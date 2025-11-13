@@ -184,11 +184,11 @@ namespace HeroServer.Controllers
 
         // DELETE services/appUser/ById?id=3&authUser=1&renap=0
         [HttpDelete("ById")]
-        public async Task<ActionResult<int>> DeleteById([FromQuery]String id, [FromQuery]String authUser = "1", [FromQuery]String renap = "0")
+        public async Task<ActionResult<int>> DeleteById([FromQuery]String id, [FromQuery]String authUser = "1")
         {
             try
             {
-                await AppUserFunctions.DeleteById(Convert.ToInt32(id), authUser == "1", renap == "1");
+                await AppUserFunctions.DeleteById(Convert.ToInt32(id), authUser == "1");
                 return Ok();
             }
             catch (Exception ex)

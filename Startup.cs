@@ -45,18 +45,14 @@ namespace HeroServer
             WebSysUserFunctions.Initialize();
             FirebaseFunctions.Initialize();
             StorageFunctions.Initialize();
-            LeapServerHelper.Initialize();
 
             CardFunctions.Initialize();
-
-            InvestmentPaymentFunctions.Initialize();
 
             services.AddControllers()
                     .AddJsonOptions(options =>
                      {
                          options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                          options.JsonSerializerOptions.PropertyNamingPolicy = new WebJsonNamingPolicy();
-                         options.JsonSerializerOptions.Converters.Add(new LeapResultJsonConverter());
                      });
 
             //services.AddHostedService<SatWorker>();

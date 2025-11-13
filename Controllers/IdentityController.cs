@@ -81,34 +81,6 @@ namespace HeroServer.Controllers
             }
         }
 
-        // GET services/identity/InfoByAppUserId?appUserId=1&status=1
-        [HttpGet("InfoByAppUserId")]
-        public async Task<ActionResult<IdentityInfo>> GetInfoByAppUserId([FromQuery]String appUserId, [FromQuery]String status = "1")
-        {
-            return Ok(await IdentityFunctions.GetInfoByAppUserId(Convert.ToInt32(appUserId), Convert.ToInt32(status)));
-        }
-
-        // GET services/identity/BoardInfoByAppUserId?appUserId=1&status=1
-        [HttpGet("BoardInfoByAppUserId")]
-        public async Task<ActionResult<IdentityInfo>> GetBoardInfoByAppUserId([FromQuery] String appUserId, [FromQuery] String status = "1")
-        {
-            return Ok(await IdentityFunctions.GetBoardInfoByAppUserId(Convert.ToInt32(appUserId), Convert.ToInt32(status)));
-        }
-
-        // GET services/identity/DpiPhotoByAppUserId?appUserId=1
-        [HttpGet("DpiPhotoByAppUserId")]
-        public async Task<ActionResult<DpiPhoto>> GetDpiPhotoByAppUserId([FromQuery]String appUserId)
-        {
-            return Ok(await IdentityFunctions.GetDpiPhoto(Convert.ToInt32(appUserId)));
-        }
-
-        // GET services/identity/DpiBoardPhotoByAppUserId?appUserId=1
-        [HttpGet("DpiBoardPhotoByAppUserId")]
-        public async Task<ActionResult<DpiPhoto>> GetDpiBoardPhotoByAppUserId([FromQuery] String appUserId)
-        {
-            return Ok(await IdentityFunctions.GetDpiBoardPhoto(Convert.ToInt32(appUserId)));
-        }
-
         // GET services/identity/PortraitByAppUserId?appUserId=1
         [HttpGet("PortraitByAppUserId")]
         public async Task<ActionResult<String>> GetPortraitByAppUserId([FromQuery]String appUserId)
@@ -121,13 +93,6 @@ namespace HeroServer.Controllers
         public async Task<ActionResult<List<Identity>>> GetAllByAppUserId([FromQuery]String appUserId, [FromQuery]String status = "1")
         {
             return Ok(await IdentityFunctions.GetAllByAppUserId(Convert.ToInt32(appUserId), Convert.ToInt32(status)));
-        }
-
-        // GET services/identity/Signature?signatureId=1
-        [HttpGet("Signature")]
-        public async Task<ActionResult<String>> GetSignature([FromQuery] String signatureId)
-        {
-            return Ok(await IdentityFunctions.GetSignature(Convert.ToInt32(signatureId)));
         }
 
         // POST services/identity/Register
@@ -172,37 +137,6 @@ namespace HeroServer.Controllers
             }
         }
 
-        // PUT services/identity/DpiFront?appUserId=3
-        [HttpPut("DpiFront")]
-        public async Task<ActionResult> UpdateDpiFront([FromQuery]String appUserId, [FromBody]String dpiPhotos)
-        {
-            try
-            {
-                
-                await IdentityFunctions.UpdateDpiFront(Convert.ToInt32(appUserId), dpiPhotos);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        // PUT services/identity/DpiBack?appUserId=3
-        [HttpPut("DpiBack")]
-        public async Task<ActionResult> UpdateDpiBack([FromQuery]String appUserId, [FromBody]String dpiBack)
-        {
-            try
-            {
-                await IdentityFunctions.UpdateDpiBack(Convert.ToInt32(appUserId), dpiBack);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         // PUT services/identity/Portrait?appUserId=3
         [HttpPut("Portrait")]
         public async Task<ActionResult> UpdatePortrait([FromQuery]String appUserId, [FromBody]String portrait)
@@ -211,20 +145,6 @@ namespace HeroServer.Controllers
             {
                 await IdentityFunctions.UpdatePortrait(Convert.ToInt32(appUserId), portrait);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        // PUT services/identity/Info
-        [HttpPut("Info")]
-        public async Task<ActionResult<int>> UpdateInfo([FromBody]IdentityInfo identityInfo)
-        {
-            try
-            {
-                return Ok(await IdentityFunctions.UpdateInfo(identityInfo));
             }
             catch (Exception ex)
             {

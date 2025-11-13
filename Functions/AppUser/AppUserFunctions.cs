@@ -128,7 +128,7 @@ namespace HeroServer
         }
 
         // DELETE
-        public static async Task DeleteById(int id, bool delAuthUser = true, bool delRenap = false)
+        public static async Task DeleteById(int id, bool delAuthUser = true)
         {
             int webSysUserId = await new AppUserDB().GetWebSysUserId(id);
 
@@ -137,14 +137,8 @@ namespace HeroServer
                 await new AppUserDB().DeleteById(id);
 
                 await IdentityFunctions.DeleteByAppUserId(id);
-                await AppointmentFunctions.DeleteByAppUserId(id);
-                await BankTransactionFunctions.DeleteByAppUserId(id);
                 await CardFunctions.DeleteByAppUserId(id);
-                await InvestmentFunctions.DeleteByAppUserId(id);
-                await OnboardingFunctions.DeleteByAppUserId(id);
                 await ReferredFunctions.DeleteByAppUserId(id);
-                if (delRenap)
-                    await RenapIdentityFunctions.DeleteByAppUserId(id);
 
                 scope.Complete();
             }
@@ -167,7 +161,7 @@ namespace HeroServer
             int appUserId = await GetIdByEmail(eMail);
             if (appUserId == -1)
                 throw new Exception("Email NOT Found");
-            await DeleteById(appUserId, delAuthUser, delRenap);
+            await DeleteById(appUserId, delAuthUser);
         }
 
         public static async Task DeleteImages(int id, bool delRenap = false)

@@ -97,16 +97,16 @@ namespace HeroServer
 
             int onboardingStage = 0;
 
-            if (appUser.AppUserStatusId == 3)  // En validación
-            {
-                Onboarding onboarding = await OnboardingFunctions.GetByAppUserId(appUser.Id);
-                if (onboarding.Status == 3)
-                    onboardingStage = OnboardingFunctions.GetStage(onboarding);
-            }
-            else if (appUser.AppUserStatusId == 5)  // Acceptado
-                await AppUserFunctions.UpdateStatus(appUser.Id, 1);  // Activo
-            else if (appUser.AppUserStatusId == 4)  // Rechazado
-                await AppUserFunctions.UpdateStatus(appUser.Id, 6);  // Inactivo
+            //if (appUser.AppUserStatusId == 3)  // En validación
+            //{
+            //    Onboarding onboarding = await OnboardingFunctions.GetByAppUserId(appUser.Id);
+            //    if (onboarding.Status == 3)
+            //        onboardingStage = OnboardingFunctions.GetStage(onboarding);
+            //}
+            //else if (appUser.AppUserStatusId == 5)  // Acceptado
+            //    await AppUserFunctions.UpdateStatus(appUser.Id, 1);  // Activo
+            //else if (appUser.AppUserStatusId == 4)  // Rechazado
+            //    await AppUserFunctions.UpdateStatus(appUser.Id, 6);  // Inactivo
 
             //return new LoginResponse(0, "0|Login|Este es un aviso de bloqueo.");
 

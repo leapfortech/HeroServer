@@ -117,7 +117,6 @@ namespace HeroServer
             {
                 int identityId = await IdentityFunctions.CopyByAppUserId(appUserId, 2);
                 (int addressAppUserId, int boardAddressId) = await CopyByAppUserId(appUserId, 2);
-                await OnboardingFunctions.Add(new Onboarding(appUserId, identityId, boardAddressId));
 
                 if (addressInfo.HouseholdBills != null && addressInfo.HouseholdBills.Length > 0)
                 {
