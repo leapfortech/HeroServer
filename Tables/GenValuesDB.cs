@@ -255,7 +255,32 @@ namespace HeroServer
             return field;
         }
 
-        public async Task<long> GetIntById(String table, long id, String fieldName)
+        public async Task<int> GetIntById(String table, long id, String fieldName)
+        {
+            String strCmd = $"SELECT {fieldName} FROM [{table}]";
+            strCmd += " WHERE Id = @Id";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+
+            int field = -1;
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        field = Convert.ToInt32(reader[fieldName]);
+                    }
+                }
+            }
+
+            return field;
+        }
+
+        public async Task<long> GetLongById(String table, long id, String fieldName)
         {
             String strCmd = $"SELECT {fieldName} FROM [{table}]";
             strCmd += " WHERE Id = @Id";
@@ -333,6 +358,36 @@ namespace HeroServer
                     if (await reader.ReadAsync())
                     {
                         field = Convert.ToInt32(reader[fieldName]);
+                    }
+                }
+            }
+
+            return field;
+        }
+
+        public async Task<long> GetLongByIntFields(String table, String[] keyNames, int[] keyValues, String fieldName)
+        {
+            String strCmd = $"SELECT {fieldName} FROM [{table}] WHERE";
+            strCmd += " @KeyName0 = @KeyValue0";
+            for (int i = 1; i < keyNames.Length; i++)
+                strCmd += $" AND @KeyName{i} = @KeyValue{i}";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+            for (int i = 0; i < keyNames.Length; i++)
+            {
+                DBHelper.AddParam(command, $"@KeyName{i}", SqlDbType.Int, keyNames[i]);
+                DBHelper.AddParam(command, $"@KeyValue{i}", SqlDbType.Int, keyValues[i]);
+            }
+
+            long field = -1;
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        field = Convert.ToInt64(reader[fieldName]);
                     }
                 }
             }

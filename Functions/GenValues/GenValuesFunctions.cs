@@ -31,9 +31,14 @@ namespace HeroServer
             return await new GenValuesDB().GetStringById(table, id, fieldName);
         }
 
-        public static async Task<long> GetIntById(String table, long id, String fieldName)
+        public static async Task<int> GetIntById(String table, long id, String fieldName)
         {
             return await new GenValuesDB().GetIntById(table, id, fieldName);
+        }
+
+        public static async Task<long> GetLongById(String table, long id, String fieldName)
+        {
+            return await new GenValuesDB().GetLongById(table, id, fieldName);
         }
 
         public static async Task<long> GetIdByField(String table, String fieldName, String fieldValue)
@@ -49,6 +54,11 @@ namespace HeroServer
         public static async Task<int> GetIntByIntFields(String table, String[] keyNames, int[] keyValues, String fieldName)
         {
             return await new GenValuesDB().GetIntByIntFields(table, keyNames, keyValues, fieldName);
+        }
+
+        public static async Task<long> GetLongByIntFields(String table, String[] keyNames, int[] keyValues, String fieldName)
+        {
+            return await new GenValuesDB().GetLongByIntFields(table, keyNames, keyValues, fieldName);
         }
     }
 }
