@@ -59,7 +59,7 @@ namespace HeroServer.Controllers
         {
             try
             {
-                return Ok(await AppUserFunctions.GetById(Convert.ToInt32(id)));
+                return Ok(await AppUserFunctions.GetById(Convert.ToInt64(id)));
             }
             catch (Exception ex)
             {
@@ -137,7 +137,7 @@ namespace HeroServer.Controllers
                 //if (!await FirebaseFunctions.AuthorizeAppUser(blcConnString, HttpContext, Convert.ToInt32(id), "AppUser.UpdateOptions"))
                 //    return Unauthorized();
 
-                if (!await AppUserFunctions.UpdateOptions(Convert.ToInt32(id), Convert.ToInt32(options)))
+                if (!await AppUserFunctions.UpdateOptions(Convert.ToInt64(id), Convert.ToInt64(options)))
                     return BadRequest($"[OPTI]");
 
                 return Ok();
@@ -157,7 +157,7 @@ namespace HeroServer.Controllers
                 //if (!await FirebaseFunctions.AuthorizeAppUser(bntConnString, HttpContext, Convert.ToInt32(id), "AppUser.SetStatus"))
                 //    return Unauthorized();
 
-                if (!await AppUserFunctions.UpdateStatus(Convert.ToInt32(id), Convert.ToInt32(appUserStatusId)))
+                if (!await AppUserFunctions.UpdateStatus(Convert.ToInt64(id), Convert.ToInt32(appUserStatusId)))
                     return BadRequest("[STAT]");
 
                 return Ok();
@@ -170,11 +170,11 @@ namespace HeroServer.Controllers
 
         // PUT services/appUser/UpdateReferred?id=1&referredCode=xx
         [HttpPut("UpdateReferred")]
-        public async Task<ActionResult<int>> UpdateReferred([FromQuery]String id, [FromQuery]String referredCode)
+        public async Task<ActionResult<long>> UpdateReferred([FromQuery]String id, [FromQuery]String referredCode)
         {
             try
             {
-                return await AppUserFunctions.UpdateReferred(Convert.ToInt32(id), referredCode);
+                return await AppUserFunctions.UpdateReferred(Convert.ToInt64(id), referredCode);
             }
             catch (Exception ex)
             {
@@ -184,11 +184,11 @@ namespace HeroServer.Controllers
 
         // DELETE services/appUser/ById?id=3&authUser=1&renap=0
         [HttpDelete("ById")]
-        public async Task<ActionResult<int>> DeleteById([FromQuery]String id, [FromQuery]String authUser = "1")
+        public async Task<ActionResult<long>> DeleteById([FromQuery]String id, [FromQuery]String authUser = "1")
         {
             try
             {
-                await AppUserFunctions.DeleteById(Convert.ToInt32(id), authUser == "1");
+                await AppUserFunctions.DeleteById(Convert.ToInt64(id), authUser == "1");
                 return Ok();
             }
             catch (Exception ex)
@@ -199,7 +199,7 @@ namespace HeroServer.Controllers
 
         // DELETE services/appUser/ByEmail?email=user@gmail.com&authUser=0&renap=1
         [HttpDelete("ByEmail")]
-        public async Task<ActionResult<int>> DeleteByEmail([FromQuery]String email, [FromQuery]String authUser = "1", [FromQuery]String renap = "0")
+        public async Task<ActionResult<long>> DeleteByEmail([FromQuery]String email, [FromQuery]String authUser = "1", [FromQuery]String renap = "0")
         {
             try
             {

@@ -14,7 +14,7 @@ namespace HeroServer
         public static async Task<String> RegisterApp(RegisterAppRequest registerAppRequest)
         {
             WebSysUser webSysUser = await WebSysUserFunctions.GetByEmail(registerAppRequest.Email);
-            int appUserId = webSysUser == null ? -1 : await AppUserFunctions.GetIdByWebSysUserId(webSysUser.Id);
+            long appUserId = webSysUser == null ? -1 : await AppUserFunctions.GetIdByWebSysUserId(webSysUser.Id);
 
             if (appUserId != -1)
                 throw new Exception($"El usuario {registerAppRequest.Email} ya fue registrado.");
@@ -40,9 +40,9 @@ namespace HeroServer
                         await WebSysUserFunctions.UpdatePhone(new PhoneRequest(webSysUser.Id, registerAppRequest.PhoneCountryId, registerAppRequest.Phone));
                 }
 
-                int referredAppUserId = await ReferredFunctions.GetAppUserIdByCode(registerAppRequest.ReferredCode);
+                long referredAppUserId = await ReferredFunctions.GetAppUserIdById(registerAppRequest.ReferredId);
 
-                AppUser appUser = new AppUser(-1, webSysUser.Id, registerAppRequest.News, referredAppUserId, 0);
+                AppUser appUser = new AppUser(-1, webSysUser.Id, referredAppUserId, 0);
                 appUserId = await new AppUserDB().Add(appUser);
 
                 await UpdateCSToken(appUserId, webSysUser.Email);
@@ -53,7 +53,7 @@ namespace HeroServer
             return $"{appUserId}|{verified}";
         }
 
-        private static async Task UpdateCSToken(int appUserId, String email)
+        private static async Task UpdateCSToken(long appUserId, String email)
         {
             String csToken = (await CybersourceFunctions.RegisterCustomer(WebEnvConfig.Flag + appUserId.ToString(), email)).Id;
             await new AppUserDB().UpdateCSToken(appUserId, csToken);
@@ -130,10 +130,10 @@ namespace HeroServer
         // BOARD
 
         // Register Board
-        public static async Task<int> RegisterBoard(RegisterBoardRequest registerBoardRequest)
+        public static async Task<long> RegisterBoard(RegisterBoardRequest registerBoardRequest)
         {
             WebSysUser webSysUser = await WebSysUserFunctions.GetByEmail(registerBoardRequest.Email);
-            int boardUserId = webSysUser == null ? -1 : await BoardUserFunctions.GetIdByWebSysUserId(webSysUser.Id);
+            long boardUserId = webSysUser == null ? -1 : await BoardUserFunctions.GetIdByWebSysUserId(webSysUser.Id);
 
             if (boardUserId != -1)
                 throw new Exception($"El usuario {registerBoardRequest.Email} ya fue registrado.");

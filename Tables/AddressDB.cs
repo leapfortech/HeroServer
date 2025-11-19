@@ -9,14 +9,14 @@ namespace HeroServer
     public class AddressDB
     {
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
-        readonly String table = "[DD-Address]";
+        readonly String table = "[D-Address]";
 
         public static Address GetAddress(SqlDataReader reader)
         {
-            return new Address(Convert.ToInt32(reader["Id"]),
-                               Convert.ToInt32(reader["CountryId"]),
-                               Convert.ToInt32(reader["StateId"]), 
-                               Convert.ToInt32(reader["CityId"]),
+            return new Address(Convert.ToInt64(reader["Id"]),
+                               Convert.ToInt64(reader["CountryId"]),
+                               Convert.ToInt64(reader["StateId"]), 
+                               Convert.ToInt64(reader["CityId"]),
                                reader["Address1"].ToString(),
                                reader["Address2"].ToString(), 
                                reader["Zone"].ToString(),
@@ -30,7 +30,7 @@ namespace HeroServer
 
         public static AddressFull GetAddressFull(SqlDataReader reader)
         {
-            return new AddressFull(Convert.ToInt32(reader["EntityId"]),
+            return new AddressFull(Convert.ToInt64(reader["Id"]),
                                    reader["Country"].ToString(),
                                    reader["State"].ToString(),
                                    reader["City"].ToString(),
@@ -66,13 +66,13 @@ namespace HeroServer
             return addresses;
         }
 
-        public async Task<Address> GetById(int id)
+        public async Task<Address> GetById(long id)
         {
             String strCmd = $"SELECT * FROM {table} WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             Address address = null;
             using (conn)
@@ -90,11 +90,11 @@ namespace HeroServer
         }
 
         // GET ALL
-        public async Task<AddressFull> GetAddressFullByAppUserId(int appUserId)
+        public async Task<AddressFull> GetAddressFullByAppUserId(long appUserId)
         {
             String strCmd = "SELECT AdrApp.AppUserId AS EntityId, Country.Name AS Country, State.Name AS State, City.Name AS City, Adr.Address1, Adr.Address2, Adr.Zone," +
                             " Adr.ZipCode, Adr.Latitude, Adr.Longitude, AdrApp.Status" + 
-                            $" FROM {table} AS Adr INNER JOIN [DL-AddressAppUser] AS AdrApp ON (AdrApp.AddressId = Adr.Id)" +
+                            $" FROM {table} AS Adr INNER JOIN [J-AddressAppUser] AS AdrApp ON (AdrApp.AddressId = Adr.Id)" +
                             " INNER JOIN [K-Country] AS Country ON (Adr.CountryId = Country.Id)" + 
                             " INNER JOIN [K-State] AS State ON (Adr.StateId = State.Id)" +
                             " INNER JOIN [K-City] AS City ON (Adr.CityId = City.Id)" +
@@ -102,36 +102,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.Int, appUserId);
-
-            AddressFull addressFull = null;
-            using (conn)
-            {
-                await conn.OpenAsync();
-                using (SqlDataReader reader = await command.ExecuteReaderAsync())
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        addressFull = GetAddressFull(reader);
-                    }
-                }
-            }
-            return addressFull;
-        }
-
-        public async Task<AddressFull> GetAddressFullByProductId(int productId)
-        {
-            String strCmd = "SELECT AdrPro.ProductId AS EntityId, Country.Name AS Country, State.Name AS State, City.Name AS City, Adr.Address1, Adr.Address2, Adr.Zone," +
-                             " Adr.ZipCode, Adr.Latitude, Adr.Longitude, AdrPro.Status" +
-                            $" FROM {table} AS Adr INNER JOIN [DL-AddressProduct] AS AdrPro ON (AdrPro.AddressId = Adr.Id)" +
-                             " INNER JOIN [K-Country] AS Country ON (Adr.CountryId = Country.Id)" +
-                             " INNER JOIN [K-State] AS State ON (Adr.StateId = State.Id)" +
-                             " INNER JOIN [K-City] AS City ON (Adr.CityId = City.Id)" +
-                             " WHERE AdrPro.ProductId = @ProductId";
-
-            SqlCommand command = new SqlCommand(strCmd, conn);
-
-            DBHelper.AddParam(command, "@ProductId", SqlDbType.Int, productId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, appUserId);
 
             AddressFull addressFull = null;
             using (conn)
@@ -149,17 +120,18 @@ namespace HeroServer
         }
 
         // INSERT
-        public async Task<int> Add(Address address)
+        public async Task<long> Add(Address address)
         {
-            String strCmd = $"INSERT INTO {table}(CountryId, StateId, CityId, Address1, Address2, Zone, ZipCode, Latitude, Longitude, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(Id, CountryId, StateId, CityId, Address1, Address2, Zone, ZipCode, Latitude, Longitude, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@CountryId, @StateId, @CityId, @Address1, @Address2, @Zone, @ZipCode, @Latitude, @Longitude, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@Id, @CountryId, @StateId, @CityId, @Address1, @Address2, @Zone, @ZipCode, @Latitude, @Longitude, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@CountryId", SqlDbType.Int, address.CountryId);
-            DBHelper.AddParam(command, "@StateId", SqlDbType.Int, address.StateId);
-            DBHelper.AddParam(command, "@CityId", SqlDbType.Int, address.CityId);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid());
+            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, address.CountryId);
+            DBHelper.AddParam(command, "@StateId", SqlDbType.BigInt, address.StateId);
+            DBHelper.AddParam(command, "@CityId", SqlDbType.BigInt, address.CityId);
             DBHelper.AddParam(command, "@Address1", SqlDbType.VarChar, address.Address1);
             DBHelper.AddParam(command, "@Address2", SqlDbType.VarChar, address.Address2);
             DBHelper.AddParam(command, "@Zone", SqlDbType.VarChar, address.Zone);
@@ -186,9 +158,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@CountryId", SqlDbType.Int, address.CountryId);
-            DBHelper.AddParam(command, "@StateId", SqlDbType.Int, address.StateId);
-            DBHelper.AddParam(command, "@CityId", SqlDbType.Int, address.CityId);
+            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, address.CountryId);
+            DBHelper.AddParam(command, "@StateId", SqlDbType.BigInt, address.StateId);
+            DBHelper.AddParam(command, "@CityId", SqlDbType.BigInt, address.CityId);
             DBHelper.AddParam(command, "@Address1", SqlDbType.VarChar, address.Address1);
             DBHelper.AddParam(command, "@Address2", SqlDbType.VarChar, address.Address2);
             DBHelper.AddParam(command, "@Zone", SqlDbType.VarChar, address.Zone);
@@ -197,7 +169,7 @@ namespace HeroServer
             DBHelper.AddParam(command, "@Longitude", SqlDbType.Decimal, address.Longitude);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, address.Status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, address.Id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, address.Id);
 
             using (conn)
             {
@@ -206,7 +178,7 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> UpdateStatus(int id, int status)
+        public async Task<bool> UpdateStatus(long id, int status)
         {
             String strCmd = $"UPDATE {table}" +
                             " SET UpdateDateTime = @UpdateDateTime, Status = @Status" +
@@ -216,7 +188,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -225,7 +197,7 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> UpdateStatus(int id, int curStatus, int newStatus)
+        public async Task<bool> UpdateStatus(long id, int curStatus, int newStatus)
         {
             String strCmd = $"UPDATE {table}" +
                             " SET UpdateDateTime = @UpdateDateTime, Status = @NewStatus" +
@@ -236,7 +208,7 @@ namespace HeroServer
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@CurStatus", SqlDbType.Int, curStatus);
             DBHelper.AddParam(command, "@NewStatus", SqlDbType.Int, newStatus);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -258,12 +230,12 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task<bool> DeleteById(long id)
         {
             String strCmd = $"DELETE {table} WHERE Id = @Id";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {

@@ -39,28 +39,22 @@ namespace HeroServer.Controllers
         [HttpGet("ById")]
         public async Task<ActionResult<Referred>> GetById([FromQuery]String id)
         {
-            return Ok(await ReferredFunctions.GetById(Convert.ToInt32(id)));
+            return Ok(await ReferredFunctions.GetById(Convert.ToInt64(id)));
         }
 
         // GET services/referred/ByAppUserId?appUserId=1
         [HttpGet("ByAppUserId")]
         public async Task<ActionResult<IEnumerable<Referred>>> GetByAppUserId([FromQuery]String appUserId)
         {
-            return Ok(await ReferredFunctions.GetByAppUserId(Convert.ToInt32(appUserId)));
+            return Ok(await ReferredFunctions.GetByAppUserId(Convert.ToInt64(appUserId)));
         }
 
-        // GET services/referred/IdByCode?code=
-        [HttpGet("IdByCode")]
-        public async Task<ActionResult<int>> GetIdByCode([FromQuery] String code)
-        {
-            return Ok(await ReferredFunctions.GetIdByCode(code));
-        }
 
         // GET services/referred/Validate?code=
         [HttpGet("Validate")]     // JAD : Remove
-        public async Task<ActionResult<int>> Validate([FromQuery] String code)
+        public async Task<ActionResult<int>> Validate([FromQuery] String id)
         {
-            return Ok(await ReferredFunctions.Validate(code));
+            return Ok(await ReferredFunctions.Validate(Convert.ToInt64(id)));
         }
 
         // POST services/referred/History
@@ -93,7 +87,7 @@ namespace HeroServer.Controllers
 
         // PUT services/referred
         [HttpPut]
-        public async Task<ActionResult<int>> Update([FromBody]Referred referred)
+        public async Task<ActionResult<bool>> Update([FromBody]Referred referred)
         {
             try
             {

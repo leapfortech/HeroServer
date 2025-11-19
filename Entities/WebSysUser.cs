@@ -5,11 +5,11 @@ namespace HeroServer
 {
     public class WebSysUser
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public String AuthUserId { get; set; }
         public String Email { get; set; }
         public String Roles { get; set; }
-        public int PhoneCountryId { get; set; }
+        public long PhoneCountryId { get; set; }
         public String Phone { get; set; }
         public String Pin { get; set; }
         public int PinFails { get; set; } = 0;
@@ -27,7 +27,7 @@ namespace HeroServer
 
         }
 
-        public WebSysUser(int id, String authUserId, String email, String roles, int phoneCountryId, String phone,
+        public WebSysUser(long id, String authUserId, String email, String roles, long phoneCountryId, String phone,
                           String pin, int pinFails, DateTime? pinDateTime,
                           DateTime createDateTime, DateTime updateDateTime, int webSysUserStatusId)
         {
@@ -45,7 +45,7 @@ namespace HeroServer
             WebSysUserStatusId = webSysUserStatusId;
         }
 
-        public WebSysUser(int id, String authUserId, String email, String roles, int phoneCountryId, String phone, int webSysUserStatusId)
+        public WebSysUser(long id, String authUserId, String email, String roles, long phoneCountryId, String phone, int webSysUserStatusId)
         {
             Id = id;
             AuthUserId = authUserId;

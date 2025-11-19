@@ -45,7 +45,7 @@ namespace HeroServer.Controllers
         {
             try
             {
-                return Ok(await IdentityFunctions.GetById(Convert.ToInt32(id)));
+                return Ok(await IdentityFunctions.GetById(Convert.ToInt64(id)));
             }
             catch (Exception ex)
             {
@@ -59,7 +59,7 @@ namespace HeroServer.Controllers
         {
             try
             {
-                return Ok(await IdentityFunctions.GetByAppUserId(Convert.ToInt32(appUserId), Convert.ToInt32(status)));
+                return Ok(await IdentityFunctions.GetByAppUserId(Convert.ToInt64(appUserId), Convert.ToInt32(status)));
             }
             catch (Exception ex)
             {
@@ -73,7 +73,7 @@ namespace HeroServer.Controllers
         {
             try
             {
-                return Ok(await IdentityFunctions.GetFullByAppUserId(Convert.ToInt32(appUserId), Convert.ToInt32(status)));
+                return Ok(await IdentityFunctions.GetFullByAppUserId(Convert.ToInt64(appUserId), Convert.ToInt32(status)));
             }
             catch (Exception ex)
             {
@@ -85,14 +85,14 @@ namespace HeroServer.Controllers
         [HttpGet("PortraitByAppUserId")]
         public async Task<ActionResult<String>> GetPortraitByAppUserId([FromQuery]String appUserId)
         {
-            return Ok(await IdentityFunctions.GetPortraitByAppUserId(Convert.ToInt32(appUserId)));
+            return Ok(await IdentityFunctions.GetPortraitByAppUserId(Convert.ToInt64(appUserId)));
         }
 
         // GET services/identity/AllByAppUserId?appUserId=1&status=0
         [HttpGet("AllByAppUserId")]
         public async Task<ActionResult<List<Identity>>> GetAllByAppUserId([FromQuery]String appUserId, [FromQuery]String status = "1")
         {
-            return Ok(await IdentityFunctions.GetAllByAppUserId(Convert.ToInt32(appUserId), Convert.ToInt32(status)));
+            return Ok(await IdentityFunctions.GetAllByAppUserId(Convert.ToInt64(appUserId), Convert.ToInt32(status)));
         }
 
         // POST services/identity/Register
@@ -111,7 +111,7 @@ namespace HeroServer.Controllers
 
         // POST services/identity/
         [HttpPost]
-        public async Task<ActionResult<int>> Add([FromBody]Identity identity)
+        public async Task<ActionResult<long>> Add([FromBody]Identity identity)
         {
             try
             {
@@ -125,7 +125,7 @@ namespace HeroServer.Controllers
 
         // PUT services/identity/
         [HttpPut]
-        public async Task<ActionResult<int>> Update([FromBody]Identity identity)
+        public async Task<ActionResult<long>> Update([FromBody]Identity identity)
         {
             try
             {
@@ -143,7 +143,7 @@ namespace HeroServer.Controllers
         {
             try
             {
-                await IdentityFunctions.UpdatePortrait(Convert.ToInt32(appUserId), portrait);
+                await IdentityFunctions.UpdatePortrait(Convert.ToInt64(appUserId), portrait);
                 return Ok();
             }
             catch (Exception ex)
@@ -158,7 +158,7 @@ namespace HeroServer.Controllers
         {
             try
             {
-                if (!await IdentityFunctions.UpdateStatus(Convert.ToInt32(id), Convert.ToInt32(status)))
+                if (!await IdentityFunctions.UpdateStatus(Convert.ToInt64(id), Convert.ToInt32(status)))
                     return BadRequest("[STAT]");
 
                 return Ok();

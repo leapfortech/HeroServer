@@ -8,9 +8,9 @@ namespace HeroServer
 {
     public static class WebSysTokenFunctions
     {
-        public static async Task<int> FindAdd(WebSysToken webSysToken)
+        public static async Task<long> FindAdd(WebSysToken webSysToken)
         {
-            int tokenId = -1;
+            long tokenId = -1;
 
             List<WebSysToken> webSysTokens = await new WebSysTokenDB().GetByWebSysUserId(webSysToken.WebSysUserId);
             for (int i = 0; i < webSysTokens.Count; i++)

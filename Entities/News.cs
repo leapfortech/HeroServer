@@ -5,7 +5,7 @@ namespace HeroServer
 {
     public class News
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public String Title { get; set; }
         public String Description { get; set; }
         public String Link { get; set; }
@@ -19,7 +19,7 @@ namespace HeroServer
         {
         }
 
-        public News(int id, String title, String description, String link, String content, DateTime createDateTime, DateTime updateDateTime, int status)
+        public News(long id, String title, String description, String link, String content, DateTime createDateTime, DateTime updateDateTime, int status)
         {
             Id = id;
             Title = title;

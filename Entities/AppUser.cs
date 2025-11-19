@@ -4,13 +4,12 @@ namespace HeroServer
 {
     public class AppUser
     {
-        public int Id { get; set; }
-        public String Code { get; set; }
-        public int WebSysUserId { get; set; }
+        public long Id { get; set; }
+        public long WebSysUserId { get; set; }
+        public String Alias { get; set; }
         public String CSToken { get; set; }
-        public int News { get; set; }
-        public int Options { get; set; } = 0;
-        public int ReferrerAppUserId { get; set; }
+        public long Options { get; set; } = 0;
+        public long ReferrerAppUserId { get; set; }
         public DateTime CreateDateTime { get; set; } = DateTime.Today;
         public DateTime UpdateDateTime { get; set; } = DateTime.Today;
         public int AppUserStatusId { get; set; }
@@ -19,13 +18,12 @@ namespace HeroServer
         {
         }
 
-        public AppUser(int id, String code, int webSysUserId, String csToken, int news, int options, int referrerAppUserId, DateTime createDateTime, DateTime updateDateTime, int appUserStatusId)
+        public AppUser(long id, long webSysUserId, String alias, String csToken, long options, long referrerAppUserId, DateTime createDateTime, DateTime updateDateTime, int appUserStatusId)
         {
             Id = id;
-            Code = code;
             WebSysUserId = webSysUserId;
+            Alias = alias;
             CSToken = csToken;
-            News = news;
             Options = options;
             ReferrerAppUserId = referrerAppUserId;
             CreateDateTime = createDateTime;
@@ -33,13 +31,12 @@ namespace HeroServer
             AppUserStatusId = appUserStatusId;
         }
 
-        public AppUser(int id, String code, int webSysUserId, String csToken, int news, int options, int referrerAppUserId, int appUserStatusId)
+        public AppUser(long id, long webSysUserId, String alias, String csToken, long options, long referrerAppUserId, int appUserStatusId)
         {
             Id = id;
-            Code = code;
             WebSysUserId = webSysUserId;
+            Alias = alias;
             CSToken = csToken;
-            News = news;
             Options = options;
             ReferrerAppUserId = referrerAppUserId;
             CreateDateTime = DateTime.Now;
@@ -47,26 +44,23 @@ namespace HeroServer
             AppUserStatusId = appUserStatusId;
         }
 
-        public AppUser(int id, int webSysUserId, String csToken, int news, int options, int appUserStatusId)
+        public AppUser(long id, long webSysUserId, String alias, String csToken, long options, int appUserStatusId)
         {
             Id = id;
-            Code = null;
             WebSysUserId = webSysUserId;
+            Alias = alias;
             CSToken = csToken;
-            News = news;
             Options = options;
             CreateDateTime = DateTime.Now;
             UpdateDateTime = DateTime.Now;
             AppUserStatusId = appUserStatusId;
         }
 
-        public AppUser(int id, int webSysUserId, int news, int referrerAppUserId, int appUserStatusId)
+        public AppUser(long id, long webSysUserId, long referrerAppUserId, int appUserStatusId)
         {
             Id = id;
-            Code = null;
             WebSysUserId = webSysUserId;
             CSToken = null;
-            News = news;
             ReferrerAppUserId = referrerAppUserId;
             CreateDateTime = DateTime.Now;
             UpdateDateTime = DateTime.Now;

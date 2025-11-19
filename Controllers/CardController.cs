@@ -27,9 +27,9 @@ namespace HeroServer.Controllers
         //[HttpGet("ById")]
         //public async Task<ActionResult<Card>> GetById([FromQuery]String id)
         //{
-        //    Card card = await new CardDB(bntConnString).GetById(Convert.ToInt32(id));
+        //    Card card = await new CardDB(bntConnString).GetById(Convert.ToInt64(id));
 
-        //    if (!await FirebaseFunctions.Authorize(bntConnString, HttpContext, Convert.ToInt32(card.AppUserId), "Card.ById"))
+        //    if (!await FirebaseFunctions.Authorize(bntConnString, HttpContext, Convert.ToInt64(card.AppUserId), "Card.ById"))
         //        return Unauthorized();
 
         //    return Ok(card);
@@ -41,10 +41,10 @@ namespace HeroServer.Controllers
         {
             try
             {
-                if (!await FirebaseFunctions.AuthorizeAppUser(HttpContext, Convert.ToInt32(appUserId), "Card.ByAppUserId"))
+                if (!await FirebaseFunctions.AuthorizeAppUser(HttpContext, Convert.ToInt64(appUserId), "Card.ByAppUserId"))
                     return Unauthorized();
 
-                return Ok(await CardFunctions.GetByAppUserId(Convert.ToInt32(appUserId)));
+                return Ok(await CardFunctions.GetByAppUserId(Convert.ToInt64(appUserId)));
             }
             catch (Exception ex)
             {
@@ -58,10 +58,10 @@ namespace HeroServer.Controllers
         {
             try
             {
-                if (!await FirebaseFunctions.AuthorizeAppUser(HttpContext, Convert.ToInt32(appUserId), "Card.BillTo"))
+                if (!await FirebaseFunctions.AuthorizeAppUser(HttpContext, Convert.ToInt64(appUserId), "Card.BillTo"))
                     return Unauthorized();
 
-                return Ok(await CardFunctions.GetBillTo(Convert.ToInt32(appUserId)));
+                return Ok(await CardFunctions.GetBillTo(Convert.ToInt64(appUserId)));
             }
             catch (Exception ex)
             {
@@ -75,7 +75,7 @@ namespace HeroServer.Controllers
         {
             try
             {
-                if (!await FirebaseFunctions.AuthorizeAppUser(HttpContext, Convert.ToInt32(cardRegister.AppUserId), "Card.Register"))
+                if (!await FirebaseFunctions.AuthorizeAppUser(HttpContext, Convert.ToInt64(cardRegister.AppUserId), "Card.Register"))
                     return Unauthorized();
 
                 return Ok(await CardFunctions.Register(cardRegister, wsLogger));
@@ -92,7 +92,7 @@ namespace HeroServer.Controllers
         //{
         //    try
         //    {
-        //        if (!await FirebaseFunctions.Authorize(bntConnString, HttpContext, Convert.ToInt32(card.AppUserId), "Card.Update"))
+        //        if (!await FirebaseFunctions.Authorize(bntConnString, HttpContext, Convert.ToInt64(card.AppUserId), "Card.Update"))
         //            return Unauthorized();
 
         //        if (!await new CardDB(bntConnString).Update(card))
@@ -111,10 +111,10 @@ namespace HeroServer.Controllers
         {
             try
             {
-                int cardId = Convert.ToInt32(id);
+                long cardId = Convert.ToInt64(id);
                 Card card = await new CardDB().GetById(cardId);
 
-                if (!await FirebaseFunctions.AuthorizeAppUser(HttpContext, Convert.ToInt32(card.AppUserId), "Card.SetStatus"))
+                if (!await FirebaseFunctions.AuthorizeAppUser(HttpContext, Convert.ToInt64(card.AppUserId), "Card.SetStatus"))
                     return Unauthorized();
 
                 await CardFunctions.SetStatus(cardId, Convert.ToInt32(status));
@@ -128,7 +128,7 @@ namespace HeroServer.Controllers
 
         // DELETE services/card?id=1
         //[HttpDelete]
-        //public async Task<ActionResult> Delete(int id)
+        //public async Task<ActionResult> Delete(long id)
         //{
         //    try
         //    {

@@ -4,7 +4,7 @@ namespace HeroServer
 {
     public class CardRegister
     {
-        public int AppUserId { get; set; }
+        public long AppUserId { get; set; }
         public String InstrumentIdentifierId { get; set; }
         public int TypeId { get; set; }
         public String Number { get; set; }
@@ -18,7 +18,7 @@ namespace HeroServer
         {
         }
 
-        public CardRegister(int appUserId, String instrumentIdentifierId, int typeId, String number, int digits, int expirationMonth, int expirationYear, String holder, float utcOffset)
+        public CardRegister(long appUserId, String instrumentIdentifierId, int typeId, String number, int digits, int expirationMonth, int expirationYear, String holder, float utcOffset)
         {
             AppUserId = appUserId;
             InstrumentIdentifierId = instrumentIdentifierId;

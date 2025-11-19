@@ -20,7 +20,7 @@ namespace HeroServer.Controllers
 
         // POST services/news
         [HttpPost]
-        public async Task<ActionResult<int>> Register([FromBody] NewsInfo newsInfo)
+        public async Task<ActionResult<long>> Register([FromBody] NewsInfo newsInfo)
         {
             try
             {
@@ -38,7 +38,7 @@ namespace HeroServer.Controllers
         {
             try
             {
-                return Ok(await NewsFunctions.UpdateStatus(Convert.ToInt32(id), Convert.ToInt32(status)));
+                return Ok(await NewsFunctions.UpdateStatus(Convert.ToInt64(id), Convert.ToInt32(status)));
             }
             catch (Exception ex)
             {

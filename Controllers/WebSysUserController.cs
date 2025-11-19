@@ -59,7 +59,7 @@ namespace HeroServer.Controllers
                 if (!await FirebaseFunctions.AuthorizeWebSysAdmin(HttpContext, "WebSysUser.UpdateRoles"))
                     return Unauthorized();
 
-                await WebSysUserFunctions.UpdateRoles(Convert.ToInt32(id), roles);
+                await WebSysUserFunctions.UpdateRoles(Convert.ToInt64(id), roles);
                 return Ok();
             }
             catch (Exception ex)
@@ -169,7 +169,7 @@ namespace HeroServer.Controllers
         {
             try
             {
-                if (!await FirebaseFunctions.AuthorizeWebSysUser(HttpContext, Convert.ToInt32(passwordRequest.WebSysUserId), "WebSysUser.SetPassword"))
+                if (!await FirebaseFunctions.AuthorizeWebSysUser(HttpContext, Convert.ToInt64(passwordRequest.WebSysUserId), "WebSysUser.SetPassword"))
                     return Unauthorized();
 
                 return Ok(await WebSysUserFunctions.SetPassword(passwordRequest));
@@ -282,10 +282,10 @@ namespace HeroServer.Controllers
         {
             try
             {
-                if (!await FirebaseFunctions.AuthorizeWebSysUser(bntConnString, HttpContext, Convert.ToInt32(id), "WebSysUser.ResetPin"))
+                if (!await FirebaseFunctions.AuthorizeWebSysUser(bntConnString, HttpContext, Convert.ToInt64(id), "WebSysUser.ResetPin"))
                     return Unauthorized();
 
-                await WebSysUserFunctions.ResetPin(bntConnString, Convert.ToInt32(id));
+                await WebSysUserFunctions.ResetPin(bntConnString, Convert.ToInt64(id));
                 return Ok();
             }
             catch (Exception ex)
@@ -340,7 +340,7 @@ namespace HeroServer.Controllers
 
         // DELETE services/websysuser/id
         //[HttpDelete("{id}")]
-        //public async Task<ActionResult> Delete(int id)
+        //public async Task<ActionResult> Delete(long id)
         //{
         //    if (!await new WebSysUserDB(bntConnString).DeleteById(id))
         //        return BadRequest();

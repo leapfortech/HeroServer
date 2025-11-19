@@ -9,10 +9,10 @@ namespace HeroServer
     public class NotificationDB
     {
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
-        readonly String table = "[DD-Notification]";
+        readonly String table = "[D-Notification]";
         public static Notification GetNotification(SqlDataReader reader)
         {
-            return new Notification(Convert.ToInt32(reader["Id"]), Convert.ToInt32(reader["WebSysUserId"]),
+            return new Notification(Convert.ToInt64(reader["Id"]), Convert.ToInt64(reader["WebSysUserId"]),
                                     reader["MessageId"].ToString(),
                                     reader["Title"].ToString(), reader["Body"].ToString(),
                                     reader["Action"].ToString(), reader["Information"].ToString(),
@@ -22,13 +22,13 @@ namespace HeroServer
         }
 
         // SELECT
-        public async Task<Notification> GetById(int id)
+        public async Task<Notification> GetById(long id)
         {
             String strCmd = $"SELECT * FROM {table} WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             Notification notification = null;
             using (conn)
@@ -46,7 +46,7 @@ namespace HeroServer
             return notification;
         }
 
-        public async Task<List<Notification>> GetByWebSysUserId(int webSysUserId, int rowsCount)
+        public async Task<List<Notification>> GetByWebSysUserId(long webSysUserId, int rowsCount)
         {
             String strCmd = "SELECT";
 
@@ -60,7 +60,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.Int, webSysUserId);
+            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, webSysUserId);
 
             if (rowsCount > 0)
                 DBHelper.AddParam(command, "@RowsCount", SqlDbType.Int, rowsCount);
@@ -82,7 +82,7 @@ namespace HeroServer
             return notifications;
         }
 
-        public async Task<List<Notification>> GetLost(int id, int webSysUserId)
+        public async Task<List<Notification>> GetLost(long id, long webSysUserId)
         {
             String strCmd = $"SELECT * FROM {table}" +
                             " WHERE WebSysUserId = @WebSysUserId" +
@@ -92,8 +92,8 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.Int, webSysUserId);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, webSysUserId);
 
             List<Notification> notifications = [];
             using (conn)
@@ -112,7 +112,7 @@ namespace HeroServer
             return notifications;
         }
 
-        public async Task<String> GetLastInformation(int webSysUserId, String action)
+        public async Task<String> GetLastInformation(long webSysUserId, String action)
         {
             String strCmd = $"SELECT TOP 1 Information FROM {table}" +
                             " WHERE WebSysUserId = @WebSysUserId" +
@@ -121,7 +121,7 @@ namespace HeroServer
                             " ORDER BY DateTime DESC";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.Int, webSysUserId);
+            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, webSysUserId);
             DBHelper.AddParam(command, "@Action", SqlDbType.VarChar, action);
 
             String information = "";
@@ -175,7 +175,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.Int, notification.WebSysUserId);
+            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, notification.WebSysUserId);
             DBHelper.AddParam(command, "@MessageId", SqlDbType.VarChar, notification.MessageId);
             DBHelper.AddParam(command, "@Title", SqlDbType.VarChar, notification.Title);
             DBHelper.AddParam(command, "@Body", SqlDbType.VarChar, notification.Body);
@@ -192,7 +192,7 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> UpdateMessageId(int id, String messageId, int status)
+        public async Task<bool> UpdateMessageId(long id, String messageId, int status)
         {
             String strCmd = $"UPDATE {table}" +
                             " SET MessageId = @MessageId, NotificationStatusId = @NotificationStatusId" +
@@ -202,7 +202,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@MessageId", SqlDbType.VarChar, messageId);
             DBHelper.AddParam(command, "@NotificationStatusId", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
 
             using (conn)
@@ -212,7 +212,7 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> UpdateStatus(int id, int status)
+        public async Task<bool> UpdateStatus(long id, int status)
         {
             String strCmd = $"UPDATE {table}" +
                             " SET NotificationStatusId = @NotificationStatusId" +
@@ -221,7 +221,7 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@NotificationStatusId", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -245,13 +245,13 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task<bool> DeleteById(long id)
         {
             String strCmd = $"DELETE FROM {table} WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -260,13 +260,13 @@ namespace HeroServer
             }
         }
 
-        public async Task<int> DeleteByWebSysUserId(int webSysUserId)
+        public async Task<long> DeleteByWebSysUserId(long webSysUserId)
         {
             String strCmd = $"DELETE FROM {table} WHERE WebSysUserId = @WebSysUserId";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.Int, webSysUserId);
+            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, webSysUserId);
 
             using (conn)
             {
@@ -275,15 +275,15 @@ namespace HeroServer
             }
         }
 
-        //public async Task<int> DeleteByAppUserId(int appUserId)
+        //public async Task<int> DeleteByAppUserId(long appUserId)
         //{
         //    String strCmd = $"DELETE FROM {table}" +
-        //                    $" INNER JOIN [DD-AppUser] ON ([DD-AppUser].WebSysUserId = {table}.WebSysUserId)" +
-        //                     " WHERE [DD-AppUser].Id = @AppUserId";
+        //                    $" INNER JOIN [D-AppUser] ON ([D-AppUser].WebSysUserId = {table}.WebSysUserId)" +
+        //                     " WHERE [D-AppUser].Id = @AppUserId";
 
         //    SqlCommand command = new SqlCommand(strCmd, conn);
 
-        //    DBHelper.AddParam(command, "@AppUserId", SqlDbType.Int, appUserId);
+        //    DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, appUserId);
 
         //    using (conn)
         //    {

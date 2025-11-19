@@ -31,7 +31,7 @@ namespace HeroServer.Controllers
         {
             try
             {
-                if (!await FirebaseFunctions.AuthorizeWebSysUser(HttpContext, Convert.ToInt32(webSysUserId), "WebSysToken.ByWebSysUserId"))
+                if (!await FirebaseFunctions.AuthorizeWebSysUser(HttpContext, Convert.ToInt64(webSysUserId), "WebSysToken.ByWebSysUserId"))
                     return Unauthorized();
 
                 return Ok(await new WebSysTokenDB().GetByWebSysUserId(Convert.ToInt32(webSysUserId), 1));
@@ -51,11 +51,11 @@ namespace HeroServer.Controllers
 
         // POST services/websystoken
         [HttpPost]
-        public async Task<ActionResult<int>> Add([FromBody] WebSysToken webSysToken)
+        public async Task<ActionResult<long>> Add([FromBody] WebSysToken webSysToken)
         {
             try
             {
-                if (!await FirebaseFunctions.AuthorizeWebSysUser(HttpContext, Convert.ToInt32(webSysToken.WebSysUserId), "WebSysToken.Add"))
+                if (!await FirebaseFunctions.AuthorizeWebSysUser(HttpContext, Convert.ToInt64(webSysToken.WebSysUserId), "WebSysToken.Add"))
                     return Unauthorized();
 
                 return Ok(await WebSysTokenFunctions.FindAdd(webSysToken));

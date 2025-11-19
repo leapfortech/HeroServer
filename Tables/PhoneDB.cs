@@ -9,12 +9,12 @@ namespace HeroServer
     public class PhoneDB
     {
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
-        readonly String table = "[DD-Phone]";
+        readonly String table = "[D-Phone]";
 
         public static Phone GetPhone(SqlDataReader reader)
         {
-            return new Phone(Convert.ToInt32(reader["Id"]),
-                             Convert.ToInt32(reader["CountryId"]),
+            return new Phone(Convert.ToInt64(reader["Id"]),
+                             Convert.ToInt64(reader["CountryId"]),
                              reader["Number"].ToString(),
                              reader["CountryCode"].ToString(),
                              reader["CallerName"].ToString(),
@@ -50,13 +50,13 @@ namespace HeroServer
             return phoneCodes;
         }
 
-        public async Task<Phone> GetById(int id)
+        public async Task<Phone> GetById(long id)
         {
             String strCmd = $"SELECT * FROM {table} WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             Phone phone = null;
             using (conn)
@@ -73,13 +73,13 @@ namespace HeroServer
             return phone;
         }
 
-        public async Task<Phone> GetByPhoneNumber(int phoneCountryId, String phoneNumber, int status)
+        public async Task<Phone> GetByPhoneNumber(long phoneCountryId, String phoneNumber, int status)
         {
             String strCmd = $"SELECT * FROM {table} WHERE CountryId = @CountryId AND Number = @Number AND Status = @Status";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@CountryId", SqlDbType.Int, phoneCountryId);
+            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, phoneCountryId);
             DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, phoneNumber);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
@@ -99,15 +99,16 @@ namespace HeroServer
         }
 
         // INSERT
-        public async Task<int> Add(Phone phone)
+        public async Task<long> Add(Phone phone)
         {
-            String strCmd = $"INSERT INTO {table}(CountryId, Number, CountryCode, CallerName, CarrierCountryCode, CarrierNetworkCode, CarrierName, CarrierType, CreateDateTime, UpdateDateTime, Status)" +
+            String strCmd = $"INSERT INTO {table}(Id, CountryId, Number, CountryCode, CallerName, CarrierCountryCode, CarrierNetworkCode, CarrierName, CarrierType, CreateDateTime, UpdateDateTime, Status)" +
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@CountryId, @Number, @CountryCode, @CallerName, @CarrierCountryCode, @CarrierNetworkCode, @CarrierName, @CarrierType, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@Id, @CountryId, @Number, @CountryCode, @CallerName, @CarrierCountryCode, @CarrierNetworkCode, @CarrierName, @CarrierType, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@CountryId", SqlDbType.Int, phone.CountryId);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid());
+            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, phone.CountryId);
             DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, phone.Number);
             DBHelper.AddParam(command, "@CountryCode", SqlDbType.VarChar, phone.CountryCode);
             DBHelper.AddParam(command, "@CallerName", SqlDbType.VarChar, phone.CallerName);
@@ -135,7 +136,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@CountryId", SqlDbType.Int, phone.CountryId);
+            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, phone.CountryId);
             DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, phone.Number);
             DBHelper.AddParam(command, "@CountryCode", SqlDbType.VarChar, phone.CountryCode);
             DBHelper.AddParam(command, "@CallerName", SqlDbType.VarChar, phone.CallerName);
@@ -144,6 +145,7 @@ namespace HeroServer
             DBHelper.AddParam(command, "@CarrierName", SqlDbType.VarChar, phone.CarrierName);
             DBHelper.AddParam(command, "@CarrierType", SqlDbType.VarChar, phone.CarrierType);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, phone.Id);
 
             using (conn)
             {
@@ -152,7 +154,7 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> UpdateStatus(int id, int status)
+        public async Task<bool> UpdateStatus(long id, int status)
         {
             String strCmd = $"UPDATE {table}" +
                             " SET UpdateDateTime = @UpdateDateTime, Status = @Status" +
@@ -162,7 +164,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -171,7 +173,7 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> UpdateStatusByPhone(int countryId, String number, int status)
+        public async Task<bool> UpdateStatusByPhone(long countryId, String number, int status)
         {
             String strCmd = $"UPDATE {table}" +
                             " SET UpdateDateTime = @UpdateDateTime, Status = @Status" +
@@ -180,7 +182,7 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@CountryId", SqlDbType.Int, countryId);
+            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, countryId);
             DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, number);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
@@ -191,7 +193,7 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> UpdateStatusByPhone(int countryId, String number, int curStatus, int newStatus)
+        public async Task<bool> UpdateStatusByPhone(long countryId, String number, int curStatus, int newStatus)
         {
             String strCmd = $"UPDATE {table}" +
                             " SET UpdateDateTime = @UpdateDateTime, Status = @NewStatus" +
@@ -200,7 +202,7 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@CountryId", SqlDbType.Int, countryId);
+            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, countryId);
             DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, number);
             DBHelper.AddParam(command, "@CurStatus", SqlDbType.Int, curStatus);
             DBHelper.AddParam(command, "@NewStatus", SqlDbType.Int, newStatus);
@@ -225,12 +227,12 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task<bool> DeleteById(long id)
         {
             String strCmd = $"DELETE {table} WHERE Id = @Id";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {

@@ -18,27 +18,27 @@ namespace HeroServer
             return await new IdentityDB().GetFullAll(status);
         }
 
-        public static async Task<Identity> GetById(int id)
+        public static async Task<Identity> GetById(long id)
         {
             return await new IdentityDB().GetById(id);
         }
 
-        public static async Task<Identity> GetByAppUserId(int appUserId, int status)
+        public static async Task<Identity> GetByAppUserId(long appUserId, int status)
         {
             return await new IdentityDB().GetByAppUserId(appUserId, status);
         }
 
-        public static async Task<IdentityFull> GetFullByAppUserId(int appUserId, int status)
+        public static async Task<IdentityFull> GetFullByAppUserId(long appUserId, int status)
         {
             return await new IdentityDB().GetFullByAppUserId(appUserId, status);
         }
 
-        public static async Task<int> GetIdByAppUserId(int appUserId, int status = 1)
+        public static async Task<long> GetIdByAppUserId(long appUserId, int status = 1)
         {
             return await new IdentityDB().GetIdByAppUserId(appUserId, status);
         }
 
-        public static async Task<String> GetPortraitByAppUserId(int appUserId)
+        public static async Task<String> GetPortraitByAppUserId(long appUserId)
         {
             String portrait = null;
             
@@ -50,15 +50,15 @@ namespace HeroServer
             return portrait;
         }
 
-        public static async Task<List<Identity>> GetAllByAppUserId(int appUserId, int status)
+        public static async Task<List<Identity>> GetAllByAppUserId(long appUserId, int status)
         {
             return await new IdentityDB().GetAllByAppUserId(appUserId, status);
         }
 
         // REGISTER
-        public static async Task<int> Register(IdentityRegister identityRegister)
+        public static async Task<long> Register(IdentityRegister identityRegister)
         {
-            int identityId;
+            long identityId;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 await new IdentityDB().UpdateStatusByAppUserId(identityRegister.Identity.AppUserId, 1, 0);
@@ -84,28 +84,13 @@ namespace HeroServer
             return identityRegister.Identity.Id;
         }
 
-        public static async Task<int> RegisterInvestment(Identity identity)
-        {
-            int identityId;
-            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {
-                identity.Status = 1;
-                identityId = await new IdentityDB().Add(identity);
-                identity.Id = identityId;
-
-                scope.Complete();
-            }
-
-            return identity.Id;
-        }
-
         // ADD
-        public static async Task<int> Add(Identity identity)
+        public static async Task<long> Add(Identity identity)
         {
             return await new IdentityDB().Add(identity);
         }
 
-        public static async Task<int> Copy(int id, int status = -1)
+        public static async Task<long> Copy(long id, int status = -1)
         {
             Identity identity = await new IdentityDB().GetById(id);
             if (status != -1)
@@ -113,7 +98,7 @@ namespace HeroServer
             return await new IdentityDB().Add(identity);
         }
 
-        public static async Task<int> CopyByAppUserId(int appUserId, int status = -1)
+        public static async Task<long> CopyByAppUserId(long appUserId, int status = -1)
         {
             Identity identity = await new IdentityDB().GetByAppUserId(appUserId);
             if (status != -1)
@@ -122,9 +107,9 @@ namespace HeroServer
         }
 
         // UPDATE
-        public static async Task<int> Update(Identity identity)
+        public static async Task<long> Update(Identity identity)
         {
-            int identityId = -1;
+            long identityId = -1;
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -147,7 +132,7 @@ namespace HeroServer
             return identityId;
         }
 
-        public static async Task UpdatePortrait(int appUserId, String portrait)
+        public static async Task UpdatePortrait(long appUserId, String portrait)
         {
             if (String.IsNullOrEmpty(portrait))
                 throw new ArgumentException("No Data to Update.");
@@ -163,24 +148,24 @@ namespace HeroServer
             }
         }
 
-        public static async Task<bool> UpdateStatus(int id, int status)
+        public static async Task<bool> UpdateStatus(long id, int status)
         {
             return await new IdentityDB().UpdateStatus(id, status);
         }
 
-        public static async Task<bool> UpdateStatusByAppUserId(int appUserId, int curStatus, int newStatus)
+        public static async Task<bool> UpdateStatusByAppUserId(long appUserId, int curStatus, int newStatus)
         {
             return await new IdentityDB().UpdateStatusByAppUserId(appUserId, curStatus, newStatus);
         }
 
         // DELETE
 
-        public static async Task Delete(int id)
+        public static async Task Delete(long id)
         {
             await new IdentityDB().DeleteById(id);
         }
 
-        public static async Task DeleteByAppUserId(int appUserId)
+        public static async Task DeleteByAppUserId(long appUserId)
         {
             await new IdentityDB().DeleteByAppUserId(appUserId);
         }

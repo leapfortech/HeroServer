@@ -9,11 +9,11 @@ namespace HeroServer
     public class NewsDB
     {
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
-        readonly String table = "[DD-News]";
+        readonly String table = "[D-News]";
 
         public static News GetNews(SqlDataReader reader)
         {
-            return new News(Convert.ToInt32(reader["Id"]),
+            return new News(Convert.ToInt64(reader["Id"]),
                             reader["Title"].ToString(),
                             reader["Description"].ToString(),
                             reader["Link"].ToString(),
@@ -46,13 +46,13 @@ namespace HeroServer
             return newss;
         }
 
-        public async Task<News> GetById(int id)
+        public async Task<News> GetById(long id)
         {
             String strCmd = $"SELECT * FROM {table} WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             News news = null;
             using (conn)
@@ -94,14 +94,15 @@ namespace HeroServer
         }
 
         // INSERT
-        public async Task<int> Add(News news)
+        public async Task<long> Add(News news)
         {
-            String strCmd = $"INSERT INTO {table}(Title, Description, Link, Content, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(Id, Title, Description, Link, Content, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Title, @Description, @Link, @Content, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@Id, @Title, @Description, @Link, @Content, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid());
             DBHelper.AddParam(command, "@Title", SqlDbType.VarChar, news.Title);
             DBHelper.AddParam(command, "@Description", SqlDbType.VarChar, news.Description);
             DBHelper.AddParam(command, "@Link", SqlDbType.VarChar, news.Link);
@@ -113,7 +114,7 @@ namespace HeroServer
             using (conn)
             {
                 await conn.OpenAsync();
-                return (int)await command.ExecuteScalarAsync();
+                return (long)await command.ExecuteScalarAsync();
             }
         }
 
@@ -129,7 +130,7 @@ namespace HeroServer
             DBHelper.AddParam(command, "@Link", SqlDbType.VarChar, news.Link);
             DBHelper.AddParam(command, "@Content", SqlDbType.VarChar, news.Content);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, news.Id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, news.Id);
 
             using (conn)
             {
@@ -138,7 +139,7 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> UpdateStatus(int id, int status)
+        public async Task<bool> UpdateStatus(long id, int status)
         {
             String strCmd = $"UPDATE {table}" +
                             " SET UpdateDateTime = @UpdateDateTime, Status = @Status" +
@@ -148,7 +149,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -170,12 +171,12 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task<bool> DeleteById(long id)
         {
             String strCmd = $"DELETE {table} WHERE Id = @Id";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {

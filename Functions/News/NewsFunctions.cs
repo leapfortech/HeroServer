@@ -8,7 +8,7 @@ namespace HeroServer
     public class NewsFunctions
     {
         // GET
-        public static async Task<News> GetById(int id)
+        public static async Task<News> GetById(long id)
         {
             return await new NewsDB().GetById(id);
         }
@@ -31,9 +31,9 @@ namespace HeroServer
 
 
         // Register
-        public static async Task<int> Register(NewsInfo newsInfo)
+        public static async Task<long> Register(NewsInfo newsInfo)
         {
-            int newsId = -1;
+            long newsId = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 newsId = await Add(newsInfo.News);
@@ -49,7 +49,7 @@ namespace HeroServer
                     
 
         // ADD
-        public static async Task<int> Add(News news)
+        public static async Task<long> Add(News news)
         {
             return await new NewsDB().Add(news);
         }
@@ -60,7 +60,7 @@ namespace HeroServer
             return await new NewsDB().Update(news);
         }
 
-        public static async Task<bool> UpdateStatus(int id, int status)
+        public static async Task<bool> UpdateStatus(long id, int status)
         {
             return await new NewsDB().UpdateStatus(id, status);
         }

@@ -5,8 +5,8 @@ namespace HeroServer
 {
     public class PhoneRequest
     {
-        public int Id { get; set; }
-        public int PhoneCountryId { get; set; }
+        public long Id { get; set; }
+        public long PhoneCountryId { get; set; }
         public String Phone { get; set; }
 
 
@@ -14,7 +14,7 @@ namespace HeroServer
         {
         }
 
-        public PhoneRequest(int id, int phoneCountryId, String phone)
+        public PhoneRequest(long id, long phoneCountryId, String phone)
         {
             Id = id;
             PhoneCountryId = phoneCountryId;

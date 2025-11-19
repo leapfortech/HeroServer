@@ -9,17 +9,16 @@ namespace HeroServer
     public class AppUserDB
     {
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
-        readonly String table = "[DD-AppUser]";
+        readonly String table = "[D-AppUser]";
 
         public static AppUser GetAppUser(SqlDataReader reader)
         {
-            return new AppUser(Convert.ToInt32(reader["Id"]),
-                               reader["Code"].ToString(),
-                               Convert.ToInt32(reader["WebSysUserId"]),
+            return new AppUser(Convert.ToInt64(reader["Id"]),
+                               Convert.ToInt64(reader["WebSysUserId"]),
+                               reader["Alias"].ToString(),
                                reader["CSToken"].ToString(),
-                               Convert.ToInt32(reader["News"]),
-                               Convert.ToInt32(reader["Options"]),
-                               Convert.ToInt32(reader["ReferrerAppUserId"]),
+                               Convert.ToInt64(reader["Options"]),
+                               Convert.ToInt64(reader["ReferrerAppUserId"]),
                                Convert.ToDateTime(reader["CreateDateTime"]),
                                Convert.ToDateTime(reader["UpdateDateTime"]),
                                Convert.ToInt32(reader["AppUserStatusId"]));
@@ -27,20 +26,19 @@ namespace HeroServer
 
         public static AppUserNamed GetAppUserNamed(SqlDataReader reader)
         {
-            return new AppUserNamed(Convert.ToInt32(reader["Id"]),
-                                    reader["Code"].ToString(),
-                                    Convert.ToInt32(reader["WebSysUserId"]),
+            return new AppUserNamed(Convert.ToInt64(reader["Id"]),
+                                    Convert.ToInt64(reader["WebSysUserId"]),
+                                    reader["Alias"].ToString(),
                                     reader["FirstName1"].ToString(),
                                     reader["FirstName2"].ToString(),
                                     reader["LastName1"].ToString(),
                                     reader["LastName2"].ToString(),
-                                    reader["LastNameMarried"].ToString(),
                                     reader["Email"].ToString(),
-                                    Convert.ToInt32(reader["PhoneCountryId"]),
+                                    Convert.ToInt64(reader["PhoneCountryId"]),
                                     reader["Phone"].ToString(),
                                     reader["CSToken"].ToString(),
-                                    Convert.ToInt32(reader["Options"]),
-                                    Convert.ToInt32(reader["ReferrerAppUserId"]),
+                                    Convert.ToInt64(reader["Options"]),
+                                    Convert.ToInt64(reader["ReferrerAppUserId"]),
                                     Convert.ToDateTime(reader["CreateDateTime"]),
                                     Convert.ToDateTime(reader["UpdateDateTime"]),
                                     Convert.ToInt32(reader["AppUserStatusId"]));
@@ -48,7 +46,7 @@ namespace HeroServer
 
         public static AppUserFull GetAppUserFull(SqlDataReader reader)
         {
-            return new AppUserFull(Convert.ToInt32(reader["Id"]),
+            return new AppUserFull(Convert.ToInt64(reader["Id"]),
                                    reader["AuthUserId"].ToString(),
                                    reader["Email"].ToString(),
                                    reader["PhonePrefix"].ToString(),
@@ -61,9 +59,9 @@ namespace HeroServer
         // SELECT
         public async Task<List<AppUserNamed>> GetNamed(int count, int page)
         {
-            String strCmd = $"SELECT {table}.*, FirstName1, FirstName2, LastName1, LastName2, LastNameMarried, Email, PhoneCountryId, Phone FROM {table}" +
-                            " INNER JOIN [DD-Identity]" +
-                            $" ON {table}.Id = [DD-Identity].AppUserId AND [DD-Identity].Status = 1";
+            String strCmd = $"SELECT {table}.*, FirstName1, FirstName2, LastName1, LastName2, Email, PhoneCountryId, Phone FROM {table}" +
+                            " INNER JOIN [D-Identity]" +
+                            $" ON {table}.Id = [D-Identity].AppUserId AND [D-Identity].Status = 1";
             if (count > 0 && page > 0)
             {
                 strCmd += " ORDER BY WebSysUserId";
@@ -97,9 +95,9 @@ namespace HeroServer
 
         public async Task<List<AppUserNamed>> GetNamedByStatus(int appUserStatusId, int count, int page)
         {
-            String strCmd = $"SELECT {table}.*, FirstName1, FirstName2, LastName1, LastName2, LastNameMarried, Email, PhoneCountryId, Phone FROM {table}" +
-                            " INNER JOIN [DD-Identity]" +
-                            $" ON {table}.Id = [DD-Identity].AppUserId AND [DD-Identity].Status = 1";
+            String strCmd = $"SELECT {table}.*, FirstName1, FirstName2, LastName1, LastName2, Email, PhoneCountryId, Phone FROM {table}" +
+                            " INNER JOIN [D-Identity]" +
+                            $" ON {table}.Id = [D-Identity].AppUserId AND [D-Identity].Status = 1";
             if (appUserStatusId >= 0)
                 strCmd += " WHERE AppUserStatusId = @AppUserStatusId";
             else
@@ -139,15 +137,15 @@ namespace HeroServer
             return appUsersNamed;
         }
 
-        public async Task<AppUserNamed> GetNamedById(int id)
+        public async Task<AppUserNamed> GetNamedById(long id)
         {
-            String strCmd = $"SELECT {table}.*, FirstName1, FirstName2, LastName1, LastName2, LastNameMarried, Email, PhoneCountryId, Phone FROM {table}" +
-                            $" INNER JOIN [DD-Identity] ON {table}.Id = [DD-Identity].AppUserId AND [DD-Identity].Status = 1" +
+            String strCmd = $"SELECT {table}.*, FirstName1, FirstName2, LastName1, LastName2, Email, PhoneCountryId, Phone FROM {table}" +
+                            $" INNER JOIN [D-Identity] ON {table}.Id = [D-Identity].AppUserId AND [D-Identity].Status = 1" +
                             $" WHERE {table}.Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             AppUserNamed appUserNamed = null;
             using (conn)
@@ -169,7 +167,7 @@ namespace HeroServer
             String strCmd = "SELECT AppUser.Id, WebSysUser.AuthUserId, WebSysUser.Email, KPhoneCountry.PhonePrefix, WebSysUser.Phone," +
                             " AppUser.CreateDateTime, AppUser.UpdateDateTime, AppUser.AppUserStatusId" +
                             $" FROM {table} AS AppUser" +
-                            " INNER JOIN [DD-WebSysUser] AS WebSysUser ON (WebSysUser.Id = AppUser.WebSysUserId)" +
+                            " INNER JOIN [D-WebSysUser] AS WebSysUser ON (WebSysUser.Id = AppUser.WebSysUserId)" +
                             " INNER JOIN [K-Country] AS KPhoneCountry ON (KPhoneCountry.Id = WebSysUser.PhoneCountryId)" +
                             " WHERE AppUser.AppUserStatusId = @AppUserStatusId";
 
@@ -242,13 +240,13 @@ namespace HeroServer
             return count;
         }
 
-        public async Task<AppUser> GetById(int id)
+        public async Task<AppUser> GetById(long id)
         {
             String strCmd = $"SELECT * FROM {table} WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             AppUser appUser = null;
             using (conn)
@@ -265,13 +263,13 @@ namespace HeroServer
             return appUser;
         }
 
-        public async Task<AppUser> GetByIdStatus(int id, int appUserStatusId)
+        public async Task<AppUser> GetByIdStatus(long id, int appUserStatusId)
         {
             String strCmd = $"SELECT * FROM {table} WHERE Id = @Id AND AppUserStatusId = @AppUserStatusId";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
             DBHelper.AddParam(command, "@AppUserStatusId", SqlDbType.Int, appUserStatusId);
 
             AppUser appUser = null;
@@ -289,17 +287,17 @@ namespace HeroServer
             return appUser;
         }
 
-        public async Task<int> GetIdByAuthUserId(String authUserId)
+        public async Task<long> GetIdByAuthUserId(String authUserId)
         {
             String strCmd = $"SELECT {table}.Id FROM {table}" +
-                            $" INNER JOIN [DD-WebSysUser] ON ([DD-WebSysUser].Id = {table}.WebSysUserId)" +
-                             " WHERE [DD-WebSysUser].AuthUserId = @AuthUserId";
+                            $" INNER JOIN [D-WebSysUser] ON ([D-WebSysUser].Id = {table}.WebSysUserId)" +
+                             " WHERE [D-WebSysUser].AuthUserId = @AuthUserId";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@AuthUserId", SqlDbType.VarChar, authUserId);
 
-            int id = -1;
+            long id = -1;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -307,7 +305,7 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                        id = Convert.ToInt32(reader["Id"]);
+                        id = Convert.ToInt64(reader["Id"]);
                     }
                 }
             }
@@ -315,13 +313,13 @@ namespace HeroServer
             return id;
         }
 
-        public async Task<AppUser> GetByWebSysUserId(int webSysUserId)
+        public async Task<AppUser> GetByWebSysUserId(long webSysUserId)
         {
             String strCmd = $"SELECT * FROM {table} WHERE WebSysUserId = @WebSysUserId";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.Int, webSysUserId);
+            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, webSysUserId);
 
             AppUser appUser = null;
             using (conn)
@@ -338,15 +336,15 @@ namespace HeroServer
             return appUser;
         }
 
-        public async Task<int> GetWebSysUserId(int id)
+        public async Task<long> GetWebSysUserId(long id)
         {
             String strCmd = $"SELECT WebSysUserId FROM {table} WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
-            int webSysUserId = -1;
+            long webSysUserId = -1;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -354,7 +352,7 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                        webSysUserId = Convert.ToInt32(reader["WebSysUserId"]);
+                        webSysUserId = Convert.ToInt64(reader["WebSysUserId"]);
                     }
                 }
             }
@@ -362,15 +360,15 @@ namespace HeroServer
             return webSysUserId;
         }
 
-        public async Task<int> GetIdByWebSysUserId(int webSysUserId)
+        public async Task<long> GetIdByWebSysUserId(long webSysUserId)
         {
             String strCmd = $"SELECT Id FROM {table} WHERE WebSysUserId = @WebSysUserId";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.Int, webSysUserId);
+            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, webSysUserId);
 
-            int id = -1;
+            long id = -1;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -378,7 +376,7 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                        id = Convert.ToInt32(reader["Id"]);
+                        id = Convert.ToInt64(reader["Id"]);
                     }
                 }
             }
@@ -386,17 +384,17 @@ namespace HeroServer
             return id;
         }
 
-        public async Task<int> GetIdByEmail(String eMail)
+        public async Task<long> GetIdByEmail(String eMail)
         {
             String strCmd = $"SELECT {table}.Id FROM {table}" +
-                            $" INNER JOIN [DD-WebSysUser] ON ([DD-WebSysUser].Id = {table}.WebSysUserId)" +
-                             " WHERE [DD-WebSysUser].Email = @Email";
+                            $" INNER JOIN [D-WebSysUser] ON ([D-WebSysUser].Id = {table}.WebSysUserId)" +
+                             " WHERE [D-WebSysUser].Email = @Email";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Email", SqlDbType.VarChar, eMail);
 
-            int id = -1;
+            long id = -1;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -404,7 +402,7 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                        id = Convert.ToInt32(reader["Id"]);
+                        id = Convert.ToInt64(reader["Id"]);
                     }
                 }
             }
@@ -438,7 +436,7 @@ namespace HeroServer
 
         public async Task<List<(int, String)>> GetMailByCSTokenNull()
         {
-            String strCmd = $"SELECT {table}.Id, Email FROM {table} INNER JOIN [DD-WebSysUser] ON [DD-AppUser].WebSysUserId = [DD-WebSysUser].Id WHERE CSToken IS NULL";
+            String strCmd = $"SELECT {table}.Id, Email FROM {table} INNER JOIN [D-WebSysUser] ON [D-AppUser].WebSysUserId = [D-WebSysUser].Id WHERE CSToken IS NULL";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -458,15 +456,15 @@ namespace HeroServer
             return appUserMails;
         }
 
-        public async Task<int> GetOptions(int id)
+        public async Task<long> GetOptions(long id)
         {
             String strCmd = $"SELECT Options FROM {table} WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
-            int options = -1;
+            long options = -1;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -483,20 +481,20 @@ namespace HeroServer
         }
 
         // INSERT
-        public async Task<int> Add(AppUser appUser)
+        public async Task<long> Add(AppUser appUser)
         {
-            String strCmd = $"INSERT INTO {table}(Code, WebSysUserId, CSToken, News, Options, ReferrerAppUserId, CreateDateTime, UpdateDateTime, AppUserStatusId)" +
+            String strCmd = $"INSERT INTO {table}(Id, WebSysUserId, Alias, CSToken, Options, ReferrerAppUserId, CreateDateTime, UpdateDateTime, AppUserStatusId)" +
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Code, @WebSysUserId, @CSToken, @News, @Options, @ReferrerAppUserId, @CreateDateTime, @UpdateDateTime, @AppUserStatusId)";
+                            " VALUES (@Id, @WebSysUserId, @Alias, @CSToken, @Options, @ReferrerAppUserId, @CreateDateTime, @UpdateDateTime, @AppUserStatusId)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Code", SqlDbType.VarChar, appUser.Code);
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.Int, appUser.WebSysUserId);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid());
+            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, appUser.WebSysUserId);
+            DBHelper.AddParam(command, "@Alias", SqlDbType.VarChar, appUser.Alias);
             DBHelper.AddParam(command, "@CSToken", SqlDbType.VarChar, appUser.CSToken);
-            DBHelper.AddParam(command, "@News", SqlDbType.Int, appUser.News);
-            DBHelper.AddParam(command, "@Options", SqlDbType.Int, appUser.Options);
-            DBHelper.AddParam(command, "@ReferrerAppUserId", SqlDbType.Int, appUser.ReferrerAppUserId);
+            DBHelper.AddParam(command, "@Options", SqlDbType.BigInt, appUser.Options);
+            DBHelper.AddParam(command, "@ReferrerAppUserId", SqlDbType.BigInt, appUser.ReferrerAppUserId);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@AppUserStatusId", SqlDbType.Int, appUser.AppUserStatusId);
@@ -504,28 +502,27 @@ namespace HeroServer
             using (conn)
             {
                 await conn.OpenAsync();
-                return (int)await command.ExecuteScalarAsync();
+                return (long)await command.ExecuteScalarAsync();
             }
         }
 
         // UPDATE
         public async Task<bool> Update(AppUser appUser)
         {
-            String strCmd = $"UPDATE {table} SET Code = @Code, WebSysUserId = @WebSysUserId, CSToken = @CSToken, News = @News, Options = @Options, ReferrerAppUserId = @ReferrerAppUserId," +
+            String strCmd = $"UPDATE {table} SET WebSysUserId = @WebSysUserId, Alias = @Alias, CSToken = @CSToken, Options = @Options, ReferrerAppUserId = @ReferrerAppUserId," +
                             " UpdateDateTime = @UpdateDateTime, AppUserStatusId = @AppUserStatusId" +
                             " WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Code", SqlDbType.VarChar, appUser.Code);
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.Int, appUser.WebSysUserId);
+            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, appUser.WebSysUserId);
+            DBHelper.AddParam(command, "@Alias", SqlDbType.VarChar, appUser.Alias);
             DBHelper.AddParam(command, "@CSToken", SqlDbType.VarChar, appUser.CSToken);
-            DBHelper.AddParam(command, "@News", SqlDbType.Int, appUser.News);
-            DBHelper.AddParam(command, "@Options", SqlDbType.Int, appUser.Options);
-            DBHelper.AddParam(command, "@ReferrerAppUserId", SqlDbType.Int, appUser.ReferrerAppUserId);
+            DBHelper.AddParam(command, "@Options", SqlDbType.BigInt, appUser.Options);
+            DBHelper.AddParam(command, "@ReferrerAppUserId", SqlDbType.BigInt, appUser.ReferrerAppUserId);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@AppUserStatusId", SqlDbType.Int, appUser.AppUserStatusId);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, appUser.Id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, appUser.Id);
 
             using (conn)
             {
@@ -534,7 +531,7 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> UpdateCSToken(int id, String csToken)
+        public async Task<bool> UpdateCSToken(long id, String csToken)
         {
             String strCmd = $"UPDATE {table}" +
                             " SET CSToken = @CSToken, UpdateDateTime = @UpdateDateTime" +
@@ -544,7 +541,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@CSToken", SqlDbType.VarChar, csToken);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -553,7 +550,7 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> UpdateOptions(int id, int options)
+        public async Task<bool> UpdateOptions(long id, long options)
         {
             String strCmd = $"UPDATE {table}" +
                             " SET Options = @Options, UpdateDateTime = @UpdateDateTime" +
@@ -561,9 +558,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Options", SqlDbType.Int, options);
+            DBHelper.AddParam(command, "@Options", SqlDbType.BigInt, options);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -572,7 +569,7 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> UpdateStatus(int id, int appUserStatusId)
+        public async Task<bool> UpdateStatus(long id, int appUserStatusId)
         {
             String strCmd = $"UPDATE {table}" +
                             " SET UpdateDateTime = @UpdateDateTime, AppUserStatusId = @AppUserStatusId" +
@@ -582,7 +579,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@AppUserStatusId", SqlDbType.Int, appUserStatusId);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -591,7 +588,7 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> UpdateStatusByWebSysUserId(int webSysUserId, int appUserStatusId)
+        public async Task<bool> UpdateStatusByWebSysUserId(long webSysUserId, int appUserStatusId)
         {
             String strCmd = $"UPDATE {table}" +
                             " SET UpdateDateTime = @UpdateDateTime, AppUserStatusId = @AppUserStatusId" +
@@ -601,7 +598,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@AppUserStatusId", SqlDbType.Int, appUserStatusId);
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.Int, webSysUserId);
+            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, webSysUserId);
 
             using (conn)
             {
@@ -610,7 +607,7 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> UpdateReferredAppUserId(int id, int referrerAppUserId)
+        public async Task<bool> UpdateReferredAppUserId(long id, long referrerAppUserId)
         {
             String strCmd = $"UPDATE {table}" +
                             " SET UpdateDateTime = @UpdateDateTime, ReferrerAppUserId = @ReferrerAppUserId" +
@@ -619,8 +616,8 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@ReferrerAppUserId", SqlDbType.Int, referrerAppUserId);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@ReferrerAppUserId", SqlDbType.BigInt, referrerAppUserId);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -642,12 +639,12 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task<bool> DeleteById(long id)
         {
             String strCmd = $"DELETE {table} WHERE Id = @Id";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -656,12 +653,12 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> DeleteByWebSysUserId(int webSysUserid)
+        public async Task<bool> DeleteByWebSysUserId(long webSysUserid)
         {
             String strCmd = $"DELETE {table} WHERE WebSysUserid = @WebSysUserid";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WebSysUserid", SqlDbType.Int, webSysUserid);
+            DBHelper.AddParam(command, "@WebSysUserid", SqlDbType.BigInt, webSysUserid);
 
             using (conn)
             {

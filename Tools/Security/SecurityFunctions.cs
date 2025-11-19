@@ -9,6 +9,14 @@ namespace HeroServer
 {
     public static class SecurityFunctions
     {
+
+        public static long GetUid()
+        {
+            long uid = -1;
+            return (uid);
+        }
+
+
         public static (byte[], byte[]) GetBobKeys(String alice)
         {
             UECDiffieHellman bob = new UECDiffieHellman();

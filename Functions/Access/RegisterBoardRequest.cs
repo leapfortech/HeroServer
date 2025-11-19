@@ -11,7 +11,7 @@ namespace HeroServer
         public String Roles { get; set; } = "BD";
         public String Email { get; set; }
         public String Password { get; set; }
-        public int PhoneCountryId { get; set; }
+        public long PhoneCountryId { get; set; }
         public String Phone { get; set; }
 
 

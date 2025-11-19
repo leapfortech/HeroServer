@@ -9,11 +9,11 @@ namespace HeroServer
     public class CardDB
     {
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
-        readonly String table = "[DD-Card]";
+        readonly String table = "[D-Card]";
 
         public static Card GetCard(SqlDataReader reader)
         {
-            return new Card(Convert.ToInt32(reader["Id"]), Convert.ToInt32(reader["AppUserId"]), reader["CSToken"].ToString(),
+            return new Card(Convert.ToInt64(reader["Id"]), Convert.ToInt64(reader["AppUserId"]), reader["CSToken"].ToString(),
                             Convert.ToInt32(reader["TypeId"]), reader["Number"].ToString(), Convert.ToInt32(reader["Digits"]),
                             Convert.ToDateTime(reader["ExpirationDate"]), reader["Holder"].ToString(),
                             Convert.ToDateTime(reader["CreateDateTime"]), Convert.ToDateTime(reader["UpdateDateTime"]),
@@ -45,13 +45,13 @@ namespace HeroServer
         }
 
 
-        public async Task<Card> GetById(int id)
+        public async Task<Card> GetById(long id)
         {
             String strCmd = $"SELECT * FROM {table} WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             Card card = null;
             using (conn)
@@ -68,7 +68,7 @@ namespace HeroServer
             return card;
         }
 
-        public async Task<Card> GetByAppUserId(int appUserId, int status = -1)
+        public async Task<Card> GetByAppUserId(long appUserId, int status = -1)
         {
             String strCmd = $"SELECT * FROM {table} WHERE AppUserId = @AppUserId";
             if (status != -1)
@@ -76,7 +76,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.Int, appUserId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, appUserId);
             if (status != -1)
                 DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
@@ -96,7 +96,7 @@ namespace HeroServer
             return card;
         }
 
-        public async Task<int> GetIdByAppUserId(int appUserId, int status = -1)
+        public async Task<long> GetIdByAppUserId(long appUserId, int status = -1)
         {
             String strCmd = $"SELECT Id FROM {table} WHERE AppUserId = @AppUserId";
             if (status != -1)
@@ -104,11 +104,11 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.Int, appUserId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, appUserId);
             if (status != -1)
                 DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
-            int id = -1;
+            long id = -1;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -116,7 +116,7 @@ namespace HeroServer
                 {
                     while (await reader.ReadAsync())
                     {
-                        id = Convert.ToInt32(reader["Id"]);
+                        id = Convert.ToInt64(reader["Id"]);
                     }
                 }
             }
@@ -147,7 +147,7 @@ namespace HeroServer
             return card;
         }
 
-        public async Task<int> GetTodayCount(int appUserId, float utcOffset)
+        public async Task<int> GetTodayCount(long appUserId, float utcOffset)
         {
             String strCmd = $"SELECT COUNT(1) AS Count FROM {table}" +
                             " WHERE AppUserId = @AppUserId" +
@@ -155,7 +155,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.Int, appUserId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, appUserId);
             DBHelper.AddParam(command, "@UtcOffset", SqlDbType.Float, utcOffset);
             DBHelper.AddParam(command, "@TodayDateTime", SqlDbType.DateTime2, DateTime.Now.AddHours(utcOffset));
 
@@ -174,15 +174,16 @@ namespace HeroServer
         }
 
         // INSERT
-        public async Task<int> Add(Card card)
+        public async Task<long> Add(Card card)
         {
-            String strCmd = $"INSERT INTO {table} (AppUserId, CSToken, TypeId, Number, Digits, ExpirationDate, Holder, CreateDateTime, UpdateDateTime, Status)" +
+            String strCmd = $"INSERT INTO {table} (Id, AppUserId, CSToken, TypeId, Number, Digits, ExpirationDate, Holder, CreateDateTime, UpdateDateTime, Status)" +
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@AppUserId, @CSToken, @TypeId, @Number, @Digits, @ExpirationDate, @Holder, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@Id, @AppUserId, @CSToken, @TypeId, @Number, @Digits, @ExpirationDate, @Holder, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.Int, card.AppUserId);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid());
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, card.AppUserId);
             DBHelper.AddParam(command, "@CSToken", SqlDbType.VarChar, card.CSToken);
             DBHelper.AddParam(command, "@TypeId", SqlDbType.Int, card.TypeId);
             DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, card.Number);
@@ -196,7 +197,7 @@ namespace HeroServer
             using (conn)
             {
                 await conn.OpenAsync();
-                return (int)await command.ExecuteScalarAsync();
+                return (long)await command.ExecuteScalarAsync();
             }
         }
 
@@ -210,7 +211,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.Int, card.AppUserId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, card.AppUserId);
             DBHelper.AddParam(command, "@CSToken", SqlDbType.VarChar, card.CSToken);
             DBHelper.AddParam(command, "@TypeId", SqlDbType.Int, card.TypeId);
             DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, card.Number);
@@ -218,7 +219,7 @@ namespace HeroServer
             DBHelper.AddParam(command, "@ExpirationDate", SqlDbType.DateTime2, card.ExpirationDate);
             DBHelper.AddParam(command, "@Holder", SqlDbType.VarChar, card.Holder);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, card.Id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, card.Id);
 
             using (conn)
             {
@@ -227,7 +228,7 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> SetStatus(int id, int status)
+        public async Task<bool> SetStatus(long id, int status)
         {
             String strCmd = $"UPDATE {table}" +
                             " SET UpdateDateTime = @UpdateDateTime, Status = @Status" +
@@ -237,7 +238,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -265,7 +266,7 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> SetHolder(int id, String holder, int status)
+        public async Task<bool> SetHolder(long id, String holder, int status)
         {
             String strCmd = $"UPDATE {table}" +
                             " SET Holder = @Holder, UpdateDateTime = @UpdateDateTime, Status = @Status" +
@@ -276,7 +277,7 @@ namespace HeroServer
             DBHelper.AddParam(command, "@Holder", SqlDbType.VarChar, holder);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -299,13 +300,13 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task<bool> DeleteById(long id)
         {
             String strCmd = $"DELETE {table} WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -314,13 +315,13 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> DeleteByAppUserId(int appUserId)
+        public async Task<bool> DeleteByAppUserId(long appUserId)
         {
             String strCmd = $"DELETE {table} WHERE AppUserId = @AppUserId";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.Int, appUserId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, appUserId);
 
             using (conn)
             {

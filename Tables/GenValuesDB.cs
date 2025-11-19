@@ -145,7 +145,7 @@ namespace HeroServer
                         for (int i = 0; i < filters.Length; i++)
                             filters[i] = reader[valuesParams.FilterColumns[i]].ToString();
 
-                        records.Add(new CatalogRecord(int.Parse(reader["Id"].ToString()), fields, filters));
+                        records.Add(new CatalogRecord(long.Parse(reader["Id"].ToString()), fields, filters));
                     }
                 }
             }
@@ -154,14 +154,14 @@ namespace HeroServer
         }
 
         // GET CODE BY ID
-        public async Task<String> GetCodeById(String table, int id)
+        public async Task<String> GetCodeById(String table, long id)
         {
             String strCmd = $"SELECT Code FROM [{table}]";
             strCmd += " WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             String code = null;
             using (conn)
@@ -180,14 +180,14 @@ namespace HeroServer
         }
 
         // GET NAME BY ID
-        public async Task<String> GetNameById(String table, int id)
+        public async Task<String> GetNameById(String table, long id)
         {
             String strCmd = $"SELECT Name FROM [{table}]";
             strCmd += " WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             String name = null;
             using (conn)
@@ -230,14 +230,14 @@ namespace HeroServer
         }
 
         // GET FIELD BY ID
-        public async Task<String> GetStringById(String table, int id, String fieldName)
+        public async Task<String> GetStringById(String table, long id, String fieldName)
         {
             String strCmd = $"SELECT {fieldName} FROM [{table}]";
             strCmd += " WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             String field = null;
             using (conn)
@@ -255,16 +255,16 @@ namespace HeroServer
             return field;
         }
 
-        public async Task<int> GetIntById(String table, int id, String fieldName)
+        public async Task<long> GetIntById(String table, long id, String fieldName)
         {
             String strCmd = $"SELECT {fieldName} FROM [{table}]";
             strCmd += " WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
-            int field = -1;
+            long field = -1;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -272,7 +272,7 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                        field = Convert.ToInt32(reader[fieldName]);
+                        field = Convert.ToInt64(reader[fieldName]);
                     }
                 }
             }
@@ -341,7 +341,7 @@ namespace HeroServer
         }
 
         // GET ID BY CODE
-        public async Task<int> GetIdByCode(String table, String code)
+        public async Task<long> GetIdByCode(String table, String code)
         {
             String strCmd = $"SELECT Id FROM [{table}]";
             strCmd += " WHERE Code = @Code";
@@ -350,7 +350,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@Code", SqlDbType.VarChar, code);
 
-            int id = -1;
+            long id = -1;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -358,7 +358,7 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                        id = Convert.ToInt32(reader["Id"]);
+                        id = Convert.ToInt64(reader["Id"]);
                     }
                 }
             }
@@ -367,7 +367,7 @@ namespace HeroServer
         }
 
         // GET ID BY FIELD
-        public async Task<int> GetIdByField(String table, String fieldName, String fieldValue)
+        public async Task<long> GetIdByField(String table, String fieldName, String fieldValue)
         {
             String strCmd = $"SELECT Id FROM [{table}]";
             strCmd += $" WHERE {fieldName} = @Field";
@@ -376,7 +376,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@Field", SqlDbType.VarChar, fieldValue);
 
-            int id = -1;
+            long id = -1;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -384,7 +384,7 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                        id = Convert.ToInt32(reader["Id"]);
+                        id = Convert.ToInt64(reader["Id"]);
                     }
                 }
             }

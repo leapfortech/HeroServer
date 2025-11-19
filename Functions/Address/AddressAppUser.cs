@@ -5,10 +5,9 @@ namespace HeroServer
 {
     public class AddressAppUser
     {
-        public int Id { get; set; }
-        public int AppUserId { get; set; }
-        public int AddressId { get; set; }
-        public int HouseholdBillCount { get; set; }
+        public long Id { get; set; }
+        public long AppUserId { get; set; }
+        public long AddressId { get; set; }
         public DateTime CreateDateTime { get; set; }
         public DateTime UpdateDateTime { get; set; }
         public int Status { get; set; }
@@ -18,12 +17,11 @@ namespace HeroServer
         {
         }
 
-        public AddressAppUser(int id, int appUserId, int addressId, int householdBillCount, DateTime createDateTime, DateTime updateDateTime, int status)
+        public AddressAppUser(long id, long appUserId, long addressId, DateTime createDateTime, DateTime updateDateTime, int status)
         {
             Id = id;
             AppUserId = appUserId;
             AddressId = addressId;
-            HouseholdBillCount = householdBillCount;
             CreateDateTime = createDateTime;
             UpdateDateTime = updateDateTime;
             Status = status;

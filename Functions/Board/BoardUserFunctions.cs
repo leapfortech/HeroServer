@@ -18,7 +18,7 @@ namespace HeroServer
             return await new BoardUserDB().GetFulls();
         }
 
-        public static async Task<BoardUser> GetById(int id)
+        public static async Task<BoardUser> GetById(long id)
         {
             return await new BoardUserDB().GetById(id);
         }
@@ -33,28 +33,28 @@ namespace HeroServer
             return await new BoardUserDB().GetCountByStatus(status);
         }
 
-        public static async Task<BoardUser> GetByIdStatus(int id, int status)
+        public static async Task<BoardUser> GetByIdStatus(long id, int status)
         {
             return await new BoardUserDB().GetByIdStatus(id, status);
         }
 
-        public static async Task<BoardUser> GetByWebSysUserId(int webSysUserId)
+        public static async Task<BoardUser> GetByWebSysUserId(long webSysUserId)
         {
             return await new BoardUserDB().GetByWebSysUserId(webSysUserId);
         }
 
-        public static async Task<int> GetIdByWebSysUserId(int webSysUserId)
+        public static async Task<long> GetIdByWebSysUserId(long webSysUserId)
         {
             return await new BoardUserDB().GetIdByWebSysUserId(webSysUserId);
         }
 
-        public static async Task<int> GetIdByEmail(String eMail)
+        public static async Task<long> GetIdByEmail(String eMail)
         {
             return await new BoardUserDB().GetIdByEmail(eMail);
         }
 
         // ADD
-        public static async Task<int> Add(BoardUser boardUser)
+        public static async Task<long> Add(BoardUser boardUser)
         {
             return await new BoardUserDB().Add(boardUser);
         }
@@ -92,22 +92,22 @@ namespace HeroServer
             }
         }
 
-        public static async Task<bool> UpdateStatus(int id, int status)
+        public static async Task<bool> UpdateStatus(long id, int status)
         {
             return await new BoardUserDB().UpdateStatus(id, status);
         }
 
         // DELETE
-        public static async Task DeleteById(int id, bool delAuthUser = true)
+        public static async Task DeleteById(long id, bool delAuthUser = true)
         {
-            int webSysUserId = await new BoardUserDB().GetWebSysUserId(id);
+            long webSysUserId = await new BoardUserDB().GetWebSysUserId(id);
 
             await new BoardUserDB().DeleteById(id);
 
             if (webSysUserId == -1)
                 return;
 
-            int appUserId = await AppUserFunctions.GetIdByWebSysUserId(webSysUserId);
+            long appUserId = await AppUserFunctions.GetIdByWebSysUserId(webSysUserId);
             if (appUserId != -1)
                 return;
 
@@ -117,7 +117,7 @@ namespace HeroServer
 
         public static async Task DeleteByEmail(String eMail, bool delAuthUser = true)
         {
-            int boardUserId = await GetIdByEmail(eMail);
+            long boardUserId = await GetIdByEmail(eMail);
             if (boardUserId == -1)
                 throw new Exception("Email NOT Found");
             await DeleteById(boardUserId, delAuthUser);

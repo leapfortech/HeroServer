@@ -25,13 +25,13 @@ namespace HeroServer
             return await FirebaseAuth.DefaultInstance.GetUserAsync(authUserId);
         }
 
-        public static async Task<UserRecord> GetUserByWebSysUserId(int webSysUserId)
+        public static async Task<UserRecord> GetUserByWebSysUserId(long webSysUserId)
         {
             String authUserId = (await new WebSysUserDB().GetById(webSysUserId)).AuthUserId;
             return await FirebaseAuth.DefaultInstance.GetUserAsync(authUserId);
         }
 
-        public static async Task<UserRecord> GetUserByAppUserId(int appUserId)
+        public static async Task<UserRecord> GetUserByAppUserId(long appUserId)
         {
             String email = await WebSysUserFunctions.GetEmailByAppUserId(appUserId);
             return await GetUserByMail(email);
@@ -64,7 +64,7 @@ namespace HeroServer
             }
         }
 
-        public static async Task<int> GetWebSysUserId(HttpContext httpContext)
+        public static async Task<long> GetWebSysUserId(HttpContext httpContext)
         {
             try
             {
@@ -77,11 +77,11 @@ namespace HeroServer
             }
         }
 
-        public static async Task<int> GetAppUserId(HttpContext httpContext)
+        public static async Task<long> GetAppUserId(HttpContext httpContext)
         {
             try
             {
-                int webSysUserId = await GetWebSysUserId(httpContext);
+                long webSysUserId = await GetWebSysUserId(httpContext);
                 return await new AppUserDB().GetIdByWebSysUserId(webSysUserId);
             }
             catch
@@ -192,16 +192,16 @@ namespace HeroServer
         }
 
         // Authorize
-        public static async Task<bool> AuthorizeAppUser(HttpContext httpContext, int appUserId, String context)
+        public static async Task<bool> AuthorizeAppUser(HttpContext httpContext, long appUserId, String context)
         {
-            int authAppUserId = -1;
+            long authAppUserId = -1;
 
             try
             {
                 FirebaseToken token = await FirebaseFunctions.GetAuthToken(httpContext);
                 if (token != null)
                 {
-                    int systemUserId = await new WebSysUserDB().GetIdByAuthUserId(token.Uid);
+                    long systemUserId = await new WebSysUserDB().GetIdByAuthUserId(token.Uid);
                     authAppUserId = await new AppUserDB().GetIdByWebSysUserId(systemUserId);
                 }
 
@@ -226,9 +226,9 @@ namespace HeroServer
             }
         }
 
-        public static async Task<bool> AuthorizeWebSysUser(HttpContext httpContext, int webSysUserId, String context)
+        public static async Task<bool> AuthorizeWebSysUser(HttpContext httpContext, long webSysUserId, String context)
         {
-            int authWebSysUserId = -1;
+            long authWebSysUserId = -1;
 
             try
             {
@@ -294,7 +294,7 @@ namespace HeroServer
         // Admin
         public static async Task<bool> AuthorizeWebSysAdmin(HttpContext httpContext, String context)
         {
-            int authWebSysUserId = -1;
+            long authWebSysUserId = -1;
 
             try
             {
@@ -306,7 +306,7 @@ namespace HeroServer
                     return true;
 
                 SecurityLog log = new SecurityLog(-1, DateTime.Now, "Identity", context, (String)token?.Claims["email"],
-                                                      token?.Uid, authWebSysUserId, -1, null);
+                                                  token?.Uid, authWebSysUserId, -1, null);
 
                 await new SecurityLogDB().Add(log);
                 return false;
@@ -320,18 +320,18 @@ namespace HeroServer
             }
         }
 
-        private static bool CheckAppUserAdmin(int authAppUserId)
+        private static bool CheckAppUserAdmin(long authAppUserId)
         {
             return true;
         }
 
-        private static bool CheckWebSysAdmin(int authWebSysUserId)
+        private static bool CheckWebSysAdmin(long authWebSysUserId)
         {
             return true;
         }
 
         // Mail
-        public static async Task ActivateAppUserMail(int webSysUserId, bool active)
+        public static async Task ActivateAppUserMail(long webSysUserId, bool active)
         {
             String authUserId = (await new WebSysUserDB().GetById(webSysUserId)).AuthUserId;
 

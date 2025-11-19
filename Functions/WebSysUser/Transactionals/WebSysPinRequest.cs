@@ -5,7 +5,7 @@ namespace HeroServer
 {
     public class WebSysPinRequest
     {
-        public int WebSysUserId { get; set; }
+        public long WebSysUserId { get; set; }
         public String Pin { get; set; }
 
 
@@ -13,7 +13,7 @@ namespace HeroServer
         {
         }
 
-        public WebSysPinRequest(int webSysUserId, String pin)
+        public WebSysPinRequest(long webSysUserId, String pin)
         {
             WebSysUserId = webSysUserId;
             Pin = pin;

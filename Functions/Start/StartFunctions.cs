@@ -26,7 +26,7 @@ namespace HeroServer
                         return new StartResponse(0, "0|Heroes Migrantes|Tu App está desactualizada.\\r\\nPor favor actualízala e intenta de nuevo.",
                                                     "https://drive.google.com/drive/u/0/folders/1oTH1HSUGFgjwgq3CujaBu6kha5eV77so|<None>");
                                                     //"https://play.google.com/store/apps/details?id=com.Hpb.Expande|https://apps.apple.com/gt/app/expande/id6745855017");
-                    return new StartResponse(0, "0|Expande|¡Tienes que actualizar tu App!");
+                    return new StartResponse(0, "0|Heroes Migrantes|¡Tienes que actualizar tu App!");
                 }
             }
 

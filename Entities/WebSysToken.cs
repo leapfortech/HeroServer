@@ -4,8 +4,8 @@ namespace HeroServer
 {
     public class WebSysToken
     {
-        public int Id { get; set; }
-        public int WebSysUserId { get; set; }
+        public long Id { get; set; }
+        public long WebSysUserId { get; set; }
         public String Token { get; set; }
         public DateTime CreateDateTime { get; set; }
         public DateTime UpdateDateTime { get; set; }
@@ -16,7 +16,7 @@ namespace HeroServer
 
         }
 
-        public WebSysToken(int id, int webSysUserId, String token, DateTime createDateTime, DateTime updateDateTime, int status)
+        public WebSysToken(long id, long webSysUserId, String token, DateTime createDateTime, DateTime updateDateTime, int status)
         {
             Id = id;
             WebSysUserId = webSysUserId;
@@ -26,7 +26,7 @@ namespace HeroServer
             Status = status;
         }
 
-        public WebSysToken(int id, int webSysUserId, String token, int status)
+        public WebSysToken(long id, long webSysUserId, String token, int status)
         {
             Id = id;
             WebSysUserId = webSysUserId;

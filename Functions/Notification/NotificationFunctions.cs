@@ -7,22 +7,22 @@ namespace HeroServer
     public class NotificationFunctions
     {
         // GET
-        public static async Task<Notification> GetById(int id)
+        public static async Task<Notification> GetById(long id)
         {
             return await new NotificationDB().GetById(id);
         }
 
-        public static async Task<List<Notification>> GetByWebSysUserId(int webSysUserId, int rowsCount)
+        public static async Task<List<Notification>> GetByWebSysUserId(long webSysUserId, int rowsCount)
         {
             return await new NotificationDB().GetByWebSysUserId(webSysUserId, rowsCount);
         }
 
-        public static async Task<List<Notification>> GetLost(int id, int webSysUserId)
+        public static async Task<List<Notification>> GetLost(long id, long webSysUserId)
         {
             return await new NotificationDB().GetLost(id, webSysUserId);
         }
 
-        public static async Task<String> GetLastInformation(int webSysUserId, String action)
+        public static async Task<String> GetLastInformation(long webSysUserId, String action)
         {
             return await new NotificationDB().GetLastInformation(webSysUserId, action);
         }
@@ -39,13 +39,13 @@ namespace HeroServer
             return await new NotificationDB().Update(notification);
         }
 
-        public static async Task<bool> UpdateStatus(int id, int status)
+        public static async Task<bool> UpdateStatus(long id, int status)
         {
             return await new NotificationDB().UpdateStatus(id, status);
         }
 
         // DELETE
-        public static async Task DeleteByWebSysUserId(int webSysUserId)
+        public static async Task DeleteByWebSysUserId(long webSysUserId)
         {
             await new NotificationDB().DeleteByWebSysUserId(webSysUserId);
         }

@@ -17,10 +17,10 @@ namespace HeroServer.Controllers
         {
             try
             {
-                if (!await FirebaseFunctions.AuthorizeWebSysUser(HttpContext, Convert.ToInt32(webSysUserId), "Notification.ByWebSysUserId"))
+                if (!await FirebaseFunctions.AuthorizeWebSysUser(HttpContext, Convert.ToInt64(webSysUserId), "Notification.ByWebSysUserId"))
                     return Unauthorized();
 
-                return Ok(await NotificationFunctions.GetByWebSysUserId(Convert.ToInt32(webSysUserId), 50));
+                return Ok(await NotificationFunctions.GetByWebSysUserId(Convert.ToInt64(webSysUserId), 50));
             }
             catch (Exception ex)
             {
@@ -34,10 +34,10 @@ namespace HeroServer.Controllers
         {
             try
             {
-                if (!await FirebaseFunctions.AuthorizeWebSysUser(HttpContext, Convert.ToInt32(webSysUserId), "Notification.Lost"))
+                if (!await FirebaseFunctions.AuthorizeWebSysUser(HttpContext, Convert.ToInt64(webSysUserId), "Notification.Lost"))
                     return Unauthorized();
 
-                return Ok(await NotificationFunctions.GetLost(Convert.ToInt32(id), Convert.ToInt32(webSysUserId)));
+                return Ok(await NotificationFunctions.GetLost(Convert.ToInt64(id), Convert.ToInt64(webSysUserId)));
             }
             catch (Exception ex)
             {
@@ -51,10 +51,10 @@ namespace HeroServer.Controllers
         {
             try
             {
-                if (!await FirebaseFunctions.AuthorizeWebSysUser(HttpContext, Convert.ToInt32(webSysUserId), "Notification.LastInformation"))
+                if (!await FirebaseFunctions.AuthorizeWebSysUser(HttpContext, Convert.ToInt64(webSysUserId), "Notification.LastInformation"))
                     return Unauthorized();
 
-                return Ok(await NotificationFunctions.GetLastInformation(Convert.ToInt32(webSysUserId), action));
+                return Ok(await NotificationFunctions.GetLastInformation(Convert.ToInt64(webSysUserId), action));
             }
             catch (Exception ex)
             {
@@ -64,11 +64,11 @@ namespace HeroServer.Controllers
 
         // DELETE services/notification/ByWebSysUser?webSysUserId=3
         [HttpDelete("ByWebSysUserId")]
-        public async Task<ActionResult<int>> DeleteByWebSysUserId([FromQuery]String webSysUserId)
+        public async Task<ActionResult<long>> DeleteByWebSysUserId([FromQuery]String webSysUserId)
         {
             try
             {
-                await NotificationFunctions.DeleteByWebSysUserId(Convert.ToInt32(webSysUserId));
+                await NotificationFunctions.DeleteByWebSysUserId(Convert.ToInt64(webSysUserId));
                 return Ok();
             }
             catch (Exception ex)

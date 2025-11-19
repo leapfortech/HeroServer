@@ -4,9 +4,8 @@ namespace HeroServer
 {
     public class ReferredFull
     {
-        public int Id { get; set; }
-        public String Code { get; set; }
-        public int AppUserId { get; set; }
+        public long Id { get; set; }
+        public long AppUserId { get; set; }
         public String FirstNames { get; set; }
         public String LastNames { get; set; }
         public String PhonePrefix { get; set; }
@@ -20,11 +19,10 @@ namespace HeroServer
         {
         }
 
-        public ReferredFull(int id, String code, int appUserId, String firstNames, String lastNames,
+        public ReferredFull(long id, long appUserId, String firstNames, String lastNames,
                             String phonePrefix, String phone, String email, DateTime createDateTime, ReferrerFull referrer)
         {
             Id = id;
-            Code = code;
             AppUserId = appUserId;
             FirstNames = firstNames;
             LastNames = lastNames;

@@ -28,23 +28,23 @@ namespace HeroServer
             return await new WebSysUserDB().GetByEmail(eMail);
         }
 
-        public static async Task<int> GetIdByEmail(String eMail)
+        public static async Task<long> GetIdByEmail(String eMail)
         {
             return await new WebSysUserDB().GetIdByEmail(eMail);
         }
 
-        public static async Task<int> Add(WebSysUser webSysUser)
+        public static async Task<long> Add(WebSysUser webSysUser)
         {
             return await new WebSysUserDB().Add(webSysUser);
         }
 
         // Roles
-        public static async Task<List<String>> GetRoles(int id)
+        public static async Task<List<String>> GetRoles(long id)
         {
             return [.. (await new WebSysUserDB().GetRoles(id))?.Split('|')];
         }
 
-        public static async Task AddRoles(int id, String roles)
+        public static async Task AddRoles(long id, String roles)
         {
             List<String> curRoles = await GetRoles(id);
 
@@ -57,14 +57,14 @@ namespace HeroServer
             await new WebSysUserDB().UpdateRoles(id, String.Join("|", curRoles));
         }
 
-        public static async Task UpdateRoles(int id, String roles)
+        public static async Task UpdateRoles(long id, String roles)
         {
             await new WebSysUserDB().UpdateRoles(id, roles);
         }
 
 
         // Mail
-        public static async Task<String> GetEmailByAppUserId(int appUserId)
+        public static async Task<String> GetEmailByAppUserId(long appUserId)
         {
             return await new WebSysUserDB().GetEmailById(await new AppUserDB().GetWebSysUserId(appUserId));
         }
@@ -77,7 +77,7 @@ namespace HeroServer
             String token = AesHelper.Encrypt(userRecord.Uid);
 
             // Send Mail
-            String title = "Bienvenido a Expande";
+            String title = "Bienvenido a Heroes Migrantes";
             String text = "Para activar tu cuenta, debes presionar el siguiente botón";
             String button = "Activar tu Cuenta";
             String link = "https://" + System.Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME").ToLower() + ".azurewebsites.net/services/websysuser/ConfirmMail?token=" + token;
@@ -454,10 +454,10 @@ namespace HeroServer
             return await new WebSysUserDB().UpdatePin(pinRequest);
         }
 
-        public static async Task ResetPin(int webSysUserId)
+        public static async Task ResetPin(long webSysUserId)
         {
             // Token
-            int appUserId = await new AppUserDB().GetIdByWebSysUserId(webSysUserId);
+            long appUserId = await new AppUserDB().GetIdByWebSysUserId(webSysUserId);
             String email = await new WebSysUserDB().GetEmailById(webSysUserId);
 
             (String firstName1, String _1, String lastName1, String _2) = await new IdentityDB().GetFullNameByAppUserId(appUserId);
@@ -613,7 +613,7 @@ namespace HeroServer
         }
 
         // DELETE
-        public static async Task DeleteById(int id, bool delAuthUser = true)
+        public static async Task DeleteById(long id, bool delAuthUser = true)
         {
             await new WebSysUserDB().DeleteById(id);
 

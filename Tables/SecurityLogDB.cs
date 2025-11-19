@@ -14,7 +14,7 @@ namespace HeroServer
 
 
         // INSERT
-        public async Task<int> Add(SecurityLog securityLog)
+        public async Task<long> Add(SecurityLog securityLog)
         {
             String strCmd = $"INSERT INTO {table} (DateTime, Type, Context, AuthEmail, AuthUserId," +
                             " AuthAppUserId, AppUserId, AppUserEmail)" +
@@ -29,14 +29,14 @@ namespace HeroServer
             DBHelper.AddParam(command, "@Context", SqlDbType.VarChar, securityLog.Context);
             DBHelper.AddParam(command, "@AuthEmail", SqlDbType.VarChar, securityLog.AuthEmail);
             DBHelper.AddParam(command, "@AuthUserId", SqlDbType.VarChar, securityLog.AuthUserId);
-            DBHelper.AddParam(command, "@AuthAppUserId", SqlDbType.Int, securityLog.AuthAppUserId);
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.Int, securityLog.AppUserId);
+            DBHelper.AddParam(command, "@AuthAppUserId", SqlDbType.BigInt, securityLog.AuthAppUserId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, securityLog.AppUserId);
             DBHelper.AddParam(command, "@AppUserEmail", SqlDbType.VarChar, securityLog.AppUserEmail);
 
             using (conn)
             {
                 await conn.OpenAsync();
-                return (int)await command.ExecuteScalarAsync();
+                return (long)await command.ExecuteScalarAsync();
             }
         }
     }

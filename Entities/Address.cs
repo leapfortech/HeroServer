@@ -4,10 +4,10 @@ namespace HeroServer
 {
     public class Address
     {
-        public int Id { get; set; } = -1;
-        public int CountryId { get; set; }
-        public int StateId { get; set; }
-        public int CityId { get; set; }
+        public long Id { get; set; } = -1;
+        public long CountryId { get; set; }
+        public long StateId { get; set; }
+        public long CityId { get; set; }
         public String Address1 { get; set; }
         public String Address2 { get; set; }
         public String Zone { get; set; }
@@ -23,8 +23,9 @@ namespace HeroServer
         {
         }
 
-        public Address(int id, int countryId, int stateId, int cityId, String address1, String address2, String zone,
-                       String zipCode, float? latitude, float? longitude, DateTime createDateTime, DateTime updateDateTime, int status)
+        public Address(long id, long countryId, long stateId, long cityId, String address1, String address2, String zone,
+                       String zipCode, float? latitude, float? longitude, DateTime createDateTime, DateTime updateDateTime,
+                       int status)
         {
             Id = id;
             CountryId = countryId;

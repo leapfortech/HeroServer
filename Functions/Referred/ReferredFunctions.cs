@@ -19,12 +19,12 @@ namespace HeroServer
             return await new ReferredDB().GetFullAll();
         }
 
-        public static async Task<Referred> GetById(int id)
+        public static async Task<Referred> GetById(long id)
         {
             return await new ReferredDB().GetById(id);
         }
 
-        public static async Task<IEnumerable<Referred>> GetByAppUserId(int appUserId, int status = 1)
+        public static async Task<IEnumerable<Referred>> GetByAppUserId(long appUserId, int status = 1)
         {
             return await new ReferredDB().GetByAppUserId(appUserId, status);
         }
@@ -34,52 +34,36 @@ namespace HeroServer
             return await new ReferredDB().GetHistory(referredHistoryRequest.AppUserId, referredHistoryRequest.DateStart, referredHistoryRequest.DateEnd);
         }
 
-        public static async Task<Referred> GetByCode(String code)
+        public static async Task<long> GetAppUserIdById(long id)
         {
-            if (String.IsNullOrEmpty(code))
-                return null;
-            return await new ReferredDB().GetByCode(code);
+            return await new ReferredDB().GetAppUserIdById(id);
         }
 
-        public static async Task<int> GetIdByCode(String code)
+        public static async Task<long> Validate(long id)   // JAD : Remove
         {
-            if (String.IsNullOrEmpty(code))
-                return -1;
-            return await new ReferredDB().GetIdByCode(code);
-        }
-
-        public static async Task<int> GetAppUserIdByCode(String code)
-        {
-            if (String.IsNullOrEmpty(code))
-                return -1;
-            return await new ReferredDB().GetAppUserIdByCode(code);
-        }
-
-        public static async Task<int> Validate(String code)   // JAD : Remove
-        {
-            return await new ReferredDB().GetIdByCode(code) == -1 ? 0 : 1;
+            return await new ReferredDB().GetById(id) == null ? 0 : 1;
         }
 
         // REGISTER
-        public static async Task<String> Register(Referred referred, ILogger logger)
+        public static async Task<long> Register(Referred referred, ILogger logger)
         {
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                referred.Code = String.Format("{0}{1:yyMMddHHmm}", referred.AppUserId, DateTime.Now);
                 referred.Status = 1;
 
                 referred.Id = await new ReferredDB().Add(referred);
 
-                if (referred.Email != null)
+                String email = await new IdentityDB().GetEmailById(referred.IdentityId, 1);
+                if (email != null)
                     await SendEmail(referred, logger);
 
                 scope.Complete();
             }
-            return referred.Id + "|" + referred.Code;
+            return referred.Id;
         }
 
         // ADD
-        public static async Task<int> Add(Referred referred)
+        public static async Task<long> Add(Referred referred)
         {
             return await new ReferredDB().Add(referred);
         }
@@ -90,13 +74,13 @@ namespace HeroServer
             return await new ReferredDB().Update(referred);
         }
 
-        public static async Task<bool> UpdateStatusByAppUser(int appUserId, int curStatus, int newStatus)
+        public static async Task<bool> UpdateStatusByAppUser(long appUserId, int curStatus, int newStatus)
         {
             return await new ReferredDB().UpdateStatusByAppUserId(appUserId, curStatus, newStatus);
         }
 
         // DELETE
-        public static async Task DeleteByAppUserId(int appUserId)
+        public static async Task DeleteByAppUserId(long appUserId)
         {
             await new ReferredDB().DeleteByAppUserId(appUserId);
         }
@@ -104,18 +88,19 @@ namespace HeroServer
         // Email
         public static async Task<int> SendEmail(Referred referred, ILogger logger)
         {
-            Identity identity = await new IdentityDB().GetByAppUserId(referred.AppUserId, 1);
+            Identity identityReferrer = await new IdentityDB().GetByAppUserId(referred.AppUserId, 1);
+            Identity identityReferred = await new IdentityDB().GetByAppUserId(referred.IdentityId, 1);
 
-            String appUserName = identity == null ? "" : $"por {identity.FirstName1} {identity.LastName1} ";
-            String referredName = $"{referred.FirstName} {referred.LastName}";
-            String link = "https://grupohpb.com/";
+            String appUserName = identityReferrer == null ? "" : $"por {identityReferrer.FirstName1} {identityReferrer.LastName1} ";
+            String referredName = $"{identityReferred.FirstName1} {identityReferred.LastName1}";
+            String link = "https://lefortech.com/";
 
             String body = $"Estimad@ {referredName}," +
-                          $" fuiste referido {appUserName}para descargar la aplicación móvil de inversiones inmobiliarias Expande.<br><br>" +
+                          $" fuiste referido {appUserName}para descargar la aplicación móvil de Héroes Migrantes.<br><br>" +
                           " Presiona el siguiente link para descargarla.<br><br>" +
                           $" <a href='{link}'>Descargar</a><br><br>" +
                           " No olvides ingresar el siguiente código al momento de tu registro" +
-                          $" para obtener los mejores beneficios: <strong>{referred.Code}</strong>.";
+                          $" para obtener los mejores beneficios: <strong>{referred.Id}</strong>.";
 
             String message = HtmlHelper.GetConfirmResultHtml("Expande", body, "#666666");
             if (message == null)
@@ -123,7 +108,7 @@ namespace HeroServer
 
             try
             {
-                await MailHelper.SendMail(referred.Email, referredName, "Eres referido de " + appUserName + " para descargar nuestra App.", message, true);
+                await MailHelper.SendMail(identityReferred.Email, referredName, "Eres referido de " + appUserName + " para descargar nuestra App.", message, true);
             }
             catch (Exception ex)
             {

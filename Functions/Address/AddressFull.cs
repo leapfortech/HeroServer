@@ -4,7 +4,7 @@ namespace HeroServer
 {
     public class AddressFull
     {
-        public int EntityId { get; set; }
+        public long Id { get; set; }
         public String Country { get; set; }
         public String State { get; set; }
         public String City { get; set; }
@@ -21,10 +21,10 @@ namespace HeroServer
         {
         }
 
-        public AddressFull(int entityId, String country, String state, String city, String address1, String address2, 
+        public AddressFull(long id, String country, String state, String city, String address1, String address2, 
                           String zone, String zipCode, float? latitude, float? longitude, int status)
         {
-            EntityId = entityId;
+            Id = id;
             Country = country;
             State = state;
             City = city;

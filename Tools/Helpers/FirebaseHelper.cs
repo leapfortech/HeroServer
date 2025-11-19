@@ -13,7 +13,7 @@ namespace HeroServer
         public static async Task<int> SendMessage(int appUserId, String dataName, int dataId, String title, String body,
                                                   String action, String information, String parameter, int displayMode, ILogger logger)
         {
-            int webSysUserId = await new AppUserDB().GetWebSysUserId(appUserId);
+            long webSysUserId = await new AppUserDB().GetWebSysUserId(appUserId);
             (String firstName1, String _1, String lastName1, String _2) = await new IdentityDB().GetFullNameByAppUserId(appUserId);
 
             String name;

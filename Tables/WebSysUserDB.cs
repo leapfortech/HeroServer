@@ -9,15 +9,15 @@ namespace HeroServer
     public class WebSysUserDB
     {
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
-        readonly String table = "[DD-WebSysUser]";
+        readonly String table = "[D-WebSysUser]";
 
         public static WebSysUser GetWebSysUser(SqlDataReader reader)
         {
-            return new WebSysUser(Convert.ToInt32(reader["Id"]),
+            return new WebSysUser(Convert.ToInt64(reader["Id"]),
                                   reader["AuthUserId"].ToString(),
                                   reader["Email"].ToString(),
                                   reader["Roles"].ToString(),
-                                  Convert.ToInt32(reader["PhoneCountryId"]),
+                                  Convert.ToInt64(reader["PhoneCountryId"]),
                                   reader["Phone"].ToString(),
                                   reader["Pin"].ToString(),
                                   Convert.ToInt32(reader["PinFails"]),
@@ -51,13 +51,13 @@ namespace HeroServer
             return webSysUsers;
         }
 
-        public async Task<WebSysUser> GetById(int id)
+        public async Task<WebSysUser> GetById(long id)
         {
             String strCmd = $"SELECT * FROM {table} WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             WebSysUser webSysUser = null;
             using (conn)
@@ -75,13 +75,13 @@ namespace HeroServer
             return webSysUser;
         }
 
-        public async Task<String> GetRoles(int id)
+        public async Task<String> GetRoles(long id)
         {
             String strCmd = $"SELECT Roles FROM {table} WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             String roles = null;
             using (conn)
@@ -123,7 +123,7 @@ namespace HeroServer
             return webSysUser;
         }
 
-        public async Task<int> GetIdByAuthUserId(String authUserId)
+        public async Task<long> GetIdByAuthUserId(String authUserId)
         {
             String strCmd = $"SELECT Id FROM {table} WHERE AuthUserId = @AuthUserId";
 
@@ -131,7 +131,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@AuthUserId", SqlDbType.VarChar, authUserId);
 
-            int id = -1;
+            long id = -1;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -139,7 +139,7 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                        id = Convert.ToInt32(reader["Id"]);
+                        id = Convert.ToInt64(reader["Id"]);
                     }
                 }
             }
@@ -147,13 +147,13 @@ namespace HeroServer
             return id;
         }
 
-        public async Task<String> GetAuthUserIdById(int id)
+        public async Task<String> GetAuthUserIdById(long id)
         {
             String strCmd = $"SELECT AuthUserId FROM {table} WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             String authUserId = null;
             using (conn)
@@ -195,7 +195,7 @@ namespace HeroServer
             return webSysUser;
         }
 
-        public async Task<int> GetIdByEmail(String eMail)
+        public async Task<long> GetIdByEmail(String eMail)
         {
             String strCmd = $"SELECT Id FROM {table} WHERE Email = @Email";
 
@@ -203,7 +203,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@Email", SqlDbType.VarChar, eMail);
 
-            int id = -1;
+            long id = -1;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -211,7 +211,7 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                        id = Convert.ToInt32(reader["Id"]);
+                        id = Convert.ToInt64(reader["Id"]);
                     }
                 }
             }
@@ -219,13 +219,13 @@ namespace HeroServer
             return id;
         }
 
-        public async Task<String> GetEmailById(int id)
+        public async Task<String> GetEmailById(long id)
         {
             String strCmd = $"SELECT Email FROM {table} WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             String email = null;
             using (conn)
@@ -269,18 +269,19 @@ namespace HeroServer
 
 
         // INSERT
-        public async Task<int> Add(WebSysUser webSysUser)
+        public async Task<long> Add(WebSysUser webSysUser)
         {
-            String strCmd = $"INSERT INTO {table} (Roles, AuthUserId, Email, PhoneCountryId, Phone, Pin, PinFails, PinDateTime, CreateDateTime, UpdateDateTime, WebSysUserStatusId)" +
+            String strCmd = $"INSERT INTO {table} (Id, Roles, AuthUserId, Email, PhoneCountryId, Phone, Pin, PinFails, PinDateTime, CreateDateTime, UpdateDateTime, WebSysUserStatusId)" +
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Roles, @AuthUserId, @Email, @PhoneCountryId, @Phone, @Pin, @PinFails, @PinDateTime, @CreateDateTime, @UpdateDateTime, @WebSysUserStatusId)";
+                            " VALUES (@Id, @Roles, @AuthUserId, @Email, @PhoneCountryId, @Phone, @Pin, @PinFails, @PinDateTime, @CreateDateTime, @UpdateDateTime, @WebSysUserStatusId)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid());
             DBHelper.AddParam(command, "@Roles", SqlDbType.VarChar, webSysUser.Roles);
             DBHelper.AddParam(command, "@AuthUserId", SqlDbType.VarChar, webSysUser.AuthUserId);
             DBHelper.AddParam(command, "@Email", SqlDbType.VarChar, webSysUser.Email);
-            DBHelper.AddParam(command, "@PhoneCountryId", SqlDbType.Int, webSysUser.PhoneCountryId);
+            DBHelper.AddParam(command, "@PhoneCountryId", SqlDbType.BigInt, webSysUser.PhoneCountryId);
             DBHelper.AddParam(command, "@Phone", SqlDbType.VarChar, webSysUser.Phone);
             DBHelper.AddParam(command, "@Pin", SqlDbType.VarChar, webSysUser.Pin);
             DBHelper.AddParam(command, "@PinFails", SqlDbType.Int, webSysUser.PinFails);
@@ -292,7 +293,7 @@ namespace HeroServer
             using (conn)
             {
                 await conn.OpenAsync();
-                return (int)await command.ExecuteScalarAsync();
+                return (long)await command.ExecuteScalarAsync();
             }
         }
 
@@ -309,11 +310,11 @@ namespace HeroServer
             DBHelper.AddParam(command, "@Roles", SqlDbType.VarChar, webSysUser.Roles);
             DBHelper.AddParam(command, "@AuthUserId", SqlDbType.VarChar, webSysUser.AuthUserId);
             DBHelper.AddParam(command, "@Email", SqlDbType.VarChar, webSysUser.Email);
-            DBHelper.AddParam(command, "@PhoneCountryId", SqlDbType.Int, webSysUser.PhoneCountryId);
+            DBHelper.AddParam(command, "@PhoneCountryId", SqlDbType.BigInt, webSysUser.PhoneCountryId);
             DBHelper.AddParam(command, "@Phone", SqlDbType.VarChar, webSysUser.Phone);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@WebSysUserStatusId", SqlDbType.Int, webSysUser.WebSysUserStatusId);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, webSysUser.Id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, webSysUser.Id);
 
             using (conn)
             {
@@ -322,7 +323,7 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> UpdateRoles(int id, String roles)
+        public async Task<bool> UpdateRoles(long id, String roles)
         {
             String strCmd = $"UPDATE {table}" +
                             " SET Roles = @Roles, UpdateDateTime = @UpdateDateTime" +
@@ -332,7 +333,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@Roles", SqlDbType.VarChar, roles);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -341,7 +342,7 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> UpdateMail(int id, String eMail)
+        public async Task<bool> UpdateMail(long id, String eMail)
         {
             String strCmd = $"UPDATE {table}" +
                             " SET Email = @Email, UpdateDateTime = @UpdateDateTime" +
@@ -351,7 +352,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@Email", SqlDbType.VarChar, eMail);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -371,7 +372,7 @@ namespace HeroServer
             DBHelper.AddParam(command, "@PhoneCountryId", SqlDbType.Int, phoneRequest.PhoneCountryId);
             DBHelper.AddParam(command, "@Phone", SqlDbType.VarChar, phoneRequest.Phone);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, phoneRequest.Id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, phoneRequest.Id);
 
             using (conn)
             {
@@ -380,7 +381,7 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> UpdateStatus(int id, int status)
+        public async Task<bool> UpdateStatus(long id, int status)
         {
             String strCmd = $"UPDATE {table}" +
                             " SET UpdateDateTime = @UpdateDateTime, Status = @Status" +
@@ -390,7 +391,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -400,13 +401,13 @@ namespace HeroServer
         }
 
         // PIN
-        public async Task<(String, int, DateTime?)> GetPin(int id)
+        public async Task<(String, int, DateTime?)> GetPin(long id)
         {
             String strCmd = $"SELECT Pin, PinFails, PinDateTime FROM {table} WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             (String pin, int fails, DateTime? dateTime) = (null, 0, null);
             using (conn)
@@ -436,7 +437,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@Pin", SqlDbType.VarChar, pinRequest.Pin);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, pinRequest.WebSysUserId);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, pinRequest.WebSysUserId);
 
             using (conn)
             {
@@ -445,7 +446,7 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> UpdatePinFails(int id, int pinFails, DateTime? pinDateTime = null)
+        public async Task<bool> UpdatePinFails(long id, int pinFails, DateTime? pinDateTime = null)
         {
             String strCmd = $"UPDATE {table}" +
                             " SET PinFails = @PinFails, PinDateTime = @PinDateTime" +
@@ -455,7 +456,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@PinFails", SqlDbType.Int, pinFails);
             DBHelper.AddParam(command, "@PinDateTime", SqlDbType.DateTime2, pinDateTime);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -478,13 +479,13 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task<bool> DeleteById(long id)
         {
             String strCmd = $"DELETE FROM {table} WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {

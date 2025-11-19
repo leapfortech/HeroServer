@@ -17,17 +17,17 @@ namespace HeroServer
             CardsPerDay = Convert.ToInt32(await new SystemParamDB().GetValue("CardsPerDay"));
         }
 
-        public static async Task<Card> GetById(int cardId)
+        public static async Task<Card> GetById(long id)
         {
-            return await new CardDB().GetById(Convert.ToInt32(cardId));
+            return await new CardDB().GetById(id);
         }
 
-        public static async Task<Card> GetByAppUserId(int appUserId, int status = 1)
+        public static async Task<Card> GetByAppUserId(long appUserId, int status = 1)
         {
             return await new CardDB().GetByAppUserId(appUserId, status);
         }
 
-        public static async Task<int> GetIdByAppUserId(int appUserId, int status = 1)
+        public static async Task<long> GetIdByAppUserId(long appUserId, int status = 1)
         {
             return await new CardDB().GetIdByAppUserId(appUserId, status);
         }
@@ -134,7 +134,7 @@ namespace HeroServer
             return card;
         }
 
-        public static async Task<Tmsv2customersEmbeddedDefaultPaymentInstrumentBillTo> GetBillTo(int appUserId)
+        public static async Task<Tmsv2customersEmbeddedDefaultPaymentInstrumentBillTo> GetBillTo(long appUserId)
         {
             // JAD : JOIN !!!
             Identity identity = await IdentityFunctions.GetByAppUserId(appUserId, 1);
@@ -161,21 +161,21 @@ namespace HeroServer
             );
         }
 
-        public static async Task SetStatus(int id, int status)
+        public static async Task SetStatus(long id, int status)
         {
             Card card = await new CardDB().GetById(id);
 
             if (card.Status == 1 && status == 0)
                 status = 2;
 
-            if (!await new CardDB().SetStatus(Convert.ToInt32(id), Convert.ToInt32(status)))
+            if (!await new CardDB().SetStatus(id, Convert.ToInt32(status)))
                 throw new Exception("Cannot Change Card Status");
         }
 
         // DELETE
-        public static async Task DeleteByAppUserId(int appUserId)
+        public static async Task DeleteByAppUserId(long appUserId)
         {
-            int id = await GetIdByAppUserId(appUserId);
+            long id = await GetIdByAppUserId(appUserId);
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {

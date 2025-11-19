@@ -5,8 +5,8 @@ namespace HeroServer
 {
     public class Phone
     {
-        public int Id { get; set; }
-        public int CountryId { get; set; }
+        public long Id { get; set; }
+        public long CountryId { get; set; }
         public String Number { get; set; }
         public String CountryCode { get; set; }
         public String CallerName { get; set; }
@@ -22,7 +22,7 @@ namespace HeroServer
         {
         }
 
-        public Phone(int id, int countryId, String number, String countryCode, String callerName, String carrierCountryCode, String carrierNetworkCode, String carrierName, String carrierType, DateTime createDateTime, DateTime updateDateTime, int status)
+        public Phone(long id, long countryId, String number, String countryCode, String callerName, String carrierCountryCode, String carrierNetworkCode, String carrierName, String carrierType, DateTime createDateTime, DateTime updateDateTime, int status)
         {
             Id = id;
             CountryId = countryId;
