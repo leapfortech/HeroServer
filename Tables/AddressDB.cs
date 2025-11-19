@@ -145,7 +145,7 @@ namespace HeroServer
             using (conn)
             {
                 await conn.OpenAsync();
-                return (int)await command.ExecuteScalarAsync();
+                return (long)await command.ExecuteScalarAsync();
             }
         }
 

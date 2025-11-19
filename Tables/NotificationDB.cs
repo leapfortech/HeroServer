@@ -142,7 +142,7 @@ namespace HeroServer
 
         
         // INSERT
-        public async Task<int> Add(Notification notification)
+        public async Task<long> Add(Notification notification)
         {
             String strCmd = $"INSERT INTO {table}(WebSysUserId, MessageId, Title, Body, Action, Information, Parameter, DisplayMode, DateTime, NotificationStatusId)" +
                                " OUTPUT INSERTED.Id" +
@@ -150,7 +150,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.Int, notification.WebSysUserId);
+            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, notification.WebSysUserId);
             DBHelper.AddParam(command, "@MessageId", SqlDbType.VarChar, notification.MessageId);
             DBHelper.AddParam(command, "@Title", SqlDbType.VarChar, notification.Title);
             DBHelper.AddParam(command, "@Body", SqlDbType.VarChar, notification.Body);
@@ -164,7 +164,7 @@ namespace HeroServer
             using (conn)
             {
                 await conn.OpenAsync();
-                return (int)await command.ExecuteScalarAsync();
+                return (long)await command.ExecuteScalarAsync();
             }
         }
 
