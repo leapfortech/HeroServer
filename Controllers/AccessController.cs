@@ -52,11 +52,11 @@ namespace HeroServer.Controllers
 
         // POST services/access/RegisterApp
         [HttpPost("RegisterApp")]
-        public async Task<ActionResult<String>> RegisterApp([FromBody]RegisterAppRequest registerRequest)
+        public async Task<ActionResult<String>> RegisterApp([FromBody]RegisterAppRequest registerAppRequest)
         {
             try
             {
-                return Ok(await AccessFunctions.RegisterApp(registerRequest));
+                return Ok(await AccessFunctions.RegisterApp(registerAppRequest));
             }
             catch (Exception ex)
             {
