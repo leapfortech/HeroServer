@@ -14,9 +14,7 @@ namespace HeroServer
         public async Task<LoginAppInfo> GetLoginAppInfo(int appUserId, int webSysUserId, DateTime meetingStartDateTime, DateTime meetingEndDateTime)
         {
             //News
-            String strCmd = "SELECT * FROM [D-News] WHERE Status = 1;" +
-
-                            // Referred Count
+            String strCmd = // Referred Count
                             "SELECT COUNT(1) AS Count FROM [D-Referred] WHERE AppUserId = @AppUserId AND Status = 1;" +
 
                             // Identity
@@ -43,7 +41,6 @@ namespace HeroServer
                 await conn.OpenAsync();
                 using (SqlDataReader reader = await command.ExecuteReaderAsync())
                 {
-                    reader.NextResult();
                     ReferredCount referredCount = new ReferredCount();
                     if (await reader.ReadAsync())
                         referredCount.Count = Convert.ToInt32(reader["Count"]);
