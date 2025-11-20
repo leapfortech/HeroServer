@@ -61,7 +61,7 @@ namespace HeroServer
 
             // DB
             Notification notification = new Notification(-1, webSysUserId, null, title, body, action, information, parameter, displayMode, DateTime.Now, 1);
-            int notificationId = await new NotificationDB().Add(notification);
+            long notificationId = await new NotificationDB().Add(notification);
 
             // Send
             //logger?.LogWarning("INFO : SendMessage On {DataName} #{DataId} to AppUser #{AppUserId}", dataName, dataId, appUserId);

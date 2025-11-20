@@ -28,7 +28,7 @@ namespace HeroServer
         }
 
         // ADD
-        public static async Task<int> Add(Notification notification)
+        public static async Task<long> Add(Notification notification)
         {
             return await new NotificationDB().Add(notification);
         }

@@ -30,7 +30,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<News> newss = new List<News>();
+            List<News> newss = [];
             using (conn)
             {
                 await conn.OpenAsync();
@@ -77,7 +77,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
-            List<News> newss = new List<News>();
+            List<News> newss = [];
             using (conn)
             {
                 await conn.OpenAsync();
@@ -102,7 +102,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('N'));
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('Z'));
             DBHelper.AddParam(command, "@Title", SqlDbType.VarChar, news.Title);
             DBHelper.AddParam(command, "@Description", SqlDbType.VarChar, news.Description);
             DBHelper.AddParam(command, "@Link", SqlDbType.VarChar, news.Link);

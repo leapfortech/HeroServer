@@ -18,13 +18,14 @@ namespace HeroServer.Controllers
         //    wsLogger = logger;
         //}
 
-        // POST services/Start
-        [HttpPost("Start")]
-        public async Task<ActionResult<String>> Start([FromBody]String alice)
+        // GET services/GetUid?type=A
+        [HttpGet("GetUid")]
+        [AllowAnonymous]
+        public ActionResult<long> StartApp([FromQuery]String type)
         {
             try
             {
-                return Ok(await CertificateFunctions.GetSecret(alice)); //, wsLogger));
+                return Ok(SecurityFunctions.GetUid(type[0]));
             }
             catch (Exception ex)
             {
