@@ -95,7 +95,6 @@ namespace HeroServer
             if (statusId == 0)
                 throw new Exception("App User not found.");
 
-            int onboardingStage = 0;
 
             //if (appUser.AppUserStatusId == 3)  // En validación
             //{
@@ -110,7 +109,7 @@ namespace HeroServer
 
             //return new LoginResponse(0, "0|Login|Este es un aviso de bloqueo.");
 
-            return new LoginAppResponse(appUser, webSysUser, 1, onboardingStage);
+            return new LoginAppResponse(appUser, webSysUser, 1);
         }
 
         public static async Task<LoginAppInfo> GetLoginAppInfo(int appUserId, int webSysUserId)
