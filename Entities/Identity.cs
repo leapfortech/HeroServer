@@ -5,8 +5,7 @@ namespace HeroServer
     public class Identity
     {
         public long Id { get; set; }
-        public long AppUserId { get; set; }
-        public String FirstName1 { get; set; }
+         public String FirstName1 { get; set; }
         public String FirstName2 { get; set; }
         public String LastName1 { get; set; }
         public String LastName2 { get; set; }
@@ -28,13 +27,12 @@ namespace HeroServer
         {
         }
 
-        public Identity(long id, long appUserId, String firstName1, String firstName2, String lastName1, String lastName2,
+        public Identity(long id, String firstName1, String firstName2, String lastName1, String lastName2,
                         long genderId, DateTime birthDate, long originCountryId, long originStateId,
                         long phoneCountryId, String phone, String email,
                         DateTime createDateTime, DateTime updateDateTime, int status)
         {
             Id = id;
-            AppUserId = appUserId;
             FirstName1 = firstName1;
             FirstName2 = firstName2;
             LastName1 = lastName1;
@@ -53,12 +51,11 @@ namespace HeroServer
             Status = status;
         }
 
-        public Identity(long id, long appUserId, String firstName1, String firstName2, String lastName1, String lastName2,
+        public Identity(long id, String firstName1, String firstName2, String lastName1, String lastName2,
                         long genderId, DateTime birthDate, long originCountryId, long originStateId,
                         long phoneCountryId, String phone, String email, int status)
         {
             Id = id;
-            AppUserId = appUserId;
             FirstName1 = firstName1;
             FirstName2 = firstName2;
             LastName1 = lastName1;

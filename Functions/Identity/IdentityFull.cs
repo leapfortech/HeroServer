@@ -5,7 +5,6 @@ namespace HeroServer
     public class IdentityFull
     {
         public long Id { get; set; }
-        public long AppUserId { get; set; }
         public String FirstName1 { get; set; }
         public String FirstName2 { get; set; }
         public String LastName1 { get; set; }
@@ -27,13 +26,12 @@ namespace HeroServer
         {
         }
 
-        public IdentityFull(long id, long appUserId, String firstName1, String firstName2, String lastName1, String lastName2,
+        public IdentityFull(long id, String firstName1, String firstName2, String lastName1, String lastName2,
                             String gender, DateTime birthDate, String originCountry, String originState, 
                             String phonePrefix, String phone, String email,
                             DateTime createDateTime, DateTime updateDateTime, int appUserStatusId, int status)
         {
             Id = id;
-            AppUserId = appUserId;
             FirstName1 = firstName1;
             FirstName2 = firstName2;
             LastName1 = lastName1;

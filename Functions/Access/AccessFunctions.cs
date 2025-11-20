@@ -153,12 +153,7 @@ namespace HeroServer
                         await WebSysUserFunctions.UpdatePhone(new PhoneRequest(webSysUser.Id, registerBoardRequest.PhoneCountryId, registerBoardRequest.Phone));
                 }
 
-                long identityId = await IdentityFunctions.Add(new Identity(-1,-1, registerBoardRequest.FirstName1,
-                                                                           registerBoardRequest.FirstName2, 
-                                                                           registerBoardRequest.LastName1, 
-                                                                           registerBoardRequest.LastName2,
-                                                                           -1, registerBoardRequest.BirthDate, 
-                                                                           -1, -1, -1, null, null, 1));
+                long identityId = await IdentityFunctions.RegisterByBoardUser(boardUserId, registerBoardRequest);
 
                 boardUser = new BoardUser(-1, webSysUser.Id, identityId, 1);
 
@@ -174,9 +169,8 @@ namespace HeroServer
 
         public static async Task<int> SendBoardUserEmail(BoardUser boardUser, String eMail, String password)
         {
-            // RM REVIEW
-            Identity identity = await IdentityFunctions.GetByAppUserId(boardUser.Id, 1);
-            
+            Identity identity = await IdentityFunctions.GetByBoardUserId(boardUser.Id, 1);
+
             String subject = "Registro plataforma Héroes Migrantes";
             String body = $"{identity.FirstName1 + " " + identity.LastName1}, fuiste registrado en la plataforma HpbBoard con las credenciales siguientes.<br><br>" +
                           $"Email: {eMail}<br>" +

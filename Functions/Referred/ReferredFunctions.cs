@@ -88,8 +88,8 @@ namespace HeroServer
         // Email
         public static async Task<int> SendEmail(Referred referred, ILogger logger)
         {
-            Identity identityReferrer = await new IdentityDB().GetByAppUserId(referred.AppUserId, 1);
-            Identity identityReferred = await new IdentityDB().GetByAppUserId(referred.IdentityId, 1);
+            Identity identityReferrer = await IdentityFunctions.GetByAppUserId(referred.AppUserId, 1);
+            Identity identityReferred = await IdentityFunctions.GetById(referred.IdentityId);
 
             String appUserName = identityReferrer == null ? "" : $"por {identityReferrer.FirstName1} {identityReferrer.LastName1} ";
             String referredName = $"{identityReferred.FirstName1} {identityReferred.LastName1}";

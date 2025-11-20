@@ -77,7 +77,7 @@ namespace HeroServer
             String token = AesHelper.Encrypt(userRecord.Uid);
 
             // Send Mail
-            String title = "Bienvenido a Heroes Migrantes";
+            String title = "Bienvenido a Héroes Migrantes";
             String text = "Para activar tu cuenta, debes presionar el siguiente botón";
             String button = "Activar tu Cuenta";
             String link = "https://" + System.Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME").ToLower() + ".azurewebsites.net/services/websysuser/ConfirmMail?token=" + token;

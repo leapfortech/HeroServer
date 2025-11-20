@@ -14,9 +14,10 @@ namespace HeroServer
                                                   String action, String information, String parameter, int displayMode, ILogger logger)
         {
             long webSysUserId = await new AppUserDB().GetWebSysUserId(appUserId);
+            
             (String firstName1, String _1, String lastName1, String _2) = await new IdentityDB().GetFullNameByAppUserId(appUserId);
 
-            String name;
+            String name = null;
             if (firstName1 == null)
             {
                 logger?.LogWarning("WARNING : No Name On {DataName} #{DataId} to AppUser #{AppUserId}", dataName, dataId, webSysUserId);
