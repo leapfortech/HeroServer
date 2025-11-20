@@ -7,10 +7,7 @@ namespace HeroServer
     {
         public long Id { get; set; }
         public long WebSysUserId { get; set; }
-        public String FirstName1 { get; set; }
-        public String FirstName2 { get; set; }
-        public String LastName1 { get; set; }
-        public String LastName2 { get; set; }
+        public long EntityId { get; set; }
         public DateTime CreateDateTime { get; set; }
         public DateTime UpdateDateTime { get; set; }
         public int BoardUserStatusId { get; set; }
@@ -20,32 +17,22 @@ namespace HeroServer
         {
         }
 
-        public BoardUser(long id, long webSysUserId, String firstName1, String firstName2, String lastName1, String lastName2, DateTime createDateTime, DateTime updateDateTime, int boardUserStatusId)
+        public BoardUser(long id, long webSysUserId, long entityId, DateTime createDateTime, DateTime updateDateTime, int boardUserStatusId)
         {
             Id = id;
             WebSysUserId = webSysUserId;
-            FirstName1 = firstName1;
-            FirstName2 = firstName2;
-            LastName1 = lastName1;
-            LastName2 = lastName2;
+            EntityId = entityId;
             CreateDateTime = createDateTime;
             UpdateDateTime = updateDateTime;
             BoardUserStatusId = boardUserStatusId;
         }
 
-        public BoardUser(long id, long webSysUserId, String firstName1, String firstName2, String lastName1, String lastName2, int boardUserStatusId)
+        public BoardUser(long id, long webSysUserId, long entityId, int boardUserStatusId)
         {
             Id = id;
             WebSysUserId = webSysUserId;
-            FirstName1 = firstName1;
-            FirstName2 = firstName2;
-            LastName1 = lastName1;
-            LastName2 = lastName2;
-            CreateDateTime = DateTime.Now;
-            UpdateDateTime = DateTime.Now;
+            EntityId = entityId;
             BoardUserStatusId = boardUserStatusId;
         }
-
-        public String GetCompleteName() => FirstName1 + (String.IsNullOrEmpty(FirstName2) ? "" : " " + FirstName2) + " " + LastName1 + (String.IsNullOrEmpty(LastName2) ? "" : " " + LastName2);
     }
 }

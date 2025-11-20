@@ -133,11 +133,11 @@ namespace HeroServer.Controllers
 
         // DELETE services/boarduser/ById?id=3
         [HttpDelete("ById")]
-        public async Task<ActionResult<int>> DeleteById([FromQuery]String id, [FromQuery]String authUser = "1")
+        public async Task<ActionResult<long>> DeleteById([FromQuery]String id, [FromQuery]String authUser = "1")
         {
             try
             {
-                await BoardUserFunctions.DeleteById(Convert.ToInt32(id), authUser == "1");
+                await BoardUserFunctions.DeleteById(Convert.ToInt64(id), authUser == "1");
                 return Ok();
             }
             catch (Exception ex)
@@ -148,7 +148,7 @@ namespace HeroServer.Controllers
 
         // DELETE services/boarduser/ByEmail?email=user@gmail.com&authUser=0
         [HttpDelete("ByEmail")]
-        public async Task<ActionResult<int>> DeleteByEmail([FromQuery]String email, [FromQuery]String authUser = "1")
+        public async Task<ActionResult<long>> DeleteByEmail([FromQuery]String email, [FromQuery]String authUser = "1")
         {
             try
             {

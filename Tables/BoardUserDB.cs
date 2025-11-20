@@ -15,10 +15,7 @@ namespace HeroServer
         {
             return new BoardUser(Convert.ToInt64(reader["Id"]),
                                  Convert.ToInt64(reader["WebSysUserId"]),
-                                 reader["FirstName1"].ToString(),
-                                 reader["FirstName2"].ToString(),
-                                 reader["LastName1"].ToString(),
-                                 reader["LastName2"].ToString(),
+                                 Convert.ToInt64(reader["EntityId"]),
                                  Convert.ToDateTime(reader["CreateDateTime"]),
                                  Convert.ToDateTime(reader["UpdateDateTime"]),
                                  Convert.ToInt32(reader["BoardUserStatusId"]));
@@ -49,7 +46,7 @@ namespace HeroServer
 
         public async Task<IEnumerable<BoardUserFull>> GetFulls()
         {
-            String strCmd = $"SELECT {table}.Id AS Id, WebSysUserId, FirstName1, FirstName2, LastName1, LastName2, {table}.CreateDateTime, {table}.UpdateDateTime, BoardUserStatusId," +
+            String strCmd = $"SELECT {table}.Id AS Id, WebSysUserId, EntityId, {table}.CreateDateTime, {table}.UpdateDateTime, BoardUserStatusId," +
                              " Roles, AuthUserId, Email, PhoneCountryId, Phone, Pin, PinFails, PinDateTime, [D-WebSysUser].CreateDateTime AS WSUCreate, [D-WebSysUser].UpdateDateTime AS WSUUpdate, WebSysUserStatusId" +
                             $" FROM {table}" +
                              " INNER JOIN [D-WebSysUser] ON ([D-WebSysUser].Id = WebSysUserId)";
@@ -271,18 +268,15 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(BoardUser boardUser)
         {
-            String strCmd = $"INSERT INTO {table}(Id, WebSysUserId, FirstName1, FirstName2, LastName1, LastName2, CreateDateTime, UpdateDateTime, BoardUserStatusId)" + 
+            String strCmd = $"INSERT INTO {table}(Id, WebSysUserId, EntityId, CreateDateTime, UpdateDateTime, BoardUserStatusId)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @WebSysUserId, @FirstName1, @FirstName2, @LastName1, @LastName2, @CreateDateTime, @UpdateDateTime, @BoardUserStatusId)";
+                            " VALUES (@Id, @WebSysUserId, @EntityId, @CreateDateTime, @UpdateDateTime, @BoardUserStatusId)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('B'));
             DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, boardUser.WebSysUserId);
-            DBHelper.AddParam(command, "@FirstName1", SqlDbType.VarChar, boardUser.FirstName1);
-            DBHelper.AddParam(command, "@FirstName2", SqlDbType.VarChar, boardUser.FirstName2);
-            DBHelper.AddParam(command, "@LastName1", SqlDbType.VarChar, boardUser.LastName1);
-            DBHelper.AddParam(command, "@LastName2", SqlDbType.VarChar, boardUser.LastName2);
+            DBHelper.AddParam(command, "@EntityId", SqlDbType.BigInt, boardUser.EntityId);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@BoardUserStatusId", SqlDbType.Int, boardUser.BoardUserStatusId);
@@ -297,16 +291,13 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(BoardUser boardUser)
         {
-            String strCmd = $"UPDATE {table} SET WebSysUserId = @WebSysUserId, FirstName1 = @FirstName1, FirstName2 = @FirstName2, LastName1 = @LastName1, LastName2 = @LastName2," +
+            String strCmd = $"UPDATE {table} SET WebSysUserId = @WebSysUserId, EntityId = @EntityId," +
                              " UpdateDateTime = @UpdateDateTime WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, boardUser.WebSysUserId);
-            DBHelper.AddParam(command, "@FirstName1", SqlDbType.VarChar, boardUser.FirstName1);
-            DBHelper.AddParam(command, "@FirstName2", SqlDbType.VarChar, boardUser.FirstName2);
-            DBHelper.AddParam(command, "@LastName1", SqlDbType.VarChar, boardUser.LastName1);
-            DBHelper.AddParam(command, "@LastName2", SqlDbType.VarChar, boardUser.LastName2);
+            DBHelper.AddParam(command, "@EntityId", SqlDbType.BigInt, boardUser.EntityId);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, boardUser.Id);
 

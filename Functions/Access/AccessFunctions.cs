@@ -153,7 +153,15 @@ namespace HeroServer
                         await WebSysUserFunctions.UpdatePhone(new PhoneRequest(webSysUser.Id, registerBoardRequest.PhoneCountryId, registerBoardRequest.Phone));
                 }
 
-                boardUser = new BoardUser(-1, webSysUser.Id, registerBoardRequest.FirstName1, registerBoardRequest.FirstName2, registerBoardRequest.LastName1, registerBoardRequest.LastName2, 1);
+                long identityId = await IdentityFunctions.Add(new Identity(-1,-1, registerBoardRequest.FirstName1,
+                                                                           registerBoardRequest.FirstName2, 
+                                                                           registerBoardRequest.LastName1, 
+                                                                           registerBoardRequest.LastName2,
+                                                                           -1, registerBoardRequest.BirthDate, 
+                                                                           -1, -1, -1, null, null, 1));
+
+                boardUser = new BoardUser(-1, webSysUser.Id, identityId, 1);
+
                 boardUser.Id = await BoardUserFunctions.Add(boardUser);
 
                 scope.Complete();
@@ -166,8 +174,11 @@ namespace HeroServer
 
         public static async Task<int> SendBoardUserEmail(BoardUser boardUser, String eMail, String password)
         {
-            String subject = "Registro plataforma HpbBoard";
-            String body = $"{boardUser.GetCompleteName()}, fuiste registrado en la plataforma HpbBoard con las credenciales siguientes.<br><br>" +
+            // RM REVIEW
+            Identity identity = await IdentityFunctions.GetByAppUserId(boardUser.Id, 1);
+            
+            String subject = "Registro plataforma Héroes Migrantes";
+            String body = $"{identity.FirstName1 + " " + identity.LastName1}, fuiste registrado en la plataforma HpbBoard con las credenciales siguientes.<br><br>" +
                           $"Email: {eMail}<br>" +
                           $"Contraseña: {password}";
 
@@ -177,7 +188,7 @@ namespace HeroServer
 
             try
             {
-                await MailHelper.SendMail(eMail, boardUser.GetCompleteName(), subject, message, true);
+                await MailHelper.SendMail(eMail, identity.FirstName1 + " " + identity.LastName1, subject, message, true);
             }
             catch
             {

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace HeroServer
 {
@@ -22,8 +21,8 @@ namespace HeroServer
         {
         }
 
-        public Card(long id, long appUserId, String csToken, int typeId, String number, int digits, DateTime expirationDate, String holder,
-                    DateTime createDateTime, DateTime updateDateTime, int status)
+        public Card(long id, long appUserId, String csToken, int typeId, String number, int digits, DateTime expirationDate,
+                    String holder, DateTime createDateTime, DateTime updateDateTime, int status)
         {
             Id = id;
             AppUserId = appUserId;

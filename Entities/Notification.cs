@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace HeroServer
 {
@@ -22,7 +21,8 @@ namespace HeroServer
         {
         }
 
-        public Notification(long id, long webSysUserId, String messageId, String title, String body, String action, String information, String parameter, int displayMode, DateTime dateTime, int notificationStatusId)
+        public Notification(long id, long webSysUserId, String messageId, String title, String body, String action,
+                            String information, String parameter, int displayMode, DateTime dateTime, int notificationStatusId)
         {
             Id = id;
             WebSysUserId = webSysUserId;

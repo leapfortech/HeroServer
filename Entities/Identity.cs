@@ -52,5 +52,27 @@ namespace HeroServer
             UpdateDateTime = updateDateTime;
             Status = status;
         }
+
+        public Identity(long id, long appUserId, String firstName1, String firstName2, String lastName1, String lastName2,
+                        long genderId, DateTime birthDate, long originCountryId, long originStateId,
+                        long phoneCountryId, String phone, String email, int status)
+        {
+            Id = id;
+            AppUserId = appUserId;
+            FirstName1 = firstName1;
+            FirstName2 = firstName2;
+            LastName1 = lastName1;
+            LastName2 = lastName2;
+            GenderId = genderId;
+            BirthDate = birthDate;
+            OriginCountryId = originCountryId;
+            OriginStateId = originStateId;
+
+            PhoneCountryId = phoneCountryId;
+            Phone = phone;
+            Email = email;
+
+            Status = status;
+        }
     }
 }

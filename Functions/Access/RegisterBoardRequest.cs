@@ -8,6 +8,7 @@ namespace HeroServer
         public String FirstName2 { get; set; }
         public String LastName1 { get; set; }
         public String LastName2 { get; set; }
+        public DateTime BirthDate { get; set; }
         public String Roles { get; set; } = "BD";
         public String Email { get; set; }
         public String Password { get; set; }
