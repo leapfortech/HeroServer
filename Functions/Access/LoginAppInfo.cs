@@ -5,7 +5,6 @@ namespace HeroServer
 {
     public class LoginAppInfo
     {
-        public List<NewsInfo> NewsInfos { get; set; }
         public ReferredCount ReferredCount { get; set; }
         public Identity Identity { get; set; }
         public Address Address { get; set; }
@@ -17,9 +16,8 @@ namespace HeroServer
         {
         }
 
-        public LoginAppInfo(List<NewsInfo> newsInfos, ReferredCount referredCount, Identity identity, Address address, String portrait, Card card, List<Notification> notifications)
+        public LoginAppInfo(ReferredCount referredCount, Identity identity, Address address, String portrait, Card card, List<Notification> notifications)
         {
-            NewsInfos = newsInfos;
             ReferredCount = referredCount;
             Identity = identity;
             Address = address;

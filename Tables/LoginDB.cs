@@ -43,14 +43,6 @@ namespace HeroServer
                 await conn.OpenAsync();
                 using (SqlDataReader reader = await command.ExecuteReaderAsync())
                 {
-                    List<NewsInfo> newsInfos = [];
-                    while (await reader.ReadAsync())
-                    {
-                        News news = NewsDB.GetNews(reader);
-                        newsInfos.Add(new NewsInfo(news, null));
-                    }
-                    loginAppInfo.NewsInfos = newsInfos;
-
                     reader.NextResult();
                     ReferredCount referredCount = new ReferredCount();
                     if (await reader.ReadAsync())

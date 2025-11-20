@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace HeroServer
 {
@@ -22,7 +21,9 @@ namespace HeroServer
         {
         }
 
-        public Phone(long id, long countryId, String number, String countryCode, String callerName, String carrierCountryCode, String carrierNetworkCode, String carrierName, String carrierType, DateTime createDateTime, DateTime updateDateTime, int status)
+        public Phone(long id, long countryId, String number, String countryCode, String callerName, String carrierCountryCode,
+                     String carrierNetworkCode, String carrierName, String carrierType, DateTime createDateTime,
+                     DateTime updateDateTime, int status)
         {
             Id = id;
             CountryId = countryId;

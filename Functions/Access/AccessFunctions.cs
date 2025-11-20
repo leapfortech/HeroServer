@@ -118,12 +118,6 @@ namespace HeroServer
             LoginAppInfo loginAppInfo = await new LoginDB().GetLoginAppInfo(appUserId, webSysUserId, DateTime.Now, DateTime.Now.AddDays(30));
             loginAppInfo.Portrait = await IdentityFunctions.GetPortraitByAppUserId(appUserId);
 
-            for (int i = 0; i < loginAppInfo.NewsInfos.Count; i++)
-            {
-                byte[] newsImg = await StorageFunctions.ReadFile("news", $"news{loginAppInfo.NewsInfos[i].News.Id:D08}", "jpg");
-                loginAppInfo.NewsInfos[i].Image = Convert.ToBase64String(newsImg);
-            }
-
             return loginAppInfo;
         }
 
