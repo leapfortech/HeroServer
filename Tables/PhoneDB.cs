@@ -107,7 +107,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid());
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('P'));
             DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, phone.CountryId);
             DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, phone.Number);
             DBHelper.AddParam(command, "@CountryCode", SqlDbType.VarChar, phone.CountryCode);

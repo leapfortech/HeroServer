@@ -102,7 +102,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid());
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('N'));
             DBHelper.AddParam(command, "@Title", SqlDbType.VarChar, news.Title);
             DBHelper.AddParam(command, "@Description", SqlDbType.VarChar, news.Description);
             DBHelper.AddParam(command, "@Link", SqlDbType.VarChar, news.Link);

@@ -10,10 +10,20 @@ namespace HeroServer
     public static class SecurityFunctions
     {
 
-        public static long GetUid()
+        public static long GetUid(char type)
         {
-            long uid = -1;
-            return (uid);
+            DateTime dt = DateTime.Now;
+            long uid = 0;
+            uid += (uid << 8) + type;
+            uid += (uid << 7) + (dt.Year - 2000L) & 0x7F;
+            uid += (uid << 4) + dt.Month;
+            uid += (uid << 5) + dt.Day;
+            uid += (uid << 5) + dt.Hour;
+            uid += (uid << 6) + dt.Minute;
+            uid += (uid << 6) + dt.Second;
+            uid += (uid << 10) + dt.Millisecond;
+            uid += (uid << 13) + new Random(dt.Millisecond).Next(0, 16383);
+            return uid;
         }
 
 

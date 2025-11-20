@@ -311,7 +311,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid());
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('I'));
             DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, identity.AppUserId);
             DBHelper.AddParam(command, "@FirstName1", SqlDbType.VarChar, identity.FirstName1);
             DBHelper.AddParam(command, "@FirstName2", SqlDbType.VarChar, identity.FirstName2);
