@@ -21,7 +21,7 @@ namespace HeroServer.Controllers
         // GET services/GetUid?type=A
         [HttpGet("GetUid")]
         [AllowAnonymous]
-        public ActionResult<long> StartApp([FromQuery]String type)
+        public ActionResult<long> GetUid([FromQuery]String type)
         {
             try
             {

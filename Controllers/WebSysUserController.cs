@@ -30,7 +30,7 @@ namespace HeroServer.Controllers
         //[HttpGet("ById")]
         //public async Task<ActionResult<WebSysUser>> GetById([FromQuery]String id)
         //{
-        //    return Ok(await new WebSysUserDB().GetById(Convert.ToInt32(id)));
+        //    return Ok(await new WebSysUserDB().GetById(Convert.ToInt64(id)));
         //}
 
         // POST services/websysuser

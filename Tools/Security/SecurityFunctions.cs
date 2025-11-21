@@ -15,17 +15,17 @@ namespace HeroServer
             DateTime dt = DateTime.Now;
             Random rnd = new Random(dt.Millisecond);
             long uid = 0;
-            uid += (uid << 6) + rnd.Next(0, 63);
-            uid += (uid << 7) + (dt.Year - 2000L) & 0x7F;
+            uid += (uid << 5) + rnd.Next(0, 31);
+            uid += (uid << 7) + ((dt.Year - 2000L) & 0x7F);
             uid += (uid << 6) + dt.Second;
             uid += (uid << 4) + dt.Month;
             uid += (uid << 10) + dt.Millisecond;
             uid += (uid << 6) + dt.Minute;
             uid += (uid << 5) + dt.Day;
-            uid += (uid << 3) + rnd.Next(0, 15);
+            uid += (uid << 3) + rnd.Next(0, 7);
             uid += (uid << 5) + dt.Hour;
             uid += (uid << 8) + type;
-            uid += (uid << 4) + rnd.Next(0, 31);
+            uid += (uid << 4) + rnd.Next(0, 15);
             return uid;
         }
 
