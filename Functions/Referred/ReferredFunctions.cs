@@ -39,7 +39,7 @@ namespace HeroServer
             return await new ReferredDB().GetAppUserIdById(id);
         }
 
-        public static async Task<long> Validate(long id)   // JAD : Remove
+        public static async Task<int> Validate(long id)   // JAD : Remove
         {
             return await new ReferredDB().GetById(id) == null ? 0 : 1;
         }

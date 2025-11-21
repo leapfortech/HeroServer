@@ -110,15 +110,13 @@ namespace HeroServer
             return await new AppUserDB().UpdateStatus(id, status);
         }
 
-        public static async Task<long> UpdateReferred(long id, String referredCode)
+        public static async Task<long> UpdateReferred(long id, long referredId)
         {
             Referred referred = null;
             
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                if (referredCode != null && referredCode.Length > 0)
-                    referred = await ReferredFunctions.GetById(id);
-
+                   referred = await ReferredFunctions.GetById(referredId);
                    await new AppUserDB().UpdateReferredAppUserId(id, referred != null ? referred.AppUserId : -1);
 
                 scope.Complete();
