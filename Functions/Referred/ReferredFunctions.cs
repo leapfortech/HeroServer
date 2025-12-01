@@ -45,16 +45,21 @@ namespace HeroServer
         }
 
         // REGISTER
-        public static async Task<long> Register(Referred referred, ILogger logger)
+        public static async Task<long> Register(RegisterReferredRequest registerReferredRequest, ILogger logger)
         {
+            Referred referred = new Referred();
+
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                referred.Status = 1;
+                registerReferredRequest.Identity.Status = 1;
+                long identityId = await new IdentityDB().Add(registerReferredRequest.Identity);
 
+                referred.AppUserId = registerReferredRequest.AppUserId;
+                referred.IdentityId = identityId;
+                referred.Status = 1;
                 referred.Id = await new ReferredDB().Add(referred);
 
-                String email = await new IdentityDB().GetEmailById(referred.IdentityId, 1);
-                if (email != null)
+                if (registerReferredRequest.Identity.Email != null)
                     await SendEmail(referred, logger);
 
                 scope.Complete();

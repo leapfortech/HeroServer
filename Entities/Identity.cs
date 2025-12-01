@@ -5,7 +5,7 @@ namespace HeroServer
     public class Identity
     {
         public long Id { get; set; }
-         public String FirstName1 { get; set; }
+        public String FirstName1 { get; set; }
         public String FirstName2 { get; set; }
         public String LastName1 { get; set; }
         public String LastName2 { get; set; }

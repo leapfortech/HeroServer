@@ -6,34 +6,32 @@ using System.Threading.Tasks;
 
 namespace HeroServer
 {
-    public class NewsDB
+    public class ContactDB
     {
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
-        readonly String table = "[D-News]";
+        readonly String table = "[D-Contact]";
 
-        private static News GetNews(SqlDataReader reader)
+        private static Contact GetContact(SqlDataReader reader)
         {
-            return new News(Convert.ToInt64(reader["Id"]),
-                            Convert.ToInt64(reader["PostId"]),
-                            Convert.ToInt64(reader["NewsTypeId"]),
-                            Convert.ToInt64(reader["OriginCountryId"]),
-                            Convert.ToInt64(reader["OriginStateId"]),
-                            reader["Source"].ToString(),
-                            reader["Url"].ToString(),
-                            reader["DateTime"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(reader["DateTime"]),
-                            Convert.ToDateTime(reader["CreateDateTime"]),
-                            Convert.ToDateTime(reader["UpdateDateTime"]),
-                            Convert.ToInt32(reader["Status"]));
+            return new Contact(Convert.ToInt64(reader["Id"]),
+                              Convert.ToInt64(reader["ProductId"]),
+                              reader["Name"].ToString(),
+                              Convert.ToInt64(reader["PhoneCountryId"]),
+                              reader["Phone"].ToString(),
+                              reader["Email"].ToString(),
+                              Convert.ToDateTime(reader["CreateDateTime"]),
+                              Convert.ToDateTime(reader["UpdateDateTime"]),
+                              Convert.ToInt32(reader["Status"]));
         }
 
         // GET
-        public async Task<IEnumerable<News>> GetAll()
+        public async Task<IEnumerable<Contact>> GetAll()
         {
             String strCmd = $"SELECT * FROM {table}";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<News> newss = new List<News>();
+            List<Contact> contacts = new List<Contact>();
             using (conn)
             {
                 await conn.OpenAsync();
@@ -41,15 +39,15 @@ namespace HeroServer
                 {
                     while (await reader.ReadAsync())
                     {
-                         News news = GetNews(reader);
-                         newss.Add(news);
+                         Contact contact = GetContact(reader);
+                         contacts.Add(contact);
                     }
                 }
             }
-            return newss;
+            return contacts;
         }
 
-        public async Task<News> GetById(long id)
+        public async Task<Contact> GetById(long id)
         {
             String strCmd = $"SELECT * FROM {table} WHERE Id = @Id";
 
@@ -57,7 +55,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
-            News news = null;
+            Contact contact = null;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -65,33 +63,31 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                         news = GetNews(reader);
+                         contact = GetContact(reader);
                     }
                 }
             }
-            return news;
+            return contact;
         }
 
         // INSERT
-        public async Task<long> Add(News news)
+        public async Task<long> Add(Contact contact)
         {
-            String strCmd = $"INSERT INTO {table}(Id, PostId, NewsTypeId, OriginCountryId, OriginStateId, Source, Url, DateTime, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(Id, ProductId, Name, PhoneCountryId, Phone, Email, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @PostId, @NewsTypeId, @OriginCountryId, @OriginStateId, @Source, @Url, @DateTime, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@Id, @ProductId, @Name, @PhoneCountryId, @Phone, @Email, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('~'));
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, news.PostId);
-            DBHelper.AddParam(command, "@NewsTypeId", SqlDbType.BigInt, news.NewsTypeId);
-            DBHelper.AddParam(command, "@OriginCountryId", SqlDbType.BigInt, news.OriginCountryId);
-            DBHelper.AddParam(command, "@OriginStateId", SqlDbType.BigInt, news.OriginStateId);
-            DBHelper.AddParam(command, "@Source", SqlDbType.VarChar, news.Source);
-            DBHelper.AddParam(command, "@Url", SqlDbType.VarChar, news.Url);
-            DBHelper.AddParam(command, "@DateTime", SqlDbType.DateTime, news.DateTime);
+            DBHelper.AddParam(command, "@ProductId", SqlDbType.BigInt, contact.ProductId);
+            DBHelper.AddParam(command, "@Name", SqlDbType.VarChar, contact.Name);
+            DBHelper.AddParam(command, "@PhoneCountryId", SqlDbType.BigInt, contact.PhoneCountryId);
+            DBHelper.AddParam(command, "@Phone", SqlDbType.VarChar, contact.Phone);
+            DBHelper.AddParam(command, "@Email", SqlDbType.VarChar, contact.Email);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, news.Status);
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, contact.Status);
 
             using (conn)
             {
@@ -101,22 +97,20 @@ namespace HeroServer
         }
 
         // UPDATE
-        public async Task<bool> Update(News news)
+        public async Task<bool> Update(Contact contact)
         {
-            String strCmd = $"UPDATE {table} SET PostId = @PostId, NewsTypeId = @NewsTypeId, OriginCountryId = @OriginCountryId, OriginStateId = @OriginStateId, Source = @Source, Url = @Url, DateTime = @DateTime, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET ProductId = @ProductId, Name = @Name, PhoneCountryId = @PhoneCountryId, Phone = @Phone, Email = @Email, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, news.PostId);
-            DBHelper.AddParam(command, "@NewsTypeId", SqlDbType.BigInt, news.NewsTypeId);
-            DBHelper.AddParam(command, "@OriginCountryId", SqlDbType.BigInt, news.OriginCountryId);
-            DBHelper.AddParam(command, "@OriginStateId", SqlDbType.BigInt, news.OriginStateId);
-            DBHelper.AddParam(command, "@Source", SqlDbType.VarChar, news.Source);
-            DBHelper.AddParam(command, "@Url", SqlDbType.VarChar, news.Url);
-            DBHelper.AddParam(command, "@DateTime", SqlDbType.DateTime, news.DateTime);
+            DBHelper.AddParam(command, "@ProductId", SqlDbType.BigInt, contact.ProductId);
+            DBHelper.AddParam(command, "@Name", SqlDbType.VarChar, contact.Name);
+            DBHelper.AddParam(command, "@PhoneCountryId", SqlDbType.BigInt, contact.PhoneCountryId);
+            DBHelper.AddParam(command, "@Phone", SqlDbType.VarChar, contact.Phone);
+            DBHelper.AddParam(command, "@Email", SqlDbType.VarChar, contact.Email);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, news.Status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, news.Id);
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, contact.Status);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, contact.Id);
 
             using (conn)
             {

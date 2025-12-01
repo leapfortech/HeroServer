@@ -6,7 +6,6 @@ namespace HeroServer
     {
         public long Id { get; set; }
         public long PostId { get; set; }
-        public long RecipeTypeId { get; set; }
         public String Ingredients { get; set; }
         public String Preparation { get; set; }
         public String Usage { get; set; }
@@ -16,12 +15,11 @@ namespace HeroServer
 
         public Treatment() { }
 
-        public Treatment(long id, long postId, long recipeTypeId, String ingredients, String preparation,
+        public Treatment(long id, long postId, String ingredients, String preparation,
                          String usage, DateTime createDateTime, DateTime updateDateTime, int status)
         {
             Id = id;
             PostId = postId;
-            RecipeTypeId = recipeTypeId;
             Ingredients = ingredients;
             Preparation = preparation;
             Usage = usage;

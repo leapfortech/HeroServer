@@ -15,7 +15,6 @@ namespace HeroServer
         {
             return new Treatment(Convert.ToInt64(reader["Id"]),
                                  Convert.ToInt64(reader["PostId"]),
-                                 Convert.ToInt64(reader["RecipeTypeId"]),
                                  reader["Ingredients"].ToString(),
                                  reader["Preparation"].ToString(),
                                  reader["Usage"].ToString(),
@@ -73,15 +72,14 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(Treatment treatment)
         {
-            String strCmd = $"INSERT INTO {table}(Id, PostId, RecipeTypeId, Ingredients, Preparation, Usage, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(Id, PostId, Ingredients, Preparation, Usage, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @PostId, @RecipeTypeId, @Ingredients, @Preparation, @Usage, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@Id, @PostId, @Ingredients, @Preparation, @Usage, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('~'));
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, treatment.PostId);
-            DBHelper.AddParam(command, "@RecipeTypeId", SqlDbType.BigInt, treatment.RecipeTypeId);
             DBHelper.AddParam(command, "@Ingredients", SqlDbType.VarChar, treatment.Ingredients);
             DBHelper.AddParam(command, "@Preparation", SqlDbType.VarChar, treatment.Preparation);
             DBHelper.AddParam(command, "@Usage", SqlDbType.VarChar, treatment.Usage);
@@ -99,12 +97,11 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(Treatment treatment)
         {
-            String strCmd = $"UPDATE {table} SET PostId = @PostId, RecipeTypeId = @RecipeTypeId, Ingredients = @Ingredients, Preparation = @Preparation, Usage = @Usage, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET PostId = @PostId, Ingredients = @Ingredients, Preparation = @Preparation, Usage = @Usage, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, treatment.PostId);
-            DBHelper.AddParam(command, "@RecipeTypeId", SqlDbType.BigInt, treatment.RecipeTypeId);
             DBHelper.AddParam(command, "@Ingredients", SqlDbType.VarChar, treatment.Ingredients);
             DBHelper.AddParam(command, "@Preparation", SqlDbType.VarChar, treatment.Preparation);
             DBHelper.AddParam(command, "@Usage", SqlDbType.VarChar, treatment.Usage);

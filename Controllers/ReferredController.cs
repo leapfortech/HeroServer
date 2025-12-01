@@ -73,11 +73,11 @@ namespace HeroServer.Controllers
 
         // POST services/referred/register
         [HttpPost("Register")]
-        public async Task<ActionResult<String>> Register([FromBody] Referred referred)
+        public async Task<ActionResult<String>> Register([FromBody] RegisterReferredRequest registerReferredRequest)
         {
             try
             {
-                return Ok(await ReferredFunctions.Register(referred, wsLogger));
+                return Ok(await ReferredFunctions.Register(registerReferredRequest, wsLogger));
             }
             catch (Exception ex)
             {
