@@ -15,7 +15,7 @@ namespace HeroServer
         public String Summary { get; set; }
         public String Description { get; set; }
         public int ImageCount { get; set; }
-        public int LikesCount { get; set; }
+        public int LikeCount { get; set; }
         public DateTime PublicationDateTime { get; set; }
         public int PostStatus { get; set; }
 
@@ -26,7 +26,7 @@ namespace HeroServer
         public PostFull(long postId, long appUserId, String appUserAlias,
                         long postTypeId, long postSubtypeId, long postOriginCountryId, long postOriginStateId,
                         String title, String summary, String description,
-                        int imageCount, int likesCount, DateTime publicationDateTime, int postStatus)
+                        int imageCount, int likeCount, DateTime publicationDateTime, int postStatus)
         {
             PostId = postId;
             AppUserId = appUserId;
@@ -39,7 +39,7 @@ namespace HeroServer
             Summary = summary;
             Description = description;
             ImageCount = imageCount;
-            LikesCount = likesCount;
+            LikeCount = likeCount;
             PublicationDateTime = publicationDateTime;
             PostStatus = postStatus;
         }

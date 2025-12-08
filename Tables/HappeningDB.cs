@@ -43,7 +43,7 @@ namespace HeroServer
                                      reader["Summary"].ToString(),
                                      reader["Description"].ToString(),
                                      Convert.ToInt32(reader["ImageCount"]),
-                                     Convert.ToInt32(reader["LikesCount"]),
+                                     Convert.ToInt32(reader["LikeCount"]),
                                      Convert.ToDateTime(reader["PublicationDateTime"]),
                                      Convert.ToInt32(reader["PostStatus"]),
 
@@ -112,7 +112,7 @@ namespace HeroServer
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
                              " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
-                             " Post.ImageCount, Post.LikesCount, Post.PublicationDateTime, Post.PostStatus," +
+                             " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
                             $" {table}.EventTypeId, {table}.CountryId, {table}.StateId, {table}.StartDateTime, {table}.EndDateTime," +
                             $" {table}.Location, {table}.Latitude, {table}.Longitude, {table}.Status" +
                             $" FROM {table}" +
@@ -145,7 +145,7 @@ namespace HeroServer
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
                              " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
-                             " Post.ImageCount, Post.LikesCount, Post.PublicationDateTime, Post.PostStatus," +
+                             " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
                             $" {table}.EventTypeId, {table}.CountryId, {table}.StateId, {table}.StartDateTime, {table}.EndDateTime," +
                             $" {table}.Location, {table}.Latitude, {table}.Longitude, {table}.Status" +
                             $" FROM {table}" +
@@ -178,7 +178,7 @@ namespace HeroServer
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
                              " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
-                             " Post.ImageCount, Post.LikesCount, Post.PublicationDateTime, Post.PostStatus," +
+                             " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
                             $" {table}.EventTypeId, {table}.CountryId, {table}.StateId, {table}.StartDateTime, {table}.EndDateTime," +
                             $" {table}.Location, {table}.Latitude, {table}.Longitude, {table}.Status" +
                             $" FROM {table}" +

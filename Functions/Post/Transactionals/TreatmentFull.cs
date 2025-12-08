@@ -16,13 +16,13 @@ namespace HeroServer
         public TreatmentFull(long id, long postId, long appUserId, String appUserAlias,
                              long postTypeId, long postSubtypeId, long originCountryId, long originStateId,
                              String title, String summary, String description,
-                             int imageCount, int likesCount, DateTime publicationDateTime,
+                             int imageCount, int likeCount, DateTime publicationDateTime,
                              int postStatusId,
                              String ingredients, String preparation, String usage,
                              int status, List<DiseaseFull> diseaseFulls)
             : base(postId, appUserId, appUserAlias, postTypeId, postSubtypeId,
                    originCountryId, originStateId, title, summary, description,
-                   imageCount, likesCount, publicationDateTime, postStatusId)
+                   imageCount, likeCount, publicationDateTime, postStatusId)
         {
             Id = id;
             Ingredients = ingredients;

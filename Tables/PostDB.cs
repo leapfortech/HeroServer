@@ -23,7 +23,7 @@ namespace HeroServer
                             reader["Summary"].ToString(),
                             reader["Description"].ToString(),
                             Convert.ToInt32(reader["ImageCount"]),
-                            Convert.ToInt32(reader["LikesCount"]),
+                            Convert.ToInt32(reader["LikeCount"]),
                             Convert.ToDateTime(reader["PublicationDateTime"]),
                             reader["ApprovalDateTime"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(reader["ApprovalDateTime"]),
                             reader["ExpirationDateTime"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(reader["ExpirationDateTime"]),
@@ -45,7 +45,7 @@ namespace HeroServer
                                 reader["Summary"].ToString(),
                                 reader["Description"].ToString(),
                                 Convert.ToInt32(reader["ImageCount"]),
-                                Convert.ToInt32(reader["LikesCount"]),
+                                Convert.ToInt32(reader["LikeCount"]),
                                 Convert.ToDateTime(reader["PublicationDateTime"]),
                                 Convert.ToInt32(reader["PostStatus"]));
         }
@@ -100,9 +100,9 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(Post post)
         {
-            String strCmd = $"INSERT INTO {table}(Id, AppUserId, PostTypeId, PostSubtypeId, OriginCountryId, OriginStateId, Title, Summary, Description, ImageCount, LikesCount, PublicationDateTime, ApprovalDateTime, ExpirationDateTime, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(Id, AppUserId, PostTypeId, PostSubtypeId, OriginCountryId, OriginStateId, Title, Summary, Description, ImageCount, LikeCount, PublicationDateTime, ApprovalDateTime, ExpirationDateTime, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @AppUserId, @PostTypeId, @PostSubtypeId, @OriginCountryId, @OriginStateId, @Title, @Summary, @Description, @ImageCount, @LikesCount, @PublicationDateTime, @ApprovalDateTime, @ExpirationDateTime, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@Id, @AppUserId, @PostTypeId, @PostSubtypeId, @OriginCountryId, @OriginStateId, @Title, @Summary, @Description, @ImageCount, @LikeCount, @PublicationDateTime, @ApprovalDateTime, @ExpirationDateTime, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -116,7 +116,7 @@ namespace HeroServer
             DBHelper.AddParam(command, "@Summary", SqlDbType.VarChar, post.Summary);
             DBHelper.AddParam(command, "@Description", SqlDbType.VarChar, post.Description);
             DBHelper.AddParam(command, "@ImageCount", SqlDbType.Int, post.ImageCount);
-            DBHelper.AddParam(command, "@LikesCount", SqlDbType.Int, post.LikesCount);
+            DBHelper.AddParam(command, "@LikeCount", SqlDbType.Int, post.LikeCount);
             DBHelper.AddParam(command, "@PublicationDateTime", SqlDbType.DateTime, post.PublicationDateTime);
             DBHelper.AddParam(command, "@ApprovalDateTime", SqlDbType.DateTime, post.ApprovalDateTime);
             DBHelper.AddParam(command, "@ExpirationDateTime", SqlDbType.DateTime, post.ExpirationDateTime);
@@ -134,7 +134,7 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(Post post)
         {
-            String strCmd = $"UPDATE {table} SET AppUserId = @AppUserId, PostTypeId = @PostTypeId, PostSubtypeId = @PostSubtypeId, OriginCountryId = @OriginCountryId, OriginStateId = @OriginStateId, Title = @Title, Summary = @Summary, Description = @Description, ImageCount = @ImageCount, LikesCount = @LikesCount, PublicationDateTime = @PublicationDateTime, ApprovalDateTime = @ApprovalDateTime, ExpirationDateTime = @ExpirationDateTime, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET AppUserId = @AppUserId, PostTypeId = @PostTypeId, PostSubtypeId = @PostSubtypeId, OriginCountryId = @OriginCountryId, OriginStateId = @OriginStateId, Title = @Title, Summary = @Summary, Description = @Description, ImageCount = @ImageCount, LikeCount = @LikeCount, PublicationDateTime = @PublicationDateTime, ApprovalDateTime = @ApprovalDateTime, ExpirationDateTime = @ExpirationDateTime, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -147,7 +147,7 @@ namespace HeroServer
             DBHelper.AddParam(command, "@Summary", SqlDbType.VarChar, post.Summary);
             DBHelper.AddParam(command, "@Description", SqlDbType.VarChar, post.Description);
             DBHelper.AddParam(command, "@ImageCount", SqlDbType.Int, post.ImageCount);
-            DBHelper.AddParam(command, "@LikesCount", SqlDbType.Int, post.LikesCount);
+            DBHelper.AddParam(command, "@LikeCount", SqlDbType.Int, post.LikeCount);
             DBHelper.AddParam(command, "@PublicationDateTime", SqlDbType.DateTime, post.PublicationDateTime);
             DBHelper.AddParam(command, "@ApprovalDateTime", SqlDbType.DateTime, post.ApprovalDateTime);
             DBHelper.AddParam(command, "@ExpirationDateTime", SqlDbType.DateTime, post.ExpirationDateTime);

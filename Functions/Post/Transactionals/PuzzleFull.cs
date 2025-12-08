@@ -23,7 +23,7 @@ namespace HeroServer
                           long postTypeId, long postSubtypeId,
                           long postOriginCountryId, long postOriginStateId,
                           String title, String summary, String description,
-                          int imageCount, int likesCount, DateTime publicationDateTime,
+                          int imageCount, int likeCount, DateTime publicationDateTime,
                           int postStatus,
                           long puzzleTypeId, long puzzleSubtypeId,
                           String question, String hint,
@@ -33,7 +33,7 @@ namespace HeroServer
                           List<PuzzleCommentFull> puzzleCommentFulls)
             : base(postId, appUserId, appUserAlias, postTypeId, postSubtypeId,
                    postOriginCountryId, postOriginStateId, title, summary, description,
-                   imageCount, likesCount, publicationDateTime, postStatus)
+                   imageCount, likeCount, publicationDateTime, postStatus)
         {
             Id = id;
             PuzzleTypeId = puzzleTypeId;

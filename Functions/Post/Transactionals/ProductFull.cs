@@ -22,7 +22,7 @@ namespace HeroServer
                            long postTypeId, long postSubtypeId,
                            long postOriginCountryId, long postOriginStateId,
                            String title, String summary, String description,
-                           int imageCount, int likesCount, DateTime publicationDateTime,
+                           int imageCount, int likeCount, DateTime publicationDateTime,
                            int postStatus,
                            long originCountryId, long saleCountryId, long saleStateId,
                            long currencyId, double price, double discountPrice,
@@ -31,7 +31,7 @@ namespace HeroServer
                            List<ProductReviewFull> productReviewFulls)
             : base(postId, appUserId, appUserAlias, postTypeId, postSubtypeId,
                    postOriginCountryId, postOriginStateId, title, summary, description,
-                   imageCount, likesCount, publicationDateTime, postStatus)
+                   imageCount, likeCount, publicationDateTime, postStatus)
         {
             Id = id;
             OriginCountryId = originCountryId;
