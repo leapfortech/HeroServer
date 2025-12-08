@@ -28,6 +28,38 @@ namespace HeroServer
                                  Convert.ToInt32(reader["Status"]));
         }
 
+        public static HappeningFull GetHappeningFull(SqlDataReader reader)
+        {
+            return new HappeningFull(Convert.ToInt64(reader["Id"]),
+
+                                     Convert.ToInt64(reader["PostId"]),
+                                     Convert.ToInt64(reader["AppUserId"]),
+                                     reader["AppUserAlias"].ToString(),
+                                     Convert.ToInt64(reader["PostTypeId"]),
+                                     Convert.ToInt64(reader["PostSubtypeId"]),
+                                     Convert.ToInt64(reader["PostOriginCountryId"]),
+                                     Convert.ToInt64(reader["PostOriginStateId"]),
+                                     reader["Title"].ToString(),
+                                     reader["Summary"].ToString(),
+                                     reader["Description"].ToString(),
+                                     Convert.ToInt32(reader["ImageCount"]),
+                                     Convert.ToInt32(reader["LikesCount"]),
+                                     Convert.ToDateTime(reader["PublicationDateTime"]),
+                                     Convert.ToInt32(reader["PostStatus"]),
+
+                                     Convert.ToInt64(reader["EventTypeId"]),
+                                     Convert.ToInt64(reader["CountryId"]),
+                                     Convert.ToInt64(reader["StateId"]),
+                                     reader["StartDateTime"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["StartDateTime"]),
+                                     reader["EndDateTime"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["EndDateTime"]),
+                                     reader["Location"].ToString(),
+                                     reader["Latitude"] == DBNull.Value ? (double?)null : Convert.ToDouble(reader["Latitude"]),
+                                     reader["Longitude"] == DBNull.Value ? (double?)null : Convert.ToDouble(reader["Longitude"]),
+                                      
+                                     Convert.ToInt32(reader["Status"]));
+        }
+
+
         // GET
         public async Task<IEnumerable<Happening>> GetAll()
         {
@@ -72,6 +104,113 @@ namespace HeroServer
                 }
             }
             return happening;
+        }
+
+        // GET FULL
+        public async Task<HappeningFull> GetFullById(long id)
+        {
+            String strCmd = $"SELECT {table}.Id, {table}.PostId," +
+                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
+                             " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.ImageCount, Post.LikesCount, Post.PublicationDateTime, Post.PostStatus," +
+                            $" {table}.EventTypeId, {table}.CountryId, {table}.StateId, {table}.StartDateTime, {table}.EndDateTime," +
+                            $" {table}.Location, {table}.Latitude, {table}.Longitude, {table}.Status" +
+                            $" FROM {table}" +
+                            $" INNER JOIN Post ON ({table}.PostId = Post.PostId)" +
+                            $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
+                            $" WHERE {table}.Id = @Id;";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+
+            HappeningFull happeningFull = null;
+            using (conn)
+            {
+                await conn.OpenAsync();
+
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (!await reader.ReadAsync())
+                        return null;
+
+                    happeningFull = GetHappeningFull(reader);
+                }
+            }
+
+            return happeningFull;
+        }
+
+        public async Task<HappeningFull> GetFullByPostId(long postId)
+        {
+            String strCmd = $"SELECT {table}.Id, {table}.PostId," +
+                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
+                             " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.ImageCount, Post.LikesCount, Post.PublicationDateTime, Post.PostStatus," +
+                            $" {table}.EventTypeId, {table}.CountryId, {table}.StateId, {table}.StartDateTime, {table}.EndDateTime," +
+                            $" {table}.Location, {table}.Latitude, {table}.Longitude, {table}.Status" +
+                            $" FROM {table}" +
+                            $" INNER JOIN Post ON ({table}.PostId = Post.PostId)" +
+                            $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
+                            $" WHERE {table}.PostId = @PostId;";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+
+            HappeningFull happeningFull = null;
+            using (conn)
+            {
+                await conn.OpenAsync();
+
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (!await reader.ReadAsync())
+                        return null;
+
+                    happeningFull = GetHappeningFull(reader);
+                }
+            }
+
+            return happeningFull;
+        }
+
+        public async Task<List<HappeningFull>> GetFullsByStatus(int status)
+        {
+            String strCmd = $"SELECT {table}.Id, {table}.PostId," +
+                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
+                             " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.ImageCount, Post.LikesCount, Post.PublicationDateTime, Post.PostStatus," +
+                            $" {table}.EventTypeId, {table}.CountryId, {table}.StateId, {table}.StartDateTime, {table}.EndDateTime," +
+                            $" {table}.Location, {table}.Latitude, {table}.Longitude, {table}.Status" +
+                            $" FROM {table}" +
+                            $" INNER JOIN Post ON ({table}.PostId = Post.PostId)" +
+                            $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)";
+
+            if (status != -1)
+                strCmd += $" WHERE {table}.Status = @Status;";
+            else
+                strCmd += ";";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            if (status != -1)
+                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+
+            List<HappeningFull> happeningFulls = [];
+            using (conn)
+            {
+                await conn.OpenAsync();
+
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        HappeningFull happeningFull = GetHappeningFull(reader);
+                        happeningFulls.Add(happeningFull);
+                    }
+                }
+            }
+
+            return happeningFulls;
         }
 
         // INSERT

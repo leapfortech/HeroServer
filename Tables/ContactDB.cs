@@ -14,14 +14,23 @@ namespace HeroServer
         private static Contact GetContact(SqlDataReader reader)
         {
             return new Contact(Convert.ToInt64(reader["Id"]),
-                              Convert.ToInt64(reader["ProductId"]),
-                              reader["Name"].ToString(),
-                              Convert.ToInt64(reader["PhoneCountryId"]),
-                              reader["Phone"].ToString(),
-                              reader["Email"].ToString(),
-                              Convert.ToDateTime(reader["CreateDateTime"]),
-                              Convert.ToDateTime(reader["UpdateDateTime"]),
-                              Convert.ToInt32(reader["Status"]));
+                               Convert.ToInt64(reader["ProductId"]),
+                               reader["Name"].ToString(),
+                               Convert.ToInt64(reader["PhoneCountryId"]),
+                               reader["Phone"].ToString(),
+                               reader["Email"].ToString(),
+                               Convert.ToDateTime(reader["CreateDateTime"]),
+                               Convert.ToDateTime(reader["UpdateDateTime"]),
+                               Convert.ToInt32(reader["Status"]));
+        }
+
+        public static ContactFull GetContactFull(SqlDataReader reader)
+        {
+            return new ContactFull(Convert.ToInt64(reader["Id"]),
+                                   reader["Name"].ToString(),
+                                   Convert.ToInt64(reader["PhoneCountryId"]),
+                                   reader["Phone"].ToString(),
+                                   reader["Email"].ToString());
         }
 
         // GET

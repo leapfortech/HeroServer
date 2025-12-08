@@ -23,6 +23,16 @@ namespace HeroServer
                                      Convert.ToInt32(reader["Status"]));
         }
 
+        public static ProductReviewFull GetProductReviewFull(SqlDataReader reader)
+        {
+            return new ProductReviewFull(Convert.ToInt64(reader["Id"]),
+                                         Convert.ToInt64(reader["AppUserId"]),
+                                         reader["AppUserAlias"].ToString(),
+                                         Convert.ToInt32(reader["Rating"]),
+                                         reader["Description"].ToString(),
+                                         Convert.ToInt32(reader["Status"]));
+        }
+
         // GET
         public async Task<IEnumerable<ProductReview>> GetAll()
         {

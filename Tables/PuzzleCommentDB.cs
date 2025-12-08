@@ -22,6 +22,16 @@ namespace HeroServer
                                      Convert.ToInt32(reader["Status"]));
         }
 
+        public static PuzzleCommentFull GetPuzzleCommentFull(SqlDataReader reader)
+        {
+            return new PuzzleCommentFull(Convert.ToInt64(reader["Id"]),
+                                         Convert.ToInt64(reader["AppUserId"]),
+                                         reader["AppUserAlias"].ToString(),
+                                         reader["Comment"].ToString(),
+                                         Convert.ToDateTime(reader["UpdateDateTime"]),
+                                         Convert.ToInt32(reader["Status"]));
+        }
+
         // GET
         public async Task<IEnumerable<PuzzleComment>> GetAll()
         {

@@ -32,6 +32,25 @@ namespace HeroServer
                             Convert.ToInt32(reader["Status"]));
         }
 
+        public static PostFull GetPostFull(SqlDataReader reader)
+        {
+            return new PostFull(Convert.ToInt64(reader["PostId"]),
+                                Convert.ToInt64(reader["AppUserId"]),
+                                reader["AppUserAlias"].ToString(),
+                                Convert.ToInt64(reader["PostTypeId"]),
+                                Convert.ToInt64(reader["PostSubtypeId"]),
+                                Convert.ToInt64(reader["PostOriginCountryId"]),
+                                Convert.ToInt64(reader["PostOriginStateId"]),
+                                reader["Title"].ToString(),
+                                reader["Summary"].ToString(),
+                                reader["Description"].ToString(),
+                                Convert.ToInt32(reader["ImageCount"]),
+                                Convert.ToInt32(reader["LikesCount"]),
+                                Convert.ToDateTime(reader["PublicationDateTime"]),
+                                Convert.ToInt32(reader["PostStatus"]));
+        }
+
+
         // GET
         public async Task<IEnumerable<Post>> GetAll()
         {

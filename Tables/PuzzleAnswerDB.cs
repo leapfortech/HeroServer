@@ -20,6 +20,14 @@ namespace HeroServer
                                     Convert.ToDateTime(reader["CreateDateTime"]));
         }
 
+        public static PuzzleAnswerFull GetPuzzleAnswerFull(SqlDataReader reader)
+        {
+            return new PuzzleAnswerFull(Convert.ToInt64(reader["Id"]),
+                                        reader["Description"].ToString(),
+                                        Convert.ToInt32(reader["IsCorrect"]),
+                                        Convert.ToDateTime(reader["UpdateDateTime"]));
+        }
+
         // GET
         public async Task<IEnumerable<PuzzleAnswer>> GetAll()
         {

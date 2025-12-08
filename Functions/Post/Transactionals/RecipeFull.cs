@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HpbServer
+namespace HeroServer
 {
     public class RecipeFull : PostFull
     {

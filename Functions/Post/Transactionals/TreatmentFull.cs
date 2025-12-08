@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HpbServer
+namespace HeroServer
 {
     public class TreatmentFull : PostFull
     {

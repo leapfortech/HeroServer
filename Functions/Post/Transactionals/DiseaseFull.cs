@@ -1,4 +1,4 @@
-﻿namespace HpbServer
+﻿namespace HeroServer
 {
     public class DiseaseFull
     {

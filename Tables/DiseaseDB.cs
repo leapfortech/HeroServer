@@ -21,6 +21,13 @@ namespace HeroServer
                                Convert.ToInt32(reader["Status"]));
         }
 
+        public static DiseaseFull GetDiseaseFull(SqlDataReader reader)
+        {
+            return new DiseaseFull(Convert.ToInt64(reader["Id"]),
+                                   Convert.ToInt64(reader["DiseaseTypeId"]),
+                                   Convert.ToInt32(reader["Status"]));
+        }
+
         // GET
         public async Task<IEnumerable<Disease>> GetAll()
         {
