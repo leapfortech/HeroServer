@@ -27,10 +27,9 @@ namespace HeroServer
                                 Convert.ToInt64(reader["PostId"]),
                                 Convert.ToInt64(reader["AppUserId"]),
                                 reader["AppUserAlias"].ToString(),
-                                Convert.ToInt64(reader["PostTypeId"]),
                                 Convert.ToInt64(reader["PostSubtypeId"]),
-                                Convert.ToInt64(reader["PostOriginCountryId"]),
-                                Convert.ToInt64(reader["PostOriginStateId"]),
+                                Convert.ToInt64(reader["PostCountryId"]),
+                                Convert.ToInt64(reader["PostStateId"]),
                                 reader["Title"].ToString(),
                                 reader["Summary"].ToString(),
                                 reader["Description"].ToString(),
@@ -93,8 +92,8 @@ namespace HeroServer
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias," +
-                             " Post.PostTypeId, Post.PostSubtypeId," +
-                             " Post.PostOriginCountryId, Post.PostOriginStateId," +
+                             " Post.PostSubtypeId," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId," +
                              " Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
                             $" {table}.Status" +
@@ -127,8 +126,8 @@ namespace HeroServer
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                             " Post.AppUserId, AppUser.Alias AS AppUserAlias," +
-                            " Post.PostTypeId, Post.PostSubtypeId," +
-                            " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
+                            " Post.PostSubtypeId," +
+                            " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                             " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
                             $" {table}.Status" +
                             $" FROM {table}" +
@@ -159,8 +158,8 @@ namespace HeroServer
         public async Task<List<TaleFull>> GetFullsByStatus(int status)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
-                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
-                             " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostSubtypeId," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
                             $" {table}.Status" +
                             $" FROM {table}" +

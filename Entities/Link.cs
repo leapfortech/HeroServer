@@ -1,24 +1,25 @@
 using System;
-using System.Collections.Generic;
 
 namespace HeroServer
 {
-    public class Contact
+    public class Link
     {
         public long Id { get; set; }
+        public long LinkTypeId { get; set; }
         public long PostId { get; set; }
-        public String Name { get; set; }
+        public String Url { get; set; }
         public DateTime CreateDateTime { get; set; }
         public DateTime UpdateDateTime { get; set; }
         public int Status { get; set; }
 
-        public Contact() { }
+        public Link() { }
 
-        public Contact(long id, long postId, String name, DateTime createDateTime, DateTime updateDateTime, int status)
+        public Link(long id, long linkTypeId, long postId, String url, DateTime createDateTime, DateTime updateDateTime, int status)
         {
             Id = id;
+            LinkTypeId = linkTypeId;
             PostId = postId;
-            Name = name;
+            Url = url;
             CreateDateTime = createDateTime;
             UpdateDateTime = updateDateTime;
             Status = status;

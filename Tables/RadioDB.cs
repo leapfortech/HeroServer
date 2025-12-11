@@ -15,7 +15,6 @@ namespace HeroServer
         {
             return new Radio(Convert.ToInt64(reader["Id"]),
                              Convert.ToInt64(reader["PostId"]),
-                             reader["Link"].ToString(),
                              Convert.ToDateTime(reader["CreateDateTime"]),
                              Convert.ToDateTime(reader["UpdateDateTime"]),
                              Convert.ToInt32(reader["Status"]));
@@ -28,10 +27,9 @@ namespace HeroServer
                                 Convert.ToInt64(reader["PostId"]),
                                 Convert.ToInt64(reader["AppUserId"]),
                                 reader["AppUserAlias"].ToString(),
-                                Convert.ToInt64(reader["PostTypeId"]),
                                 Convert.ToInt64(reader["PostSubtypeId"]),
-                                Convert.ToInt64(reader["PostOriginCountryId"]),
-                                Convert.ToInt64(reader["PostOriginStateId"]),
+                                Convert.ToInt64(reader["PostCountryId"]),
+                                Convert.ToInt64(reader["PostStateId"]),
                                 reader["Title"].ToString(),
                                 reader["Summary"].ToString(),
                                 reader["Description"].ToString(),
@@ -40,7 +38,6 @@ namespace HeroServer
                                 Convert.ToDateTime(reader["PublicationDateTime"]),
                                 Convert.ToInt32(reader["PostStatus"]),
 
-                                reader["Link"].ToString(),
                                 Convert.ToInt32(reader["Status"]));
         }
 
@@ -95,10 +92,10 @@ namespace HeroServer
         public async Task<RadioFull> GetFullById(long id)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
-                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
-                             " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostSubtypeId," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
-                            $" {table}.Link, {table}.Status" +
+                            $" {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN Post ON ({table}.PostId = Post.PostId)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
@@ -127,10 +124,10 @@ namespace HeroServer
         public async Task<RadioFull> GetFullByPostId(long postId)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
-                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
-                             " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostSubtypeId," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
-                            $" {table}.Link, {table}.Status" +
+                            $" {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN Post ON ({table}.PostId = Post.PostId)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
@@ -159,10 +156,10 @@ namespace HeroServer
         public async Task<List<RadioFull>> GetFullsByStatus(int status)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
-                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
-                             " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostSubtypeId," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
-                            $" {table}.Link, {table}.Status" +
+                            $" {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN Post ON ({table}.PostId = Post.PostId)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)";
@@ -198,15 +195,14 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(Radio radio)
         {
-            String strCmd = $"INSERT INTO {table}(Id, PostId, Link, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(Id, PostId, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @PostId, @Link, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@Id, @PostId, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('~'));
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, radio.PostId);
-            DBHelper.AddParam(command, "@Link", SqlDbType.VarChar, radio.Link);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, radio.Status);
@@ -221,12 +217,11 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(Radio radio)
         {
-            String strCmd = $"UPDATE {table} SET PostId = @PostId, Link = @Link, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET PostId = @PostId, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, radio.PostId);
-            DBHelper.AddParam(command, "@Link", SqlDbType.VarChar, radio.Link);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, radio.Status);
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, radio.Id);

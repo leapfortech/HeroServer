@@ -6,29 +6,27 @@ using System.Threading.Tasks;
 
 namespace HeroServer
 {
-    public class PuzzlePlayerDB
+    public class RadioListenDB
     {
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
-        readonly String table = "[J-PuzzlePlayer]";
+        readonly String table = "[J-RadioListen]";
 
-        private static PuzzlePlayer GetPuzzlePlayer(SqlDataReader reader)
+        private static RadioListen GetRadioListen(SqlDataReader reader)
         {
-            return new PuzzlePlayer(Convert.ToInt64(reader["Id"]),
-                                    Convert.ToInt64(reader["PlayerId"]),
-                                    Convert.ToInt64(reader["PuzzleId"]),
-                                    Convert.ToInt32(reader["IsGuessed"]),
-                                    reader["AttemptDateTime"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(reader["AttemptDateTime"]),
-                                    Convert.ToDateTime(reader["CreateDateTime"]));
+            return new RadioListen(Convert.ToInt64(reader["Id"]),
+                                   Convert.ToInt64(reader["RadioId"]),
+                                   Convert.ToInt64(reader["AppUserId"]),
+                                   Convert.ToDateTime(reader["CreateDateTime"]));
         }
 
         // GET
-        public async Task<IEnumerable<PuzzlePlayer>> GetAll()
+        public async Task<IEnumerable<RadioListen>> GetAll()
         {
             String strCmd = $"SELECT * FROM {table}";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<PuzzlePlayer> puzzlePlayers = new List<PuzzlePlayer>();
+            List<RadioListen> radioListens = new List<RadioListen>();
             using (conn)
             {
                 await conn.OpenAsync();
@@ -36,24 +34,48 @@ namespace HeroServer
                 {
                     while (await reader.ReadAsync())
                     {
-                         PuzzlePlayer puzzlePlayer = GetPuzzlePlayer(reader);
-                         puzzlePlayers.Add(puzzlePlayer);
+                         RadioListen radioListen = GetRadioListen(reader);
+                         radioListens.Add(radioListen);
                     }
                 }
             }
-            return puzzlePlayers;
+            return radioListens;
         }
 
-        public async Task<PuzzlePlayer> GetById(long id, int status = 1)
+        public async Task<IEnumerable<RadioListen>> GetAllByRadioId(long radioId, int status = 1)
         {
-            String strCmd = $"SELECT * FROM {table} WHERE Id = @Id AND Status = @Status";
+            String strCmd = $"SELECT * FROM {table} WHERE RadioId = @RadioId AND Status = @Status";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioId);
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+
+            List<RadioListen> radioListens = new List<RadioListen>();
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        RadioListen radioListen = GetRadioListen(reader);
+                        radioListens.Add(radioListen);
+                    }
+                }
+            }
+            return radioListens;
+        }
+
+        public async Task<RadioListen> GetById(long id)
+        {
+            String strCmd = $"SELECT * FROM {table} WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
-            PuzzlePlayer puzzlePlayer = null;
+            RadioListen radioListen = null;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -61,23 +83,23 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                         puzzlePlayer = GetPuzzlePlayer(reader);
+                         radioListen = GetRadioListen(reader);
                     }
                 }
             }
-            return puzzlePlayer;
+            return radioListen;
         }
 
-        public async Task<PuzzlePlayer> GetByPlayerId(long playerId, int status = 1)
+        public async Task<RadioListen> GetByRadioId(long radioId, int status = 1)
         {
-            String strCmd = $"SELECT * FROM {table} WHERE PlayerId = @PlayerId AND Status = @Status";
+            String strCmd = $"SELECT * FROM {table} WHERE RadioId = @RadioId AND Status = @Status";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PlayerId", SqlDbType.BigInt, playerId);
+            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioId);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
-            PuzzlePlayer puzzlePlayer = null;
+            RadioListen radioListen = null;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -85,26 +107,26 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                        puzzlePlayer = GetPuzzlePlayer(reader);
+                        radioListen = GetRadioListen(reader);
                     }
                 }
             }
-            return puzzlePlayer;
+            return radioListen;
         }
 
-        public async Task<long> GetIdByPlayerId(long playerId, int status = 1)
+        public async Task<long> GetIdByRadioId(long radioId, int status = 1)
         {
-            String strCmd = $"SELECT Id FROM {table} WHERE PlayerId = @PlayerId";
+            String strCmd = $"SELECT Id FROM {table} WHERE RadioId = @RadioId";
             if (status != -1)
                 strCmd += " AND Status = @Status";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PlayerId", SqlDbType.BigInt, playerId);
+            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioId);
             if (status != -1)
                 DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
-            long puzzlePlayerId = -1;
+            long radioListenId = -1;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -112,26 +134,24 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                        puzzlePlayerId = Convert.ToInt64(reader["Id"]);
+                        radioListenId = Convert.ToInt64(reader["Id"]);
                     }
                 }
             }
-            return puzzlePlayerId;
+            return radioListenId;
         }
 
         // INSERT
-        public async Task<long> Add(PuzzlePlayer puzzlePlayer)
+        public async Task<long> Add(RadioListen radioListen)
         {
-            String strCmd = $"INSERT INTO {table}(PlayerId, PuzzleId, IsGuessed, AttemptDateTime, CreateDateTime)" + 
+            String strCmd = $"INSERT INTO {table}(RadioId, AppUserId, CreateDateTime)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@PlayerId, @PuzzleId, @IsGuessed, @AttemptDateTime, @CreateDateTime)";
+                            " VALUES (@RadioId, @AppUserId, @CreateDateTime)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PlayerId", SqlDbType.BigInt, puzzlePlayer.PlayerId);
-            DBHelper.AddParam(command, "@PuzzleId", SqlDbType.BigInt, puzzlePlayer.PuzzleId);
-            DBHelper.AddParam(command, "@IsGuessed", SqlDbType.Int, puzzlePlayer.IsGuessed);
-            DBHelper.AddParam(command, "@AttemptDateTime", SqlDbType.DateTime, puzzlePlayer.AttemptDateTime);
+            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioListen.RadioId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, radioListen.AppUserId);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
 
             using (conn)
@@ -142,17 +162,15 @@ namespace HeroServer
         }
 
         // UPDATE
-        public async Task<bool> Update(PuzzlePlayer puzzlePlayer)
+        public async Task<bool> Update(RadioListen radioListen)
         {
-            String strCmd = $"UPDATE {table} SET PlayerId = @PlayerId, PuzzleId = @PuzzleId, IsGuessed = @IsGuessed, AttemptDateTime = @AttemptDateTime WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET RadioId = @RadioId, AppUserId = @AppUserId WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PlayerId", SqlDbType.BigInt, puzzlePlayer.PlayerId);
-            DBHelper.AddParam(command, "@PuzzleId", SqlDbType.BigInt, puzzlePlayer.PuzzleId);
-            DBHelper.AddParam(command, "@IsGuessed", SqlDbType.Int, puzzlePlayer.IsGuessed);
-            DBHelper.AddParam(command, "@AttemptDateTime", SqlDbType.DateTime, puzzlePlayer.AttemptDateTime);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, puzzlePlayer.Id);
+            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioListen.RadioId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, radioListen.AppUserId);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, radioListen.Id);
 
             using (conn)
             {

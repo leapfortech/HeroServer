@@ -6,40 +6,40 @@ using System.Threading.Tasks;
 
 namespace HeroServer
 {
-    public class PuzzleCommentDB
+    public class CommentDB
     {
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
-        readonly String table = "[D-PuzzleComment]";
+        readonly String table = "[D-Comment]";
 
-        private static PuzzleComment GetPuzzleComment(SqlDataReader reader)
+        private static Comment GetComment(SqlDataReader reader)
         {
-            return new PuzzleComment(Convert.ToInt64(reader["Id"]),
-                                     Convert.ToInt64(reader["PuzzleId"]),
-                                     Convert.ToInt64(reader["AppUserId"]),
-                                     reader["Comment"].ToString(),
-                                     Convert.ToDateTime(reader["CreateDateTime"]),
-                                     Convert.ToDateTime(reader["UpdateDateTime"]),
-                                     Convert.ToInt32(reader["Status"]));
+            return new Comment(Convert.ToInt64(reader["Id"]),
+                               Convert.ToInt64(reader["PostId"]),
+                               Convert.ToInt64(reader["AppUserId"]),
+                               reader["Message"].ToString(),
+                               Convert.ToDateTime(reader["CreateDateTime"]),
+                               Convert.ToDateTime(reader["UpdateDateTime"]),
+                               Convert.ToInt32(reader["Status"]));
         }
 
-        public static PuzzleCommentFull GetPuzzleCommentFull(SqlDataReader reader)
+        public static CommentFull GetCommentFull(SqlDataReader reader)
         {
-            return new PuzzleCommentFull(Convert.ToInt64(reader["Id"]),
-                                         Convert.ToInt64(reader["AppUserId"]),
-                                         reader["AppUserAlias"].ToString(),
-                                         reader["Comment"].ToString(),
-                                         Convert.ToDateTime(reader["UpdateDateTime"]),
-                                         Convert.ToInt32(reader["Status"]));
+            return new CommentFull(Convert.ToInt64(reader["Id"]),
+                                   Convert.ToInt64(reader["AppUserId"]),
+                                   reader["AppUserAlias"].ToString(),
+                                   reader["Message"].ToString(),
+                                   Convert.ToDateTime(reader["UpdateDateTime"]),
+                                   Convert.ToInt32(reader["Status"]));
         }
 
         // GET
-        public async Task<IEnumerable<PuzzleComment>> GetAll()
+        public async Task<IEnumerable<Comment>> GetAll()
         {
             String strCmd = $"SELECT * FROM {table}";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<PuzzleComment> puzzleComments = new List<PuzzleComment>();
+            List<Comment> comments = new List<Comment>();
             using (conn)
             {
                 await conn.OpenAsync();
@@ -47,15 +47,15 @@ namespace HeroServer
                 {
                     while (await reader.ReadAsync())
                     {
-                         PuzzleComment puzzleComment = GetPuzzleComment(reader);
-                         puzzleComments.Add(puzzleComment);
+                         Comment comment = GetComment(reader);
+                         comments.Add(comment);
                     }
                 }
             }
-            return puzzleComments;
+            return comments;
         }
 
-        public async Task<PuzzleComment> GetById(long id)
+        public async Task<Comment> GetById(long id)
         {
             String strCmd = $"SELECT * FROM {table} WHERE Id = @Id";
 
@@ -63,7 +63,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
-            PuzzleComment puzzleComment = null;
+            Comment comment = null;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -71,28 +71,28 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                         puzzleComment = GetPuzzleComment(reader);
+                         comment = GetComment(reader);
                     }
                 }
             }
-            return puzzleComment;
+            return comment;
         }
 
         // INSERT
-        public async Task<long> Add(PuzzleComment puzzleComment)
+        public async Task<long> Add(Comment comment)
         {
-            String strCmd = $"INSERT INTO {table}(PuzzleId, AppUserId, Comment, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(PostId, AppUserId, Message, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@PuzzleId, @AppUserId, @Comment, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@PostId, @AppUserId, @Message, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PuzzleId", SqlDbType.BigInt, puzzleComment.PuzzleId);
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, puzzleComment.AppUserId);
-            DBHelper.AddParam(command, "@Comment", SqlDbType.VarChar, puzzleComment.Comment);
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, comment.PostId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, comment.AppUserId);
+            DBHelper.AddParam(command, "@Message", SqlDbType.VarChar, comment.Message);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, puzzleComment.Status);
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, comment.Status);
 
             using (conn)
             {
@@ -102,18 +102,18 @@ namespace HeroServer
         }
 
         // UPDATE
-        public async Task<bool> Update(PuzzleComment puzzleComment)
+        public async Task<bool> Update(Comment comment)
         {
-            String strCmd = $"UPDATE {table} SET PuzzleId = @PuzzleId, AppUserId = @AppUserId, Comment = @Comment, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET PostId = @PostId, AppUserId = @AppUserId, Message = @Message, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PuzzleId", SqlDbType.BigInt, puzzleComment.PuzzleId);
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, puzzleComment.AppUserId);
-            DBHelper.AddParam(command, "@Comment", SqlDbType.VarChar, puzzleComment.Comment);
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, comment.PostId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, comment.AppUserId);
+            DBHelper.AddParam(command, "@Message", SqlDbType.VarChar, comment.Message);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, puzzleComment.Status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, puzzleComment.Id);
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, comment.Status);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, comment.Id);
 
             using (conn)
             {

@@ -6,36 +6,29 @@ using System.Threading.Tasks;
 
 namespace HeroServer
 {
-    public class DiseaseDB
+    public class FavoriteDB
     {
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
-        readonly String table = "[J-Disease]";
+        readonly String table = "[J-Favorite]";
 
-        private static Disease GetDisease(SqlDataReader reader)
+        private static Favorite GetFavorite(SqlDataReader reader)
         {
-            return new Disease(Convert.ToInt64(reader["Id"]),
-                               Convert.ToInt64(reader["TreatmentId"]),
-                               Convert.ToInt64(reader["DiseaseTypeId"]),
-                               Convert.ToDateTime(reader["CreateDateTime"]),
-                               Convert.ToDateTime(reader["UpdateDateTime"]),
-                               Convert.ToInt32(reader["Status"]));
-        }
-
-        public static DiseaseFull GetDiseaseFull(SqlDataReader reader)
-        {
-            return new DiseaseFull(Convert.ToInt64(reader["Id"]),
-                                   Convert.ToInt64(reader["DiseaseTypeId"]),
-                                   Convert.ToInt32(reader["Status"]));
+            return new Favorite(Convert.ToInt64(reader["Id"]),
+                                Convert.ToInt64(reader["PostId"]),
+                                Convert.ToInt64(reader["AppUserId"]),
+                                Convert.ToDateTime(reader["CreateDateTime"]),
+                                Convert.ToDateTime(reader["UpdateDateTime"]),
+                                Convert.ToInt32(reader["Status"]));
         }
 
         // GET
-        public async Task<IEnumerable<Disease>> GetAll()
+        public async Task<IEnumerable<Favorite>> GetAll()
         {
             String strCmd = $"SELECT * FROM {table}";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<Disease> diseases = new List<Disease>();
+            List<Favorite> favorites = new List<Favorite>();
             using (conn)
             {
                 await conn.OpenAsync();
@@ -43,24 +36,24 @@ namespace HeroServer
                 {
                     while (await reader.ReadAsync())
                     {
-                         Disease disease = GetDisease(reader);
-                         diseases.Add(disease);
+                         Favorite favorite = GetFavorite(reader);
+                         favorites.Add(favorite);
                     }
                 }
             }
-            return diseases;
+            return favorites;
         }
 
-        public async Task<IEnumerable<Disease>> GetAllByTreatmentId(long treatmentId, int status = 1)
+        public async Task<IEnumerable<Favorite>> GetAllByPostId(long postId, int status = 1)
         {
-            String strCmd = $"SELECT * FROM {table} WHERE TreatmentId = @TreatmentId AND Status = @Status";
+            String strCmd = $"SELECT * FROM {table} WHERE PostId = @PostId AND Status = @Status";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@TreatmentId", SqlDbType.BigInt, treatmentId);
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
-            List<Disease> diseases = new List<Disease>();
+            List<Favorite> favorites = new List<Favorite>();
             using (conn)
             {
                 await conn.OpenAsync();
@@ -68,15 +61,15 @@ namespace HeroServer
                 {
                     while (await reader.ReadAsync())
                     {
-                        Disease disease = GetDisease(reader);
-                        diseases.Add(disease);
+                        Favorite favorite = GetFavorite(reader);
+                        favorites.Add(favorite);
                     }
                 }
             }
-            return diseases;
+            return favorites;
         }
 
-        public async Task<Disease> GetById(long id, int status = 1)
+        public async Task<Favorite> GetById(long id, int status = 1)
         {
             String strCmd = $"SELECT * FROM {table} WHERE Id = @Id AND Status = @Status";
 
@@ -85,7 +78,7 @@ namespace HeroServer
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
-            Disease disease = null;
+            Favorite favorite = null;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -93,23 +86,23 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                         disease = GetDisease(reader);
+                         favorite = GetFavorite(reader);
                     }
                 }
             }
-            return disease;
+            return favorite;
         }
 
-        public async Task<Treatment> GetByTreatmentId(long treatmentId, int status = 1)
+        public async Task<Favorite> GetByPostId(long postId, int status = 1)
         {
             String strCmd = $"SELECT * FROM {table} WHERE PostId = @PostId AND Status = @Status";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@TreatmentId", SqlDbType.BigInt, treatmentId);
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
-            Treatment treatment = null;
+            Favorite favorite = null;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -117,26 +110,26 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                        treatment = TreatmentDB.GetTreatment(reader);
+                        favorite = GetFavorite(reader);
                     }
                 }
             }
-            return treatment;
+            return favorite;
         }
 
-        public async Task<long> GetIdByTreatmentId(long treatmentId, int status = 1)
+        public async Task<long> GetIdByPostId(long postId, int status = 1)
         {
-            String strCmd = $"SELECT Id FROM {table} WHERE TreatmentId = @TreatmentId";
+            String strCmd = $"SELECT Id FROM {table} WHERE PostId = @PostId";
             if (status != -1)
                 strCmd += " AND Status = @Status";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@TreatmentId", SqlDbType.BigInt, treatmentId);
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
             if (status != -1)
                 DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
-            long diseaseId = -1;
+            long favoriteId = -1;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -144,27 +137,27 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                        diseaseId = Convert.ToInt64(reader["Id"]);
+                        favoriteId = Convert.ToInt64(reader["Id"]);
                     }
                 }
             }
-            return diseaseId;
+            return favoriteId;
         }
 
         // INSERT
-        public async Task<long> Add(Disease disease)
+        public async Task<long> Add(Favorite favorite)
         {
-            String strCmd = $"INSERT INTO {table}(TreatmentId, DiseaseTypeId, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(PostId, AppUserId, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@TreatmentId, @DiseaseTypeId, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@PostId, @AppUserId, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@TreatmentId", SqlDbType.BigInt, disease.TreatmentId);
-            DBHelper.AddParam(command, "@DiseaseTypeId", SqlDbType.BigInt, disease.DiseaseTypeId);
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, favorite.PostId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, favorite.AppUserId);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, disease.Status);
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, favorite.Status);
 
             using (conn)
             {
@@ -174,17 +167,17 @@ namespace HeroServer
         }
 
         // UPDATE
-        public async Task<bool> Update(Disease disease)
+        public async Task<bool> Update(Favorite favorite)
         {
-            String strCmd = $"UPDATE {table} SET TreatmentId = @TreatmentId, DiseaseTypeId = @DiseaseTypeId, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET PostId = @PostId, AppUserId = @AppUserId, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@TreatmentId", SqlDbType.BigInt, disease.TreatmentId);
-            DBHelper.AddParam(command, "@DiseaseTypeId", SqlDbType.BigInt, disease.DiseaseTypeId);
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, favorite.PostId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, favorite.AppUserId);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, disease.Status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, disease.Id);
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, favorite.Status);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, favorite.Id);
 
             using (conn)
             {
@@ -232,16 +225,16 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> UpdateStatusByTreatmentId(long treatmentId, int curStatus, int newStatus)
+        public async Task<bool> UpdateStatusByPostId(long postId, int curStatus, int newStatus)
         {
             String strCmd = $"UPDATE {table}" +
                             " SET UpdateDateTime = @UpdateDateTime, Status = @NewStatus" +
-                            " WHERE TreatmentId = @TreatmentId AND Status = @CurStatus";
+                            " WHERE PostId = @PostId AND Status = @CurStatus";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@TreatmentId", SqlDbType.BigInt, treatmentId);
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
             DBHelper.AddParam(command, "@CurStatus", SqlDbType.Int, curStatus);
             DBHelper.AddParam(command, "@NewStatus", SqlDbType.Int, newStatus);
 

@@ -18,6 +18,10 @@ namespace HeroServer
                                  Convert.ToInt64(reader["EventTypeId"]),
                                  Convert.ToInt64(reader["CountryId"]),
                                  Convert.ToInt64(reader["StateId"]),
+                                 Convert.ToInt32(reader["IsPublic"]),
+                                 Convert.ToInt32(reader["HasSignup"]),
+                                 Convert.ToInt32(reader["HasPayment"]),
+                                 reader["PaymentDetails"].ToString(),
                                  reader["StartDateTime"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(reader["StartDateTime"]),
                                  reader["EndDateTime"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(reader["EndDateTime"]),
                                  reader["Location"].ToString(),
@@ -35,10 +39,9 @@ namespace HeroServer
                                      Convert.ToInt64(reader["PostId"]),
                                      Convert.ToInt64(reader["AppUserId"]),
                                      reader["AppUserAlias"].ToString(),
-                                     Convert.ToInt64(reader["PostTypeId"]),
                                      Convert.ToInt64(reader["PostSubtypeId"]),
-                                     Convert.ToInt64(reader["PostOriginCountryId"]),
-                                     Convert.ToInt64(reader["PostOriginStateId"]),
+                                     Convert.ToInt64(reader["PostCountryId"]),
+                                     Convert.ToInt64(reader["PostStateId"]),
                                      reader["Title"].ToString(),
                                      reader["Summary"].ToString(),
                                      reader["Description"].ToString(),
@@ -50,6 +53,10 @@ namespace HeroServer
                                      Convert.ToInt64(reader["EventTypeId"]),
                                      Convert.ToInt64(reader["CountryId"]),
                                      Convert.ToInt64(reader["StateId"]),
+                                     Convert.ToInt32(reader["IsPublic"]),
+                                     Convert.ToInt32(reader["HasSignup"]),
+                                     Convert.ToInt32(reader["HasPayment"]),
+                                     reader["PaymentDetails"].ToString(),
                                      reader["StartDateTime"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["StartDateTime"]),
                                      reader["EndDateTime"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["EndDateTime"]),
                                      reader["Location"].ToString(),
@@ -110,10 +117,11 @@ namespace HeroServer
         public async Task<HappeningFull> GetFullById(long id)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
-                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
-                             " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostSubtypeId," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
-                            $" {table}.EventTypeId, {table}.CountryId, {table}.StateId, {table}.StartDateTime, {table}.EndDateTime," +
+                            $" {table}.EventTypeId, {table}.CountryId, {table}.StateId, {table}.IsPublic, {table}.HasSignup," + 
+                            $" {table}.HasPayment, {table}.PaymentDetails, {table}.StartDateTime, {table}.EndDateTime," +
                             $" {table}.Location, {table}.Latitude, {table}.Longitude, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN Post ON ({table}.PostId = Post.PostId)" +
@@ -143,10 +151,11 @@ namespace HeroServer
         public async Task<HappeningFull> GetFullByPostId(long postId)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
-                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
-                             " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostSubtypeId," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
-                            $" {table}.EventTypeId, {table}.CountryId, {table}.StateId, {table}.StartDateTime, {table}.EndDateTime," +
+                            $" {table}.EventTypeId, {table}.CountryId, {table}.StateId, {table}.IsPublic, {table}.HasSignup," +
+                            $" {table}.HasPayment, {table}.PaymentDetails, {table}.StartDateTime, {table}.EndDateTime," +
                             $" {table}.Location, {table}.Latitude, {table}.Longitude, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN Post ON ({table}.PostId = Post.PostId)" +
@@ -176,10 +185,11 @@ namespace HeroServer
         public async Task<List<HappeningFull>> GetFullsByStatus(int status)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
-                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
-                             " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostSubtypeId," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
-                            $" {table}.EventTypeId, {table}.CountryId, {table}.StateId, {table}.StartDateTime, {table}.EndDateTime," +
+                            $" {table}.EventTypeId, {table}.CountryId, {table}.StateId, {table}.IsPublic, {table}.HasSignup," + 
+                            $" {table}.HasPayment, {table}.PaymentDetails, {table}.StartDateTime, {table}.EndDateTime," +
                             $" {table}.Location, {table}.Latitude, {table}.Longitude, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN Post ON ({table}.PostId = Post.PostId)" +
@@ -216,9 +226,9 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(Happening happening)
         {
-            String strCmd = $"INSERT INTO {table}(Id, PostId, EventTypeId, CountryId, StateId, StartDateTime, EndDateTime, Location, Latitude, Longitude, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(Id, PostId, EventTypeId, CountryId, StateId, IsPublic, HasSignup, HasPayment, PaymentDetails, StartDateTime, EndDateTime, Location, Latitude, Longitude, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @PostId, @EventTypeId, @CountryId, @StateId, @StartDateTime, @EndDateTime, @Location, @Latitude, @Longitude, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@Id, @PostId, @EventTypeId, @CountryId, @StateId, @IsPublic, @HasSignup, @HasPayment, @PaymentDetails, @StartDateTime, @EndDateTime, @Location, @Latitude, @Longitude, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -227,6 +237,10 @@ namespace HeroServer
             DBHelper.AddParam(command, "@EventTypeId", SqlDbType.BigInt, happening.EventTypeId);
             DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, happening.CountryId);
             DBHelper.AddParam(command, "@StateId", SqlDbType.BigInt, happening.StateId);
+            DBHelper.AddParam(command, "@IsPublic", SqlDbType.Int, happening.IsPublic);
+            DBHelper.AddParam(command, "@HasSignup", SqlDbType.Int, happening.HasSignup);
+            DBHelper.AddParam(command, "@HasPayment", SqlDbType.Int, happening.HasPayment);
+            DBHelper.AddParam(command, "@PaymentDetails", SqlDbType.VarChar, happening.PaymentDetails);
             DBHelper.AddParam(command, "@StartDateTime", SqlDbType.DateTime, happening.StartDateTime);
             DBHelper.AddParam(command, "@EndDateTime", SqlDbType.DateTime, happening.EndDateTime);
             DBHelper.AddParam(command, "@Location", SqlDbType.VarChar, happening.Location);
@@ -246,7 +260,7 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(Happening happening)
         {
-            String strCmd = $"UPDATE {table} SET PostId = @PostId, EventTypeId = @EventTypeId, CountryId = @CountryId, StateId = @StateId, StartDateTime = @StartDateTime, EndDateTime = @EndDateTime, Location = @Location, Latitude = @Latitude, Longitude = @Longitude, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET PostId = @PostId, EventTypeId = @EventTypeId, CountryId = @CountryId, StateId = @StateId, IsPublic = @IsPublic, HasSignup = @HasSignup, HasPayment = @HasPayment, PaymentDetails = @PaymentDetails, StartDateTime = @StartDateTime, EndDateTime = @EndDateTime, Location = @Location, Latitude = @Latitude, Longitude = @Longitude, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -254,6 +268,10 @@ namespace HeroServer
             DBHelper.AddParam(command, "@EventTypeId", SqlDbType.BigInt, happening.EventTypeId);
             DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, happening.CountryId);
             DBHelper.AddParam(command, "@StateId", SqlDbType.BigInt, happening.StateId);
+            DBHelper.AddParam(command, "@IsPublic", SqlDbType.Int, happening.IsPublic);
+            DBHelper.AddParam(command, "@HasSignup", SqlDbType.Int, happening.HasSignup);
+            DBHelper.AddParam(command, "@HasPayment", SqlDbType.Int, happening.HasPayment);
+            DBHelper.AddParam(command, "@PaymentDetails", SqlDbType.VarChar, happening.PaymentDetails);
             DBHelper.AddParam(command, "@StartDateTime", SqlDbType.DateTime, happening.StartDateTime);
             DBHelper.AddParam(command, "@EndDateTime", SqlDbType.DateTime, happening.EndDateTime);
             DBHelper.AddParam(command, "@Location", SqlDbType.VarChar, happening.Location);

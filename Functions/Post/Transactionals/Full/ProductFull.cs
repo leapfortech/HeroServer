@@ -6,43 +6,45 @@ namespace HeroServer
     public class ProductFull : PostFull
     {
         public long Id { get; set; }
-        public long OriginCountryId { get; set; }
+        public long ProductSubtypeId { get; set; }
         public long SaleCountryId { get; set; }
         public long SaleStateId { get; set; }
         public long CurrencyId { get; set; }
         public double Price { get; set; }
         public double DiscountPrice { get; set; }
+        public long DeliveryTypeId { get; set; }
+        public String Annotation { get; set; }
         public int Status { get; set; }
 
-        public ContactFull ContactFull { get; set; }
         public List<ProductReviewFull> ProductReviewFulls { get; set; }
 
 
         public ProductFull(long id, long postId, long appUserId, String appUserAlias,
-                           long postTypeId, long postSubtypeId,
-                           long postOriginCountryId, long postOriginStateId,
+                           long postSubtypeId,
+                           long postCountryId, long postStateId,
                            String title, String summary, String description,
                            int imageCount, int likeCount, DateTime publicationDateTime,
                            int postStatus,
-                           long originCountryId, long saleCountryId, long saleStateId,
+                           long productSubtypeId, long saleCountryId, long saleStateId,
                            long currencyId, double price, double discountPrice,
+                           long deliveryTypeId, String annotation,
                            int status,
-                           ContactFull contactFull,
                            List<ProductReviewFull> productReviewFulls)
-            : base(postId, appUserId, appUserAlias, postTypeId, postSubtypeId,
-                   postOriginCountryId, postOriginStateId, title, summary, description,
+            : base(postId, appUserId, appUserAlias, postSubtypeId,
+                   postCountryId, postStateId, title, summary, description,
                    imageCount, likeCount, publicationDateTime, postStatus)
         {
             Id = id;
-            OriginCountryId = originCountryId;
+            ProductSubtypeId = productSubtypeId;
             SaleCountryId = saleCountryId;
             SaleStateId = saleStateId;
             CurrencyId = currencyId;
             Price = price;
             DiscountPrice = discountPrice;
+            DeliveryTypeId = deliveryTypeId;
+            Annotation = annotation;
             Status = status;
 
-            ContactFull = contactFull;
             ProductReviewFulls = productReviewFulls ?? new List<ProductReviewFull>();
         }
     }

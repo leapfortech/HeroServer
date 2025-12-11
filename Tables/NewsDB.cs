@@ -16,10 +16,8 @@ namespace HeroServer
             return new News(Convert.ToInt64(reader["Id"]),
                             Convert.ToInt64(reader["PostId"]),
                             Convert.ToInt64(reader["NewsTypeId"]),
-                            Convert.ToInt64(reader["OriginCountryId"]),
-                            Convert.ToInt64(reader["OriginStateId"]),
+                            reader["Place"].ToString(),
                             reader["Source"].ToString(),
-                            reader["Url"].ToString(),
                             reader["DateTime"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(reader["DateTime"]),
                             Convert.ToDateTime(reader["CreateDateTime"]),
                             Convert.ToDateTime(reader["UpdateDateTime"]),
@@ -33,10 +31,9 @@ namespace HeroServer
                                 Convert.ToInt64(reader["PostId"]),
                                 Convert.ToInt64(reader["AppUserId"]),
                                 reader["AppUserAlias"].ToString(),
-                                Convert.ToInt64(reader["PostTypeId"]),
                                 Convert.ToInt64(reader["PostSubtypeId"]),
-                                Convert.ToInt64(reader["PostOriginCountryId"]),
-                                Convert.ToInt64(reader["PostOriginStateId"]),
+                                Convert.ToInt64(reader["PostCountryId"]),
+                                Convert.ToInt64(reader["PostStateId"]),
                                 reader["Title"].ToString(),
                                 reader["Summary"].ToString(),
                                 reader["Description"].ToString(),
@@ -46,10 +43,8 @@ namespace HeroServer
                                 Convert.ToInt32(reader["PostStatus"]),
 
                                 Convert.ToInt64(reader["NewsTypeId"]),
-                                Convert.ToInt64(reader["OriginCountryId"]),
-                                Convert.ToInt64(reader["OriginStateId"]),
+                                reader["Place"].ToString(),
                                 reader["Source"].ToString(),
-                                reader["Url"].ToString(),
                                 reader["DateTime"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["DateTime"]),
                                 Convert.ToInt32(reader["Status"]));
         }
@@ -105,11 +100,11 @@ namespace HeroServer
         public async Task<NewsFull> GetFullById(long id)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
-                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
-                             " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostSubtypeId," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
-                            $" {table}.NewsTypeId, {table}.OriginCountryId, {table}.OriginStateId," +
-                            $" {table}.Source, {table}.Url, {table}.DateTime, {table}.Status" +
+                            $" {table}.NewsTypeId, {table}.Place," +
+                            $" {table}.Source, {table}.DateTime, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN Post ON ({table}.PostId = Post.PostId)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
@@ -137,11 +132,11 @@ namespace HeroServer
         public async Task<NewsFull> GetFullByPostId(long postId)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
-                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
-                             " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostSubtypeId," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
-                            $" {table}.NewsTypeId, {table}.OriginCountryId, {table}.OriginStateId," +
-                            $" {table}.Source, {table}.Url, {table}.DateTime, {table}.Status" +
+                            $" {table}.NewsTypeId, {table}.Place," +
+                            $" {table}.Source, {table}.DateTime, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN Post ON ({table}.PostId = Post.PostId)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
@@ -170,11 +165,11 @@ namespace HeroServer
         public async Task<List<NewsFull>> GetFullsByStatus(int status)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
-                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
-                             " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostSubtypeId," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
-                            $" {table}.NewsTypeId, {table}.OriginCountryId, {table}.OriginStateId," +
-                            $" {table}.Source, {table}.Url, {table}.DateTime, {table}.Status" +
+                            $" {table}.NewsTypeId, {table}.Place," +
+                            $" {table}.Source, {table}.DateTime, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN Post ON ({table}.PostId = Post.PostId)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)";
@@ -211,19 +206,17 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(News news)
         {
-            String strCmd = $"INSERT INTO {table}(Id, PostId, NewsTypeId, OriginCountryId, OriginStateId, Source, Url, DateTime, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(Id, PostId, NewsTypeId, Place, Source, DateTime, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @PostId, @NewsTypeId, @OriginCountryId, @OriginStateId, @Source, @Url, @DateTime, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@Id, @PostId, @NewsTypeId, @Place, @Source, @DateTime, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('~'));
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, news.PostId);
             DBHelper.AddParam(command, "@NewsTypeId", SqlDbType.BigInt, news.NewsTypeId);
-            DBHelper.AddParam(command, "@OriginCountryId", SqlDbType.BigInt, news.OriginCountryId);
-            DBHelper.AddParam(command, "@OriginStateId", SqlDbType.BigInt, news.OriginStateId);
+            DBHelper.AddParam(command, "@Place", SqlDbType.VarChar, news.Place);
             DBHelper.AddParam(command, "@Source", SqlDbType.VarChar, news.Source);
-            DBHelper.AddParam(command, "@Url", SqlDbType.VarChar, news.Url);
             DBHelper.AddParam(command, "@DateTime", SqlDbType.DateTime, news.DateTime);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
@@ -239,16 +232,14 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(News news)
         {
-            String strCmd = $"UPDATE {table} SET PostId = @PostId, NewsTypeId = @NewsTypeId, OriginCountryId = @OriginCountryId, OriginStateId = @OriginStateId, Source = @Source, Url = @Url, DateTime = @DateTime, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET PostId = @PostId, NewsTypeId = @NewsTypeId, Place = @Place, Source = @Source, DateTime = @DateTime, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, news.PostId);
             DBHelper.AddParam(command, "@NewsTypeId", SqlDbType.BigInt, news.NewsTypeId);
-            DBHelper.AddParam(command, "@OriginCountryId", SqlDbType.BigInt, news.OriginCountryId);
-            DBHelper.AddParam(command, "@OriginStateId", SqlDbType.BigInt, news.OriginStateId);
+            DBHelper.AddParam(command, "@Place", SqlDbType.VarChar, news.Place);
             DBHelper.AddParam(command, "@Source", SqlDbType.VarChar, news.Source);
-            DBHelper.AddParam(command, "@Url", SqlDbType.VarChar, news.Url);
             DBHelper.AddParam(command, "@DateTime", SqlDbType.DateTime, news.DateTime);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, news.Status);

@@ -6,35 +6,30 @@ using System.Threading.Tasks;
 
 namespace HeroServer
 {
-    public class ContactDB
+    public class ReactionDB
     {
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
-        readonly String table = "[D-Contact]";
+        readonly String table = "[D-Reaction]";
 
-        private static Contact GetContact(SqlDataReader reader)
+        private static Reaction GetReaction(SqlDataReader reader)
         {
-            return new Contact(Convert.ToInt64(reader["Id"]),
-                               Convert.ToInt64(reader["PostId"]),
-                               reader["Name"].ToString(),
-                               Convert.ToDateTime(reader["CreateDateTime"]),
-                               Convert.ToDateTime(reader["UpdateDateTime"]),
-                               Convert.ToInt32(reader["Status"]));
-        }
-
-        public static ContactFull GetContactFull(SqlDataReader reader)
-        {
-            return new ContactFull(Convert.ToInt64(reader["Id"]),
-                                   reader["Name"].ToString());
+            return new Reaction(Convert.ToInt64(reader["Id"]),
+                                Convert.ToInt64(reader["ReactionTypeId"]),
+                                Convert.ToInt64(reader["PostId"]),
+                                Convert.ToInt64(reader["AppUserId"]),
+                                Convert.ToDateTime(reader["CreateDateTime"]),
+                                Convert.ToDateTime(reader["UpdateDateTime"]),
+                                Convert.ToInt32(reader["Status"]));
         }
 
         // GET
-        public async Task<IEnumerable<Contact>> GetAll()
+        public async Task<IEnumerable<Reaction>> GetAll()
         {
             String strCmd = $"SELECT * FROM {table}";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<Contact> contacts = new List<Contact>();
+            List<Reaction> reactions = new List<Reaction>();
             using (conn)
             {
                 await conn.OpenAsync();
@@ -42,15 +37,15 @@ namespace HeroServer
                 {
                     while (await reader.ReadAsync())
                     {
-                         Contact contact = GetContact(reader);
-                         contacts.Add(contact);
+                         Reaction reaction = GetReaction(reader);
+                         reactions.Add(reaction);
                     }
                 }
             }
-            return contacts;
+            return reactions;
         }
 
-        public async Task<Contact> GetById(long id)
+        public async Task<Reaction> GetById(long id)
         {
             String strCmd = $"SELECT * FROM {table} WHERE Id = @Id";
 
@@ -58,7 +53,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
-            Contact contact = null;
+            Reaction reaction = null;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -66,28 +61,28 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                         contact = GetContact(reader);
+                         reaction = GetReaction(reader);
                     }
                 }
             }
-            return contact;
+            return reaction;
         }
 
         // INSERT
-        public async Task<long> Add(Contact contact)
+        public async Task<long> Add(Reaction reaction)
         {
-            String strCmd = $"INSERT INTO {table}(Id, PostId, Name, PhoneCountryId, Phone, Email, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(ReactionTypeId, PostId, AppUserId, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @PostId, @Name, @PhoneCountryId, @Phone, @Email, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@ReactionTypeId, @PostId, @AppUserId, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('~'));
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, contact.PostId);
-            DBHelper.AddParam(command, "@Name", SqlDbType.VarChar, contact.Name);
+            DBHelper.AddParam(command, "@ReactionTypeId", SqlDbType.BigInt, reaction.ReactionTypeId);
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, reaction.PostId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, reaction.AppUserId);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, contact.Status);
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, reaction.Status);
 
             using (conn)
             {
@@ -97,17 +92,18 @@ namespace HeroServer
         }
 
         // UPDATE
-        public async Task<bool> Update(Contact contact)
+        public async Task<bool> Update(Reaction reaction)
         {
-            String strCmd = $"UPDATE {table} SET PostId = @PostId, Name = @Name, PhoneCountryId = @PhoneCountryId, Phone = @Phone, Email = @Email, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET ReactionTypeId = @ReactionTypeId, PostId = @PostId, AppUserId = @AppUserId, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, contact.PostId);
-            DBHelper.AddParam(command, "@Name", SqlDbType.VarChar, contact.Name);
+            DBHelper.AddParam(command, "@ReactionTypeId", SqlDbType.BigInt, reaction.ReactionTypeId);
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, reaction.PostId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, reaction.AppUserId);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, contact.Status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, contact.Id);
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, reaction.Status);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, reaction.Id);
 
             using (conn)
             {

@@ -6,7 +6,7 @@ namespace HeroServer
     {
         public List<PuzzleFull> PuzzleFulls { get; set; }
         public List<PuzzleAnswerFull> PuzzleAnswerFulls { get; set; }
-        public List<PuzzleCommentFull> PuzzleCommentFulls { get; set; }
+        public List<CommentFull> PuzzleCommentFulls { get; set; }
 
         public PuzzleDataFull()
         {
@@ -14,7 +14,7 @@ namespace HeroServer
 
         public PuzzleDataFull(List<PuzzleFull> puzzleFulls,
                               List<PuzzleAnswerFull> puzzleAnswerFulls,
-                              List<PuzzleCommentFull> puzzleCommentFulls)
+                              List<CommentFull> puzzleCommentFulls)
         {
             PuzzleFulls = puzzleFulls;
             PuzzleAnswerFulls = puzzleAnswerFulls;

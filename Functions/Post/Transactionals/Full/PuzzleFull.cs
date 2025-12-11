@@ -6,8 +6,8 @@ namespace HeroServer
     public class PuzzleFull : PostFull
     {
         public long Id { get; set; }
-        public long PuzzleTypeId { get; set; }
         public long PuzzleSubtypeId { get; set; }
+        public long CountryId { get; set; }
         public String Question { get; set; }
         public String Hint { get; set; }
         public int Difficulty { get; set; }
@@ -16,28 +16,26 @@ namespace HeroServer
         public int Status { get; set; }
 
         public List<PuzzleAnswerFull> PuzzleAnswerFulls { get; set; }
-        public List<PuzzleCommentFull> PuzzleCommentFulls { get; set; }
 
 
         public PuzzleFull(long id, long postId, long appUserId, String appUserAlias,
-                          long postTypeId, long postSubtypeId,
-                          long postOriginCountryId, long postOriginStateId,
+                          long postSubtypeId,
+                          long postCountryId, long postStateId,
                           String title, String summary, String description,
                           int imageCount, int likeCount, DateTime publicationDateTime,
                           int postStatus,
-                          long puzzleTypeId, long puzzleSubtypeId,
+                          long puzzleSubtypeId, long countryId,
                           String question, String hint,
                           int difficulty, int points, int playCount,
                           int status,
-                          List<PuzzleAnswerFull> puzzleAnswerFulls,
-                          List<PuzzleCommentFull> puzzleCommentFulls)
-            : base(postId, appUserId, appUserAlias, postTypeId, postSubtypeId,
-                   postOriginCountryId, postOriginStateId, title, summary, description,
+                          List<PuzzleAnswerFull> puzzleAnswerFulls)
+            : base(postId, appUserId, appUserAlias, postSubtypeId,
+                   postCountryId, postStateId, title, summary, description,
                    imageCount, likeCount, publicationDateTime, postStatus)
         {
             Id = id;
-            PuzzleTypeId = puzzleTypeId;
             PuzzleSubtypeId = puzzleSubtypeId;
+            CountryId = countryId;
             Question = question;
             Hint = hint;
             Difficulty = difficulty;
@@ -46,7 +44,6 @@ namespace HeroServer
             Status = status;
 
             PuzzleAnswerFulls = puzzleAnswerFulls ?? new List<PuzzleAnswerFull>();
-            PuzzleCommentFulls = puzzleCommentFulls ?? new List<PuzzleCommentFull>();
         }
     }
 }

@@ -2,25 +2,25 @@ using System;
 
 namespace HeroServer
 {
-    public class PuzzleComment
+    public class CommentPlaint
     {
         public long Id { get; set; }
-        public long PuzzleId { get; set; }
+        public long PlaintTypeId { get; set; }
+        public long CommentId { get; set; }
         public long AppUserId { get; set; }
-        public String Comment { get; set; }
         public DateTime CreateDateTime { get; set; }
         public DateTime UpdateDateTime { get; set; }
         public int Status { get; set; }
 
-        public PuzzleComment() { }
+        public CommentPlaint() { }
 
-        public PuzzleComment(long id, long puzzleId, long appUserId, String comment, DateTime createDateTime,
+        public CommentPlaint(long id, long plaintTypeId, long commentId, long appUserId, DateTime createDateTime,
                              DateTime updateDateTime, int status)
         {
             Id = id;
-            PuzzleId = puzzleId;
+            PlaintTypeId = plaintTypeId;
+            CommentId = commentId;
             AppUserId = appUserId;
-            Comment = comment;
             CreateDateTime = createDateTime;
             UpdateDateTime = updateDateTime;
             Status = status;

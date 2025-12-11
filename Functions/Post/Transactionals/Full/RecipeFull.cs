@@ -17,14 +17,14 @@ namespace HeroServer
         }
 
         public RecipeFull(long id, long postId, long appUserId, String appUserAlias,
-                          long postTypeId, long postSubtypeId, long originCountryId, long originStateId,
+                          long postSubtypeId, long postCountryId, long postStateId,
                           String title, String summary, String description,
                           int imageCount, int likeCount, DateTime publicationDateTime,
                           int postStatusId, long recipeTypeId,
                           String ingredients, String preparation,
                           int portions, int cookingTime, int status)
-            : base(postId, appUserId, appUserAlias, postTypeId, postSubtypeId,
-                   originCountryId, originStateId, title, summary, description,
+            : base(postId, appUserId, appUserAlias, postSubtypeId,
+                   postCountryId, postStateId, title, summary, description,
                    imageCount, likeCount, publicationDateTime, postStatusId)
         {
             Id = id;

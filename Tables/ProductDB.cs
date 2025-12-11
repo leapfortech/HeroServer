@@ -15,13 +15,14 @@ namespace HeroServer
         {
             return new Product(Convert.ToInt64(reader["Id"]),
                                Convert.ToInt64(reader["PostId"]),
-                               Convert.ToInt64(reader["OriginCountryId"]),
+                               Convert.ToInt64(reader["ProductSubtypeId"]),
                                Convert.ToInt64(reader["SaleCountryId"]),
                                Convert.ToInt64(reader["SaleStateId"]),
                                Convert.ToInt64(reader["CurrencyId"]),
                                Convert.ToDouble(reader["Price"]),
                                Convert.ToDouble(reader["DiscountPrice"]),
-                               Convert.ToInt64(reader["ContactIdentityId"]),
+                               Convert.ToInt64(reader["DeliveryTypeId"]),
+                               reader["Annotation"].ToString(),
                                Convert.ToDateTime(reader["CreateDateTime"]),
                                Convert.ToDateTime(reader["UpdateDateTime"]),
                                Convert.ToInt32(reader["Status"]));
@@ -34,10 +35,9 @@ namespace HeroServer
                                    Convert.ToInt64(reader["PostId"]),
                                    Convert.ToInt64(reader["AppUserId"]),
                                    reader["AppUserAlias"].ToString(),
-                                   Convert.ToInt64(reader["PostTypeId"]),
                                    Convert.ToInt64(reader["PostSubtypeId"]),
-                                   Convert.ToInt64(reader["PostOriginCountryId"]),
-                                   Convert.ToInt64(reader["PostOriginStateId"]),
+                                   Convert.ToInt64(reader["PostCountryId"]),
+                                   Convert.ToInt64(reader["PostStateId"]),
                                    reader["Title"].ToString(),
                                    reader["Summary"].ToString(),
                                    reader["Description"].ToString(),
@@ -46,15 +46,16 @@ namespace HeroServer
                                    Convert.ToDateTime(reader["PublicationDateTime"]),
                                    Convert.ToInt32(reader["PostStatus"]),
 
-                                   Convert.ToInt64(reader["OriginCountryId"]),
+                                   Convert.ToInt64(reader["ProductSubtypeId"]),
                                    Convert.ToInt64(reader["SaleCountryId"]),
                                    Convert.ToInt64(reader["SaleStateId"]),
                                    Convert.ToInt64(reader["CurrencyId"]),
                                    Convert.ToDouble(reader["Price"]),
                                    Convert.ToDouble(reader["DiscountPrice"]),
+                                   Convert.ToInt64(reader["DeliveryTypeId"]),
+                                   reader["Annotation"].ToString(),
                                    Convert.ToInt32(reader["Status"]),
 
-                                   null,    // ContactFull
                                    null);   // ProductReviewFull
         }
 
@@ -109,19 +110,16 @@ namespace HeroServer
         public async Task<ProductFull> GetFullById(long id)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
-                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
-                             " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostSubtypeId," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
-                            $" {table}.OriginCountryId, {table}.SaleCountryId, {table}.SaleStateId," +
-                            $" {table}.CurrencyId, {table}.Price, {table}.DiscountPrice, {table}.Status" +
+                            $" {table}.ProductSubtypeId, {table}.SaleCountryId, {table}.SaleStateId," +
+                            $" {table}.CurrencyId, {table}.Price, {table}.DiscountPrice, {table}.DeliveryTypeId, {table}.Annotation," + 
+                            $" {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN Post ON ({table}.PostId = Post.PostId)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
                             $" WHERE {table}.Id = @Id;";
-
-            strCmd += "SELECT Id, Name, PhoneCountryId, Phone, Email" +
-                      " FROM [D-Contact]" +
-                      " WHERE Status = 1 AND ProductId = @Id;";
 
             strCmd += "SELECT ProductReview.Id, ProductReview.AppUserId, AppUser.Alias AS AppUserAlias," +
                       " ProductReview.Rating, ProductReview.Description, ProductReview.Status" +
@@ -145,10 +143,6 @@ namespace HeroServer
                     productFull = GetProductFull(reader);
 
                     await reader.NextResultAsync();
-                    if (await reader.ReadAsync())
-                        productFull.ContactFull = ContactDB.GetContactFull(reader);
-
-                    await reader.NextResultAsync();
                     productFull.ProductReviewFulls = [];
                     while (await reader.ReadAsync())
                     {
@@ -164,20 +158,16 @@ namespace HeroServer
         public async Task<ProductFull> GetFullByPostId(long postId)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
-                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
-                             " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostSubtypeId," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
-                            $" {table}.OriginCountryId, {table}.SaleCountryId, {table}.SaleStateId," +
-                            $" {table}.CurrencyId, {table}.Price, {table}.DiscountPrice, {table}.Status" +
+                            $" {table}.ProductSubtypeId, {table}.SaleCountryId, {table}.SaleStateId," +
+                            $" {table}.CurrencyId, {table}.Price, {table}.DiscountPrice, {table}.DeliveryTypeId, {table}.Annotation," +
+                            $" {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN Post ON ({table}.PostId = Post.PostId)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
                             $" WHERE {table}.PostId = @PostId;";
-
-            strCmd += "SELECT Id, Name, PhoneCountryId, Phone, Email" +
-                      " FROM [D-Contact]" +
-                      " WHERE Status = 1 AND ProductId IN" +
-                      $" (SELECT Id FROM {table} WHERE PostId = @PostId);";
 
             strCmd += "SELECT ProductReview.Id, ProductReview.AppUserId, AppUser.Alias AS AppUserAlias," +
                       " ProductReview.Rating, ProductReview.Description, ProductReview.Status" +
@@ -202,10 +192,6 @@ namespace HeroServer
                     productFull = GetProductFull(reader);
 
                     await reader.NextResultAsync();
-                    if (await reader.ReadAsync())
-                        productFull.ContactFull = ContactDB.GetContactFull(reader);
-
-                    await reader.NextResultAsync();
                     productFull.ProductReviewFulls = [];
                     while (await reader.ReadAsync())
                     {
@@ -221,28 +207,18 @@ namespace HeroServer
         public async Task<ProductDataFull> GetFullsByStatus(int status)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
-                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
-                             " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostSubtypeId," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
-                            $" {table}.OriginCountryId, {table}.SaleCountryId, {table}.SaleStateId, {table}.CurrencyId," +
-                            $" {table}.Price, {table}.DiscountPrice, {table}.Status" +
+                            $" {table}.ProductSubtypeId, {table}.SaleCountryId, {table}.SaleStateId, {table}.CurrencyId," +
+                            $" {table}.Price, {table}.DiscountPrice, {table}.DeliveryTypeId, {table}.Annotation," +
+                            $" {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN Post ON ({table}.PostId = Post.PostId)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)";
 
             if (status != -1)
                 strCmd += $" WHERE {table}.Status = @Status;";
-            else
-                strCmd += ";";
-
-            strCmd +=  "SELECT Contact.Id, Contact.Name, Contact.PhoneCountryId, Contact.Phone," +
-                       " Contact.Email, Contact.Status, Contact.ProductId" +
-                       " FROM [D-Contact] AS Contact" +
-                      $" JOIN {table} ON (Contact.ProductId = {table}.Id)" +
-                       " WHERE Contact.Status = 1";
-
-            if (status != -1)
-                strCmd += $" AND {table}.Status = @Status;";
             else
                 strCmd += ";";
 
@@ -280,15 +256,6 @@ namespace HeroServer
                     productDataFull.ProductFulls = productFulls;
 
                     await reader.NextResultAsync();
-                    List<ContactFull> contacts = [];
-                    while (await reader.ReadAsync())
-                    {
-                        ContactFull contact = ContactDB.GetContactFull(reader);
-                        contacts.Add(contact);
-                    }
-                    productDataFull.ContactFulls = contacts;
-
-                    await reader.NextResultAsync();
                     List<ProductReviewFull> reviews = [];
                     while (await reader.ReadAsync())
                     {
@@ -305,21 +272,22 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(Product product)
         {
-            String strCmd = $"INSERT INTO {table}(Id, PostId, OriginCountryId, SaleCountryId, SaleStateId, CurrencyId, Price, DiscountPrice, ContactIdentityId, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(Id, PostId, ProductSubtypeId, SaleCountryId, SaleStateId, CurrencyId, Price, DiscountPrice, DeliveryTypeId, Annotation, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @PostId, @OriginCountryId, @SaleCountryId, @SaleStateId, @CurrencyId, @Price, @DiscountPrice, @ContactIdentityId, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@Id, @PostId, @ProductSubtypeId, @SaleCountryId, @SaleStateId, @CurrencyId, @Price, @DiscountPrice, @DeliveryTypeId, @Annotation, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('~'));
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, product.PostId);
-            DBHelper.AddParam(command, "@OriginCountryId", SqlDbType.BigInt, product.OriginCountryId);
+            DBHelper.AddParam(command, "@ProductSubtypeId", SqlDbType.BigInt, product.ProductSubtypeId);
             DBHelper.AddParam(command, "@SaleCountryId", SqlDbType.BigInt, product.SaleCountryId);
             DBHelper.AddParam(command, "@SaleStateId", SqlDbType.BigInt, product.SaleStateId);
             DBHelper.AddParam(command, "@CurrencyId", SqlDbType.BigInt, product.CurrencyId);
             DBHelper.AddParam(command, "@Price", SqlDbType.Decimal, product.Price);
             DBHelper.AddParam(command, "@DiscountPrice", SqlDbType.Decimal, product.DiscountPrice);
-            DBHelper.AddParam(command, "@ContactIdentityId", SqlDbType.BigInt, product.ContactIdentityId);
+            DBHelper.AddParam(command, "@DeliveryTypeId", SqlDbType.BigInt, product.DeliveryTypeId);
+            DBHelper.AddParam(command, "@Annotation", SqlDbType.VarChar, product.Annotation);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, product.Status);
@@ -334,18 +302,19 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(Product product)
         {
-            String strCmd = $"UPDATE {table} SET PostId = @PostId, OriginCountryId = @OriginCountryId, SaleCountryId = @SaleCountryId, SaleStateId = @SaleStateId, CurrencyId = @CurrencyId, Price = @Price, DiscountPrice = @DiscountPrice, ContactIdentityId = @ContactIdentityId, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET PostId = @PostId, ProductSubtypeId = @ProductSubtypeId, SaleCountryId = @SaleCountryId, SaleStateId = @SaleStateId, CurrencyId = @CurrencyId, Price = @Price, DiscountPrice = @DiscountPrice, DeliveryTypeId = @DeliveryTypeId, Annotation = @Annotation, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, product.PostId);
-            DBHelper.AddParam(command, "@OriginCountryId", SqlDbType.BigInt, product.OriginCountryId);
+            DBHelper.AddParam(command, "@ProductSubtypeId", SqlDbType.BigInt, product.ProductSubtypeId);
             DBHelper.AddParam(command, "@SaleCountryId", SqlDbType.BigInt, product.SaleCountryId);
             DBHelper.AddParam(command, "@SaleStateId", SqlDbType.BigInt, product.SaleStateId);
             DBHelper.AddParam(command, "@CurrencyId", SqlDbType.BigInt, product.CurrencyId);
             DBHelper.AddParam(command, "@Price", SqlDbType.Decimal, product.Price);
             DBHelper.AddParam(command, "@DiscountPrice", SqlDbType.Decimal, product.DiscountPrice);
-            DBHelper.AddParam(command, "@ContactIdentityId", SqlDbType.BigInt, product.ContactIdentityId);
+            DBHelper.AddParam(command, "@DeliveryTypeId", SqlDbType.BigInt, product.DeliveryTypeId);
+            DBHelper.AddParam(command, "@Annotation", SqlDbType.VarChar, product.Annotation);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, product.Status);
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, product.Id);

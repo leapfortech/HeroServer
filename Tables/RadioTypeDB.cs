@@ -6,36 +6,29 @@ using System.Threading.Tasks;
 
 namespace HeroServer
 {
-    public class DiseaseDB
+    public class RadioTypeDB
     {
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
-        readonly String table = "[J-Disease]";
+        readonly String table = "[J-RadioType]";
 
-        private static Disease GetDisease(SqlDataReader reader)
+        private static RadioType GetRadioType(SqlDataReader reader)
         {
-            return new Disease(Convert.ToInt64(reader["Id"]),
-                               Convert.ToInt64(reader["TreatmentId"]),
-                               Convert.ToInt64(reader["DiseaseTypeId"]),
-                               Convert.ToDateTime(reader["CreateDateTime"]),
-                               Convert.ToDateTime(reader["UpdateDateTime"]),
-                               Convert.ToInt32(reader["Status"]));
-        }
-
-        public static DiseaseFull GetDiseaseFull(SqlDataReader reader)
-        {
-            return new DiseaseFull(Convert.ToInt64(reader["Id"]),
-                                   Convert.ToInt64(reader["DiseaseTypeId"]),
-                                   Convert.ToInt32(reader["Status"]));
+            return new RadioType(Convert.ToInt64(reader["Id"]),
+                                 Convert.ToInt64(reader["RadioId"]),
+                                 Convert.ToInt64(reader["RadioTypeId"]),
+                                 Convert.ToDateTime(reader["CreateDateTime"]),
+                                 Convert.ToDateTime(reader["UpdateDateTime"]),
+                                 Convert.ToInt32(reader["Status"]));
         }
 
         // GET
-        public async Task<IEnumerable<Disease>> GetAll()
+        public async Task<IEnumerable<RadioType>> GetAll()
         {
             String strCmd = $"SELECT * FROM {table}";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<Disease> diseases = new List<Disease>();
+            List<RadioType> radioTypes = new List<RadioType>();
             using (conn)
             {
                 await conn.OpenAsync();
@@ -43,24 +36,24 @@ namespace HeroServer
                 {
                     while (await reader.ReadAsync())
                     {
-                         Disease disease = GetDisease(reader);
-                         diseases.Add(disease);
+                         RadioType radioType = GetRadioType(reader);
+                         radioTypes.Add(radioType);
                     }
                 }
             }
-            return diseases;
+            return radioTypes;
         }
 
-        public async Task<IEnumerable<Disease>> GetAllByTreatmentId(long treatmentId, int status = 1)
+        public async Task<IEnumerable<RadioType>> GetAllByRadioId(long radioId, int status = 1)
         {
-            String strCmd = $"SELECT * FROM {table} WHERE TreatmentId = @TreatmentId AND Status = @Status";
+            String strCmd = $"SELECT * FROM {table} WHERE RadioId = @RadioId AND Status = @Status";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@TreatmentId", SqlDbType.BigInt, treatmentId);
+            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioId);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
-            List<Disease> diseases = new List<Disease>();
+            List<RadioType> radioTypes = new List<RadioType>();
             using (conn)
             {
                 await conn.OpenAsync();
@@ -68,15 +61,15 @@ namespace HeroServer
                 {
                     while (await reader.ReadAsync())
                     {
-                        Disease disease = GetDisease(reader);
-                        diseases.Add(disease);
+                        RadioType radioType = GetRadioType(reader);
+                        radioTypes.Add(radioType);
                     }
                 }
             }
-            return diseases;
+            return radioTypes;
         }
 
-        public async Task<Disease> GetById(long id, int status = 1)
+        public async Task<RadioType> GetById(long id, int status = 1)
         {
             String strCmd = $"SELECT * FROM {table} WHERE Id = @Id AND Status = @Status";
 
@@ -85,7 +78,7 @@ namespace HeroServer
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
-            Disease disease = null;
+            RadioType radioType = null;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -93,23 +86,23 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                         disease = GetDisease(reader);
+                         radioType = GetRadioType(reader);
                     }
                 }
             }
-            return disease;
+            return radioType;
         }
 
-        public async Task<Treatment> GetByTreatmentId(long treatmentId, int status = 1)
+        public async Task<RadioType> GetByRadioId(long radioId, int status = 1)
         {
-            String strCmd = $"SELECT * FROM {table} WHERE PostId = @PostId AND Status = @Status";
+            String strCmd = $"SELECT * FROM {table} WHERE RadioId = @RadioId AND Status = @Status";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@TreatmentId", SqlDbType.BigInt, treatmentId);
+            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioId);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
-            Treatment treatment = null;
+            RadioType radioType = null;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -117,26 +110,26 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                        treatment = TreatmentDB.GetTreatment(reader);
+                        radioType = GetRadioType(reader);
                     }
                 }
             }
-            return treatment;
+            return radioType;
         }
 
-        public async Task<long> GetIdByTreatmentId(long treatmentId, int status = 1)
+        public async Task<long> GetIdByRadioId(long radioId, int status = 1)
         {
-            String strCmd = $"SELECT Id FROM {table} WHERE TreatmentId = @TreatmentId";
+            String strCmd = $"SELECT Id FROM {table} WHERE RadioId = @RadioId";
             if (status != -1)
                 strCmd += " AND Status = @Status";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@TreatmentId", SqlDbType.BigInt, treatmentId);
+            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioId);
             if (status != -1)
                 DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
-            long diseaseId = -1;
+            long radioTypeId = -1;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -144,27 +137,27 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                        diseaseId = Convert.ToInt64(reader["Id"]);
+                        radioTypeId = Convert.ToInt64(reader["Id"]);
                     }
                 }
             }
-            return diseaseId;
+            return radioTypeId;
         }
 
         // INSERT
-        public async Task<long> Add(Disease disease)
+        public async Task<long> Add(RadioType radioType)
         {
-            String strCmd = $"INSERT INTO {table}(TreatmentId, DiseaseTypeId, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(RadioId, RadioTypeId, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@TreatmentId, @DiseaseTypeId, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@RadioId, @RadioTypeId, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@TreatmentId", SqlDbType.BigInt, disease.TreatmentId);
-            DBHelper.AddParam(command, "@DiseaseTypeId", SqlDbType.BigInt, disease.DiseaseTypeId);
+            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioType.RadioId);
+            DBHelper.AddParam(command, "@RadioTypeId", SqlDbType.BigInt, radioType.RadioTypeId);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, disease.Status);
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, radioType.Status);
 
             using (conn)
             {
@@ -174,17 +167,17 @@ namespace HeroServer
         }
 
         // UPDATE
-        public async Task<bool> Update(Disease disease)
+        public async Task<bool> Update(RadioType radioType)
         {
-            String strCmd = $"UPDATE {table} SET TreatmentId = @TreatmentId, DiseaseTypeId = @DiseaseTypeId, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET RadioId = @RadioId, RadioTypeId = @RadioTypeId, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@TreatmentId", SqlDbType.BigInt, disease.TreatmentId);
-            DBHelper.AddParam(command, "@DiseaseTypeId", SqlDbType.BigInt, disease.DiseaseTypeId);
+            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioType.RadioId);
+            DBHelper.AddParam(command, "@RadioTypeId", SqlDbType.BigInt, radioType.RadioTypeId);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, disease.Status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, disease.Id);
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, radioType.Status);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, radioType.Id);
 
             using (conn)
             {
@@ -232,16 +225,16 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> UpdateStatusByTreatmentId(long treatmentId, int curStatus, int newStatus)
+        public async Task<bool> UpdateStatusByRadioId(long radioId, int curStatus, int newStatus)
         {
             String strCmd = $"UPDATE {table}" +
                             " SET UpdateDateTime = @UpdateDateTime, Status = @NewStatus" +
-                            " WHERE TreatmentId = @TreatmentId AND Status = @CurStatus";
+                            " WHERE RadioId = @RadioId AND Status = @CurStatus";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@TreatmentId", SqlDbType.BigInt, treatmentId);
+            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioId);
             DBHelper.AddParam(command, "@CurStatus", SqlDbType.Int, curStatus);
             DBHelper.AddParam(command, "@NewStatus", SqlDbType.Int, newStatus);
 

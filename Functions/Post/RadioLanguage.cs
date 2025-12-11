@@ -1,24 +1,23 @@
 using System;
-using System.Collections.Generic;
 
 namespace HeroServer
 {
-    public class Contact
+    public class RadioLanguage
     {
         public long Id { get; set; }
-        public long PostId { get; set; }
-        public String Name { get; set; }
+        public long RadioId { get; set; }
+        public long LanguageTypeId { get; set; }
         public DateTime CreateDateTime { get; set; }
         public DateTime UpdateDateTime { get; set; }
         public int Status { get; set; }
 
-        public Contact() { }
+        public RadioLanguage() { }
 
-        public Contact(long id, long postId, String name, DateTime createDateTime, DateTime updateDateTime, int status)
+        public RadioLanguage(long id, long radioId, long languageTypeId, DateTime createDateTime, DateTime updateDateTime, int status)
         {
             Id = id;
-            PostId = postId;
-            Name = name;
+            RadioId = radioId;
+            LanguageTypeId = languageTypeId;
             CreateDateTime = createDateTime;
             UpdateDateTime = updateDateTime;
             Status = status;

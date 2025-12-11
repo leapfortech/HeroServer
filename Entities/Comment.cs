@@ -1,24 +1,26 @@
 using System;
-using System.Collections.Generic;
 
 namespace HeroServer
 {
-    public class Contact
+    public class Comment
     {
         public long Id { get; set; }
         public long PostId { get; set; }
-        public String Name { get; set; }
+        public long AppUserId { get; set; }
+        public String Message { get; set; }
         public DateTime CreateDateTime { get; set; }
         public DateTime UpdateDateTime { get; set; }
         public int Status { get; set; }
 
-        public Contact() { }
+        public Comment() { }
 
-        public Contact(long id, long postId, String name, DateTime createDateTime, DateTime updateDateTime, int status)
+        public Comment(long id, long postId, long appUserId, String message, DateTime createDateTime,
+                             DateTime updateDateTime, int status)
         {
             Id = id;
             PostId = postId;
-            Name = name;
+            AppUserId = appUserId;
+            Message = message;
             CreateDateTime = createDateTime;
             UpdateDateTime = updateDateTime;
             Status = status;

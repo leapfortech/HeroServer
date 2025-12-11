@@ -11,13 +11,14 @@ namespace HeroServer
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
         readonly String table = "[D-Treatment]";
 
-        private static Treatment GetTreatment(SqlDataReader reader)
+        public static Treatment GetTreatment(SqlDataReader reader)
         {
             return new Treatment(Convert.ToInt64(reader["Id"]),
                                  Convert.ToInt64(reader["PostId"]),
                                  reader["Ingredients"].ToString(),
                                  reader["Preparation"].ToString(),
                                  reader["Usage"].ToString(),
+                                 reader["Annotation"].ToString(),
                                  Convert.ToDateTime(reader["CreateDateTime"]),
                                  Convert.ToDateTime(reader["UpdateDateTime"]),
                                  Convert.ToInt32(reader["Status"]));
@@ -30,10 +31,9 @@ namespace HeroServer
                                      Convert.ToInt64(reader["PostId"]),
                                      Convert.ToInt64(reader["AppUserId"]),
                                      reader["AppUserAlias"].ToString(),
-                                     Convert.ToInt64(reader["PostTypeId"]),
                                      Convert.ToInt64(reader["PostSubtypeId"]),
-                                     Convert.ToInt64(reader["PostOriginCountryId"]),
-                                     Convert.ToInt64(reader["PostOriginStateId"]),
+                                     Convert.ToInt64(reader["PostCountryId"]),
+                                     Convert.ToInt64(reader["PostStateId"]),
                                      reader["Title"].ToString(),
                                      reader["Summary"].ToString(),
                                      reader["Description"].ToString(),
@@ -45,6 +45,7 @@ namespace HeroServer
                                      reader["Ingredients"].ToString(),
                                      reader["Preparation"].ToString(),
                                      reader["Usage"].ToString(),
+                                     reader["Annotation"].ToString(),
                                      Convert.ToInt32(reader["Status"]),
 
                                      null ); // DiseaseFulls
@@ -100,10 +101,10 @@ namespace HeroServer
         public async Task<TreatmentFull> GetFullById(long id)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
-                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
-                             " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostSubtypeId," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
-                            $" {table}.Ingredients, {table}.Preparation, {table}.Usage, {table}.Status" +
+                            $" {table}.Ingredients, {table}.Preparation, {table}.Usage, {table}.Annotation, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN Post ON ({table}.PostId = Post.PostId)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
@@ -147,10 +148,10 @@ namespace HeroServer
         public async Task<TreatmentFull> GetFullByPostId(long postId)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
-                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
-                             " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostSubtypeId," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
-                            $" {table}.Ingredients, {table}.Preparation, {table}.Usage, {table}.Status" +
+                            $" {table}.Ingredients, {table}.Preparation, {table}.Usage, {table}.Annotation, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN Post ON ({table}.PostId = Post.PostId)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
@@ -194,10 +195,10 @@ namespace HeroServer
         public async Task<TreatmentDataFull> GetFullsByStatus(int status)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
-                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId, Post.PostSubtypeId," +
-                             " Post.PostOriginCountryId, Post.PostOriginStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostSubtypeId," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
-                            $" {table}.Ingredients, {table}.Preparation, {table}.Usage, {table}.Status" +
+                            $" {table}.Ingredients, {table}.Preparation, {table}.Usage, {table}.Annotation, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN Post ON ({table}.PostId = Post.PostId)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)";
@@ -255,9 +256,9 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(Treatment treatment)
         {
-            String strCmd = $"INSERT INTO {table}(Id, PostId, Ingredients, Preparation, Usage, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(Id, PostId, Ingredients, Preparation, Usage, Annotation, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @PostId, @Ingredients, @Preparation, @Usage, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@Id, @PostId, @Ingredients, @Preparation, @Usage, @Annotation, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -266,6 +267,7 @@ namespace HeroServer
             DBHelper.AddParam(command, "@Ingredients", SqlDbType.VarChar, treatment.Ingredients);
             DBHelper.AddParam(command, "@Preparation", SqlDbType.VarChar, treatment.Preparation);
             DBHelper.AddParam(command, "@Usage", SqlDbType.VarChar, treatment.Usage);
+            DBHelper.AddParam(command, "@Annotation", SqlDbType.VarChar, treatment.Annotation);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, treatment.Status);
@@ -280,7 +282,7 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(Treatment treatment)
         {
-            String strCmd = $"UPDATE {table} SET PostId = @PostId, Ingredients = @Ingredients, Preparation = @Preparation, Usage = @Usage, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET PostId = @PostId, Ingredients = @Ingredients, Preparation = @Preparation, Usage = @Usage, Annotation = @Annotation, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -288,6 +290,7 @@ namespace HeroServer
             DBHelper.AddParam(command, "@Ingredients", SqlDbType.VarChar, treatment.Ingredients);
             DBHelper.AddParam(command, "@Preparation", SqlDbType.VarChar, treatment.Preparation);
             DBHelper.AddParam(command, "@Usage", SqlDbType.VarChar, treatment.Usage);
+            DBHelper.AddParam(command, "@Annotation", SqlDbType.VarChar, treatment.Annotation);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, treatment.Status);
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, treatment.Id);

@@ -7,10 +7,9 @@ namespace HeroServer
         public long PostId { get; set; }
         public long AppUserId { get; set; }
         public String AppUserAlias { get; set; }
-        public long PostTypeId { get; set; }
         public long PostSubtypeId { get; set; }
-        public long PostOriginCountryId { get; set; }
-        public long PostOriginStateId { get; set; }
+        public long PostCountryId { get; set; }
+        public long PostStateId { get; set; }
         public String Title { get; set; }
         public String Summary { get; set; }
         public String Description { get; set; }
@@ -24,17 +23,16 @@ namespace HeroServer
         }
 
         public PostFull(long postId, long appUserId, String appUserAlias,
-                        long postTypeId, long postSubtypeId, long postOriginCountryId, long postOriginStateId,
+                        long postSubtypeId, long postCountryId, long postStateId,
                         String title, String summary, String description,
                         int imageCount, int likeCount, DateTime publicationDateTime, int postStatus)
         {
             PostId = postId;
             AppUserId = appUserId;
             AppUserAlias = appUserAlias;
-            PostTypeId = postTypeId;
             PostSubtypeId = postSubtypeId;
-            PostOriginCountryId = postOriginCountryId;
-            PostOriginStateId = postOriginStateId;
+            PostCountryId = postCountryId;
+            PostStateId = postStateId;
             Title = title;
             Summary = summary;
             Description = description;

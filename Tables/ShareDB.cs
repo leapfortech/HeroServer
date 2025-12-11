@@ -6,29 +6,27 @@ using System.Threading.Tasks;
 
 namespace HeroServer
 {
-    public class PuzzlePlayerDB
+    public class ShareDB
     {
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
-        readonly String table = "[J-PuzzlePlayer]";
+        readonly String table = "[J-Share]";
 
-        private static PuzzlePlayer GetPuzzlePlayer(SqlDataReader reader)
+        private static Share GetShare(SqlDataReader reader)
         {
-            return new PuzzlePlayer(Convert.ToInt64(reader["Id"]),
-                                    Convert.ToInt64(reader["PlayerId"]),
-                                    Convert.ToInt64(reader["PuzzleId"]),
-                                    Convert.ToInt32(reader["IsGuessed"]),
-                                    reader["AttemptDateTime"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(reader["AttemptDateTime"]),
-                                    Convert.ToDateTime(reader["CreateDateTime"]));
+            return new Share(Convert.ToInt64(reader["Id"]),
+                             Convert.ToInt64(reader["PostId"]),
+                             Convert.ToInt64(reader["AppUserId"]),
+                             Convert.ToDateTime(reader["CreateDateTime"]));
         }
 
         // GET
-        public async Task<IEnumerable<PuzzlePlayer>> GetAll()
+        public async Task<IEnumerable<Share>> GetAll()
         {
             String strCmd = $"SELECT * FROM {table}";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<PuzzlePlayer> puzzlePlayers = new List<PuzzlePlayer>();
+            List<Share> shares = new List<Share>();
             using (conn)
             {
                 await conn.OpenAsync();
@@ -36,15 +34,39 @@ namespace HeroServer
                 {
                     while (await reader.ReadAsync())
                     {
-                         PuzzlePlayer puzzlePlayer = GetPuzzlePlayer(reader);
-                         puzzlePlayers.Add(puzzlePlayer);
+                         Share share = GetShare(reader);
+                         shares.Add(share);
                     }
                 }
             }
-            return puzzlePlayers;
+            return shares;
         }
 
-        public async Task<PuzzlePlayer> GetById(long id, int status = 1)
+        public async Task<IEnumerable<Share>> GetAllByPostId(long postId, int status = 1)
+        {
+            String strCmd = $"SELECT * FROM {table} WHERE PostId = @PostId";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+
+            List<Share> shares = new List<Share>();
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Share share = GetShare(reader);
+                        shares.Add(share);
+                    }
+                }
+            }
+            return shares;
+        }
+
+        public async Task<Share> GetById(long id, int status = 1)
         {
             String strCmd = $"SELECT * FROM {table} WHERE Id = @Id AND Status = @Status";
 
@@ -53,7 +75,7 @@ namespace HeroServer
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
-            PuzzlePlayer puzzlePlayer = null;
+            Share share = null;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -61,23 +83,23 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                         puzzlePlayer = GetPuzzlePlayer(reader);
+                         share = GetShare(reader);
                     }
                 }
             }
-            return puzzlePlayer;
+            return share;
         }
 
-        public async Task<PuzzlePlayer> GetByPlayerId(long playerId, int status = 1)
+        public async Task<Share> GetByPostId(long postId, int status = 1)
         {
-            String strCmd = $"SELECT * FROM {table} WHERE PlayerId = @PlayerId AND Status = @Status";
+            String strCmd = $"SELECT * FROM {table} WHERE PostId = @PostId AND Status = @Status";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PlayerId", SqlDbType.BigInt, playerId);
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
-            PuzzlePlayer puzzlePlayer = null;
+            Share share = null;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -85,26 +107,26 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                        puzzlePlayer = GetPuzzlePlayer(reader);
+                        share = GetShare(reader);
                     }
                 }
             }
-            return puzzlePlayer;
+            return share;
         }
 
-        public async Task<long> GetIdByPlayerId(long playerId, int status = 1)
+        public async Task<long> GetIdByPostId(long postId, int status = 1)
         {
-            String strCmd = $"SELECT Id FROM {table} WHERE PlayerId = @PlayerId";
+            String strCmd = $"SELECT Id FROM {table} WHERE PostId = @PostId";
             if (status != -1)
                 strCmd += " AND Status = @Status";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PlayerId", SqlDbType.BigInt, playerId);
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
             if (status != -1)
                 DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
-            long puzzlePlayerId = -1;
+            long shareId = -1;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -112,26 +134,25 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                        puzzlePlayerId = Convert.ToInt64(reader["Id"]);
+                        shareId = Convert.ToInt64(reader["Id"]);
                     }
                 }
             }
-            return puzzlePlayerId;
+            return shareId;
         }
 
+
         // INSERT
-        public async Task<long> Add(PuzzlePlayer puzzlePlayer)
+        public async Task<long> Add(Share share)
         {
-            String strCmd = $"INSERT INTO {table}(PlayerId, PuzzleId, IsGuessed, AttemptDateTime, CreateDateTime)" + 
+            String strCmd = $"INSERT INTO {table}(PostId, AppUserId, CreateDateTime)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@PlayerId, @PuzzleId, @IsGuessed, @AttemptDateTime, @CreateDateTime)";
+                            " VALUES (@PostId, @AppUserId, @CreateDateTime)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PlayerId", SqlDbType.BigInt, puzzlePlayer.PlayerId);
-            DBHelper.AddParam(command, "@PuzzleId", SqlDbType.BigInt, puzzlePlayer.PuzzleId);
-            DBHelper.AddParam(command, "@IsGuessed", SqlDbType.Int, puzzlePlayer.IsGuessed);
-            DBHelper.AddParam(command, "@AttemptDateTime", SqlDbType.DateTime, puzzlePlayer.AttemptDateTime);
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, share.PostId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, share.AppUserId);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
 
             using (conn)
@@ -142,17 +163,15 @@ namespace HeroServer
         }
 
         // UPDATE
-        public async Task<bool> Update(PuzzlePlayer puzzlePlayer)
+        public async Task<bool> Update(Share share)
         {
-            String strCmd = $"UPDATE {table} SET PlayerId = @PlayerId, PuzzleId = @PuzzleId, IsGuessed = @IsGuessed, AttemptDateTime = @AttemptDateTime WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET PostId = @PostId, AppUserId = @AppUserId WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PlayerId", SqlDbType.BigInt, puzzlePlayer.PlayerId);
-            DBHelper.AddParam(command, "@PuzzleId", SqlDbType.BigInt, puzzlePlayer.PuzzleId);
-            DBHelper.AddParam(command, "@IsGuessed", SqlDbType.Int, puzzlePlayer.IsGuessed);
-            DBHelper.AddParam(command, "@AttemptDateTime", SqlDbType.DateTime, puzzlePlayer.AttemptDateTime);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, puzzlePlayer.Id);
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, share.PostId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, share.AppUserId);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, share.Id);
 
             using (conn)
             {

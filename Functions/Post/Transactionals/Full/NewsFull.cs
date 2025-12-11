@@ -6,10 +6,8 @@ namespace HeroServer
     {
         public long Id { get; set; }
         public long NewsTypeId { get; set; }
-        public long OriginCountryId { get; set; }
-        public long OriginStateId { get; set; }
+        public String Place { get; set; }
         public String Source { get; set; }
-        public String Url { get; set; }
         public DateTime? DateTime { get; set; }
         public int Status { get; set; }
 
@@ -18,24 +16,21 @@ namespace HeroServer
         }
 
         public NewsFull(long id, long postId, long appUserId, String appUserAlias,
-                        long postTypeId, long postSubtypeId,
-                        long postOriginCountryId, long postOriginStateId,
+                        long postSubtypeId,
+                        long postCountryId, long postStateId,
                         String title, String summary, String description,
                         int imageCount, int likeCount, DateTime publicationDateTime,
-                        int postStatus,
-                        long newsTypeId, long originCountryId, long originStateId,
-                        String source, String url, DateTime? dateTime,
+                        int postStatus, long newsTypeId, String place,
+                        String source, DateTime? dateTime,
                         int status)
-            : base(postId, appUserId, appUserAlias, postTypeId, postSubtypeId,
-                   postOriginCountryId, postOriginStateId, title, summary, description,
+            : base(postId, appUserId, appUserAlias, postSubtypeId,
+                   postCountryId, postStateId, title, summary, description,
                    imageCount, likeCount, publicationDateTime, postStatus)
         {
             Id = id;
             NewsTypeId = newsTypeId;
-            OriginCountryId = originCountryId;
-            OriginStateId = originStateId;
+            Place = place;
             Source = source;
-            Url = url;
             DateTime = dateTime;
             Status = status;
         }

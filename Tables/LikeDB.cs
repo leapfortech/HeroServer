@@ -6,35 +6,30 @@ using System.Threading.Tasks;
 
 namespace HeroServer
 {
-    public class ContactDB
+    public class LikeDB
     {
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
-        readonly String table = "[D-Contact]";
+        readonly String table = "[D-Like]";
 
-        private static Contact GetContact(SqlDataReader reader)
+        private static Like GetLike(SqlDataReader reader)
         {
-            return new Contact(Convert.ToInt64(reader["Id"]),
-                               Convert.ToInt64(reader["PostId"]),
-                               reader["Name"].ToString(),
-                               Convert.ToDateTime(reader["CreateDateTime"]),
-                               Convert.ToDateTime(reader["UpdateDateTime"]),
-                               Convert.ToInt32(reader["Status"]));
-        }
-
-        public static ContactFull GetContactFull(SqlDataReader reader)
-        {
-            return new ContactFull(Convert.ToInt64(reader["Id"]),
-                                   reader["Name"].ToString());
+            return new Like(Convert.ToInt64(reader["Id"]),
+                            Convert.ToInt64(reader["PostId"]),
+                            Convert.ToInt64(reader["AppUserId"]),
+                            Convert.ToInt32(reader["Rank"]),
+                            Convert.ToDateTime(reader["CreateDateTime"]),
+                            Convert.ToDateTime(reader["UpdateDateTime"]),
+                            Convert.ToInt32(reader["Status"]));
         }
 
         // GET
-        public async Task<IEnumerable<Contact>> GetAll()
+        public async Task<IEnumerable<Like>> GetAll()
         {
             String strCmd = $"SELECT * FROM {table}";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<Contact> contacts = new List<Contact>();
+            List<Like> likes = new List<Like>();
             using (conn)
             {
                 await conn.OpenAsync();
@@ -42,15 +37,15 @@ namespace HeroServer
                 {
                     while (await reader.ReadAsync())
                     {
-                         Contact contact = GetContact(reader);
-                         contacts.Add(contact);
+                         Like like = GetLike(reader);
+                         likes.Add(like);
                     }
                 }
             }
-            return contacts;
+            return likes;
         }
 
-        public async Task<Contact> GetById(long id)
+        public async Task<Like> GetById(long id)
         {
             String strCmd = $"SELECT * FROM {table} WHERE Id = @Id";
 
@@ -58,7 +53,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
-            Contact contact = null;
+            Like like = null;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -66,28 +61,28 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                         contact = GetContact(reader);
+                         like = GetLike(reader);
                     }
                 }
             }
-            return contact;
+            return like;
         }
 
         // INSERT
-        public async Task<long> Add(Contact contact)
+        public async Task<long> Add(Like like)
         {
-            String strCmd = $"INSERT INTO {table}(Id, PostId, Name, PhoneCountryId, Phone, Email, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(PostId, AppUserId, Rank, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @PostId, @Name, @PhoneCountryId, @Phone, @Email, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@PostId, @AppUserId, @Rank, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('~'));
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, contact.PostId);
-            DBHelper.AddParam(command, "@Name", SqlDbType.VarChar, contact.Name);
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, like.PostId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, like.AppUserId);
+            DBHelper.AddParam(command, "@Rank", SqlDbType.Int, like.Rank);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, contact.Status);
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, like.Status);
 
             using (conn)
             {
@@ -97,17 +92,18 @@ namespace HeroServer
         }
 
         // UPDATE
-        public async Task<bool> Update(Contact contact)
+        public async Task<bool> Update(Like like)
         {
-            String strCmd = $"UPDATE {table} SET PostId = @PostId, Name = @Name, PhoneCountryId = @PhoneCountryId, Phone = @Phone, Email = @Email, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET PostId = @PostId, AppUserId = @AppUserId, Rank = @Rank, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, contact.PostId);
-            DBHelper.AddParam(command, "@Name", SqlDbType.VarChar, contact.Name);
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, like.PostId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, like.AppUserId);
+            DBHelper.AddParam(command, "@Rank", SqlDbType.Int, like.Rank);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, contact.Status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, contact.Id);
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, like.Status);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, like.Id);
 
             using (conn)
             {
