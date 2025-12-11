@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace HeroServer
 {
@@ -18,6 +19,10 @@ namespace HeroServer
         public DateTime PublicationDateTime { get; set; }
         public int PostStatus { get; set; }
 
+        public ContactFull ContactFull { get; set; }
+        public List<LinkFull> LinkFulls { get; set; }
+        public List<CommentFull> CommentFulls { get; set; }
+
         public PostFull()
         {
         }
@@ -25,7 +30,10 @@ namespace HeroServer
         public PostFull(long postId, long appUserId, String appUserAlias,
                         long postSubtypeId, long postCountryId, long postStateId,
                         String title, String summary, String description,
-                        int imageCount, int likeCount, DateTime publicationDateTime, int postStatus)
+                        int imageCount, int likeCount, DateTime publicationDateTime, int postStatus,
+                        ContactFull contactFull,
+                        List<LinkFull> linkFulls,
+                        List<CommentFull> commentFulls)
         {
             PostId = postId;
             AppUserId = appUserId;
@@ -40,6 +48,10 @@ namespace HeroServer
             LikeCount = likeCount;
             PublicationDateTime = publicationDateTime;
             PostStatus = postStatus;
+
+            ContactFull = contactFull;
+            LinkFulls = linkFulls;
+            CommentFulls = commentFulls;
         }
     }
 }

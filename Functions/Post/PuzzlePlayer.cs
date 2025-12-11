@@ -11,7 +11,9 @@ namespace HeroServer
         public DateTime? AttemptDateTime { get; set; }
         public DateTime CreateDateTime { get; set; }
 
-        public PuzzlePlayer() { }
+        public PuzzlePlayer()
+        {
+        }
 
         public PuzzlePlayer(long id, long playerId, long puzzleId, int isGuessed, DateTime? attemptDateTime,
                             DateTime createDateTime)

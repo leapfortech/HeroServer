@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace HeroServer
 {
@@ -29,6 +30,9 @@ namespace HeroServer
                              String title, String summary, String description,
                              int imageCount, int likeCount, DateTime publicationDateTime,
                              int postStatus,
+                             ContactFull contactFull,
+                             List<LinkFull> linkFulls,
+                             List<CommentFull> commentFulls,
                              long eventTypeId, long countryId, long stateId,
                              int isPublic, int hasSignup, int hasPayment, String paymentDetails,
                              DateTime? startDateTime, DateTime? endDateTime,
@@ -36,7 +40,8 @@ namespace HeroServer
                              int status)
             : base(postId, appUserId, appUserAlias, postSubtypeId,
                    countryId, stateId, title, summary, description,
-                   imageCount, likeCount, publicationDateTime, postStatus)
+                   imageCount, likeCount, publicationDateTime, postStatus,
+                   contactFull, linkFulls, commentFulls)
         {
             Id = id;
             EventTypeId = eventTypeId;

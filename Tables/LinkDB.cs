@@ -22,6 +22,14 @@ namespace HeroServer
                             Convert.ToInt32(reader["Status"]));
         }
 
+        public static LinkFull GetLinkFull(SqlDataReader reader)
+        {
+            return new LinkFull(Convert.ToInt64(reader["Id"]),
+                                Convert.ToInt64(reader["LinkTypeId"]),
+                                reader["Url"].ToString(),
+                                Convert.ToInt32(reader["Status"]));
+        }
+
         // GET
         public async Task<IEnumerable<Link>> GetAll()
         {

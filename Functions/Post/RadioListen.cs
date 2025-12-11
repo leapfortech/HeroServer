@@ -9,7 +9,9 @@ namespace HeroServer
         public long AppUserId { get; set; }
         public DateTime CreateDateTime { get; set; }
 
-        public RadioListen() { }
+        public RadioListen()
+        {
+        }
 
         public RadioListen(long id, long radioId, long appUserId, DateTime createDateTime)
         {

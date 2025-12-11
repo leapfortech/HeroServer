@@ -12,7 +12,9 @@ namespace HeroServer
         public DateTime UpdateDateTime { get; set; }
         public int Status { get; set; }
 
-        public Link() { }
+        public Link() 
+        {
+        }
 
         public Link(long id, long linkTypeId, long postId, String url, DateTime createDateTime, DateTime updateDateTime, int status)
         {

@@ -25,6 +25,9 @@ namespace HeroServer
                            String title, String summary, String description,
                            int imageCount, int likeCount, DateTime publicationDateTime,
                            int postStatus,
+                           ContactFull contactFull,
+                           List<LinkFull> linkFulls,
+                           List<CommentFull> commentFulls,
                            long productSubtypeId, long saleCountryId, long saleStateId,
                            long currencyId, double price, double discountPrice,
                            long deliveryTypeId, String annotation,
@@ -32,7 +35,8 @@ namespace HeroServer
                            List<ProductReviewFull> productReviewFulls)
             : base(postId, appUserId, appUserAlias, postSubtypeId,
                    postCountryId, postStateId, title, summary, description,
-                   imageCount, likeCount, publicationDateTime, postStatus)
+                   imageCount, likeCount, publicationDateTime, postStatus,
+                   contactFull, linkFulls, commentFulls)
         {
             Id = id;
             ProductSubtypeId = productSubtypeId;

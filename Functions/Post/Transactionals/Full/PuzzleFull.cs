@@ -24,6 +24,9 @@ namespace HeroServer
                           String title, String summary, String description,
                           int imageCount, int likeCount, DateTime publicationDateTime,
                           int postStatus,
+                          ContactFull contactFull,
+                          List<LinkFull> linkFulls,
+                          List<CommentFull> commentFulls,
                           long puzzleSubtypeId, long countryId,
                           String question, String hint,
                           int difficulty, int points, int playCount,
@@ -31,7 +34,8 @@ namespace HeroServer
                           List<PuzzleAnswerFull> puzzleAnswerFulls)
             : base(postId, appUserId, appUserAlias, postSubtypeId,
                    postCountryId, postStateId, title, summary, description,
-                   imageCount, likeCount, publicationDateTime, postStatus)
+                   imageCount, likeCount, publicationDateTime, postStatus,
+                   contactFull, linkFulls, commentFulls)
         {
             Id = id;
             PuzzleSubtypeId = puzzleSubtypeId;

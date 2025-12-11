@@ -9,7 +9,9 @@ namespace HeroServer
         public long AppUserId { get; set; }
         public DateTime CreateDateTime { get; set; }
 
-        public PostRead() { }
+        public PostRead() 
+        {
+        }
 
         public PostRead(long id, long postId, long appUserId, DateTime createDateTime)
         {

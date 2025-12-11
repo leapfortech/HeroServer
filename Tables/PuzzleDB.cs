@@ -44,6 +44,9 @@ namespace HeroServer
                                   Convert.ToInt32(reader["LikeCount"]),
                                   Convert.ToDateTime(reader["PublicationDateTime"]),
                                   Convert.ToInt32(reader["PostStatus"]),
+                                  null,   //ContactFull
+                                  null,   //LinkFulls
+                                  null,   //CommentFulls
 
                                   Convert.ToInt64(reader["PuzzleSubtypeId"]),
                                   Convert.ToInt64(reader["CountryId"]),
@@ -121,6 +124,20 @@ namespace HeroServer
                       " FROM [D-PuzzleAnswer]" +
                       " WHERE PuzzleId = @Id;";
 
+            strCmd += "SELECT Id, Name, Status" +
+                       " FROM [D-Contact]" +
+                      $" WHERE Status = 1 AND PostId = (SELECT PostId FROM {table} WHERE Id = @Id);";
+
+            strCmd += "SELECT Link.Id, Link.LinkTypeId, Link.Url, Link.Status" +
+                       " FROM [D-Link] AS Link" +
+                      $" WHERE Link.Status = 1 AND Link.PostId = (SELECT PostId FROM {table} WHERE Id = @Id);";
+
+            strCmd += "SELECT Comment.Id, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
+                      " Comment.Message, Comment.UpdateDateTime, Comment.Status" +
+                      " FROM [D-Comment] AS Comment" +
+                      " INNER JOIN [D-AppUser] AS AppUser ON (Comment.AppUserId = AppUser.Id)" +
+                     $" WHERE Comment.Status = 1 AND Comment.PostId = (SELECT PostId FROM {table} WHERE Id = @Id);";
+
             SqlCommand command = new SqlCommand(strCmd, conn);
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
@@ -139,6 +156,22 @@ namespace HeroServer
                     puzzleFull.PuzzleAnswerFulls = [];
                     while (await reader.ReadAsync())
                         puzzleFull.PuzzleAnswerFulls.Add(PuzzleAnswerDB.GetPuzzleAnswerFull(reader));
+
+                    await reader.NextResultAsync();
+                    if (await reader.ReadAsync())
+                        puzzleFull.ContactFull = ContactDB.GetContactFull(reader);
+
+                    await reader.NextResultAsync();
+                    List<LinkFull> linkFulls = [];
+                    while (await reader.ReadAsync())
+                        linkFulls.Add(LinkDB.GetLinkFull(reader));
+                    puzzleFull.LinkFulls = linkFulls;
+
+                    await reader.NextResultAsync();
+                    List<CommentFull> commentFulls = [];
+                    while (await reader.ReadAsync())
+                        commentFulls.Add(CommentDB.GetCommentFull(reader));
+                    puzzleFull.CommentFulls = commentFulls;
                 }
             }
 
@@ -163,6 +196,20 @@ namespace HeroServer
                       " WHERE PuzzleId IN" +
                       $" (SELECT Id FROM {table} WHERE PostId = @PostId);";
 
+            strCmd += "SELECT Id, Name, Status" +
+                       " FROM [D-Contact]" +
+                       " WHERE Status = 1 AND PostId = @PostId;";
+
+            strCmd += "SELECT Link.Id, Link.LinkTypeId, Link.Url, Link.Status" +
+              " FROM [D-Link] AS Link" +
+              " WHERE Link.Status = 1 AND Link.PostId = @PostId;";
+
+            strCmd += "SELECT Comment.Id, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
+                      " Comment.Message, Comment.UpdateDateTime, Comment.Status" +
+                      " FROM [D-Comment] AS Comment" +
+                      " INNER JOIN [D-AppUser] AS AppUser ON(Comment.AppUserId = AppUser.Id)" +
+                      " WHERE Comment.Status = 1 AND Comment.PostId = @PostId;";
+
             SqlCommand command = new SqlCommand(strCmd, conn);
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
 
@@ -181,6 +228,22 @@ namespace HeroServer
                     puzzleFull.PuzzleAnswerFulls = [];
                     while (await reader.ReadAsync())
                         puzzleFull.PuzzleAnswerFulls.Add(PuzzleAnswerDB.GetPuzzleAnswerFull(reader));
+
+                    await reader.NextResultAsync();
+                    if (await reader.ReadAsync())
+                        puzzleFull.ContactFull = ContactDB.GetContactFull(reader);
+
+                    await reader.NextResultAsync();
+                    List<LinkFull> linkFulls = [];
+                    while (await reader.ReadAsync())
+                        linkFulls.Add(LinkDB.GetLinkFull(reader));
+                    puzzleFull.LinkFulls = linkFulls;
+
+                    await reader.NextResultAsync();
+                    List<CommentFull> commentFulls = [];
+                    while (await reader.ReadAsync())
+                        commentFulls.Add(CommentDB.GetCommentFull(reader));
+                    puzzleFull.CommentFulls = commentFulls;
                 }
             }
 
@@ -215,13 +278,45 @@ namespace HeroServer
             else
                 strCmd += ";";
 
+            strCmd += "SELECT Contact.Id, Contact.Name, Contact.Status" +
+                      " FROM [D-Contact] AS Contact" +
+                      $" INNER JOIN {table} ON (Contact.PostId = {table}.PostId)" +
+                       " WHERE Contact.Status = 1";
+
+            if (status != -1)
+                strCmd += $" AND {table}.Status = @Status;";
+            else
+                strCmd += ";";
+
+            strCmd += "SELECT Link.Id, Link.LinkTypeId, Link.Url, Link.Status" +
+                       " FROM [D-Link] AS Link" +
+                      $" INNER JOIN {table} ON (Link.PostId = {table}.PostId)" +
+                       " WHERE Link.Status = 1";
+
+            if (status != -1)
+                strCmd += $" AND {table}.Status = @Status;";
+            else
+                strCmd += ";";
+
+            strCmd += "SELECT Comment.Id, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
+                       " Comment.Message, Comment.UpdateDateTime, Comment.Status" +
+                       " FROM [D-Comment] AS Comment" +
+                       " INNER JOIN [D-AppUser] AS AppUser ON(Comment.AppUserId = AppUser.Id)" +
+                      $" INNER JOIN {table}" +
+                      $" ON (Comment.PostId = {table}.PostId)" +
+                       " WHERE Comment.Status = 1";
+
+            if (status != -1)
+                strCmd += $" AND {table}.Status = @Status;";
+            else
+                strCmd += ";";
+
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             if (status != -1)
                 DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
             PuzzleDataFull puzzleDataFull = new PuzzleDataFull();
-
             using (conn)
             {
                 await conn.OpenAsync();
@@ -237,6 +332,24 @@ namespace HeroServer
                     while (await reader.ReadAsync())
                         puzzleAnswerFulls.Add(PuzzleAnswerDB.GetPuzzleAnswerFull(reader));
                     puzzleDataFull.PuzzleAnswerFulls = puzzleAnswerFulls;
+
+                    await reader.NextResultAsync();
+                    List<ContactFull> contactFulls = [];
+                    while (await reader.ReadAsync())
+                        contactFulls.Add(ContactDB.GetContactFull(reader));
+                    puzzleDataFull.ContactFulls = contactFulls;
+
+                    await reader.NextResultAsync();
+                    List<LinkFull> linkFulls = [];
+                    while (await reader.ReadAsync())
+                        linkFulls.Add(LinkDB.GetLinkFull(reader));
+                    puzzleDataFull.LinkFulls = linkFulls;
+
+                    await reader.NextResultAsync();
+                    List<CommentFull> commentFulls = [];
+                    while (await reader.ReadAsync())
+                        commentFulls.Add(CommentDB.GetCommentFull(reader));
+                    puzzleDataFull.CommentFulls = commentFulls;
                 }
             }
 

@@ -19,11 +19,15 @@ namespace HeroServer
                              String title, String summary, String description,
                              int imageCount, int likeCount, DateTime publicationDateTime,
                              int postStatusId,
+                             ContactFull contactFull,
+                             List<LinkFull> linkFulls,
+                             List<CommentFull> commentFulls,
                              String ingredients, String preparation, String usage, String annotation,
                              int status, List<DiseaseFull> diseaseFulls)
             : base(postId, appUserId, appUserAlias, postSubtypeId,
                    postCountryId, postStateId, title, summary, description,
-                   imageCount, likeCount, publicationDateTime, postStatusId)
+                   imageCount, likeCount, publicationDateTime, postStatusId,
+                   contactFull, linkFulls, commentFulls)
         {
             Id = id;
             Ingredients = ingredients;

@@ -11,7 +11,9 @@ namespace HeroServer
         public DateTime UpdateDateTime { get; set; }
         public int Status { get; set; }
 
-        public Disease() { }
+        public Disease() 
+        {
+        }
 
         public Disease(long id, long treatmentId, long diseaseTypeId, DateTime createDateTime, DateTime updateDateTime, int status)
         {

@@ -2,20 +2,20 @@
 
 namespace HeroServer
 {
-    public class ContactFull
+    public class RadioTypeFull
     {
         public long Id { get; set; }
-        public String Name { get; set; }
+        public long RadioTypeId { get; set; }
         public int Status { get; set; }
 
-        public ContactFull()
+        public RadioTypeFull()
         {
         }
 
-        public ContactFull(long id, String name, int status)
+        public RadioTypeFull(long id, long radioTypeId, int status)
         {
             Id = id;
-            Name = name;
+            RadioTypeId = radioTypeId;
             Status = status;
         }
     }

@@ -11,7 +11,9 @@ namespace HeroServer
         public DateTime UpdateDateTime { get; set; }
         public int Status { get; set; }
 
-        public Favorite() { }
+        public Favorite()
+        {
+        }
 
         public Favorite(long id, long postId, long appUserId, DateTime createDateTime, DateTime updateDateTime, int status)
         {

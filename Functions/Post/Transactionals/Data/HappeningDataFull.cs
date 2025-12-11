@@ -2,26 +2,23 @@
 
 namespace HeroServer
 {
-    public class TreatmentDataFull
+    public class HappeningDataFull
     {
-        public List<TreatmentFull> TreatmentFulls { get; set; }
-        public List<DiseaseFull> DiseaseFulls { get; set; }
+        public List<HappeningFull> HappeningFulls { get; set; }
         public List<ContactFull> ContactFulls { get; set; }
         public List<LinkFull> LinkFulls { get; set; }
         public List<CommentFull> CommentFulls { get; set; }
 
-        public TreatmentDataFull()
+        public HappeningDataFull()
         {
         }
 
-        public TreatmentDataFull(List<TreatmentFull> treatmentFulls,
-                                 List<DiseaseFull> diseaseFulls,
+        public HappeningDataFull(List<HappeningFull> happeningFulls,
                                  List<ContactFull> contactFulls,
                                  List<LinkFull> linkFulls,
                                  List<CommentFull> commentFulls)
         {
-            TreatmentFulls = treatmentFulls;
-            DiseaseFulls = diseaseFulls;
+            HappeningFulls = happeningFulls;
             ContactFulls = contactFulls;
             LinkFulls = linkFulls;
             CommentFulls = commentFulls;

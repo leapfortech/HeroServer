@@ -11,7 +11,9 @@ namespace HeroServer
         public DateTime UpdateDateTime { get; set; }
         public int Status { get; set; }
 
-        public RadioLanguage() { }
+        public RadioLanguage()
+        {
+        }
 
         public RadioLanguage(long id, long radioId, long languageTypeId, DateTime createDateTime, DateTime updateDateTime, int status)
         {

@@ -21,6 +21,13 @@ namespace HeroServer
                                      Convert.ToInt32(reader["Status"]));
         }
 
+        public static RadioLanguageFull GetRadioLanguageFull(SqlDataReader reader)
+        {
+            return new RadioLanguageFull(Convert.ToInt64(reader["Id"]),
+                                         Convert.ToInt64(reader["LanguageTypeId"]),
+                                         Convert.ToInt32(reader["Status"]));
+        }
+
         // GET
         public async Task<IEnumerable<RadioLanguage>> GetAll()
         {

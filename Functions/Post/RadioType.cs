@@ -11,7 +11,9 @@ namespace HeroServer
         public DateTime UpdateDateTime { get; set; }
         public int Status { get; set; }
 
-        public RadioType() { }
+        public RadioType() 
+        {
+        }
 
         public RadioType(long id, long radioId, long radioTypeId, DateTime createDateTime, DateTime updateDateTime, int status)
         {

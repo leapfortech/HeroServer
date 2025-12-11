@@ -41,6 +41,9 @@ namespace HeroServer
                                      Convert.ToInt32(reader["LikeCount"]),
                                      Convert.ToDateTime(reader["PublicationDateTime"]),
                                      Convert.ToInt32(reader["PostStatus"]),
+                                     null,   //ContactFull
+                                     null,   //LinkFulls
+                                     null,   //CommentFulls
 
                                      reader["Ingredients"].ToString(),
                                      reader["Preparation"].ToString(),
@@ -116,6 +119,20 @@ namespace HeroServer
                        " WHERE Disease.Status = 1" +
                       $" AND {table}.Id = @Id;";
 
+            strCmd += "SELECT Id, Name, Status" +
+                       " FROM [D-Contact]" +
+                      $" WHERE Status = 1 AND PostId = (SELECT PostId FROM {table} WHERE Id = @Id);";
+
+            strCmd += "SELECT Link.Id, Link.LinkTypeId, Link.Url, Link.Status" +
+                       " FROM [D-Link] AS Link" +
+                      $" WHERE Link.Status = 1 AND Link.PostId = (SELECT PostId FROM {table} WHERE Id = @Id);";
+
+            strCmd += "SELECT Comment.Id, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
+                      " Comment.Message, Comment.UpdateDateTime, Comment.Status" +
+                      " FROM [D-Comment] AS Comment" +
+                      " INNER JOIN [D-AppUser] AS AppUser ON (Comment.AppUserId = AppUser.Id)" +
+                     $" WHERE Comment.Status = 1 AND Comment.PostId = (SELECT PostId FROM {table} WHERE Id = @Id);";
+
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
@@ -139,6 +156,22 @@ namespace HeroServer
                         DiseaseFull diseaseFull = DiseaseDB.GetDiseaseFull(reader);
                         treatmentFull.DiseaseFulls.Add(diseaseFull);
                     }
+
+                    await reader.NextResultAsync();
+                    if (await reader.ReadAsync())
+                        treatmentFull.ContactFull = ContactDB.GetContactFull(reader);
+
+                    await reader.NextResultAsync();
+                    List<LinkFull> linkFulls = [];
+                    while (await reader.ReadAsync())
+                        linkFulls.Add(LinkDB.GetLinkFull(reader));
+                    treatmentFull.LinkFulls = linkFulls;
+
+                    await reader.NextResultAsync();
+                    List<CommentFull> commentFulls = [];
+                    while (await reader.ReadAsync())
+                        commentFulls.Add(CommentDB.GetCommentFull(reader));
+                    treatmentFull.CommentFulls = commentFulls;
                 }
             }
 
@@ -163,6 +196,20 @@ namespace HeroServer
                        " WHERE Disease.Status = 1" +
                       $" AND {table}.PostId = @PostId;";
 
+            strCmd += "SELECT Id, Name, Status" +
+                       " FROM [D-Contact]" +
+                       " WHERE Status = 1 AND PostId = @PostId;";
+
+            strCmd += "SELECT Link.Id, Link.LinkTypeId, Link.Url, Link.Status" +
+              " FROM [D-Link] AS Link" +
+              " WHERE Link.Status = 1 AND Link.PostId = @PostId;";
+
+            strCmd += "SELECT Comment.Id, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
+                      " Comment.Message, Comment.UpdateDateTime, Comment.Status" +
+                      " FROM [D-Comment] AS Comment" +
+                      " INNER JOIN [D-AppUser] AS AppUser ON(Comment.AppUserId = AppUser.Id)" +
+                      " WHERE Comment.Status = 1 AND Comment.PostId = @PostId;";
+
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
@@ -186,6 +233,22 @@ namespace HeroServer
                         DiseaseFull diseaseFull = DiseaseDB.GetDiseaseFull(reader);
                         treatmentFull.DiseaseFulls.Add(diseaseFull);
                     }
+
+                    await reader.NextResultAsync();
+                    if (await reader.ReadAsync())
+                        treatmentFull.ContactFull = ContactDB.GetContactFull(reader);
+
+                    await reader.NextResultAsync();
+                    List<LinkFull> linkFulls = [];
+                    while (await reader.ReadAsync())
+                        linkFulls.Add(LinkDB.GetLinkFull(reader));
+                    treatmentFull.LinkFulls = linkFulls;
+
+                    await reader.NextResultAsync();
+                    List<CommentFull> commentFulls = [];
+                    while (await reader.ReadAsync())
+                        commentFulls.Add(CommentDB.GetCommentFull(reader));
+                    treatmentFull.CommentFulls = commentFulls;
                 }
             }
 
@@ -218,6 +281,39 @@ namespace HeroServer
             else
                 strCmd += ";";
 
+            strCmd += "SELECT Contact.Id, Contact.Name, Contact.Status" +
+                      " FROM [D-Contact] AS Contact" +
+                      $" INNER JOIN {table} ON (Contact.PostId = {table}.PostId)" +
+                       " WHERE Contact.Status = 1";
+
+            if (status != -1)
+                strCmd += $" AND {table}.Status = @Status;";
+            else
+                strCmd += ";";
+
+            strCmd += "SELECT Link.Id, Link.LinkTypeId, Link.Url, Link.Status" +
+                       " FROM [D-Link] AS Link" +
+                      $" INNER JOIN {table} ON (Link.PostId = {table}.PostId)" +
+                       " WHERE Link.Status = 1";
+
+            if (status != -1)
+                strCmd += $" AND {table}.Status = @Status;";
+            else
+                strCmd += ";";
+
+            strCmd += "SELECT Comment.Id, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
+                       " Comment.Message, Comment.UpdateDateTime, Comment.Status" +
+                       " FROM [D-Comment] AS Comment" +
+                       " INNER JOIN [D-AppUser] AS AppUser ON(Comment.AppUserId = AppUser.Id)" +
+                      $" INNER JOIN {table}" +
+                      $" ON (Comment.PostId = {table}.PostId)" +
+                       " WHERE Comment.Status = 1";
+
+            if (status != -1)
+                strCmd += $" AND {table}.Status = @Status;";
+            else
+                strCmd += ";";
+
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             if (status != -1)
@@ -232,21 +328,32 @@ namespace HeroServer
                 {
                     List<TreatmentFull> treatmentFulls = [];
                     while (await reader.ReadAsync())
-                    {
-                        TreatmentFull treatment = GetTreatmentFull(reader);
-                        treatmentFulls.Add(treatment);
-                    }
+                        treatmentFulls.Add(GetTreatmentFull(reader));
                     treatmentDataFull.TreatmentFulls = treatmentFulls;
 
                     await reader.NextResultAsync();
                     List<DiseaseFull> diseaseFulls = [];
                     while (await reader.ReadAsync())
-                    {
-                        DiseaseFull diseaseFull = DiseaseDB.GetDiseaseFull(reader);
-                        diseaseFulls.Add(diseaseFull);
-                    }
-
+                        diseaseFulls.Add(DiseaseDB.GetDiseaseFull(reader));
                     treatmentDataFull.DiseaseFulls = diseaseFulls;
+
+                    await reader.NextResultAsync();
+                    List<ContactFull> contactFulls = [];
+                    while (await reader.ReadAsync())
+                        contactFulls.Add(ContactDB.GetContactFull(reader));
+                    treatmentDataFull.ContactFulls = contactFulls;
+
+                    await reader.NextResultAsync();
+                    List<LinkFull> linkFulls = [];
+                    while (await reader.ReadAsync())
+                        linkFulls.Add(LinkDB.GetLinkFull(reader));
+                    treatmentDataFull.LinkFulls = linkFulls;
+
+                    await reader.NextResultAsync();
+                    List<CommentFull> commentFulls = [];
+                    while (await reader.ReadAsync())
+                        commentFulls.Add(CommentDB.GetCommentFull(reader));
+                    treatmentDataFull.CommentFulls = commentFulls;
                 }
             }
 
