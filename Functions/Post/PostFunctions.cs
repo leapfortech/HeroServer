@@ -268,6 +268,46 @@ namespace HeroServer
             return postId;
         }
 
+        public static async Task<long> RegisterShare(Share share)
+        {
+            return await new ShareDB().Add(share);
+        }
+
+        public static async Task<long> RegisterFavorite(Favorite favorite)
+        {
+            favorite.Status = 1;
+            return await new FavoriteDB().Add(favorite);
+        }
+
+        public static async Task<long> RegisterComment(Comment comment)
+        {
+            comment.Status = 1;
+            return await new CommentDB().Add(comment);
+        }
+
+        public static async Task<long> RegisterPostPlaint(PostPlaint postPlaint)
+        {
+            postPlaint.Status = 1;
+            return await new PostPlaintDB().Add(postPlaint);
+        }
+
+        public static async Task<long> RegisterPostRead(PostRead postRead)
+        {
+            return await new PostReadDB().Add(postRead);
+        }
+
+        public static async Task<long> RegisterReaction(Reaction reaction)
+        {
+            reaction.Status = 1;
+            return await new ReactionDB().Add(reaction);
+        }
+
+        public static async Task<long> RegisterLike(Like like)
+        {
+            like.Status = 1;
+            return await new LikeDB().Add(like);
+        }
+
         // IMAGES
         public static async Task RegisterImages(long postId, List<String> images)
         {
