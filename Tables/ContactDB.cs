@@ -29,7 +29,7 @@ namespace HeroServer
         }
 
         // GET
-        public async Task<IEnumerable<Contact>> GetAll()
+        public async Task<List<Contact>> GetAll()
         {
             String strCmd = $"SELECT * FROM {table}";
 

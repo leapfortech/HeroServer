@@ -53,11 +53,16 @@ namespace HeroServer
 
 
         // GET
-        public async Task<IEnumerable<Post>> GetAll()
+        public async Task<List<Post>> GetAllByStatus(int status = -1)
         {
             String strCmd = $"SELECT * FROM {table}";
+            if (status != -1)
+                strCmd += " WHERE Status = @Status";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
+
+            if (status != -1)
+                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
             List<Post> posts = [];
             using (conn)
@@ -153,6 +158,24 @@ namespace HeroServer
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, post.Status);
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, post.Id);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
+
+        public async Task<bool> UpdateImageCount(long id, int imageCount)
+        {
+            String strCmd = $"UPDATE {table}" +
+                            " SET ImageCount = @ImageCount" +
+                            " WHERE Id = @Id";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@ImageCount", SqlDbType.Int, imageCount);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {

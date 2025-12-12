@@ -29,12 +29,11 @@ namespace HeroServer
         }
 
         // REGISTER
-        public static async Task<long> Register(long postId, RegisterProductRequest registerProductRequest)
+        public static async Task<long> Register(RegisterProductRequest registerProductRequest)
         {
             long productId = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                registerProductRequest.Product.PostId = postId;
                 registerProductRequest.Product.Status = 1;
 
                 productId = await new ProductDB().Add(registerProductRequest.Product);

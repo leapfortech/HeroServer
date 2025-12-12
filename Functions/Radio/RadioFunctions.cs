@@ -29,12 +29,11 @@ namespace HeroServer
         }
 
         // REGISTER
-        public static async Task<long> Register(long postId, RegisterRadioRequest registerRadioRequest)
+        public static async Task<long> Register(RegisterRadioRequest registerRadioRequest)
         {
             long radioId = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                registerRadioRequest.Radio.PostId = postId;
                 registerRadioRequest.Radio.Status = 1;
 
                 radioId = await new RadioDB().Add(registerRadioRequest.Radio);
