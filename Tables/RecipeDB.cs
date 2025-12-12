@@ -56,13 +56,18 @@ namespace HeroServer
 
 
         // GET
-        public async Task<IEnumerable<Recipe>> GetAll()
+        public async Task<List<Recipe>> GetAllByStatus(int status = -1)
         {
             String strCmd = $"SELECT * FROM {table}";
+            if (status != -1)
+                strCmd += " WHERE Status = @Status";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<Recipe> recipes = new List<Recipe>();
+            if (status != -1)
+                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+
+            List<Recipe> recipes = [];
             using (conn)
             {
                 await conn.OpenAsync();

@@ -35,7 +35,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<Contact> contacts = new List<Contact>();
+            List<Contact> contacts = [];
             using (conn)
             {
                 await conn.OpenAsync();

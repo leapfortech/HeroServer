@@ -25,13 +25,13 @@ namespace HeroServer.Controllers
             }
         }
 
-        // GET services/identity/FullAll?status=1
+        // GET services/identity/GetFullsByStatus?status=1
         [HttpGet("FullAll")]
-        public async Task<ActionResult<List<IdentityFull>>> GetFullAll([FromQuery] String status = "-1")
+        public async Task<ActionResult<List<IdentityFull>>> GetFullsByStatus([FromQuery] String status = "-1")
         {
             try
             {
-                return Ok(await IdentityFunctions.GetFullAll(Convert.ToInt32(status)));
+                return Ok(await IdentityFunctions.GetFullsByStatus(Convert.ToInt32(status)));
             }
             catch (Exception ex)
             {

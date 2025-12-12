@@ -35,7 +35,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<RadioLanguage> radioLanguages = new List<RadioLanguage>();
+            List<RadioLanguage> radioLanguages = [];
             using (conn)
             {
                 await conn.OpenAsync();

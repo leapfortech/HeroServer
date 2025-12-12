@@ -35,7 +35,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<RadioType> radioTypes = new List<RadioType>();
+            List<RadioType> radioTypes = [];
             using (conn)
             {
                 await conn.OpenAsync();

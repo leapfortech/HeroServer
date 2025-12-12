@@ -48,13 +48,18 @@ namespace HeroServer
 
 
         // GET
-        public async Task<IEnumerable<Radio>> GetAll()
+        public async Task<List<Radio>> GetAllByStatus(int status = -1)
         {
             String strCmd = $"SELECT * FROM {table}";
+            if (status != -1)
+                strCmd += " WHERE Status = @Status";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<Radio> radios = new List<Radio>();
+            if (status != -1)
+                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+
+            List<Radio> radios = [];
             using (conn)
             {
                 await conn.OpenAsync();

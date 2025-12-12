@@ -39,7 +39,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<Comment> comments = new List<Comment>();
+            List<Comment> comments = [];
             using (conn)
             {
                 await conn.OpenAsync();

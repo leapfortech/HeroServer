@@ -35,7 +35,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<Disease> diseases = new List<Disease>();
+            List<Disease> diseases = [];
             using (conn)
             {
                 await conn.OpenAsync();

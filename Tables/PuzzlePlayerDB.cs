@@ -28,7 +28,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<PuzzlePlayer> puzzlePlayers = new List<PuzzlePlayer>();
+            List<PuzzlePlayer> puzzlePlayers = [];
             using (conn)
             {
                 await conn.OpenAsync();

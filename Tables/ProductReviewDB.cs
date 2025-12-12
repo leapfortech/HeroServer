@@ -40,7 +40,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<ProductReview> productReviews = new List<ProductReview>();
+            List<ProductReview> productReviews = [];
             using (conn)
             {
                 await conn.OpenAsync();

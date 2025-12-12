@@ -26,7 +26,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<RadioListen> radioListens = new List<RadioListen>();
+            List<RadioListen> radioListens = [];
             using (conn)
             {
                 await conn.OpenAsync();

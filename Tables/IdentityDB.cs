@@ -80,7 +80,7 @@ namespace HeroServer
             return identities;
         }
 
-        public async Task<List<IdentityFull>> GetFullAll(int status = -1)
+        public async Task<List<IdentityFull>> GetFullsByStatus(int status = -1)
         {
             String strCmd = "SELECT Identty.Id, FirstName1, FirstName2,LastName1, LastName2, KGender.Name AS Gender," +
                              " BirthDate, KCountry.Name AS OriginCountry, KState.Name AS OriginState," +

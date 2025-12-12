@@ -37,7 +37,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<Link> links = new List<Link>();
+            List<Link> links = [];
             using (conn)
             {
                 await conn.OpenAsync();

@@ -29,7 +29,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<Reaction> reactions = new List<Reaction>();
+            List<Reaction> reactions = [];
             using (conn)
             {
                 await conn.OpenAsync();

@@ -29,7 +29,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<Like> likes = new List<Like>();
+            List<Like> likes = [];
             using (conn)
             {
                 await conn.OpenAsync();

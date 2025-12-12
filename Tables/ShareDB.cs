@@ -26,7 +26,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<Share> shares = new List<Share>();
+            List<Share> shares = [];
             using (conn)
             {
                 await conn.OpenAsync();

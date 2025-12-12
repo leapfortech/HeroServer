@@ -13,9 +13,9 @@ namespace HeroServer
             return await new IdentityDB().GetAll(status);
         }
 
-        public static async Task<List<IdentityFull>> GetFullAll(int status)
+        public static async Task<List<IdentityFull>> GetFullsByStatus(int status)
         {
-            return await new IdentityDB().GetFullAll(status);
+            return await new IdentityDB().GetFullsByStatus(status);
         }
 
         public static async Task<Identity> GetById(long id)

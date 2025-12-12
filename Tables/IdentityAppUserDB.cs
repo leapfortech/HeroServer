@@ -28,7 +28,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<IdentityAppUser> identityAppUsers = new List<IdentityAppUser>();
+            List<IdentityAppUser> identityAppUsers = [];
             using (conn)
             {
                 await conn.OpenAsync();

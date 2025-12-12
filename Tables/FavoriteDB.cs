@@ -28,7 +28,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<Favorite> favorites = new List<Favorite>();
+            List<Favorite> favorites = [];
             using (conn)
             {
                 await conn.OpenAsync();

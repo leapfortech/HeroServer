@@ -28,7 +28,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<IdentityBoardUser> identityBoardUsers = new List<IdentityBoardUser>();
+            List<IdentityBoardUser> identityBoardUsers = [];
             using (conn)
             {
                 await conn.OpenAsync();

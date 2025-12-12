@@ -26,7 +26,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<PostRead> postReads = new List<PostRead>();
+            List<PostRead> postReads = [];
             using (conn)
             {
                 await conn.OpenAsync();

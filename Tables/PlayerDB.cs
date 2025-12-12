@@ -30,7 +30,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<Player> players = new List<Player>();
+            List<Player> players = [];
             using (conn)
             {
                 await conn.OpenAsync();

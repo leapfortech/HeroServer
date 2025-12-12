@@ -29,7 +29,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<Reward> rewards = new List<Reward>();
+            List<Reward> rewards = [];
             using (conn)
             {
                 await conn.OpenAsync();

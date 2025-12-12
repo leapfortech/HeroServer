@@ -55,13 +55,18 @@ namespace HeroServer
         }
 
         // GET
-        public async Task<IEnumerable<Treatment>> GetAll()
+        public async Task<List<Treatment>> GetAllByStatus(int status = -1)
         {
             String strCmd = $"SELECT * FROM {table}";
+            if (status != -1)
+                strCmd += " WHERE Status = @Status";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<Treatment> treatments = new List<Treatment>();
+            if (status != -1)
+                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+
+            List<Treatment> treatments = [];
             using (conn)
             {
                 await conn.OpenAsync();
