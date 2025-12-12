@@ -119,15 +119,15 @@ namespace HeroServer
                       " FROM [J-RadioLanguage]" +
                       " WHERE RadioId = @Id;";
 
-            strCmd += "SELECT Id, Name, Status" +
+            strCmd += "SELECT Id, PostId, Name, Status" +
                        " FROM [D-Contact]" +
                       $" WHERE Status = 1 AND PostId = (SELECT PostId FROM {table} WHERE Id = @Id);";
 
-            strCmd += "SELECT Link.Id, Link.LinkTypeId, Link.Url, Link.Status" +
+            strCmd += "SELECT Link.Id, Link.LinkTypeId, Link.PostId, Link.Url, Link.Status" +
                        " FROM [D-Link] AS Link" +
                       $" WHERE Link.Status = 1 AND Link.PostId = (SELECT PostId FROM {table} WHERE Id = @Id);";
 
-            strCmd += "SELECT Comment.Id, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
+            strCmd += "SELECT Comment.Id, Comment.PostId, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
                       " Comment.Message, Comment.UpdateDateTime, Comment.Status" +
                       " FROM [D-Comment] AS Comment" +
                       " INNER JOIN [D-AppUser] AS AppUser ON (Comment.AppUserId = AppUser.Id)" +
@@ -201,15 +201,15 @@ namespace HeroServer
                       " WHERE RadioId IN" +
                       $" (SELECT Id FROM {table} WHERE PostId = @PostId);";
 
-            strCmd += "SELECT Id, Name, Status" +
+            strCmd += "SELECT Id, PostId, Name, Status" +
                        " FROM [D-Contact]" +
                        " WHERE Status = 1 AND PostId = @PostId;";
 
-            strCmd += "SELECT Link.Id, Link.LinkTypeId, Link.Url, Link.Status" +
+            strCmd += "SELECT Link.Id, Link.LinkTypeId, Link.PostId, Link.Url, Link.Status" +
               " FROM [D-Link] AS Link" +
               " WHERE Link.Status = 1 AND Link.PostId = @PostId;";
 
-            strCmd += "SELECT Comment.Id, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
+            strCmd += "SELECT Comment.Id, Comment.PostId, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
                       " Comment.Message, Comment.UpdateDateTime, Comment.Status" +
                       " FROM [D-Comment] AS Comment" +
                       " INNER JOIN [D-AppUser] AS AppUser ON(Comment.AppUserId = AppUser.Id)" +
@@ -261,7 +261,7 @@ namespace HeroServer
             return radioFull;
         }
 
-        public async Task<RadioDataFull> GetFullsByStatus(int status)
+        public async Task<RadioDataFull> GetDataFullByStatus(int status)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostSubtypeId," +
@@ -297,7 +297,7 @@ namespace HeroServer
             else
                 strCmd += ";";
 
-            strCmd += "SELECT Contact.Id, Contact.Name, Contact.Status" +
+            strCmd += "SELECT Contact.Id, Contact.PostId, Contact.Name, Contact.Status" +
                       " FROM [D-Contact] AS Contact" +
                       $" INNER JOIN {table} ON (Contact.PostId = {table}.PostId)" +
                        " WHERE Contact.Status = 1";
@@ -307,7 +307,7 @@ namespace HeroServer
             else
                 strCmd += ";";
 
-            strCmd += "SELECT Link.Id, Link.LinkTypeId, Link.Url, Link.Status" +
+            strCmd += "SELECT Link.Id, Link.LinkTypeId, Link.PostId, Link.Url, Link.Status" +
                        " FROM [D-Link] AS Link" +
                       $" INNER JOIN {table} ON (Link.PostId = {table}.PostId)" +
                        " WHERE Link.Status = 1";
@@ -317,7 +317,7 @@ namespace HeroServer
             else
                 strCmd += ";";
 
-            strCmd += "SELECT Comment.Id, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
+            strCmd += "SELECT Comment.Id, Comment.PostId, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
                        " Comment.Message, Comment.UpdateDateTime, Comment.Status" +
                        " FROM [D-Comment] AS Comment" +
                        " INNER JOIN [D-AppUser] AS AppUser ON(Comment.AppUserId = AppUser.Id)" +

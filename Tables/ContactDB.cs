@@ -24,6 +24,7 @@ namespace HeroServer
         public static ContactFull GetContactFull(SqlDataReader reader)
         {
             return new ContactFull(Convert.ToInt64(reader["Id"]),
+                                   Convert.ToInt64(reader["PostId"]),
                                    reader["Name"].ToString(),
                                    Convert.ToInt32(reader["Status"]));
         }

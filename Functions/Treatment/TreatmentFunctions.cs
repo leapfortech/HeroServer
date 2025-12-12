@@ -28,6 +28,73 @@ namespace HeroServer
             return await new TreatmentDB().GetFullByPostId(postId);
         }
 
+        public static async Task<List<TreatmentFull>> GetFullsByStatus(int status)
+        {
+            TreatmentDataFull treatmentDataFull = await new TreatmentDB().GetDataFullByStatus(status);
+
+            return GetFulls(treatmentDataFull);
+        }
+
+        public static List<TreatmentFull> GetFulls(TreatmentDataFull treatmentDataFull)
+        {
+            // ContactFull
+            Dictionary<long, ContactFull> contactFullsDict = [];
+            foreach (ContactFull contactFull in treatmentDataFull.ContactFulls)
+            {
+                if (contactFullsDict.TryGetValue(contactFull.PostId, out ContactFull value))
+                    throw new Exception($"Duplicate Contact for PostId {contactFull.PostId}");
+
+                contactFullsDict[contactFull.PostId] = contactFull;
+            }
+
+            // LinkFull
+            Dictionary<long, List<LinkFull>> linkFullsDict = [];
+            foreach (LinkFull linkFull in treatmentDataFull.LinkFulls)
+            {
+                if (linkFullsDict.TryGetValue(linkFull.PostId, out List<LinkFull> value))
+                    value.Add(linkFull);
+                else
+                    linkFullsDict[linkFull.PostId] = [linkFull];
+            }
+
+            // CommentFull
+            Dictionary<long, List<CommentFull>> commentFullsDict = [];
+            foreach (CommentFull commentFull in treatmentDataFull.CommentFulls)
+            {
+                if (commentFullsDict.TryGetValue(commentFull.PostId, out List<CommentFull> value))
+                    value.Add(commentFull);
+                else
+                    commentFullsDict[commentFull.PostId] = [commentFull];
+            }
+
+            // TreatmentFull
+            List<TreatmentFull> treatmentFulls = [];
+            foreach (TreatmentFull treatmentFull in treatmentDataFull.TreatmentFulls)
+            {
+                // ContactFull
+                if (!contactFullsDict.TryGetValue(treatmentFull.PostId, out ContactFull contact))
+                    contact = null;
+
+                treatmentFull.ContactFull = contact;
+
+                // LinkFulls
+                if (!linkFullsDict.TryGetValue(treatmentFull.PostId, out List<LinkFull> links))
+                    links = [];
+
+                treatmentFull.LinkFulls = links;
+
+                // CommentFulls
+                if (!commentFullsDict.TryGetValue(treatmentFull.PostId, out List<CommentFull> comments))
+                    comments = [];
+
+                treatmentFull.CommentFulls = comments;
+
+                treatmentFulls.Add(treatmentFull);
+            }
+
+            return treatmentFulls;
+        }
+
         // REGISTER
         public static async Task<long> Register(RegisterTreatmentRequest registerTreatmentRequest)
         {

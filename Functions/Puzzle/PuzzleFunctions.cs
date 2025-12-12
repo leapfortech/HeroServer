@@ -28,6 +28,73 @@ namespace HeroServer
             return await new PuzzleDB().GetFullByPostId(postId);
         }
 
+        public static async Task<List<PuzzleFull>> GetFullsByStatus(int status)
+        {
+            PuzzleDataFull puzzleDataFull = await new PuzzleDB().GetDataFullByStatus(status);
+
+            return GetFulls(puzzleDataFull);
+        }
+
+        public static List<PuzzleFull> GetFulls(PuzzleDataFull puzzleDataFull)
+        {
+            // ContactFull
+            Dictionary<long, ContactFull> contactFullsDict = [];
+            foreach (ContactFull contactFull in puzzleDataFull.ContactFulls)
+            {
+                if (contactFullsDict.TryGetValue(contactFull.PostId, out ContactFull value))
+                    throw new Exception($"Duplicate Contact for PostId {contactFull.PostId}");
+
+                contactFullsDict[contactFull.PostId] = contactFull;
+            }
+
+            // LinkFull
+            Dictionary<long, List<LinkFull>> linkFullsDict = [];
+            foreach (LinkFull linkFull in puzzleDataFull.LinkFulls)
+            {
+                if (linkFullsDict.TryGetValue(linkFull.PostId, out List<LinkFull> value))
+                    value.Add(linkFull);
+                else
+                    linkFullsDict[linkFull.PostId] = [linkFull];
+            }
+
+            // CommentFull
+            Dictionary<long, List<CommentFull>> commentFullsDict = [];
+            foreach (CommentFull commentFull in puzzleDataFull.CommentFulls)
+            {
+                if (commentFullsDict.TryGetValue(commentFull.PostId, out List<CommentFull> value))
+                    value.Add(commentFull);
+                else
+                    commentFullsDict[commentFull.PostId] = [commentFull];
+            }
+
+            // PuzzleFull
+            List<PuzzleFull> puzzleFulls = [];
+            foreach (PuzzleFull puzzleFull in puzzleDataFull.PuzzleFulls)
+            {
+                // ContactFull
+                if (!contactFullsDict.TryGetValue(puzzleFull.PostId, out ContactFull contact))
+                    contact = null;
+
+                puzzleFull.ContactFull = contact;
+
+                // LinkFulls
+                if (!linkFullsDict.TryGetValue(puzzleFull.PostId, out List<LinkFull> links))
+                    links = [];
+
+                puzzleFull.LinkFulls = links;
+
+                // CommentFulls
+                if (!commentFullsDict.TryGetValue(puzzleFull.PostId, out List<CommentFull> comments))
+                    comments = [];
+
+                puzzleFull.CommentFulls = comments;
+
+                puzzleFulls.Add(puzzleFull);
+            }
+
+            return puzzleFulls;
+        }
+
         // REGISTER
         public static async Task<long> Register(RegisterPuzzleRequest registerPuzzleRequest)
         {

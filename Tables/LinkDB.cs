@@ -26,6 +26,7 @@ namespace HeroServer
         {
             return new LinkFull(Convert.ToInt64(reader["Id"]),
                                 Convert.ToInt64(reader["LinkTypeId"]),
+                                Convert.ToInt64(reader["PostId"]),
                                 reader["Url"].ToString(),
                                 Convert.ToInt32(reader["Status"]));
         }

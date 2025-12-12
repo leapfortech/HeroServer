@@ -28,6 +28,73 @@ namespace HeroServer
             return await new RadioDB().GetFullByPostId(postId);
         }
 
+        public static async Task<List<RadioFull>> GetFullsByStatus(int status)
+        {
+            RadioDataFull radioDataFull = await new RadioDB().GetDataFullByStatus(status);
+
+            return GetFulls(radioDataFull);
+        }
+
+        public static List<RadioFull> GetFulls(RadioDataFull radioDataFull)
+        {
+            // ContactFull
+            Dictionary<long, ContactFull> contactFullsDict = [];
+            foreach (ContactFull contactFull in radioDataFull.ContactFulls)
+            {
+                if (contactFullsDict.TryGetValue(contactFull.PostId, out ContactFull value))
+                    throw new Exception($"Duplicate Contact for PostId {contactFull.PostId}");
+
+                contactFullsDict[contactFull.PostId] = contactFull;
+            }
+
+            // LinkFull
+            Dictionary<long, List<LinkFull>> linkFullsDict = [];
+            foreach (LinkFull linkFull in radioDataFull.LinkFulls)
+            {
+                if (linkFullsDict.TryGetValue(linkFull.PostId, out List<LinkFull> value))
+                    value.Add(linkFull);
+                else
+                    linkFullsDict[linkFull.PostId] = [linkFull];
+            }
+
+            // CommentFull
+            Dictionary<long, List<CommentFull>> commentFullsDict = [];
+            foreach (CommentFull commentFull in radioDataFull.CommentFulls)
+            {
+                if (commentFullsDict.TryGetValue(commentFull.PostId, out List<CommentFull> value))
+                    value.Add(commentFull);
+                else
+                    commentFullsDict[commentFull.PostId] = [commentFull];
+            }
+
+            // RadioFull
+            List<RadioFull> radioFulls = [];
+            foreach (RadioFull radioFull in radioDataFull.RadioFulls)
+            {
+                // ContactFull
+                if (!contactFullsDict.TryGetValue(radioFull.PostId, out ContactFull contact))
+                    contact = null;
+
+                radioFull.ContactFull = contact;
+
+                // LinkFulls
+                if (!linkFullsDict.TryGetValue(radioFull.PostId, out List<LinkFull> links))
+                    links = [];
+
+                radioFull.LinkFulls = links;
+
+                // CommentFulls
+                if (!commentFullsDict.TryGetValue(radioFull.PostId, out List<CommentFull> comments))
+                    comments = [];
+
+                radioFull.CommentFulls = comments;
+
+                radioFulls.Add(radioFull);
+            }
+
+            return radioFulls;
+        }
+
         // REGISTER
         public static async Task<long> Register(RegisterRadioRequest registerRadioRequest)
         {

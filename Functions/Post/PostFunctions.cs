@@ -18,6 +18,47 @@ namespace HeroServer
             return await new PostDB().GetById(id);
         }
 
+        // GET FULL
+        public static async Task<List<TaleFull>> GetTaleFullsByStatus(int status)
+        {
+            return await TaleFunctions.GetFullsByStatus(status);
+        }
+
+        public static async Task<List<RecipeFull>> GetRecipeFullsByStatus(int status)
+        {
+            return await RecipeFunctions.GetFullsByStatus(status);
+        }
+
+        public static async Task<List<TreatmentFull>> GetTreatmentFullsByStatus(int status)
+        {
+            return await TreatmentFunctions.GetFullsByStatus(status);
+        }
+
+        public static async Task<List<RadioFull>> GetRadioFullsByStatus(int status)
+        {
+            return await RadioFunctions.GetFullsByStatus(status);
+        }
+
+        public static async Task<List<ProductFull>> GetProductFullsByStatus(int status)
+        {
+            return await ProductFunctions.GetFullsByStatus(status);
+        }
+
+        public static async Task<List<HappeningFull>> GetHappeningFullsByStatus(int status)
+        {
+            return await HappeningFunctions.GetFullsByStatus(status);
+        }
+
+        public static async Task<List<NewsFull>> GetNewsFullsByStatus(int status)
+        {
+            return await NewsFunctions.GetFullsByStatus(status);
+        }
+
+        public static async Task<List<PuzzleFull>> GetPuzzleFullsByStatus(int status)
+        {
+            return await PuzzleFunctions.GetFullsByStatus(status);
+        }
+
         // REGISTER
         public static async Task<long> RegisterTale(RegisterTaleRequest registerTaleRequest)
         {

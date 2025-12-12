@@ -27,6 +27,73 @@ namespace HeroServer
             return await new TaleDB().GetFullByPostId(postId);
         }
 
+        public static async Task<List<TaleFull>> GetFullsByStatus(int status)
+        {
+            TaleDataFull taleDataFull = await new TaleDB().GetDataFullByStatus(status);
+
+            return GetFulls(taleDataFull);
+        }
+
+        public static List<TaleFull> GetFulls(TaleDataFull taleDataFull)
+        {
+            // ContactFull
+            Dictionary<long, ContactFull> contactFullsDict = [];
+            foreach (ContactFull contactFull in taleDataFull.ContactFulls)
+            {
+                if (contactFullsDict.TryGetValue(contactFull.PostId, out ContactFull value))
+                    throw new Exception($"Duplicate Contact for PostId {contactFull.PostId}");
+
+                contactFullsDict[contactFull.PostId] = contactFull;
+            }
+
+            // LinkFull
+            Dictionary<long, List<LinkFull>> linkFullsDict = [];
+            foreach (LinkFull linkFull in taleDataFull.LinkFulls)
+            {
+                if (linkFullsDict.TryGetValue(linkFull.PostId, out List<LinkFull> value))
+                    value.Add(linkFull);
+                else
+                    linkFullsDict[linkFull.PostId] = [linkFull];
+            }
+
+            // CommentFull
+            Dictionary<long, List<CommentFull>> commentFullsDict = [];
+            foreach (CommentFull commentFull in taleDataFull.CommentFulls)
+            {
+                if (commentFullsDict.TryGetValue(commentFull.PostId, out List<CommentFull> value))
+                    value.Add(commentFull);
+                else
+                    commentFullsDict[commentFull.PostId] = [commentFull];
+            }
+
+            // TaleFull
+            List<TaleFull> taleFulls = [];
+            foreach (TaleFull taleFull in taleDataFull.TaleFulls)
+            {
+                // ContactFull
+                if (!contactFullsDict.TryGetValue(taleFull.PostId, out ContactFull contact))
+                    contact = null;
+
+                taleFull.ContactFull = contact;
+
+                // LinkFulls
+                if (!linkFullsDict.TryGetValue(taleFull.PostId, out List<LinkFull> links))
+                    links = [];
+
+                taleFull.LinkFulls = links;
+
+                // CommentFulls
+                if (!commentFullsDict.TryGetValue(taleFull.PostId, out List<CommentFull> comments))
+                    comments = [];
+
+                taleFull.CommentFulls = comments;
+
+                taleFulls.Add(taleFull);
+            }
+
+            return taleFulls;
+        }
+
         // REGISTER
         public static async Task<long> Register(Tale tale)
         {

@@ -27,6 +27,73 @@ namespace HeroServer
             return await new NewsDB().GetFullByPostId(postId);
         }
 
+        public static async Task<List<NewsFull>> GetFullsByStatus(int status)
+        {
+            NewsDataFull newsDataFull = await new NewsDB().GetDataFullByStatus(status);
+
+            return GetFulls(newsDataFull);
+        }
+
+        public static List<NewsFull> GetFulls(NewsDataFull newsDataFull)
+        {
+            // ContactFull
+            Dictionary<long, ContactFull> contactFullsDict = [];
+            foreach (ContactFull contactFull in newsDataFull.ContactFulls)
+            {
+                if (contactFullsDict.TryGetValue(contactFull.PostId, out ContactFull value))
+                    throw new Exception($"Duplicate Contact for PostId {contactFull.PostId}");
+
+                contactFullsDict[contactFull.PostId] = contactFull;
+            }
+
+            // LinkFull
+            Dictionary<long, List<LinkFull>> linkFullsDict = [];
+            foreach (LinkFull linkFull in newsDataFull.LinkFulls)
+            {
+                if (linkFullsDict.TryGetValue(linkFull.PostId, out List<LinkFull> value))
+                    value.Add(linkFull);
+                else
+                    linkFullsDict[linkFull.PostId] = [linkFull];
+            }
+
+            // CommentFull
+            Dictionary<long, List<CommentFull>> commentFullsDict = [];
+            foreach (CommentFull commentFull in newsDataFull.CommentFulls)
+            {
+                if (commentFullsDict.TryGetValue(commentFull.PostId, out List<CommentFull> value))
+                    value.Add(commentFull);
+                else
+                    commentFullsDict[commentFull.PostId] = [commentFull];
+            }
+
+            // NewsFull
+            List<NewsFull> newsFulls = [];
+            foreach (NewsFull newsFull in newsDataFull.NewsFulls)
+            {
+                // ContactFull
+                if (!contactFullsDict.TryGetValue(newsFull.PostId, out ContactFull contact))
+                    contact = null;
+
+                newsFull.ContactFull = contact;
+
+                // LinkFulls
+                if (!linkFullsDict.TryGetValue(newsFull.PostId, out List<LinkFull> links))
+                    links = [];
+
+                newsFull.LinkFulls = links;
+
+                // CommentFulls
+                if (!commentFullsDict.TryGetValue(newsFull.PostId, out List<CommentFull> comments))
+                    comments = [];
+
+                newsFull.CommentFulls = comments;
+
+                newsFulls.Add(newsFull);
+            }
+
+            return newsFulls;
+        }
+
         // REGISTER
         public static async Task<long> Register(News news)
         {

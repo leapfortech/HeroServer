@@ -25,6 +25,7 @@ namespace HeroServer
         public static CommentFull GetCommentFull(SqlDataReader reader)
         {
             return new CommentFull(Convert.ToInt64(reader["Id"]),
+                                   Convert.ToInt64(reader["PostId"]),
                                    Convert.ToInt64(reader["AppUserId"]),
                                    reader["AppUserAlias"].ToString(),
                                    reader["Message"].ToString(),
