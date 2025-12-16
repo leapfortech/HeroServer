@@ -22,7 +22,7 @@ namespace HeroServer
         public ProductFull(long id, long postId, long appUserId, String appUserAlias,
                            long postSubtypeId,
                            long postCountryId, long postStateId,
-                           String title, String summary, String description,
+                           String title, String titleImage, String summary, String description,
                            int imageCount, int likeCount, DateTime publicationDateTime,
                            int postStatus,
                            ContactFull contactFull,
@@ -34,7 +34,7 @@ namespace HeroServer
                            int status,
                            List<ProductReviewFull> productReviewFulls)
             : base(postId, appUserId, appUserAlias, postSubtypeId,
-                   postCountryId, postStateId, title, summary, description,
+                   postCountryId, postStateId, title, titleImage, summary, description,
                    imageCount, likeCount, publicationDateTime, postStatus,
                    contactFull, linkFulls, commentFulls)
         {

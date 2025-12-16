@@ -20,22 +20,36 @@ namespace HeroServer
 
         public static async Task<PuzzleFull> GetFullById(long id)
         {
-            return await new PuzzleDB().GetFullById(id);
+            PuzzleFull puzzleFull = await new PuzzleDB().GetFullById(id);
+
+            if (puzzleFull == null)
+                return null;
+
+            puzzleFull.TitleImage = await PostFunctions.GetTitleImageById(puzzleFull.PostId);
+
+            return puzzleFull;
         }
 
         public static async Task<PuzzleFull> GetFullByPostId(long postId)
         {
-            return await new PuzzleDB().GetFullByPostId(postId);
+            PuzzleFull puzzleFull = await new PuzzleDB().GetFullByPostId(postId);
+
+            if (puzzleFull == null)
+                return null;
+
+            puzzleFull.TitleImage = await PostFunctions.GetTitleImageById(postId);
+
+            return puzzleFull;
         }
 
         public static async Task<List<PuzzleFull>> GetFullsByStatus(int status)
         {
             PuzzleDataFull puzzleDataFull = await new PuzzleDB().GetDataFullByStatus(status);
 
-            return GetFulls(puzzleDataFull);
+            return await GetFulls(puzzleDataFull);
         }
 
-        public static List<PuzzleFull> GetFulls(PuzzleDataFull puzzleDataFull)
+        public static async Task<List<PuzzleFull>> GetFulls(PuzzleDataFull puzzleDataFull)
         {
             // ContactFull
             Dictionary<long, ContactFull> contactFullsDict = [];
@@ -88,6 +102,9 @@ namespace HeroServer
                     comments = [];
 
                 puzzleFull.CommentFulls = comments;
+
+                // TitleImage
+                puzzleFull.TitleImage = await PostFunctions.GetTitleImageById(puzzleFull.PostId);
 
                 puzzleFulls.Add(puzzleFull);
             }

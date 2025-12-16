@@ -20,22 +20,36 @@ namespace HeroServer
 
         public static async Task<ProductFull> GetFullById(long id)
         {
-            return await new ProductDB().GetFullById(id);
+            ProductFull productFull = await new ProductDB().GetFullById(id);
+
+            if (productFull == null)
+                return null;
+
+            productFull.TitleImage = await PostFunctions.GetTitleImageById(productFull.PostId);
+
+            return productFull;
         }
 
         public static async Task<ProductFull> GetFullByPostId(long postId)
         {
-            return await new ProductDB().GetFullByPostId(postId);
+            ProductFull productFull = await new ProductDB().GetFullByPostId(postId);
+
+            if (productFull == null)
+                return null;
+
+            productFull.TitleImage = await PostFunctions.GetTitleImageById(postId);
+
+            return productFull;
         }
 
         public static async Task<List<ProductFull>> GetFullsByStatus(int status)
         {
             ProductDataFull productDataFull = await new ProductDB().GetDataFullByStatus(status);
 
-            return GetFulls(productDataFull);
+            return await GetFulls(productDataFull);
         }
 
-        public static List<ProductFull> GetFulls(ProductDataFull productDataFull)
+        public static async Task<List<ProductFull>> GetFulls(ProductDataFull productDataFull)
         {
             // ContactFull
             Dictionary<long, ContactFull> contactFullsDict = [];
@@ -88,6 +102,9 @@ namespace HeroServer
                     comments = [];
 
                 productFull.CommentFulls = comments;
+
+                // TitleImage
+                productFull.TitleImage = await PostFunctions.GetTitleImageById(productFull.PostId);
 
                 productFulls.Add(productFull);
             }

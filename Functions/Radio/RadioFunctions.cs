@@ -20,22 +20,36 @@ namespace HeroServer
 
         public static async Task<RadioFull> GetFullById(long id)
         {
-            return await new RadioDB().GetFullById(id);
+            RadioFull radioFull = await new RadioDB().GetFullById(id);
+
+            if (radioFull == null)
+                return null;
+
+            radioFull.TitleImage = await PostFunctions.GetTitleImageById(radioFull.PostId);
+
+            return radioFull;
         }
 
         public static async Task<RadioFull> GetFullByPostId(long postId)
         {
-            return await new RadioDB().GetFullByPostId(postId);
+            RadioFull radioFull = await new RadioDB().GetFullByPostId(postId);
+
+            if (radioFull == null)
+                return null;
+
+            radioFull.TitleImage = await PostFunctions.GetTitleImageById(postId);
+
+            return radioFull;
         }
 
         public static async Task<List<RadioFull>> GetFullsByStatus(int status)
         {
             RadioDataFull radioDataFull = await new RadioDB().GetDataFullByStatus(status);
 
-            return GetFulls(radioDataFull);
+            return await GetFulls(radioDataFull);
         }
 
-        public static List<RadioFull> GetFulls(RadioDataFull radioDataFull)
+        public static async Task<List<RadioFull>> GetFulls(RadioDataFull radioDataFull)
         {
             // ContactFull
             Dictionary<long, ContactFull> contactFullsDict = [];
@@ -88,6 +102,9 @@ namespace HeroServer
                     comments = [];
 
                 radioFull.CommentFulls = comments;
+
+                // TitleImage
+                radioFull.TitleImage = await PostFunctions.GetTitleImageById(radioFull.PostId);
 
                 radioFulls.Add(radioFull);
             }

@@ -16,7 +16,7 @@ namespace HeroServer
 
         public TreatmentFull(long id, long postId, long appUserId, String appUserAlias,
                              long postSubtypeId, long postCountryId, long postStateId,
-                             String title, String summary, String description,
+                             String title, String titleImage, String summary, String description,
                              int imageCount, int likeCount, DateTime publicationDateTime,
                              int postStatusId,
                              ContactFull contactFull,
@@ -25,7 +25,7 @@ namespace HeroServer
                              String ingredients, String preparation, String usage, String annotation,
                              int status, List<DiseaseFull> diseaseFulls)
             : base(postId, appUserId, appUserAlias, postSubtypeId,
-                   postCountryId, postStateId, title, summary, description,
+                   postCountryId, postStateId, title, titleImage, summary, description,
                    imageCount, likeCount, publicationDateTime, postStatusId,
                    contactFull, linkFulls, commentFulls)
         {

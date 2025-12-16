@@ -20,22 +20,36 @@ namespace HeroServer
 
         public static async Task<HappeningFull> GetFullById(long id)
         {
-            return await new HappeningDB().GetFullById(id);
+            HappeningFull happeningFull = await new HappeningDB().GetFullById(id);
+
+            if (happeningFull == null)
+                return null;
+
+            happeningFull.TitleImage = await PostFunctions.GetTitleImageById(happeningFull.PostId);
+
+            return happeningFull;
         }
 
         public static async Task<HappeningFull> GetFullByPostId(long postId)
         {
-            return await new HappeningDB().GetFullByPostId(postId);
+            HappeningFull happeningFull = await new HappeningDB().GetFullByPostId(postId);
+
+            if (happeningFull == null)
+                return null;
+
+            happeningFull.TitleImage = await PostFunctions.GetTitleImageById(postId);
+
+            return happeningFull;
         }
 
         public static async Task<List<HappeningFull>> GetFullsByStatus(int status)
         {
             HappeningDataFull happeningDataFull = await new HappeningDB().GetDataFullByStatus(status);
 
-            return GetFulls(happeningDataFull);
+            return await GetFulls(happeningDataFull);
         }
 
-        public static List<HappeningFull> GetFulls(HappeningDataFull happeningDataFull)
+        public static async Task<List<HappeningFull>> GetFulls(HappeningDataFull happeningDataFull)
         {
             // ContactFull
             Dictionary<long, ContactFull> contactFullsDict = [];
@@ -88,6 +102,9 @@ namespace HeroServer
                     comments = [];
 
                 happeningFull.CommentFulls = comments;
+
+                // TitleImage
+                happeningFull.TitleImage = await PostFunctions.GetTitleImageById(happeningFull.PostId);
 
                 happeningFulls.Add(happeningFull);
             }

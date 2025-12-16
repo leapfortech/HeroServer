@@ -40,6 +40,7 @@ namespace HeroServer
                                 Convert.ToInt64(reader["PostCountryId"]),
                                 Convert.ToInt64(reader["PostStateId"]),
                                 reader["Title"].ToString(),
+                                null,   //TitleImage
                                 reader["Summary"].ToString(),
                                 reader["Description"].ToString(),
                                 Convert.ToInt32(reader["ImageCount"]),
@@ -48,7 +49,7 @@ namespace HeroServer
                                 Convert.ToInt32(reader["PostStatus"]),
                                 null,   //ContactFull
                                 null,   //LinkFulls
-                                null);   //CommentFulls
+                                null);  //CommentFulls
         }
 
 

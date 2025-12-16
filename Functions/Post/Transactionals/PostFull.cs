@@ -12,6 +12,7 @@ namespace HeroServer
         public long PostCountryId { get; set; }
         public long PostStateId { get; set; }
         public String Title { get; set; }
+        public String TitleImage { get; set; }
         public String Summary { get; set; }
         public String Description { get; set; }
         public int ImageCount { get; set; }
@@ -29,7 +30,7 @@ namespace HeroServer
 
         public PostFull(long postId, long appUserId, String appUserAlias,
                         long postSubtypeId, long postCountryId, long postStateId,
-                        String title, String summary, String description,
+                        String title, String titleImage, String summary, String description,
                         int imageCount, int likeCount, DateTime publicationDateTime, int postStatus,
                         ContactFull contactFull,
                         List<LinkFull> linkFulls,
@@ -42,6 +43,7 @@ namespace HeroServer
             PostCountryId = postCountryId;
             PostStateId = postStateId;
             Title = title;
+            TitleImage = titleImage;
             Summary = summary;
             Description = description;
             ImageCount = imageCount;

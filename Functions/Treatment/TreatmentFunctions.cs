@@ -20,22 +20,36 @@ namespace HeroServer
 
         public static async Task<TreatmentFull> GetFullById(long id)
         {
-            return await new TreatmentDB().GetFullById(id);
+            TreatmentFull treatmentFull = await new TreatmentDB().GetFullById(id);
+
+            if (treatmentFull == null)
+                return null;
+
+            treatmentFull.TitleImage = await PostFunctions.GetTitleImageById(treatmentFull.PostId);
+
+            return treatmentFull;
         }
 
         public static async Task<TreatmentFull> GetFullByPostId(long postId)
         {
-            return await new TreatmentDB().GetFullByPostId(postId);
+            TreatmentFull treatmentFull = await new TreatmentDB().GetFullByPostId(postId);
+
+            if (treatmentFull == null)
+                return null;
+
+            treatmentFull.TitleImage = await PostFunctions.GetTitleImageById(postId);
+
+            return treatmentFull;
         }
 
         public static async Task<List<TreatmentFull>> GetFullsByStatus(int status)
         {
             TreatmentDataFull treatmentDataFull = await new TreatmentDB().GetDataFullByStatus(status);
 
-            return GetFulls(treatmentDataFull);
+            return await GetFulls(treatmentDataFull);
         }
 
-        public static List<TreatmentFull> GetFulls(TreatmentDataFull treatmentDataFull)
+        public static async Task<List<TreatmentFull>> GetFulls(TreatmentDataFull treatmentDataFull)
         {
             // ContactFull
             Dictionary<long, ContactFull> contactFullsDict = [];
@@ -88,6 +102,9 @@ namespace HeroServer
                     comments = [];
 
                 treatmentFull.CommentFulls = comments;
+
+                // TitleImage
+                treatmentFull.TitleImage = await PostFunctions.GetTitleImageById(treatmentFull.PostId);
 
                 treatmentFulls.Add(treatmentFull);
             }

@@ -39,6 +39,7 @@ namespace HeroServer
                                    Convert.ToInt64(reader["PostCountryId"]),
                                    Convert.ToInt64(reader["PostStateId"]),
                                    reader["Title"].ToString(),
+                                   null,   //TitleImage
                                    reader["Summary"].ToString(),
                                    reader["Description"].ToString(),
                                    Convert.ToInt32(reader["ImageCount"]),

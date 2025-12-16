@@ -20,22 +20,36 @@ namespace HeroServer
 
         public static async Task<TaleFull> GetFullById(long id)
         {
-            return await new TaleDB().GetFullById(id);
+            TaleFull taleFull = await new TaleDB().GetFullById(id);
+
+            if (taleFull == null)
+                return null;
+
+            taleFull.TitleImage = await PostFunctions.GetTitleImageById(taleFull.PostId);
+
+            return taleFull;
         }
 
         public static async Task<TaleFull> GetFullByPostId(long postId)
         {
-            return await new TaleDB().GetFullByPostId(postId);
+            TaleFull taleFull = await new TaleDB().GetFullByPostId(postId);
+
+            if (taleFull == null)
+                return null;
+
+            taleFull.TitleImage = await PostFunctions.GetTitleImageById(postId);
+
+            return taleFull;
         }
 
         public static async Task<List<TaleFull>> GetFullsByStatus(int status)
         {
             TaleDataFull taleDataFull = await new TaleDB().GetDataFullByStatus(status);
 
-            return GetFulls(taleDataFull);
+            return await GetFulls(taleDataFull);
         }
 
-        public static List<TaleFull> GetFulls(TaleDataFull taleDataFull)
+        public static async Task<List<TaleFull>> GetFulls(TaleDataFull taleDataFull)
         {
             // ContactFull
             Dictionary<long, ContactFull> contactFullsDict = [];
@@ -88,6 +102,9 @@ namespace HeroServer
                     comments = [];
 
                 taleFull.CommentFulls = comments;
+
+                // TitleImage
+                taleFull.TitleImage = await PostFunctions.GetTitleImageById(taleFull.PostId);
 
                 taleFulls.Add(taleFull);
             }

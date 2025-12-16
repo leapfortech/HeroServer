@@ -70,12 +70,18 @@ namespace HeroServer
         }
 
         // IMAGES
-        public static async Task<List<String>> GetImagesById(int id, bool first)
+        public static async Task<String> GetTitleImageById(long id)
+        {
+            byte[] image = await StorageFunctions.ReadFile("posts", $"post{id:D08}|00", "jpg");
+            return image == null ? null : Convert.ToBase64String(image);
+        }
+
+        public static async Task<List<String>> GetImagesById(long id, bool first)
         {
             return await GetImages(id, await new PostDB().GetImageCount(id), first);
         }
 
-        public static async Task<List<String>> GetImages(int id, int count, bool first)
+        public static async Task<List<String>> GetImages(long id, int count, bool first)
         {
             List<String> images = [];
             String filename = $"post{id:D08}";

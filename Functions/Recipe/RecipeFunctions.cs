@@ -20,22 +20,36 @@ namespace HeroServer
 
         public static async Task<RecipeFull> GetFullById(long id)
         {
-            return await new RecipeDB().GetFullById(id);
+            RecipeFull recipeFull = await new RecipeDB().GetFullById(id);
+
+            if (recipeFull == null)
+                return null;
+
+            recipeFull.TitleImage = await PostFunctions.GetTitleImageById(recipeFull.PostId);
+
+            return recipeFull;
         }
 
         public static async Task<RecipeFull> GetFullByPostId(long postId)
         {
-            return await new RecipeDB().GetFullByPostId(postId);
+            RecipeFull recipeFull = await new RecipeDB().GetFullByPostId(postId);
+
+            if (recipeFull == null)
+                return null;
+
+            recipeFull.TitleImage = await PostFunctions.GetTitleImageById(postId);
+
+            return recipeFull;
         }
 
         public static async Task<List<RecipeFull>> GetFullsByStatus(int status)
         {
             RecipeDataFull recipeDataFull = await new RecipeDB().GetDataFullByStatus(status);
 
-            return GetFulls(recipeDataFull);
+            return await GetFulls(recipeDataFull);
         }
 
-        public static List<RecipeFull> GetFulls(RecipeDataFull recipeDataFull)
+        public static async Task<List<RecipeFull>> GetFulls(RecipeDataFull recipeDataFull)
         {
             // ContactFull
             Dictionary<long, ContactFull> contactFullsDict = [];
@@ -88,6 +102,9 @@ namespace HeroServer
                     comments = [];
 
                 recipeFull.CommentFulls = comments;
+
+                // TitleImage
+                recipeFull.TitleImage = await PostFunctions.GetTitleImageById(recipeFull.PostId);
 
                 recipeFulls.Add(recipeFull);
             }
