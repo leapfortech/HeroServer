@@ -101,9 +101,6 @@ namespace HeroServer
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                long postId = await PostFunctions.Register(registerRadioRequest);
-
-                registerRadioRequest.Radio.PostId = postId;
                 registerRadioRequest.Radio.Status = 1;
                 id = await Add(registerRadioRequest.Radio);
 
@@ -122,6 +119,8 @@ namespace HeroServer
 
                     await new RadioLanguageDB().Add(registerRadioRequest.RadioLanguages[i]);
                 }
+
+                registerRadioRequest.Radio.PostId = await PostFunctions.Register(registerRadioRequest);
 
                 scope.Complete();
             }

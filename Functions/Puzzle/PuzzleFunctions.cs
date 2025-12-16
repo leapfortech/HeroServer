@@ -101,9 +101,6 @@ namespace HeroServer
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                long postId = await PostFunctions.Register(registerPuzzleRequest);
-
-                registerPuzzleRequest.Puzzle.PostId = postId;
                 registerPuzzleRequest.Puzzle.Status = 1;
                 id = await Add(registerPuzzleRequest.Puzzle);
 
@@ -112,6 +109,8 @@ namespace HeroServer
                     registerPuzzleRequest.PuzzleAnswers[i].PuzzleId = id;
                     await new PuzzleAnswerDB().Add(registerPuzzleRequest.PuzzleAnswers[i]);
                 }
+
+                registerPuzzleRequest.Puzzle.PostId = await PostFunctions.Register(registerPuzzleRequest);
 
                 scope.Complete();
             }

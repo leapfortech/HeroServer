@@ -101,11 +101,10 @@ namespace HeroServer
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                long postId = await PostFunctions.Register(registerHappeningRequest);
-
-                registerHappeningRequest.Happening.PostId = postId;
                 registerHappeningRequest.Happening.Status = 1;
                 id = await Add(registerHappeningRequest.Happening);
+
+                registerHappeningRequest.Happening.PostId = await PostFunctions.Register(registerHappeningRequest);
 
                 scope.Complete();
             }

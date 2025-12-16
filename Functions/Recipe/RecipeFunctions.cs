@@ -101,11 +101,10 @@ namespace HeroServer
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                long postId = await PostFunctions.Register(registerRecipeRequest);
-
-                registerRecipeRequest.Recipe.PostId = postId;
                 registerRecipeRequest.Recipe.Status = 1;
                 id = await Add(registerRecipeRequest.Recipe);
+
+                registerRecipeRequest.Recipe.PostId = await PostFunctions.Register(registerRecipeRequest);
 
                 scope.Complete();
             }

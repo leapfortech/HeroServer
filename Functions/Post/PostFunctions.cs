@@ -21,13 +21,10 @@ namespace HeroServer
         // REGISTER
         public static async Task<long> Register(RegisterPostRequest RegisterPostRequest)
         {
-            long postId = -1;
-            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {
-                RegisterPostRequest.Post.Status = 1;
+            RegisterPostRequest.Post.Status = 1;
 
-                postId = await new PostDB().Add(RegisterPostRequest.Post);
-            }
+            long postId = await new PostDB().Add(RegisterPostRequest.Post);
+
             await RegisterImages(postId, RegisterPostRequest.Images);
 
             return postId;
