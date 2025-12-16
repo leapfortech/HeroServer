@@ -98,16 +98,18 @@ namespace HeroServer
         // REGISTER
         public static async Task<long> Register(RegisterRadioRequest registerRadioRequest)
         {
-            long radioId = -1;
+            long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                registerRadioRequest.Radio.Status = 1;
+                long postId = await PostFunctions.Register(registerRadioRequest);
 
-                radioId = await new RadioDB().Add(registerRadioRequest.Radio);
+                registerRadioRequest.Radio.PostId = postId;
+                registerRadioRequest.Radio.Status = 1;
+                id = await Add(registerRadioRequest.Radio);
 
                 for (int i = 0; i < registerRadioRequest.RadioTypes.Count; i++)
                 {
-                    registerRadioRequest.RadioTypes[i].RadioId = radioId;
+                    registerRadioRequest.RadioTypes[i].RadioId = id;
                     registerRadioRequest.RadioTypes[i].Status = 1;
 
                     await new RadioTypeDB().Add(registerRadioRequest.RadioTypes[i]);
@@ -115,7 +117,7 @@ namespace HeroServer
 
                 for (int i = 0; i < registerRadioRequest.RadioLanguages.Count; i++)
                 {
-                    registerRadioRequest.RadioLanguages[i].RadioId = radioId;
+                    registerRadioRequest.RadioLanguages[i].RadioId = id;
                     registerRadioRequest.RadioLanguages[i].Status = 1;
 
                     await new RadioLanguageDB().Add(registerRadioRequest.RadioLanguages[i]);
@@ -124,7 +126,7 @@ namespace HeroServer
                 scope.Complete();
             }
 
-            return radioId;
+            return id;
         }
 
         // ADD

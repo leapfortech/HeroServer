@@ -98,16 +98,18 @@ namespace HeroServer
         // REGISTER
         public static async Task<long> Register(RegisterTreatmentRequest registerTreatmentRequest)
         {
-            long treatmentId = -1;
+            long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                registerTreatmentRequest.Treatment.Status = 1;
+                long postId = await PostFunctions.Register(registerTreatmentRequest);
 
-                treatmentId = await new TreatmentDB().Add(registerTreatmentRequest.Treatment);
+                registerTreatmentRequest.Treatment.PostId = postId;
+                registerTreatmentRequest.Treatment.Status = 1;
+                id = await Add(registerTreatmentRequest.Treatment);
 
                 for (int i = 0; i < registerTreatmentRequest.Diseases.Count; i++)
                 {
-                    registerTreatmentRequest.Diseases[i].TreatmentId = treatmentId;
+                    registerTreatmentRequest.Diseases[i].TreatmentId = id;
                     registerTreatmentRequest.Diseases[i].Status = 1;
 
                     await new DiseaseDB().Add(registerTreatmentRequest.Diseases[i]);
@@ -116,7 +118,7 @@ namespace HeroServer
                 scope.Complete();
             }
 
-            return treatmentId;
+            return id;
         }
 
         // ADD

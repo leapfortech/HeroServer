@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace HeroServer
 {
@@ -95,11 +96,21 @@ namespace HeroServer
         }
 
         // REGISTER
-        public static async Task<long> Register(News news)
+        public static async Task<long> Register(RegisterNewsRequest registerNewsRequest)
         {
-            news.Status = 1;
+            long id = -1;
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                long postId = await PostFunctions.Register(registerNewsRequest);
 
-            return await Add(news);
+                registerNewsRequest.News.PostId = postId;
+                registerNewsRequest.News.Status = 1;
+                id = await Add(registerNewsRequest.News);
+
+                scope.Complete();
+            }
+
+            return id;
         }
 
         // ADD

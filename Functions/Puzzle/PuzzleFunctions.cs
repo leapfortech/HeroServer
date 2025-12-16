@@ -98,26 +98,27 @@ namespace HeroServer
         // REGISTER
         public static async Task<long> Register(RegisterPuzzleRequest registerPuzzleRequest)
         {
-            long puzzleId = -1;
+            long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                registerPuzzleRequest.Puzzle.Status = 1;
+                long postId = await PostFunctions.Register(registerPuzzleRequest);
 
-                puzzleId = await new PuzzleDB().Add(registerPuzzleRequest.Puzzle);
+                registerPuzzleRequest.Puzzle.PostId = postId;
+                registerPuzzleRequest.Puzzle.Status = 1;
+                id = await Add(registerPuzzleRequest.Puzzle);
 
                 for (int i = 0; i < registerPuzzleRequest.PuzzleAnswers.Count; i++)
                 {
-                    registerPuzzleRequest.PuzzleAnswers[i].PuzzleId = puzzleId;
-
+                    registerPuzzleRequest.PuzzleAnswers[i].PuzzleId = id;
                     await new PuzzleAnswerDB().Add(registerPuzzleRequest.PuzzleAnswers[i]);
                 }
 
                 scope.Complete();
             }
 
-            return puzzleId;
+            return id;
         }
-
+        
         // ADD
         public static async Task<long> Add(Puzzle puzzle)
         {
