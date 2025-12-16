@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -17,6 +18,20 @@ namespace HeroServer.Controllers
             try
             {
                 return Ok(await PostFunctions.GetById(Convert.ToInt64(id)));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // GET services/project/ImagesById?id=1&first=true
+        [HttpGet("ImagesById")]
+        public async Task<ActionResult<List<String>>> GetImagesById([FromQuery] String id, [FromQuery] String first = "true")
+        {
+            try
+            {
+                return Ok(await PostFunctions.GetImagesById(Convert.ToInt32(id), first == "true"));
             }
             catch (Exception ex)
             {
