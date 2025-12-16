@@ -22,7 +22,6 @@ namespace HeroServer
         public static async Task<long> Register(RegisterPostRequest RegisterPostRequest)
         {
             RegisterPostRequest.Post.Status = 1;
-
             long postId = await new PostDB().Add(RegisterPostRequest.Post);
 
             await RegisterImages(postId, RegisterPostRequest.Images);
@@ -71,7 +70,26 @@ namespace HeroServer
         }
 
         // IMAGES
-        public static async Task RegisterImages(long postId, List<String> images)
+        public static async Task<List<String>> GetImagesById(int id, bool first)
+        {
+            return await GetImages(id, await new PostDB().GetImageCount(id), first);
+        }
+
+        public static async Task<List<String>> GetImages(int id, int count, bool first)
+        {
+            List<String> images = [];
+            String filename = $"post{id:D08}";
+            for (int i = first ? 0 : 1; i < count; i++)
+            {
+                byte[] img = await StorageFunctions.ReadFile("posts", $"{filename}|{i:D02}", "jpg");
+                if (img == null) continue;
+                images.Add(Convert.ToBase64String(img));
+            }
+
+            return images;
+        }
+
+        public static async Task RegisterImages(long postId, List<String> images)  // JAD
         {
             if (images == null || images.Count == 0)
                 throw new Exception("Images list should NOT be empty");

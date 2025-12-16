@@ -103,6 +103,29 @@ namespace HeroServer
             return post;
         }
 
+        public async Task<int> GetImageCount(long id)
+        {
+            String strCmd = $"SELECT ImageCount FROM {table} WHERE Id = @Id";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+
+            int imageCount = 0;
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        imageCount = Convert.ToInt32(reader["ImageCount"]);
+                    }
+                }
+            }
+            return imageCount;
+        }
+
         // INSERT
         public async Task<long> Add(Post post)
         {
