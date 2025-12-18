@@ -22,7 +22,7 @@ namespace HeroServer
                               Convert.ToInt32(reader["Difficulty"]),
                               Convert.ToInt32(reader["Points"]),
                               Convert.ToInt32(reader["PlayCount"]),
-                              Convert.ToInt32(reader["CreateDateTime"]),
+                              Convert.ToDateTime(reader["CreateDateTime"]),
                               Convert.ToDateTime(reader["UpdateDateTime"]),
                               Convert.ToInt32(reader["Status"]));
         }
@@ -126,7 +126,7 @@ namespace HeroServer
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
                             $" WHERE {table}.Id = @Id;";
 
-            strCmd += "SELECT Id, PuzzleId, Description, IsCorrect, UpdateDateTime" +
+            strCmd += "SELECT Id, PuzzleId, Description, IsCorrect" +
                       " FROM [D-PuzzleAnswer]" +
                       " WHERE PuzzleId = @Id;";
 
@@ -197,7 +197,7 @@ namespace HeroServer
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
                             $" WHERE {table}.PostId = @PostId;";
 
-            strCmd += "SELECT Id, PuzzleId, Description, IsCorrect, UpdateDateTime" +
+            strCmd += "SELECT Id, PuzzleId, Description, IsCorrect" +
                       " FROM [D-PuzzleAnswer]" +
                       " WHERE PuzzleId IN" +
                       $" (SELECT Id FROM {table} WHERE PostId = @PostId);";
@@ -274,7 +274,7 @@ namespace HeroServer
                 strCmd += ";";
 
             strCmd +=  "SELECT PuzzleAnswer.Id, PuzzleAnswer.PuzzleId, PuzzleAnswer.Description," +
-                       " PuzzleAnswer.IsCorrect, PuzzleAnswer.UpdateDateTime" +
+                       " PuzzleAnswer.IsCorrect," +
                        " FROM [D-PuzzleAnswer] AS PuzzleAnswer" +
                       $" JOIN {table} ON (PuzzleAnswer.PuzzleId = {table}.Id)" +
                        " WHERE 1 = 1";
@@ -380,7 +380,7 @@ namespace HeroServer
             DBHelper.AddParam(command, "@Difficulty", SqlDbType.Int, puzzle.Difficulty);
             DBHelper.AddParam(command, "@Points", SqlDbType.Int, puzzle.Points);
             DBHelper.AddParam(command, "@PlayCount", SqlDbType.Int, puzzle.PlayCount);
-            DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.Int, DateTime.Now);
+            DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, puzzle.Status);
 

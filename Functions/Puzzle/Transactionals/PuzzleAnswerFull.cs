@@ -7,18 +7,16 @@ namespace HeroServer
         public long Id { get; set; }
         public String Description { get; set; }
         public int IsCorrect { get; set; }
-        public DateTime UpdateDateTime { get; set; }
 
         public PuzzleAnswerFull()
         {
         }
 
-        public PuzzleAnswerFull(long id, String description, int isCorrect, DateTime updateDateTime)
+        public PuzzleAnswerFull(long id, String description, int isCorrect)
         {
             Id = id;
             Description = description;
             IsCorrect = isCorrect;
-            UpdateDateTime = updateDateTime;
         }
     }
 }

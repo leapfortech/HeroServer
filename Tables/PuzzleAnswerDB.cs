@@ -24,8 +24,7 @@ namespace HeroServer
         {
             return new PuzzleAnswerFull(Convert.ToInt64(reader["Id"]),
                                         reader["Description"].ToString(),
-                                        Convert.ToInt32(reader["IsCorrect"]),
-                                        Convert.ToDateTime(reader["UpdateDateTime"]));
+                                        Convert.ToInt32(reader["IsCorrect"]));
         }
 
         // GET

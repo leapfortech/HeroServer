@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace HeroServer
 {
@@ -14,14 +13,14 @@ namespace HeroServer
         public int Difficulty { get; set; }
         public int Points { get; set; }
         public int PlayCount { get; set; }
-        public int CreateDateTime { get; set; }
+        public DateTime CreateDateTime { get; set; }
         public DateTime UpdateDateTime { get; set; }
         public int Status { get; set; }
 
         public Puzzle() { }
 
         public Puzzle(long id, long postId, long puzzleSubtypeId, long countryId, String question, String hint,
-                      int difficulty, int points, int playCount, int createDateTime, DateTime updateDateTime, int status)
+                      int difficulty, int points, int playCount, DateTime createDateTime, DateTime updateDateTime, int status)
         {
             Id = id;
             PostId = postId;
