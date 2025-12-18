@@ -55,7 +55,7 @@ namespace HeroServer.Controllers
 
         // PUT services/puzzle
         [HttpPut]
-        public async Task<ActionResult<long>> Update([FromBody] Puzzle puzzle)
+        public async Task<ActionResult<bool>> Update([FromBody] Puzzle puzzle)
         {
             try
             {

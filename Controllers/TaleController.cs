@@ -55,7 +55,7 @@ namespace HeroServer.Controllers
 
         // PUT services/tale
         [HttpPut]
-        public async Task<ActionResult<long>> Update([FromBody] Tale tale)
+        public async Task<ActionResult<bool>> Update([FromBody] Tale tale)
         {
             try
             {

@@ -55,7 +55,7 @@ namespace HeroServer.Controllers
 
         // PUT services/recipe
         [HttpPut]
-        public async Task<ActionResult<long>> Update([FromBody] Recipe recipe)
+        public async Task<ActionResult<bool>> Update([FromBody] Recipe recipe)
         {
             try
             {

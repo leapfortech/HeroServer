@@ -56,7 +56,7 @@ namespace HeroServer.Controllers
 
         // PUT services/radio
         [HttpPut]
-        public async Task<ActionResult<long>> Update([FromBody] Radio radio)
+        public async Task<ActionResult<bool>> Update([FromBody] Radio radio)
         {
             try
             {
