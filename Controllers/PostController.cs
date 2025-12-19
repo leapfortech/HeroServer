@@ -31,7 +31,7 @@ namespace HeroServer.Controllers
         {
             try
             {
-                return Ok(await PostFunctions.GetImagesById(Convert.ToInt32(id), first == "true"));
+                return Ok(await PostFunctions.GetImagesById(Convert.ToInt64(id), first == "true"));
             }
             catch (Exception ex)
             {

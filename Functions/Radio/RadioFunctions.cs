@@ -145,6 +145,11 @@ namespace HeroServer
             return id;
         }
 
+        public static async Task<long> RegisterRadioListen(RadioListen radioListen)
+        {
+            return await new RadioListenDB().Add(radioListen);
+        }
+
         // ADD
         public static async Task<long> Add(Radio radio)
         {

@@ -54,6 +54,20 @@ namespace HeroServer.Controllers
             }
         }
 
+        // POST services/radio/RegisterRadioListen
+        [HttpPost("RegisterRadioListen")]
+        public async Task<ActionResult<long>> RegisterRadioListen([FromBody] RadioListen radioListen)
+        {
+            try
+            {
+                return Ok(await RadioFunctions.RegisterRadioListen(radioListen));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // PUT services/radio
         [HttpPut]
         public async Task<ActionResult<bool>> Update([FromBody] Radio radio)
