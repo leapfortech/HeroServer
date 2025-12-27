@@ -40,7 +40,7 @@ namespace HeroServer
                         await WebSysUserFunctions.UpdatePhone(new PhoneRequest(webSysUser.Id, registerAppRequest.PhoneCountryId, registerAppRequest.Phone));
                 }
 
-                long referredAppUserId = await ReferredFunctions.GetAppUserIdById(registerAppRequest.ReferredId);
+                long referredAppUserId = await ReferredFunctions.GetAppUserIdByCode(registerAppRequest.ReferredCode);
 
                 AppUser appUser = new AppUser(-1, webSysUser.Id, referredAppUserId, 0);
                 appUserId = await new AppUserDB().Add(appUser);

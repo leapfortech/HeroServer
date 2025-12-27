@@ -10,7 +10,7 @@ namespace HeroServer
         public String Password { get; set; }
         public long PhoneCountryId { get; set; }
         public String Phone { get; set; }
-        public long ReferredId { get; set; }
+        public String ReferredCode { get; set; }
         public Identity Identity { get; set; }
         public Address Address { get; set; }
 
