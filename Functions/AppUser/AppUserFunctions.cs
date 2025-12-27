@@ -73,6 +73,11 @@ namespace HeroServer
             return await new AppUserDB().GetCountByStatus(status);
         }
 
+        public static async Task<AliasResponse> ValidateAlias(AliasRequest aliasRequest)
+        {
+            return new AliasResponse(await new AppUserDB().GetMailByAlias(aliasRequest.Alias, 1));
+        }
+
         // ADD
         public static async Task<long> Add(AppUser appUser)
         {

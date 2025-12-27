@@ -95,6 +95,20 @@ namespace HeroServer.Controllers
             }
         }
 
+        // POST services/appUser/ValidateAlias
+        [HttpPost("ValidateAlias")]
+        public async Task<ActionResult<AliasResponse>> ValidateAlias([FromBody] AliasRequest aliasRequest)
+        {
+            try
+            {
+                return Ok(await AppUserFunctions.ValidateAlias(aliasRequest));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // PUT services/appUser
         [HttpPut]
         public async Task<ActionResult> Update([FromBody]AppUser appUser)

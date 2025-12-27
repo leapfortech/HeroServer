@@ -96,18 +96,18 @@ namespace HeroServer.Controllers
         }
 
         // POST services/identity/RegisterByAppUser?appUserId=2
-        [HttpPost("RegisterByAppUser")]
-        public async Task<ActionResult<long>> RegisterByAppUser([FromQuery] String appUserId, [FromBody]IdentityRegister identityRegister)
-        {
-            try
-            {
-                return Ok(await IdentityFunctions.RegisterByAppUser(Convert.ToInt64(appUserId), identityRegister));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        //[HttpPost("RegisterByAppUser")]
+        //public async Task<ActionResult<long>> RegisterByAppUser([FromQuery] String appUserId, [FromBody]IdentityRegister identityRegister)
+        //{
+        //    try
+        //    {
+        //        return Ok(await IdentityFunctions.RegisterByAppUser(Convert.ToInt64(appUserId), identityRegister));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
 
         // POST services/identity/
         [HttpPost]

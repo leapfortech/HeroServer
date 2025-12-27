@@ -456,6 +456,57 @@ namespace HeroServer
             return appUserMails;
         }
 
+        public async Task<String> GetMailByAlias(String alias, int status = 1)
+        {
+            String strCmd = $"SELECT Email FROM {table}" +
+                            $" INNER JOIN [D-WebSysUser] ON {table}.WebSysUserId = [D-WebSysUser].Id" +
+                            $" WHERE {table}.Alias = @Alias AND {table}.Status = @Status";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@Alias", SqlDbType.VarChar, alias);
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+
+            String email = null;
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        email = reader["Email"].ToString();
+                    }
+                }
+            }
+
+            return email;
+        }
+
+        public async Task<AppUser> GetByAlias(String alias, int status = 1)
+        {
+            String strCmd = $"SELECT * FROM {table} WHERE Alias = @Alias AND Status = @Status";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@Alias", SqlDbType.VarChar, alias);
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+
+            AppUser appUser = null;
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        appUser = GetAppUser(reader);
+                    }
+                }
+            }
+            return appUser;
+        }
+
         public async Task<long> GetOptions(long id)
         {
             String strCmd = $"SELECT Options FROM {table} WHERE Id = @Id";
