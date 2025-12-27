@@ -11,7 +11,7 @@ namespace HeroServer
         public long PhoneCountryId { get; set; }
         public String Phone { get; set; }
         public String ReferredCode { get; set; }
-        public Identity Identity { get; set; }
+        public IdentityRegister IdentityRegister { get; set; }
         public Address Address { get; set; }
 
 

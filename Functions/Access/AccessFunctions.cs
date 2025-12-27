@@ -46,7 +46,10 @@ namespace HeroServer
                 appUserId = await new AppUserDB().Add(appUser);
 
                 await UpdateCSToken(appUserId, webSysUser.Email);
-                
+
+                await IdentityFunctions.RegisterByAppUser(appUser.Id, registerAppRequest.IdentityRegister);
+                await AddressFunctions.RegisterByAppUser(appUser.Id, registerAppRequest.Address);
+
                 scope.Complete();
             }
 
