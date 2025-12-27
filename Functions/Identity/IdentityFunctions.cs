@@ -85,13 +85,10 @@ namespace HeroServer
                 if (identityRegister.Portrait.Length > 0)
                     await StorageFunctions.UpdateFile(containerName, "prt" + appUserId, "jpg", Convert.FromBase64String(identityRegister.Portrait));
 
-                // AppUser Status
-                await AppUserFunctions.UpdateStatus(appUserId, 2);
-
                 scope.Complete();
             }
 
-            return identityRegister.Identity.Id;
+            return identityId;
         }
 
         public static async Task<long> RegisterByBoardUser(long boardUserId, RegisterBoardRequest registerBoardRequest)

@@ -76,9 +76,6 @@ namespace HeroServer
                 addressAppUser = new AddressAppUser(-1, appUserId, addressId, DateTime.Now, DateTime.Now, 1);
                 addressAppUser.Id = await new AddressAppUserDB().Add(addressAppUser);
 
-                // AppUser Status
-                await AppUserFunctions.UpdateStatus(appUserId, 3);
-
                 scope.Complete();
             }
 

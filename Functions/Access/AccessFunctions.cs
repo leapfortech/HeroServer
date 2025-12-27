@@ -42,13 +42,13 @@ namespace HeroServer
 
                 long referredAppUserId = await ReferredFunctions.GetAppUserIdByCode(registerAppRequest.ReferredCode);
 
-                AppUser appUser = new AppUser(-1, webSysUser.Id, referredAppUserId, 0);
+                AppUser appUser = new AppUser(-1, webSysUser.Id, referredAppUserId, 1);
                 appUserId = await new AppUserDB().Add(appUser);
 
                 await UpdateCSToken(appUserId, webSysUser.Email);
 
-                await IdentityFunctions.RegisterByAppUser(appUser.Id, registerAppRequest.IdentityRegister);
-                await AddressFunctions.RegisterByAppUser(appUser.Id, registerAppRequest.Address);
+                await IdentityFunctions.RegisterByAppUser(appUserId, registerAppRequest.IdentityRegister);
+                await AddressFunctions.RegisterByAppUser(appUserId, registerAppRequest.Address);
 
                 scope.Complete();
             }
