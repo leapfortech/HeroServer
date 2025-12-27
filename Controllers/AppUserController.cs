@@ -170,11 +170,11 @@ namespace HeroServer.Controllers
 
         // PUT services/appUser/UpdateReferred?id=1&referredId=xx
         [HttpPut("UpdateReferred")]
-        public async Task<ActionResult<long>> UpdateReferred([FromQuery]String id, [FromQuery]String referredId)
+        public async Task<ActionResult<long>> UpdateReferred([FromQuery]String id, [FromQuery]String referredCode)
         {
             try
             {
-                return await AppUserFunctions.UpdateReferred(Convert.ToInt64(id), Convert.ToInt64(referredId));
+                return await AppUserFunctions.UpdateReferred(Convert.ToInt64(id), referredCode);
             }
             catch (Exception ex)
             {
