@@ -34,18 +34,39 @@ namespace HeroServer
             return await new ReferredDB().GetHistory(referredHistoryRequest.AppUserId, referredHistoryRequest.DateStart, referredHistoryRequest.DateEnd);
         }
 
-        public static async Task<long> GetAppUserIdById(long id)
+        //public static async Task<long> GetAppUserIdById(long id)
+        //{
+        //    return await new ReferredDB().GetAppUserIdById(id);
+        //}
+
+        public static async Task<Referred> GetByCode(String code)
         {
-            return await new ReferredDB().GetAppUserIdById(id);
+            if (String.IsNullOrEmpty(code))
+                return null;
+            return await new ReferredDB().GetByCode(code);
         }
 
-        public static async Task<int> Validate(long id)   // JAD : Remove
+        public static async Task<long> GetIdByCode(String code)
         {
-            return await new ReferredDB().GetById(id) == null ? 0 : 1;
+            if (String.IsNullOrEmpty(code))
+                return -1;
+            return await new ReferredDB().GetIdByCode(code);
+        }
+
+        public static async Task<long> GetAppUserIdByCode(String code)
+        {
+            if (String.IsNullOrEmpty(code))
+                return -1;
+            return await new ReferredDB().GetAppUserIdByCode(code);
+        }
+
+        public static async Task<long> Validate(String code)   // JAD : Remove
+        {
+            return await new ReferredDB().GetIdByCode(code) == -1 ? 0 : 1;
         }
 
         // REGISTER
-        public static async Task<long> Register(RegisterReferredRequest registerReferredRequest, ILogger logger)
+        public static async Task<String> Register(RegisterReferredRequest registerReferredRequest, ILogger logger)
         {
             Referred referred = new Referred();
 
@@ -54,6 +75,7 @@ namespace HeroServer
                 registerReferredRequest.Identity.Status = 1;
                 long identityId = await new IdentityDB().Add(registerReferredRequest.Identity);
 
+                referred.Code = String.Format("{0}{1:yyMMddHHmm}", referred.AppUserId, DateTime.Now);
                 referred.AppUserId = registerReferredRequest.AppUserId;
                 referred.IdentityId = identityId;
                 referred.Status = 1;
@@ -64,7 +86,7 @@ namespace HeroServer
 
                 scope.Complete();
             }
-            return referred.Id;
+            return referred.Id + "|" + referred.Code;
         }
 
         // ADD

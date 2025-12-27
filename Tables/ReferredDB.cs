@@ -14,6 +14,7 @@ namespace HeroServer
         private static Referred GetReferred(SqlDataReader reader)
         {
             return new Referred(Convert.ToInt64(reader["Id"]),
+                                reader["Code"].ToString(),
                                 Convert.ToInt64(reader["AppUserId"]),
                                 Convert.ToInt64(reader["IdentityId"]),
                                 Convert.ToDateTime(reader["CreateDateTime"]),
@@ -24,6 +25,7 @@ namespace HeroServer
         private static ReferredFull GetReferredFull(SqlDataReader reader)
         {
             return new ReferredFull(Convert.ToInt64(reader["Id"]),
+                                    reader["Code"].ToString(),
                                     Convert.ToInt32(reader["AppUserId"]),
                                     reader["FirstName"].ToString(),
                                     reader["LastName"].ToString(),
@@ -71,7 +73,7 @@ namespace HeroServer
 
         public async Task<List<ReferredFull>> GetFullAll()
         {
-            String strCmd = "SELECT Referred.Id, Referred.AppUserId, Referred.Firstname, Referred.LastName, RCountry.PhonePrefix, Referred.Phone, Referred.Email, Referred.CreateDateTime," +
+            String strCmd = "SELECT Referred.Id, Referred.Code, Referred.AppUserId, Referred.Firstname, Referred.LastName, RCountry.PhonePrefix, Referred.Phone, Referred.Email, Referred.CreateDateTime," +
                             " Identty.Id AS IdentityId, Identty.FirstName1, Identty.FirstName2, Identty.LastName1, Identty.LastName2, ICountry.PhonePrefix AS IPhonePrefix," +
                             $" Identty.Phone AS IPhone, Identty.Email AS IEmail FROM {table} AS Referred" +
                             " INNER JOIN [D-Identity] AS Identty ON Referred.AppUserId = Identty.AppUserId AND Identty.Status = 1" +
@@ -217,6 +219,75 @@ namespace HeroServer
             return appUserId;
         }
 
+        public async Task<Referred> GetByCode(String code)
+        {
+            String strCmd = $"SELECT * FROM {table} WHERE Code = @Code";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@Code", SqlDbType.VarChar, code);
+
+            Referred referred = null;
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        referred = GetReferred(reader);
+                    }
+                }
+            }
+            return referred;
+        }
+
+        public async Task<long> GetIdByCode(String code)
+        {
+            String strCmd = $"SELECT Id FROM {table} WHERE Code = @Code";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@Code", SqlDbType.VarChar, code);
+
+            int id = -1;
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        id = Convert.ToInt32(reader["Id"]);
+                    }
+                }
+            }
+            return id;
+        }
+
+        public async Task<long> GetAppUserIdByCode(String code)
+        {
+            String strCmd = $"SELECT AppUserId FROM {table} WHERE Code = @Code";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@Code", SqlDbType.VarChar, code);
+
+            int appUserId = -1;
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        appUserId = Convert.ToInt32(reader["AppUserId"]);
+                    }
+                }
+            }
+            return appUserId;
+        }
+
         // INSERT
         public async Task<long> Add(Referred referred)
         {
@@ -226,6 +297,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
+            DBHelper.AddParam(command, "@Code", SqlDbType.VarChar, referred.Code);
             DBHelper.AddParam(command, "@AppUserId", SqlDbType.Int, referred.AppUserId);
             DBHelper.AddParam(command, "@IdentityId", SqlDbType.Int, referred.IdentityId);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime2, DateTime.Now);
@@ -242,10 +314,11 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(Referred referred)
         {
-            String strCmd = $"UPDATE {table} SET AppUserId = @AppUserId, IdentityId = @IdentityId, UpdateDateTime = @UpdateDateTime WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET Code = @Code, AppUserId = @AppUserId, IdentityId = @IdentityId, UpdateDateTime = @UpdateDateTime WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
+            DBHelper.AddParam(command, "@Code", SqlDbType.VarChar, referred.Code);
             DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, referred.AppUserId);
             DBHelper.AddParam(command, "@IdentityId", SqlDbType.Int, referred.IdentityId);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);

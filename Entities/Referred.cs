@@ -5,6 +5,7 @@ namespace HeroServer
     public class Referred
     {
         public long Id { get; set; }
+        public String Code { get; set; }
         public long AppUserId { get; set; }
         public long IdentityId { get; set; }
         public DateTime CreateDateTime { get; set; }
@@ -16,9 +17,10 @@ namespace HeroServer
         {
         }
 
-        public Referred(long id, long appUserId, long identityId, DateTime createDateTime, DateTime updateDateTime, int status)
+        public Referred(long id, String code, long appUserId, long identityId, DateTime createDateTime, DateTime updateDateTime, int status)
         {
             Id = id;
+            Code = code;
             AppUserId = appUserId;
             IdentityId = identityId;
             CreateDateTime = createDateTime;
