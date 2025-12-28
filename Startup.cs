@@ -47,6 +47,7 @@ namespace HeroServer
             StorageFunctions.Initialize();
 
             CardFunctions.Initialize();
+            PhoneFunctions.Initialize();
 
             services.AddControllers()
                     .AddJsonOptions(options =>
