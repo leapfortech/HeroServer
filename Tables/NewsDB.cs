@@ -329,7 +329,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('~'));
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('N'));
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, news.PostId);
             DBHelper.AddParam(command, "@NewsTypeId", SqlDbType.BigInt, news.NewsTypeId);
             DBHelper.AddParam(command, "@Place", SqlDbType.VarChar, news.Place);

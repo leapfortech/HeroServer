@@ -88,7 +88,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('~'));
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('u'));
             DBHelper.AddParam(command, "@ProductId", SqlDbType.BigInt, productReview.ProductId);
             DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, productReview.AppUserId);
             DBHelper.AddParam(command, "@Rating", SqlDbType.Int, productReview.Rating);

@@ -82,7 +82,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('~'));
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('z'));
             DBHelper.AddParam(command, "@PuzzleId", SqlDbType.BigInt, puzzleAnswer.PuzzleId);
             DBHelper.AddParam(command, "@Description", SqlDbType.VarChar, puzzleAnswer.Description);
             DBHelper.AddParam(command, "@IsCorrect", SqlDbType.Int, puzzleAnswer.IsCorrect);

@@ -77,7 +77,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('~'));
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('W'));
             DBHelper.AddParam(command, "@PlayerId", SqlDbType.BigInt, reward.PlayerId);
             DBHelper.AddParam(command, "@RewardTypeId", SqlDbType.BigInt, reward.RewardTypeId);
             DBHelper.AddParam(command, "@EarnedDateTime", SqlDbType.DateTime, reward.EarnedDateTime);

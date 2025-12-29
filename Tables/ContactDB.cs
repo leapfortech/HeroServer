@@ -84,7 +84,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('~'));
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('C'));
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, contact.PostId);
             DBHelper.AddParam(command, "@Name", SqlDbType.VarChar, contact.Name);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);

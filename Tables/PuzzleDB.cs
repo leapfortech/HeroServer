@@ -371,7 +371,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('~'));
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('Z'));
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, puzzle.PostId);
             DBHelper.AddParam(command, "@PuzzleSubtypeId", SqlDbType.BigInt, puzzle.PuzzleSubtypeId);
             DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, puzzle.CountryId);

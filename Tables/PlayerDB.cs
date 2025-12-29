@@ -78,7 +78,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('~'));
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('Y'));
             DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, player.AppUserId);
             DBHelper.AddParam(command, "@Rank", SqlDbType.Int, player.Rank);
             DBHelper.AddParam(command, "@PuzzleCount", SqlDbType.Int, player.PuzzleCount);
