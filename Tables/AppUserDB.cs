@@ -460,12 +460,12 @@ namespace HeroServer
         {
             String strCmd = $"SELECT Email FROM {table}" +
                             $" INNER JOIN [D-WebSysUser] ON {table}.WebSysUserId = [D-WebSysUser].Id" +
-                            $" WHERE {table}.Alias = @Alias AND {table}.Status = @Status";
+                            $" WHERE {table}.Alias = @Alias AND {table}.AppUserStatusId = @AppUserStatusId";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Alias", SqlDbType.VarChar, alias);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+            DBHelper.AddParam(command, "@AppUserStatusId", SqlDbType.Int, status);
 
             String email = null;
             using (conn)

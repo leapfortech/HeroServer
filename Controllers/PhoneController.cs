@@ -42,7 +42,7 @@ namespace HeroServer.Controllers
 
         // POST services/phone/RegisterPhone?phoneCountryId=1&phoneNumber=
         [HttpPost("RegisterPhone")]
-        public async Task<ActionResult<String>> RegisterPhone([FromQuery]int phoneCountryId, [FromQuery]String phoneNumber)
+        public async Task<ActionResult<String>> RegisterPhone([FromQuery]long phoneCountryId, [FromQuery]String phoneNumber)
         {
             try
             {

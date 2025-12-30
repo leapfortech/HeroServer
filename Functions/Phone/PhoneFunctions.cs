@@ -45,7 +45,7 @@ namespace HeroServer
             return await VerificationCheckResource.CreateAsync(verificationCheckOptions);
         }
 
-        public static async Task<String> RegisterPhone(int phoneCountryId, String phoneNumber, bool checkInfo = false)
+        public static async Task<String> RegisterPhone(long phoneCountryId, String phoneNumber, bool checkInfo = false)
         {
             await new PhoneDB().UpdateStatusByPhone(phoneCountryId, phoneNumber, 1, 3);
             await new PhoneDB().UpdateStatusByPhone(phoneCountryId, phoneNumber, 2, 4);
