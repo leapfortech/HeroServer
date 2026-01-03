@@ -12,11 +12,14 @@ namespace HeroServer
         public Card Card { get; set; }
         public List<Notification> Notifications { get; set; }
 
+        public List<TaleFull> TaleFulls { get; set; }
+
         public LoginAppInfo()
         {
         }
 
-        public LoginAppInfo(ReferredCount referredCount, Identity identity, Address address, String portrait, Card card, List<Notification> notifications)
+        public LoginAppInfo(ReferredCount referredCount, Identity identity, Address address, String portrait, Card card, List<Notification> notifications,
+                            List<TaleFull> taleFulls)
         {
             ReferredCount = referredCount;
             Identity = identity;
@@ -24,6 +27,8 @@ namespace HeroServer
             Portrait = portrait;
             Card = card;
             Notifications = notifications;
+
+            TaleFulls = taleFulls;
         }
     }
 }
