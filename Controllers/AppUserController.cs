@@ -213,11 +213,11 @@ namespace HeroServer.Controllers
 
         // DELETE services/appUser/ByEmail?email=user@gmail.com&authUser=0&renap=1
         [HttpDelete("ByEmail")]
-        public async Task<ActionResult<long>> DeleteByEmail([FromQuery]String email, [FromQuery]String authUser = "1", [FromQuery]String renap = "0")
+        public async Task<ActionResult<long>> DeleteByEmail([FromQuery]String email, [FromQuery]String authUser = "1")
         {
             try
             {
-                await AppUserFunctions.DeleteByEmail(email, authUser == "1", renap == "1");
+                await AppUserFunctions.DeleteByEmail(email, authUser == "1");
                 return Ok();
             }
             catch (Exception ex)

@@ -139,11 +139,14 @@ namespace HeroServer
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
+                await ReferredFunctions.DeleteByAppUserId(id);
+
                 await new AppUserDB().DeleteById(id);
                 
                 await IdentityFunctions.DeleteByAppUserId(id);
+                await AddressFunctions.DeleteByAppUserId(id);
+
                 await CardFunctions.DeleteByAppUserId(id);
-                await ReferredFunctions.DeleteByAppUserId(id);
 
                 scope.Complete();
             }
@@ -161,7 +164,7 @@ namespace HeroServer
             await WebSysUserFunctions.DeleteById(webSysUserId, delAuthUser);
         }
 
-        public static async Task DeleteByEmail(String eMail, bool delAuthUser = true, bool delRenap = false)
+        public static async Task DeleteByEmail(String eMail, bool delAuthUser = true)
         {
             long appUserId = await GetIdByEmail(eMail);
             if (appUserId == -1)
@@ -169,11 +172,9 @@ namespace HeroServer
             await DeleteById(appUserId, delAuthUser);
         }
 
-        public static async Task DeleteImages(long id, bool delRenap = false)
+        public static async Task DeleteImages(long id)
         {
-            if (delRenap)
-                await StorageFunctions.DeleteContainer($"user{id:D08}");
-            await StorageFunctions.DeleteContainer($"invest{id:D08}");
+            await StorageFunctions.DeleteContainer($"user{id:D08}");
         }
     }
 }

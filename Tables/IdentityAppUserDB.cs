@@ -67,7 +67,7 @@ namespace HeroServer
                 {
                     while (await reader.ReadAsync())
                     {
-                        long identityId = Convert.ToInt32(reader["IdentityId"]);
+                        long identityId = Convert.ToInt64(reader["IdentityId"]);
                         list.Add(identityId);
                     }
                 }

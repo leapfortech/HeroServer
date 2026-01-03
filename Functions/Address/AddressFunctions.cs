@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Transactions;
 
@@ -135,6 +136,21 @@ namespace HeroServer
 
             await new AddressAppUserDB().UpdateStatusByAppUserId(appUserId, curStatus, newStatus);
             return await new AddressDB().UpdateStatus(addressId, curStatus, newStatus);
+        }
+
+        public static async Task DeleteByAppUserId(long appUserId)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                List<long> addressIds = await new AddressAppUserDB().GetAddressIdsByAppUserId(appUserId);
+
+                for (int i = 0; i < addressIds.Count; i++)
+                    await new AddressDB().DeleteById(addressIds[i]);
+
+                await new AddressAppUserDB().DeleteByAppUserId(appUserId);
+
+                scope.Complete();
+            }
         }
     }
 }
