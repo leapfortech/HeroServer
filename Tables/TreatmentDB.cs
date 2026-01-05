@@ -106,6 +106,29 @@ namespace HeroServer
             return treatment;
         }
 
+        public async Task<long> GetIdByPostId(long postId)
+        {
+            String strCmd = $"SELECT Id FROM {table} WHERE PostId = @PostId";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+
+            long id = -1;
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        id = Convert.ToInt64(reader["Id"]);
+                    }
+                }
+            }
+            return id;
+        }
+
         // GET FULL
         public async Task<TreatmentFull> GetFullById(long id)
         {
@@ -453,6 +476,20 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
+
+        public async Task<bool> DeleteByPostId(long postId)
+        {
+            String strCmd = $"DELETE {table} WHERE PostId = @PostId";
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
 
             using (conn)
             {

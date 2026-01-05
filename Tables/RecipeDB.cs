@@ -417,5 +417,19 @@ namespace HeroServer
                 return await command.ExecuteNonQueryAsync() == 1;
             }
         }
+
+        public async Task<bool> DeleteByPostId(long postId)
+        {
+            String strCmd = $"DELETE {table} WHERE PostId = @PostId";
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
     }
 }

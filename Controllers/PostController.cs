@@ -150,5 +150,20 @@ namespace HeroServer.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        // DELETE services/post/ById?id=3
+        [HttpDelete("ById")]
+        public async Task<ActionResult<long>> DeleteById([FromQuery] String id)
+        {
+            try
+            {
+                await PostFunctions.DeleteById(Convert.ToInt64(id));
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

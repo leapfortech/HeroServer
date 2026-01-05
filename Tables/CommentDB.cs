@@ -56,6 +56,38 @@ namespace HeroServer
             return comments;
         }
 
+        public async Task<List<long>> GetCommentIdsByPostId(long postId, int status = -1)
+        {
+            String strCmd = $"SELECT Id FROM {table} WHERE PostId = @PostId";
+
+            if (status != -1)
+                strCmd += " AND Status = @Status";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+
+            if (status != -1)
+                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+
+            List<long> list = new List<long>();
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        long commentId = Convert.ToInt64(reader["Id"]);
+                        list.Add(commentId);
+                    }
+                }
+            }
+
+            return list;
+        }
+
         public async Task<Comment> GetById(long id)
         {
             String strCmd = $"SELECT * FROM {table} WHERE Id = @Id";
@@ -161,6 +193,20 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
+
+        public async Task<bool> DeleteByPostId(long postId)
+        {
+            String strCmd = $"DELETE {table} WHERE PostId = @PostId";
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
 
             using (conn)
             {

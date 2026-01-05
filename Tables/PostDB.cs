@@ -104,6 +104,29 @@ namespace HeroServer
             return post;
         }
 
+        public async Task<long> GetPostSubtypeId(long id)
+        {
+            String strCmd = $"SELECT PostSubtypeId FROM {table} WHERE Id = @Id";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+
+            long postSubtypeId = 0;
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        postSubtypeId = Convert.ToInt64(reader["PostSubtypeId"]);
+                    }
+                }
+            }
+            return postSubtypeId;
+        }
+
         public async Task<int> GetImageCount(long id)
         {
             String strCmd = $"SELECT ImageCount FROM {table} WHERE Id = @Id";

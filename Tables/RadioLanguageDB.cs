@@ -51,6 +51,38 @@ namespace HeroServer
             return radioLanguages;
         }
 
+        public async Task<List<long>> GetLanguageTypeIdsByRadioId(long radioId, int status = -1)
+        {
+            String strCmd = $"SELECT LanguageTypeId FROM {table} WHERE RadioId = @RadioId";
+
+            if (status != -1)
+                strCmd += " AND Status = @Status";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioId);
+
+            if (status != -1)
+                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+
+            List<long> list = new List<long>();
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        long languageTypeId = Convert.ToInt64(reader["LanguageTypeId"]);
+                        list.Add(languageTypeId);
+                    }
+                }
+            }
+
+            return list;
+        }
+
         public async Task<IEnumerable<RadioLanguage>> GetAllByRadioId(long radioId, int status = 1)
         {
             String strCmd = $"SELECT * FROM {table} WHERE RadioId = @RadioId AND Status = @Status";
@@ -271,6 +303,20 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
+
+        public async Task<bool> DeleteByRadioId(long radioId)
+        {
+            String strCmd = $"DELETE {table} WHERE RadioId = @RadioId";
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioId);
 
             using (conn)
             {

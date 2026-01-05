@@ -156,9 +156,22 @@ namespace HeroServer
 
         // DELETE
 
-        public static async Task Delete(long id)
+        public static async Task DeleteById(long id)
         {
             await new ProductDB().DeleteById(id);
+        }
+
+        public static async Task DeleteByPostId(long postId)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                long productId = await new ProductDB().GetIdByPostId(postId);
+
+                await new ProductReviewDB().DeleteByProductId(productId);
+                await new ProductDB().DeleteByPostId(postId);
+
+                scope.Complete();
+            }
         }
     }
 }

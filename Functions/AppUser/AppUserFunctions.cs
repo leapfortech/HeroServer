@@ -140,13 +140,11 @@ namespace HeroServer
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 await ReferredFunctions.DeleteByAppUserId(id);
-
-                await new AppUserDB().DeleteById(id);
-                
                 await IdentityFunctions.DeleteByAppUserId(id);
                 await AddressFunctions.DeleteByAppUserId(id);
-
                 await CardFunctions.DeleteByAppUserId(id);
+
+                await new AppUserDB().DeleteById(id);
 
                 scope.Complete();
             }

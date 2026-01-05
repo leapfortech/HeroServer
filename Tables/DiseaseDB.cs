@@ -51,6 +51,38 @@ namespace HeroServer
             return diseases;
         }
 
+        public async Task<List<long>> GetDiseaseIdsByTreatmentId(long treatmentId, int status = -1)
+        {
+            String strCmd = $"SELECT DiseaseId FROM {table} WHERE TreatmentId = @TreatmentId";
+
+            if (status != -1)
+                strCmd += " AND Status = @Status";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@TreatmentId", SqlDbType.BigInt, treatmentId);
+
+            if (status != -1)
+                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+
+            List<long> list = new List<long>();
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        long diseaseId = Convert.ToInt64(reader["Id"]);
+                        list.Add(diseaseId);
+                    }
+                }
+            }
+
+            return list;
+        }
+
         public async Task<IEnumerable<Disease>> GetAllByTreatmentId(long treatmentId, int status = 1)
         {
             String strCmd = $"SELECT * FROM {table} WHERE TreatmentId = @TreatmentId AND Status = @Status";
@@ -271,6 +303,20 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
+
+        public async Task<bool> DeleteByTreatmentId(long treatmentId)
+        {
+            String strCmd = $"DELETE {table} WHERE TreatmentId = @TreatmentId";
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@TreatmentId", SqlDbType.BigInt, treatmentId);
 
             using (conn)
             {

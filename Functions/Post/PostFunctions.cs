@@ -152,9 +152,100 @@ namespace HeroServer
 
         // DELETE
 
-        public static async Task Delete(long id)
+        public static async Task DeleteById(long id)
         {
-            await new PostDB().DeleteById(id);
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                await DeleteShareByPostId(id);
+                await DeleteFavoriteByPostId(id);
+                await DeleteContactByPostId(id);
+                await DeleteCommentByPostId(id);
+                await DeletePostPlaintByPostId(id);
+                await DeleteLinkByPostId(id);
+                await DeletePostReadByPostId(id);
+                await DeleteReactionByPostId(id);
+                await DeleteLikeByPostId(id);
+
+                long postSubtypeId = await new PostDB().GetPostSubtypeId(id);
+
+                switch (postSubtypeId)
+                {
+                    case 1: await TaleFunctions.DeleteByPostId(id); break;
+                    case 2: await RecipeFunctions.DeleteByPostId(id); break;
+                    case 3: await TreatmentFunctions.DeleteByPostId(id); break;
+                    case 4: await RadioFunctions.DeleteByPostId(id); break;
+                    case 5: await ProductFunctions.DeleteByPostId(id); break;
+                    case 6: await HappeningFunctions.DeleteByPostId(id); break;
+                    case 7: await NewsFunctions.DeleteByPostId(id); break;
+                    case 8: await PuzzleFunctions.DeleteByPostId(id); break;
+                }
+
+                await new PostDB().DeleteById(id);
+
+                scope.Complete();
+            }
+
+            await DeleteImages(id);
+        }
+
+        public static async Task DeleteShareByPostId(long postId)
+        {
+                await new ShareDB().DeleteByPostId(postId);
+        }
+
+        public static async Task DeleteFavoriteByPostId(long postId)
+        {
+            await new FavoriteDB().DeleteByPostId(postId);
+        }
+
+        public static async Task DeleteContactByPostId(long postId)
+        {
+            await new ContactDB().DeleteByPostId(postId);
+        }
+
+        public static async Task DeleteCommentByPostId(long postId)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                List<long> commentIds = await new CommentDB().GetCommentIdsByPostId(postId);
+
+                for (int i = 0; i < commentIds.Count; i++)
+                    await new CommentPlaintDB().DeleteById(commentIds[i]);
+
+                await new CommentDB().DeleteByPostId(postId);
+
+                scope.Complete();
+            }
+        }
+
+        public static async Task DeletePostPlaintByPostId(long postId)
+        {
+            await new PostPlaintDB().DeleteByPostId(postId);
+        }
+
+        public static async Task DeleteLinkByPostId(long postId)
+        {
+            await new LinkDB().DeleteByPostId(postId);
+        }
+
+        public static async Task DeletePostReadByPostId(long postId)
+        {
+            await new PostReadDB().DeleteByPostId(postId);
+        }
+
+        public static async Task DeleteReactionByPostId(long postId)
+        {
+            await new ReactionDB().DeleteByPostId(postId);
+        }
+
+        public static async Task DeleteLikeByPostId(long postId)
+        {
+            await new LikeDB().DeleteByPostId(postId);
+        }
+
+        public static async Task DeleteImages(long postId)
+        {
+            await StorageFunctions.DeleteContainer($"posts{postId:D08}");
         }
     }
 }

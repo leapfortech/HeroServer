@@ -154,9 +154,22 @@ namespace HeroServer
 
         // DELETE
 
-        public static async Task Delete(long id)
+        public static async Task DeleteById(long id)
         {
             await new PuzzleDB().DeleteById(id);
+        }
+
+        public static async Task DeleteByPostId(long postId)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                long puzzleId = await new PuzzleDB().GetIdByPostId(postId);
+
+                await new PuzzleAnswerDB().DeleteByPuzzleId(puzzleId);
+                await new PuzzleDB().DeleteByPostId(postId);
+
+                scope.Complete();
+            }
         }
     }
 }

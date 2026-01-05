@@ -67,6 +67,38 @@ namespace HeroServer
             return radioListens;
         }
 
+        public async Task<List<long>> GetRadioListenIdsByRadioId(long radioId, int status = -1)
+        {
+            String strCmd = $"SELECT Id FROM {table} WHERE RadioId = @RadioId";
+
+            if (status != -1)
+                strCmd += " AND Status = @Status";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioId);
+
+            if (status != -1)
+                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+
+            List<long> list = new List<long>();
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        long id = Convert.ToInt64(reader["Id"]);
+                        list.Add(id);
+                    }
+                }
+            }
+
+            return list;
+        }
+
         public async Task<RadioListen> GetById(long id)
         {
             String strCmd = $"SELECT * FROM {table} WHERE Id = @Id";
@@ -198,6 +230,20 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
+
+        public async Task<bool> DeleteByRadioId(long radioId)
+        {
+            String strCmd = $"DELETE {table} WHERE RadioId = @RadioId";
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioId);
 
             using (conn)
             {

@@ -169,9 +169,25 @@ namespace HeroServer
 
         // DELETE
 
-        public static async Task Delete(long id)
+        public static async Task DeleteById(long id)
         {
             await new RadioDB().DeleteById(id);
+        }
+
+        public static async Task DeleteByPostId(long postId)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                long radioId = await new RadioDB().GetIdByPostId(postId);
+
+                await new RadioTypeDB().DeleteByRadioId(radioId);
+                await new RadioLanguageDB().DeleteByRadioId(radioId);
+                await new RadioListenDB().DeleteByRadioId(radioId);
+
+                await new RadioDB().DeleteByPostId(postId);
+
+                scope.Complete();
+            }
         }
     }
 }

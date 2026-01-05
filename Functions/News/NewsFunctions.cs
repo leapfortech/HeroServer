@@ -148,9 +148,14 @@ namespace HeroServer
 
         // DELETE
 
-        public static async Task Delete(long id)
+        public static async Task DeleteById(long id)
         {
             await new NewsDB().DeleteById(id);
+        }
+
+        public static async Task DeleteByPostId(long postId)
+        {
+            await new NewsDB().DeleteByPostId(postId);
         }
     }
 }

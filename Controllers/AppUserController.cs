@@ -196,7 +196,7 @@ namespace HeroServer.Controllers
             }
         }
 
-        // DELETE services/appUser/ById?id=3&authUser=1&renap=0
+        // DELETE services/appUser/ById?id=3&authUser=1
         [HttpDelete("ById")]
         public async Task<ActionResult<long>> DeleteById([FromQuery]String id, [FromQuery]String authUser = "1")
         {

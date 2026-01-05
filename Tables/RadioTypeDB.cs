@@ -51,6 +51,38 @@ namespace HeroServer
             return radioTypes;
         }
 
+        public async Task<List<long>> GetRadioTypeIdsByRadioId(long radioId, int status = -1)
+        {
+            String strCmd = $"SELECT RadioTypeId FROM {table} WHERE RadioId = @RadioId";
+
+            if (status != -1)
+                strCmd += " AND Status = @Status";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioId);
+
+            if (status != -1)
+                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+
+            List<long> list = new List<long>();
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        long radioTypeId = Convert.ToInt64(reader["RadioTypeId"]);
+                        list.Add(radioTypeId);
+                    }
+                }
+            }
+
+            return list;
+        }
+
         public async Task<IEnumerable<RadioType>> GetAllByRadioId(long radioId, int status = 1)
         {
             String strCmd = $"SELECT * FROM {table} WHERE RadioId = @RadioId AND Status = @Status";
@@ -271,6 +303,20 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
+
+        public async Task<bool> DeleteByRadioId(long radioId)
+        {
+            String strCmd = $"DELETE {table} WHERE RadioId = @RadioId";
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioId);
 
             using (conn)
             {
