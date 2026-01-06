@@ -15,7 +15,7 @@ namespace HeroServer
         {
             return new RadioLanguage(Convert.ToInt64(reader["Id"]),
                                      Convert.ToInt64(reader["RadioId"]),
-                                     Convert.ToInt64(reader["LanguageTypeId"]),
+                                     Convert.ToInt64(reader["LanguageId"]),
                                      Convert.ToDateTime(reader["CreateDateTime"]),
                                      Convert.ToDateTime(reader["UpdateDateTime"]),
                                      Convert.ToInt32(reader["Status"]));
@@ -24,7 +24,7 @@ namespace HeroServer
         public static RadioLanguageFull GetRadioLanguageFull(SqlDataReader reader)
         {
             return new RadioLanguageFull(Convert.ToInt64(reader["Id"]),
-                                         Convert.ToInt64(reader["LanguageTypeId"]),
+                                         Convert.ToInt64(reader["LanguageId"]),
                                          Convert.ToInt32(reader["Status"]));
         }
 
@@ -51,9 +51,9 @@ namespace HeroServer
             return radioLanguages;
         }
 
-        public async Task<List<long>> GetLanguageTypeIdsByRadioId(long radioId, int status = -1)
+        public async Task<List<long>> GetLanguageIdsByRadioId(long radioId, int status = -1)
         {
-            String strCmd = $"SELECT LanguageTypeId FROM {table} WHERE RadioId = @RadioId";
+            String strCmd = $"SELECT LanguageId FROM {table} WHERE RadioId = @RadioId";
 
             if (status != -1)
                 strCmd += " AND Status = @Status";
@@ -74,8 +74,8 @@ namespace HeroServer
                 {
                     while (await reader.ReadAsync())
                     {
-                        long languageTypeId = Convert.ToInt64(reader["LanguageTypeId"]);
-                        list.Add(languageTypeId);
+                        long languageId = Convert.ToInt64(reader["LanguageId"]);
+                        list.Add(languageId);
                     }
                 }
             }
@@ -186,14 +186,14 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(RadioLanguage radioLanguage)
         {
-            String strCmd = $"INSERT INTO {table}(RadioId, LanguageTypeId, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(RadioId, LanguageId, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@RadioId, @LanguageTypeId, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@RadioId, @LanguageId, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioLanguage.RadioId);
-            DBHelper.AddParam(command, "@LanguageTypeId", SqlDbType.BigInt, radioLanguage.LanguageTypeId);
+            DBHelper.AddParam(command, "@LanguageId", SqlDbType.BigInt, radioLanguage.LanguageId);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, radioLanguage.Status);
@@ -208,12 +208,12 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(RadioLanguage radioLanguage)
         {
-            String strCmd = $"UPDATE {table} SET RadioId = @RadioId, LanguageTypeId = @LanguageTypeId, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET RadioId = @RadioId, LanguageId = @LanguageId, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioLanguage.RadioId);
-            DBHelper.AddParam(command, "@LanguageTypeId", SqlDbType.BigInt, radioLanguage.LanguageTypeId);
+            DBHelper.AddParam(command, "@LanguageId", SqlDbType.BigInt, radioLanguage.LanguageId);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, radioLanguage.Status);
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, radioLanguage.Id);

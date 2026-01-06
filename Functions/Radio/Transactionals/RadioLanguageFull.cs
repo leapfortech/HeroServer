@@ -5,17 +5,17 @@ namespace HeroServer
     public class RadioLanguageFull
     {
         public long Id { get; set; }
-        public long LanguageTypeId { get; set; }
+        public long LanguageId { get; set; }
         public int Status { get; set; }
 
         public RadioLanguageFull()
         {
         }
 
-        public RadioLanguageFull(long id, long languageTypeId, int status)
+        public RadioLanguageFull(long id, long languageId, int status)
         {
             Id = id;
-            LanguageTypeId = languageTypeId;
+            LanguageId = languageId;
             Status = status;
         }
     }

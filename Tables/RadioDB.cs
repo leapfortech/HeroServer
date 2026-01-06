@@ -139,7 +139,7 @@ namespace HeroServer
                       " FROM [J-RadioType]" +
                       " WHERE RadioId = @Id;";
 
-            strCmd += "SELECT Id, LanguageTypeId, Status" +
+            strCmd += "SELECT Id, LanguageId, Status" +
                       " FROM [J-RadioLanguage]" +
                       " WHERE RadioId = @Id;";
 
@@ -220,7 +220,7 @@ namespace HeroServer
                       " WHERE RadioId IN" +
                       $" (SELECT Id FROM {table} WHERE PostId = @PostId);";
 
-            strCmd += "SELECT Id, RadioLanguageId, Status" +
+            strCmd += "SELECT Id, LanguageId, Status" +
                       " FROM [J-RadioLanguage]" +
                       " WHERE RadioId IN" +
                       $" (SELECT Id FROM {table} WHERE PostId = @PostId);";
@@ -311,7 +311,7 @@ namespace HeroServer
             else
                 strCmd += ";";
 
-            strCmd += "SELECT RadioLanguage.Id, RadioLanguage.RadioLanguageId, RadioLanguage.Status" +
+            strCmd += "SELECT RadioLanguage.Id, RadioLanguage.LanguageId, RadioLanguage.Status" +
                        " FROM [J-RadioLanguage] AS RadioLanguage" +
                       $" JOIN {table} ON (RadioLanguage.RadioId = {table}.Id)" +
                        " WHERE 1 = 1";

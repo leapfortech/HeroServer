@@ -6,7 +6,7 @@ namespace HeroServer
     {
         public long Id { get; set; }
         public long RadioId { get; set; }
-        public long LanguageTypeId { get; set; }
+        public long LanguageId { get; set; }
         public DateTime CreateDateTime { get; set; }
         public DateTime UpdateDateTime { get; set; }
         public int Status { get; set; }
@@ -15,11 +15,11 @@ namespace HeroServer
         {
         }
 
-        public RadioLanguage(long id, long radioId, long languageTypeId, DateTime createDateTime, DateTime updateDateTime, int status)
+        public RadioLanguage(long id, long radioId, long languageId, DateTime createDateTime, DateTime updateDateTime, int status)
         {
             Id = id;
             RadioId = radioId;
-            LanguageTypeId = languageTypeId;
+            LanguageId = languageId;
             CreateDateTime = createDateTime;
             UpdateDateTime = updateDateTime;
             Status = status;
