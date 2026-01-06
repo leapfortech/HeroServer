@@ -615,13 +615,14 @@ namespace HeroServer
         // DELETE
         public static async Task DeleteById(long id, bool delAuthUser = true)
         {
+            String authUserId = null;
+
+            if (delAuthUser)
+                authUserId = await new WebSysUserDB().GetAuthUserIdById(id);
+
             await new WebSysUserDB().DeleteById(id);
 
-            if (!delAuthUser)
-                return;
-
-            String authUserId = await new WebSysUserDB().GetAuthUserIdById(id);
-            if (authUserId == null)
+            if (!delAuthUser || String.IsNullOrEmpty(authUserId))
                 return;
 
             try
@@ -632,7 +633,6 @@ namespace HeroServer
             {
                 throw new Exception("Delete AuthUserId " + authUserId);
             }
-
         }
     }
 }

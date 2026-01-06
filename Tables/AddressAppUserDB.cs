@@ -205,9 +205,9 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(AddressAppUser addressAppUser)
         {
-            String strCmd = $"INSERT INTO {table}(AppUserId, AddressId, HouseholdBillCount, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(AppUserId, AddressId, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@AppUserId, @AddressId, @HouseholdBillCount, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@AppUserId, @AddressId, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -227,7 +227,7 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(AddressAppUser addressAppUser)
         {
-            String strCmd = $"UPDATE {table} SET AppUserId = @AppUserId, AddressId = @AddressId, HouseholdBillCount = @HouseholdBillCount, UpdateDateTime = @UpdateDateTime WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET AppUserId = @AppUserId, AddressId = @AddressId, UpdateDateTime = @UpdateDateTime WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 

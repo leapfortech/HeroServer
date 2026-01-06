@@ -20,41 +20,61 @@ namespace HeroServer
                 throw new Exception($"El usuario {registerAppRequest.Email} ya fue registrado.");
 
             int verified = 0;
-
-            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            String createdAuthUserId = null;
+            try
             {
-                if (webSysUser == null)
+                using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    UserRecord userRecord = await FirebaseFunctions.Register(null, registerAppRequest.Email, registerAppRequest.Password, false);
+                    if (webSysUser == null)
+                    {
+                        UserRecord userRecord = await FirebaseFunctions.Register(null, registerAppRequest.Email, registerAppRequest.Password, false);
 
-                    webSysUser = new WebSysUser(-1, userRecord.Uid, registerAppRequest.Email, registerAppRequest.Roles, registerAppRequest.PhoneCountryId, registerAppRequest.Phone, 1);
-                    webSysUser.Id = await WebSysUserFunctions.Add(webSysUser);
+                        createdAuthUserId = userRecord.Uid;
+                        webSysUser = new WebSysUser(-1, userRecord.Uid, registerAppRequest.Email, registerAppRequest.Roles, registerAppRequest.PhoneCountryId, registerAppRequest.Phone, 1);
+                        webSysUser.Id = await WebSysUserFunctions.Add(webSysUser);
+                    }
+                    else
+                    {
+                        verified = 1;
+
+                        await WebSysUserFunctions.AddRoles(webSysUser.Id, registerAppRequest.Roles);
+
+                        if (registerAppRequest.PhoneCountryId != -1)
+                            await WebSysUserFunctions.UpdatePhone(new PhoneRequest(webSysUser.Id, registerAppRequest.PhoneCountryId, registerAppRequest.Phone));
+                    }
+
+                    long referredAppUserId = await ReferredFunctions.GetAppUserIdByCode(registerAppRequest.ReferredCode);
+
+                    AppUser appUser = new AppUser(-1, webSysUser.Id, registerAppRequest.Alias, referredAppUserId, 1);
+                    appUserId = await new AppUserDB().Add(appUser);
+
+                    await UpdateCSToken(appUserId, webSysUser.Email);
+
+                    registerAppRequest.IdentityRegister.Identity.PhoneCountryId = registerAppRequest.PhoneCountryId;
+                    registerAppRequest.IdentityRegister.Identity.Phone = registerAppRequest.Phone;
+                    registerAppRequest.IdentityRegister.Identity.Email = registerAppRequest.Email;
+
+                    await IdentityFunctions.RegisterByAppUser(appUserId, registerAppRequest.IdentityRegister);
+                    await AddressFunctions.RegisterByAppUser(appUserId, registerAppRequest.Address);
+
+                    scope.Complete();
                 }
-                else
+            }
+            catch
+            {
+                if (createdAuthUserId != null)
                 {
-                    verified = 1;
+                    try
+                    {
+                        await FirebaseAuth.DefaultInstance.DeleteUserAsync(createdAuthUserId);
+                    }
+                    catch 
+                    {
 
-                    await WebSysUserFunctions.AddRoles(webSysUser.Id, registerAppRequest.Roles);
-
-                    if (registerAppRequest.PhoneCountryId != -1)
-                        await WebSysUserFunctions.UpdatePhone(new PhoneRequest(webSysUser.Id, registerAppRequest.PhoneCountryId, registerAppRequest.Phone));
+                    }
                 }
 
-                long referredAppUserId = await ReferredFunctions.GetAppUserIdByCode(registerAppRequest.ReferredCode);
-
-                AppUser appUser = new AppUser(-1, webSysUser.Id, registerAppRequest.Alias, referredAppUserId, 1);
-                appUserId = await new AppUserDB().Add(appUser);
-
-                await UpdateCSToken(appUserId, webSysUser.Email);
-
-                registerAppRequest.IdentityRegister.Identity.PhoneCountryId = registerAppRequest.PhoneCountryId;
-                registerAppRequest.IdentityRegister.Identity.Phone = registerAppRequest.Phone;
-                registerAppRequest.IdentityRegister.Identity.Email = registerAppRequest.Email;
-
-                await IdentityFunctions.RegisterByAppUser(appUserId, registerAppRequest.IdentityRegister);
-                await AddressFunctions.RegisterByAppUser(appUserId, registerAppRequest.Address);
-
-                scope.Complete();
+                throw;
             }
 
             return $"{appUserId}|{verified}";
