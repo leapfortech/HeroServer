@@ -56,10 +56,11 @@ namespace HeroServer
             AppUserStatusId = appUserStatusId;
         }
 
-        public AppUser(long id, long webSysUserId, long referrerAppUserId, int appUserStatusId)
+        public AppUser(long id, long webSysUserId, String alias, long referrerAppUserId, int appUserStatusId)
         {
             Id = id;
             WebSysUserId = webSysUserId;
+            Alias = alias;
             CSToken = null;
             ReferrerAppUserId = referrerAppUserId;
             CreateDateTime = DateTime.Now;

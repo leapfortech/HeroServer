@@ -42,7 +42,7 @@ namespace HeroServer
 
                 long referredAppUserId = await ReferredFunctions.GetAppUserIdByCode(registerAppRequest.ReferredCode);
 
-                AppUser appUser = new AppUser(-1, webSysUser.Id, referredAppUserId, 1);
+                AppUser appUser = new AppUser(-1, webSysUser.Id, registerAppRequest.Alias, referredAppUserId, 1);
                 appUserId = await new AppUserDB().Add(appUser);
 
                 await UpdateCSToken(appUserId, webSysUser.Email);
