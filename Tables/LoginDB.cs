@@ -30,14 +30,14 @@ namespace HeroServer
                             "SELECT TOP (50) * FROM [D-Notification] WHERE WebSysUserId = @WebSysUserId AND NotificationStatusId = 1 ORDER BY DateTime DESC;";
 
             // Tale
-            strCmd = "SELECT [D-Tale].Id, [D-Tale].PostId," +
-                     " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostSubtypeId," +
-                     " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
-                     " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.Status," +
-                     " [D-Tale].Status" +
-                     " FROM [D-Tale]" +
-                     " INNER JOIN [D-Post] AS Post ON ([D-Tale].PostId = Post.Id)" +
-                     " INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)";
+            strCmd += "SELECT [D-Tale].Id, [D-Tale].PostId," +
+                      " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostSubtypeId," +
+                      " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
+                      " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.Status," +
+                      " [D-Tale].Status" +
+                      " FROM [D-Tale]" +
+                      " INNER JOIN [D-Post] AS Post ON ([D-Tale].PostId = Post.Id)" +
+                      " INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)";
 
 
             if (taleStatus != -1)

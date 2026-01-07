@@ -49,7 +49,7 @@ namespace HeroServer
                                      Convert.ToInt32(reader["ImageCount"]),
                                      Convert.ToInt32(reader["LikeCount"]),
                                      Convert.ToDateTime(reader["PublicationDateTime"]),
-                                     Convert.ToInt32(reader["PostStatus"]),
+                                     Convert.ToInt32(reader["Status"]),
                                      null,   //ContactFull
                                      null,   //LinkFulls
                                      null,   //CommentFulls

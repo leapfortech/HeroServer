@@ -22,6 +22,9 @@ namespace HeroServer
         public static async Task<long> Register(RegisterPostRequest RegisterPostRequest)
         {
             RegisterPostRequest.Post.Status = 1;
+            RegisterPostRequest.Post.PublicationDateTime = DateTime.Now;
+            RegisterPostRequest.Post.ApprovalDateTime = null;
+            RegisterPostRequest.Post.ExpirationDateTime = null;
             long postId = await new PostDB().Add(RegisterPostRequest.Post);
 
             await RegisterImages(postId, RegisterPostRequest.Images);
