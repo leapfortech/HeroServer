@@ -81,6 +81,20 @@ namespace HeroServer.Controllers
             }
         }
 
+        // POST services/post/RegisterCommentPlaint
+        [HttpPost("RegisterCommentPlaint")]
+        public async Task<ActionResult<long>> RegisterCommentPlaint([FromBody] CommentPlaint commentPlaint)
+        {
+            try
+            {
+                return Ok(await PostFunctions.RegisterCommentPlaint(commentPlaint));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // POST services/post/RegisterPostPlaint
         [HttpPost("RegisterPostPlaint")]
         public async Task<ActionResult<long>> RegisterPostPlaint([FromBody] PostPlaint postPlaint)

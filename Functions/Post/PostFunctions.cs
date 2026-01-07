@@ -46,6 +46,12 @@ namespace HeroServer
             return await new CommentDB().Add(comment);
         }
 
+        public static async Task<long> RegisterCommentPlaint(CommentPlaint commentPlaint)
+        {
+            commentPlaint.Status = 1;
+            return await new CommentPlaintDB().Add(commentPlaint);
+        }
+
         public static async Task<long> RegisterPostPlaint(PostPlaint postPlaint)
         {
             postPlaint.Status = 1;
