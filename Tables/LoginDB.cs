@@ -11,15 +11,14 @@ namespace HeroServer
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
 
         // SELECT
-        public async Task<LoginAppInfo> GetLoginAppInfo(long appUserId, long webSysUserId,
-                                                        long taleStatus = 1)
+        public async Task<LoginAppInfo> GetLoginAppInfo(long appUserId, long webSysUserId, int taleStatus = 1)
         {
             //News
             String strCmd = // Referred Count
                             "SELECT COUNT(1) AS Count FROM [D-Referred] WHERE AppUserId = @AppUserId AND Status = 1;" +
 
                             // Identity
-                            "SELECT * FROM [D-Identity] AS Idt INNER JOIN [J-IdentityAppUser] AS IdtApp ON (IdtApp.IdentityId = Idt.Id) WHERE IdtApp.AppUserId = @AppUserId AND Status = 1; " +
+                            "SELECT * FROM [D-Identity] AS Idt INNER JOIN [J-IdentityAppUser] AS IdtApp ON (IdtApp.IdentityId = Idt.Id) WHERE IdtApp.AppUserId = @AppUserId AND IdtApp.Status = 1; " +
 
                             // Address AppUser
                             "SELECT Adr.* FROM [D-Address] AS Adr INNER JOIN [J-AddressAppUser] AS AdrApp ON (AdrApp.AddressId = Adr.Id) WHERE AdrApp.AppUserId = @AppUserId AND AdrApp.Status = 1; " +
@@ -34,10 +33,10 @@ namespace HeroServer
             strCmd = "SELECT [D-Tale].Id, [D-Tale].PostId," +
                      " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostSubtypeId," +
                      " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
-                     " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
+                     " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.Status," +
                      " [D-Tale].Status" +
                      " FROM [D-Tale]" +
-                     " INNER JOIN Post ON ([D-Tale].PostId = Post.PostId)" +
+                     " INNER JOIN [D-Post] AS Post ON ([D-Tale].PostId = Post.Id)" +
                      " INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)";
 
 
@@ -79,6 +78,7 @@ namespace HeroServer
             else
                 strCmd += ";";
 
+
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, appUserId);
@@ -86,7 +86,7 @@ namespace HeroServer
 
             if (taleStatus != -1)
                 DBHelper.AddParam(command, "@TaleStatus", SqlDbType.Int, taleStatus);
-
+            
             
             LoginAppInfo loginAppInfo = new LoginAppInfo();
             TaleDataFull taleDataFull = new TaleDataFull();
@@ -99,12 +99,6 @@ namespace HeroServer
                     ReferredCount referredCount = new ReferredCount();
                     if (await reader.ReadAsync())
                         referredCount.Count = Convert.ToInt32(reader["Count"]);
-
-                    reader.NextResult();
-                    if (await reader.ReadAsync())
-                        referredCount.InvestmentCount = Convert.ToInt32(reader["InvestmentCount"]);
-
-                    loginAppInfo.ReferredCount = referredCount;
 
                     reader.NextResult();
                     if (await reader.ReadAsync())

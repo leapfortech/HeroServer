@@ -44,7 +44,7 @@ namespace HeroServer.Controllers
 
         // POST services/websystoken/Find
         //[HttpPost("Find")]
-        //public async Task<ActionResult<int>> Find([FromBody]SystemToken systemToken)
+        //public async Task<ActionResult<long>> Find([FromBody]SystemToken systemToken)
         //{
         //    return Ok(await new SystemTokenDB(bntConnString).Find(systemToken));
         //}

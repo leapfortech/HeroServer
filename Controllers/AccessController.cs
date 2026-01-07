@@ -24,7 +24,7 @@ namespace HeroServer.Controllers
         {
             try
             {
-                return Ok(await AccessFunctions.GetLoginAppInfo(Convert.ToInt32(appUserId), Convert.ToInt32(webSysUserId)));
+                return Ok(await AccessFunctions.GetLoginAppInfo(Convert.ToInt64(appUserId), Convert.ToInt64(webSysUserId)));
             }
             catch (Exception ex)
             {

@@ -139,9 +139,9 @@ namespace HeroServer
             return new LoginAppResponse(appUser, webSysUser, 1);
         }
 
-        public static async Task<LoginAppInfo> GetLoginAppInfo(int appUserId, int webSysUserId)
+        public static async Task<LoginAppInfo> GetLoginAppInfo(long appUserId, long webSysUserId)
         {
-            LoginAppInfo loginAppInfo = await new LoginDB().GetLoginAppInfo(appUserId, webSysUserId, 1);
+            LoginAppInfo loginAppInfo = await new LoginDB().GetLoginAppInfo(appUserId, webSysUserId);
             loginAppInfo.Portrait = await IdentityFunctions.GetPortraitByAppUserId(appUserId);
 
             return loginAppInfo;

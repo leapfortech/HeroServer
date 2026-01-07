@@ -104,10 +104,10 @@ namespace HeroServer
                              " Post.PostSubtypeId," +
                              " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId," +
                              " Post.Title, Post.Summary, Post.Description," +
-                             " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
+                             " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.Status," +
                             $" {table}.Status" +
                             $" FROM {table}" +
-                            $" INNER JOIN Post ON ({table}.PostId = Post.PostId)" +
+                            $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
                             $" WHERE {table}.Id = @Id;";
 
@@ -167,10 +167,10 @@ namespace HeroServer
                             " Post.AppUserId, AppUser.Alias AS AppUserAlias," +
                             " Post.PostSubtypeId," +
                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
-                            " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
+                            " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.Status," +
                             $" {table}.Status" +
                             $" FROM {table}" +
-                            $" INNER JOIN Post ON ({table}.PostId = Post.PostId)" +
+                            $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
                             $" WHERE {table}.PostId = @PostId;";
 
@@ -229,10 +229,10 @@ namespace HeroServer
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostSubtypeId," +
                              " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
-                             " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.PostStatus," +
+                             " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.Status," +
                             $" {table}.Status" +
                             $" FROM {table}" +
-                            $" INNER JOIN Post ON ({table}.PostId = Post.PostId)" +
+                            $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)";
 
 
