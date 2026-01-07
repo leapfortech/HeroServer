@@ -25,7 +25,7 @@ namespace HeroServer.Controllers
             }
         }
 
-        // GET services/project/ImagesById?id=1&first=true
+        // GET services/post/ImagesById?id=1&first=true
         [HttpGet("ImagesById")]
         public async Task<ActionResult<List<String>>> GetImagesById([FromQuery] String id, [FromQuery] String first = "true")
         {
