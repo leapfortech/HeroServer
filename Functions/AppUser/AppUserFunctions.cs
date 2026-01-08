@@ -136,6 +136,7 @@ namespace HeroServer
         public static async Task DeleteById(long id, bool delAuthUser = true)
         {
             long webSysUserId = await new AppUserDB().GetWebSysUserId(id);
+            bool committed = false;
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -147,9 +148,14 @@ namespace HeroServer
                 await new AppUserDB().DeleteById(id);
 
                 scope.Complete();
+                committed = true;
             }
 
-            await DeleteImages(id);
+            if (committed)
+            {
+                String containerName = "user" + id.ToString("D08");
+                await StorageFunctions.DeleteContainer(containerName);
+            }
 
             if (webSysUserId == -1)
                 return;
@@ -168,11 +174,6 @@ namespace HeroServer
             if (appUserId == -1)
                 throw new Exception("Email NOT Found");
             await DeleteById(appUserId, delAuthUser);
-        }
-
-        public static async Task DeleteImages(long id)
-        {
-            await StorageFunctions.DeleteContainer($"user{id:D08}");
         }
     }
 }

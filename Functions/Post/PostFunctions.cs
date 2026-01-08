@@ -163,6 +163,8 @@ namespace HeroServer
 
         public static async Task DeleteById(long id)
         {
+            bool committed = false;
+
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 await DeleteShareByPostId(id);
@@ -192,9 +194,15 @@ namespace HeroServer
                 await new PostDB().DeleteById(id);
 
                 scope.Complete();
+                committed = true;
             }
 
-            await DeleteImages(id);
+            if (committed)
+            {
+                String containerName = "posts";
+                String filename = $"post{id:D08}";
+                await DeleteImages(containerName, filename);
+            }
         }
 
         public static async Task DeleteShareByPostId(long postId)
@@ -250,11 +258,6 @@ namespace HeroServer
         public static async Task DeleteLikeByPostId(long postId)
         {
             await new LikeDB().DeleteByPostId(postId);
-        }
-
-        public static async Task DeleteImages(long postId)
-        {
-            await StorageFunctions.DeleteContainer($"posts{postId:D08}");
         }
     }
 }
