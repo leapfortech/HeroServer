@@ -116,19 +116,18 @@ namespace HeroServer
         public static async Task<long> Register(RegisterTaleRequest registerTaleRequest)
         {
             long id = -1;
-            long postId = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 registerTaleRequest.Post.PostSubtypeId = (long)PostSubtype.Tale;
-                postId = await PostFunctions.Register(registerTaleRequest);
+                registerTaleRequest.Post.Id = await PostFunctions.Register(registerTaleRequest);
 
                 if (registerTaleRequest.Tale == null)
                 {
-                    registerTaleRequest.Tale = new Tale(-1, postId, DateTime.Now, DateTime.Now, 1);
+                    registerTaleRequest.Tale = new Tale(-1, registerTaleRequest.Post.Id, DateTime.Now, DateTime.Now, 1);
                 }
                 else
                 {
-                    registerTaleRequest.Tale.PostId = postId;
+                    registerTaleRequest.Tale.PostId = registerTaleRequest.Post.Id;
                     registerTaleRequest.Tale.Status = 1;
                 }
 

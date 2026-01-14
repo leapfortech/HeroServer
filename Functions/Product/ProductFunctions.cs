@@ -124,14 +124,6 @@ namespace HeroServer
                 registerProductRequest.Product.Status = 1;
                 id = await Add(registerProductRequest.Product);
 
-                for (int i = 0; i < registerProductRequest.ProductReviews.Count; i++)
-                {
-                    registerProductRequest.ProductReviews[i].ProductId = id;
-                    registerProductRequest.ProductReviews[i].Status = 1;
-
-                    await new ProductReviewDB().Add(registerProductRequest.ProductReviews[i]);
-                }
-
                 scope.Complete();
             }
 

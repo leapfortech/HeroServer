@@ -19,15 +19,39 @@ namespace HeroServer
         }
 
         // REGISTER
-        public static async Task<long> Register(RegisterPostRequest RegisterPostRequest)
+        public static async Task<long> Register(RegisterPostRequest registerPostRequest)
         {
-            RegisterPostRequest.Post.PublicationDateTime = DateTime.Now;
-            RegisterPostRequest.Post.ApprovalDateTime = null;
-            RegisterPostRequest.Post.ExpirationDateTime = null;
-            RegisterPostRequest.Post.Status = 1;
-            long postId = await new PostDB().Add(RegisterPostRequest.Post);
+            long postId = -1;
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                registerPostRequest.Post.PublicationDateTime = DateTime.Now;
+                registerPostRequest.Post.ApprovalDateTime = null;
+                registerPostRequest.Post.ExpirationDateTime = null;
+                registerPostRequest.Post.Status = 1;
 
-            await RegisterImages(postId, RegisterPostRequest.Images);
+                postId = await new PostDB().Add(registerPostRequest.Post);
+
+                if (registerPostRequest.Contact != null)
+                {
+                    registerPostRequest.Contact.PostId = postId;
+                    registerPostRequest.Contact.Status = 1;
+                    await new ContactDB().Add(registerPostRequest.Contact);
+                }
+
+                if (registerPostRequest.Links != null && registerPostRequest.Links.Count > 0)
+                {
+                    for (int i = 0; i < registerPostRequest.Links.Count; i++)
+                    {
+                        registerPostRequest.Links[i].PostId = postId;
+                        registerPostRequest.Links[i].Status = 1;
+                        await new LinkDB().Add(registerPostRequest.Links[i]);
+                    }
+                }
+
+                scope.Complete();
+            }
+
+            await RegisterImages(postId, registerPostRequest.Images);
 
             return postId;
         }

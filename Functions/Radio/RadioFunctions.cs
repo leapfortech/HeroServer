@@ -121,7 +121,16 @@ namespace HeroServer
                 registerRadioRequest.Post.PostSubtypeId = (long)PostSubtype.Radio;
                 registerRadioRequest.Radio.PostId = await PostFunctions.Register(registerRadioRequest);
 
-                registerRadioRequest.Radio.Status = 1;
+                if (registerRadioRequest.Radio == null)
+                {
+                    registerRadioRequest.Radio = new Radio(-1, registerRadioRequest.Radio.PostId, DateTime.Now, DateTime.Now, 1);
+                }
+                else
+                {
+                    registerRadioRequest.Radio.PostId = registerRadioRequest.Radio.PostId;
+                    registerRadioRequest.Radio.Status = 1;
+                }
+
                 id = await Add(registerRadioRequest.Radio);
 
                 for (int i = 0; i < registerRadioRequest.RadioTypes.Count; i++)
