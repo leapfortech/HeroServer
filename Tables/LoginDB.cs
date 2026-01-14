@@ -39,7 +39,6 @@ namespace HeroServer
                       " INNER JOIN [D-Post] AS Post ON ([D-Tale].PostId = Post.Id)" +
                       " INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)";
 
-
             if (taleStatus != -1)
                 strCmd += $" WHERE [D-Tale].Status = @TaleStatus;";
             else

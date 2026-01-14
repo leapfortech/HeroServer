@@ -118,6 +118,9 @@ namespace HeroServer
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
+                registerTreatmentRequest.Post.PostSubtypeId = (long)PostSubtype.Treatment;
+                registerTreatmentRequest.Treatment.PostId = await PostFunctions.Register(registerTreatmentRequest);
+
                 registerTreatmentRequest.Treatment.Status = 1;
                 id = await Add(registerTreatmentRequest.Treatment);
 
@@ -128,8 +131,6 @@ namespace HeroServer
 
                     await new DiseaseDB().Add(registerTreatmentRequest.Diseases[i]);
                 }
-
-                registerTreatmentRequest.Treatment.PostId = await PostFunctions.Register(registerTreatmentRequest);
 
                 scope.Complete();
             }

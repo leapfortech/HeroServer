@@ -118,6 +118,9 @@ namespace HeroServer
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
+                registerProductRequest.Post.PostSubtypeId = (long)PostSubtype.Product;
+                registerProductRequest.Product.PostId = await PostFunctions.Register(registerProductRequest);
+
                 registerProductRequest.Product.Status = 1;
                 id = await Add(registerProductRequest.Product);
 
@@ -128,8 +131,6 @@ namespace HeroServer
 
                     await new ProductReviewDB().Add(registerProductRequest.ProductReviews[i]);
                 }
-
-                registerProductRequest.Product.PostId = await PostFunctions.Register(registerProductRequest);
 
                 scope.Complete();
             }

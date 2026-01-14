@@ -118,10 +118,11 @@ namespace HeroServer
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
+                registerNewsRequest.Post.PostSubtypeId = (long)PostSubtype.News;
+                registerNewsRequest.News.PostId = await PostFunctions.Register(registerNewsRequest);
+
                 registerNewsRequest.News.Status = 1;
                 id = await Add(registerNewsRequest.News);
-
-                registerNewsRequest.News.PostId = await PostFunctions.Register(registerNewsRequest);
 
                 scope.Complete();
             }
