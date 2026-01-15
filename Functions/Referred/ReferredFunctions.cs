@@ -29,7 +29,7 @@ namespace HeroServer
             return await new ReferredDB().GetByAppUserId(appUserId, status);
         }
 
-        public static async Task<IEnumerable<Referred>> GetHistory(ReferredHistoryRequest referredHistoryRequest)
+        public static async Task<IEnumerable<ReferredFull>> GetHistory(ReferredHistoryRequest referredHistoryRequest)
         {
             return await new ReferredDB().GetHistory(referredHistoryRequest.AppUserId, referredHistoryRequest.DateStart, referredHistoryRequest.DateEnd);
         }
