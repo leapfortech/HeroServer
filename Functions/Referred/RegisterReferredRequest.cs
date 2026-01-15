@@ -1,6 +1,6 @@
 ﻿namespace HeroServer
 {
-    public class RegisterReferredRequest : RegisterPostRequest
+    public class RegisterReferredRequest
     {
         public long AppUserId { get; set; }
         public Identity Identity { get; set; }
