@@ -73,7 +73,7 @@ namespace HeroServer.Controllers
 
         // POST services/referred/ByPeriod
         [HttpPost("ByPeriod")]     // JAD : Remove
-        public async Task<ActionResult<IEnumerable<Referred>>> GetByPeriod([FromBody] ReferredHistoryRequest referredHistoryRequest)
+        public async Task<ActionResult<IEnumerable<ReferredFull>>> GetByPeriod([FromBody] ReferredHistoryRequest referredHistoryRequest)
         {
             return Ok(await ReferredFunctions.GetHistory(referredHistoryRequest));
         }

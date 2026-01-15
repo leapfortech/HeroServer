@@ -26,14 +26,14 @@ namespace HeroServer
         {
             return new ReferredFull(Convert.ToInt64(reader["Id"]),
                                     reader["Code"].ToString(),
-                                    Convert.ToInt32(reader["AppUserId"]),
-                                    reader["FirstName"].ToString(),
-                                    reader["LastName"].ToString(),
+                                    reader["FirstName1"].ToString(),
+                                    reader["FirstName2"].ToString(),
+                                    reader["LastName1"].ToString(),
+                                    reader["LastName2"].ToString(),
                                     reader["PhonePrefix"].ToString(),
                                     reader["Phone"].ToString(),
                                     reader["Email"].ToString(),
-                                    Convert.ToDateTime(reader["CreateDateTime"]),
-                                    GetReferrerFull(reader));
+                                    Convert.ToDateTime(reader["CreateDateTime"]));
         }
 
         private static ReferrerFull GetReferrerFull(SqlDataReader reader)
@@ -170,9 +170,16 @@ namespace HeroServer
             return count;
         }
 
-        public async Task<IEnumerable<Referred>> GetHistory(long appUserId, DateTime startDate, DateTime endDate)
+        public async Task<IEnumerable<ReferredFull>> GetHistory(long appUserId, DateTime startDate, DateTime endDate)
         {
-            String strCmd = $"SELECT * FROM {table} WHERE AppUserId = @AppUserId AND Status = 1 AND CreateDateTime BETWEEN @DateStart AND @DateEnd ORDER BY CreateDatetime DESC";
+            String strCmd = @"SELECT referred.Id, referred.Code, identity.FirstName1, identity.FirstName2," +
+                             " identity.LastName1, identity.LastName2, identity.PhoneCountryId AS PhonePrefix," +
+                             " identity.Phone, identity.Email, referred.CreateDateTime" +
+                             " FROM [D-Referred] referred" +
+                             " INNER JOIN [D-Identity] identity ON identity.Id = referred.IdentityId" +
+                             " WHERE referred.AppUserId = @AppUserId AND referred.Status = 1" +
+                             " AND referred.CreateDateTime BETWEEN @DateStart AND @DateEnd" +
+                             " ORDER BY referred.CreateDateTime DESC";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -180,7 +187,7 @@ namespace HeroServer
             DBHelper.AddParam(command, "@DateStart", SqlDbType.DateTime2, startDate);
             DBHelper.AddParam(command, "@DateEnd", SqlDbType.DateTime2, endDate);
 
-            List<Referred> referreds = [];
+            List<ReferredFull> referredFulls = [];
             using (conn)
             {
                 await conn.OpenAsync();
@@ -188,12 +195,12 @@ namespace HeroServer
                 {
                     while (await reader.ReadAsync())
                     {
-                        Referred referred = GetReferred(reader);
-                        referreds.Add(referred);
+                        ReferredFull referredFull = GetReferredFull(reader);
+                        referredFulls.Add(referredFull);
                     }
                 }
             }
-            return referreds;
+            return referredFulls;
         }
 
         public async Task<long> GetAppUserIdById(long id)
