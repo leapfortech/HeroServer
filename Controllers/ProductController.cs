@@ -53,6 +53,20 @@ namespace HeroServer.Controllers
             }
         }
 
+        // POST services/product/RegisterReview
+        [HttpPost("RegisterReview")]
+        public async Task<ActionResult<long>> RegisterReview([FromBody] ProductReview productReview)
+        {
+            try
+            {
+                return Ok(await ProductFunctions.RegisterReview(productReview));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // PUT services/product
         [HttpPut]
         public async Task<ActionResult<bool>> Update([FromBody] Product product)

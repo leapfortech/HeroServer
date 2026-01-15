@@ -130,6 +130,12 @@ namespace HeroServer
             return id;
         }
 
+        public static async Task<long> RegisterReview(ProductReview productReview)
+        {
+                productReview.Status = 1;
+                return await new ProductReviewDB().Add(productReview);
+        }
+
         // ADD
         public static async Task<long> Add(Product product)
         {
