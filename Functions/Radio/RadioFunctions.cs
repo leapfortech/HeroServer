@@ -119,15 +119,15 @@ namespace HeroServer
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 registerRadioRequest.Post.PostSubtypeId = (long)PostSubtype.Radio;
-                registerRadioRequest.Radio.PostId = await PostFunctions.Register(registerRadioRequest);
+                registerRadioRequest.Post.Id = await PostFunctions.Register(registerRadioRequest);
 
                 if (registerRadioRequest.Radio == null)
                 {
-                    registerRadioRequest.Radio = new Radio(-1, registerRadioRequest.Radio.PostId, DateTime.Now, DateTime.Now, 1);
+                    registerRadioRequest.Radio = new Radio(-1, registerRadioRequest.Post.Id, DateTime.Now, DateTime.Now, 1);
                 }
                 else
                 {
-                    registerRadioRequest.Radio.PostId = registerRadioRequest.Radio.PostId;
+                    registerRadioRequest.Radio.PostId = registerRadioRequest.Post.Id;
                     registerRadioRequest.Radio.Status = 1;
                 }
 
