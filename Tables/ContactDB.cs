@@ -78,9 +78,9 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(Contact contact)
         {
-            String strCmd = $"INSERT INTO {table}(Id, PostId, Name, PhoneCountryId, Phone, Email, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(Id, PostId, Name, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @PostId, @Name, @PhoneCountryId, @Phone, @Email, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@Id, @PostId, @Name, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -101,7 +101,7 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(Contact contact)
         {
-            String strCmd = $"UPDATE {table} SET PostId = @PostId, Name = @Name, PhoneCountryId = @PhoneCountryId, Phone = @Phone, Email = @Email, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET PostId = @PostId, Name = @Name, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
