@@ -51,7 +51,8 @@ namespace HeroServer
                 scope.Complete();
             }
 
-            await RegisterImages(postId, registerPostRequest.Images);
+            if (registerPostRequest.Images != null && registerPostRequest.Images.Count != 0)
+                await RegisterImages(postId, registerPostRequest.Images);
 
             return postId;
         }
