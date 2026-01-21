@@ -121,6 +121,10 @@ namespace HeroServer
                 registerPuzzleRequest.Post.PostSubtypeId = (long)PostSubtype.Puzzle;
 
                 registerPuzzleRequest.Puzzle.PostId = await PostFunctions.Register(registerPuzzleRequest);
+
+                registerPuzzleRequest.Puzzle.Difficulty = -1;
+                registerPuzzleRequest.Puzzle.Points = 1;
+                registerPuzzleRequest.Puzzle.PlayCount = 0;
                 registerPuzzleRequest.Puzzle.Status = 1;
                 
                 id = await Add(registerPuzzleRequest.Puzzle);
