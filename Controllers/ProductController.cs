@@ -69,11 +69,11 @@ namespace HeroServer.Controllers
 
         // PUT services/product
         [HttpPut]
-        public async Task<ActionResult<bool>> Update([FromBody] Product product)
+        public async Task<ActionResult<bool>> Update([FromBody] RegisterProductRequest registerProductRequest)
         {
             try
             {
-                return Ok(await ProductFunctions.Update(product));
+                return Ok(await ProductFunctions.Update(registerProductRequest));
             }
             catch (Exception ex)
             {

@@ -70,11 +70,11 @@ namespace HeroServer.Controllers
 
         // PUT services/radio
         [HttpPut]
-        public async Task<ActionResult<bool>> Update([FromBody] Radio radio)
+        public async Task<ActionResult<bool>> Update([FromBody] RegisterRadioRequest registerRadioRequest)
         {
             try
             {
-                return Ok(await RadioFunctions.Update(radio));
+                return Ok(await RadioFunctions.Update(registerRadioRequest));
             }
             catch (Exception ex)
             {

@@ -17,14 +17,17 @@ namespace HeroServer
                                     Convert.ToInt64(reader["PuzzleId"]),
                                     reader["Description"].ToString(),
                                     Convert.ToInt32(reader["IsCorrect"]),
-                                    Convert.ToDateTime(reader["CreateDateTime"]));
+                                    Convert.ToDateTime(reader["CreateDateTime"]),
+                                    Convert.ToDateTime(reader["UpdateDateTime"]),
+                                    Convert.ToInt32(reader["Status"]));
         }
 
         public static PuzzleAnswerFull GetPuzzleAnswerFull(SqlDataReader reader)
         {
             return new PuzzleAnswerFull(Convert.ToInt64(reader["Id"]),
                                         reader["Description"].ToString(),
-                                        Convert.ToInt32(reader["IsCorrect"]));
+                                        Convert.ToInt32(reader["IsCorrect"]),
+                                        Convert.ToInt32(reader["Status"]));
         }
 
         // GET
@@ -76,9 +79,9 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(PuzzleAnswer puzzleAnswer)
         {
-            String strCmd = $"INSERT INTO {table}(Id, PuzzleId, Description, IsCorrect, CreateDateTime)" + 
+            String strCmd = $"INSERT INTO {table}(Id, PuzzleId, Description, IsCorrect, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @PuzzleId, @Description, @IsCorrect, @CreateDateTime)";
+                            " VALUES (@Id, @PuzzleId, @Description, @IsCorrect, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -87,6 +90,8 @@ namespace HeroServer
             DBHelper.AddParam(command, "@Description", SqlDbType.VarChar, puzzleAnswer.Description);
             DBHelper.AddParam(command, "@IsCorrect", SqlDbType.Int, puzzleAnswer.IsCorrect);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
+            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, puzzleAnswer.Status);
 
             using (conn)
             {
@@ -98,14 +103,54 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(PuzzleAnswer puzzleAnswer)
         {
-            String strCmd = $"UPDATE {table} SET PuzzleId = @PuzzleId, Description = @Description, IsCorrect = @IsCorrect WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET PuzzleId = @PuzzleId, Description = @Description, IsCorrect = @IsCorrect, UpdateDateTime = @UpdateDateTime WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@PuzzleId", SqlDbType.BigInt, puzzleAnswer.PuzzleId);
             DBHelper.AddParam(command, "@Description", SqlDbType.VarChar, puzzleAnswer.Description);
             DBHelper.AddParam(command, "@IsCorrect", SqlDbType.Int, puzzleAnswer.IsCorrect);
+            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);   
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, puzzleAnswer.Id);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
+
+        public async Task<bool> UpdateStatus(long id, int status)
+        {
+            String strCmd = $"UPDATE {table}" +
+                            " SET UpdateDateTime = @UpdateDateTime, Status = @Status" +
+                            " WHERE Id = @Id";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
+
+        public async Task<bool> UpdateStatusByPuzzleId(long puzzleId, int curStatus, int newStatus)
+        {
+            String strCmd = $"UPDATE {table}" +
+                            " SET UpdateDateTime = @UpdateDateTime, Status = @NewStatus" +
+                            " WHERE PuzzleId = @PuzzleId AND Status = @CurStatus";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            DBHelper.AddParam(command, "@PuzzleId", SqlDbType.BigInt, puzzleId);
+            DBHelper.AddParam(command, "@CurStatus", SqlDbType.Int, curStatus);
+            DBHelper.AddParam(command, "@NewStatus", SqlDbType.Int, newStatus);
 
             using (conn)
             {

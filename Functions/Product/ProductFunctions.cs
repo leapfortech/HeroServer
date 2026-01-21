@@ -143,6 +143,37 @@ namespace HeroServer
         }
 
         // UPDATE
+        public static async Task<bool> Update(RegisterProductRequest registerProductRequest)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                // Update Post
+                bool postUpdated = await new PostDB().Update(registerProductRequest.Post);
+                if (!postUpdated)
+                    return false;
+
+                // Update Product
+                // Soft Delete
+                await new ProductDB().UpdateStatusByPostId(registerProductRequest.Post.Id, 1, 0);
+
+                registerProductRequest.Product.PostId = registerProductRequest.Post.Id;
+                registerProductRequest.Product.Status = 1;
+
+                if (registerProductRequest.Product.Id <= 0)
+                {
+                    await Add(registerProductRequest.Product);
+                }
+                else
+                {
+                    await Update(registerProductRequest.Product);
+                    await UpdateStatus(registerProductRequest.Product.Id, 1);
+                }
+
+                scope.Complete();
+                return true;
+            }
+        }
+
         public static async Task<bool> Update(Product product)
         {
             return await new ProductDB().Update(product);

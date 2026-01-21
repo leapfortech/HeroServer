@@ -55,11 +55,11 @@ namespace HeroServer.Controllers
 
         // PUT services/news
         [HttpPut]
-        public async Task<ActionResult<bool>> Update([FromBody] News news)
+        public async Task<ActionResult<bool>> Update([FromBody] RegisterNewsRequest registerNewsRequest)
         {
             try
             {
-                return Ok(await NewsFunctions.Update(news));
+                return Ok(await NewsFunctions.Update(registerNewsRequest));
             }
             catch (Exception ex)
             {

@@ -55,11 +55,11 @@ namespace HeroServer.Controllers
 
         // PUT services/tale
         [HttpPut]
-        public async Task<ActionResult<bool>> Update([FromBody] Tale tale)
+        public async Task<ActionResult<bool>> Update([FromBody] RegisterTaleRequest registerTaleRequest)
         {
             try
             {
-                return Ok(await TaleFunctions.Update(tale));
+                return Ok(await TaleFunctions.Update(registerTaleRequest));
             }
             catch (Exception ex)
             {

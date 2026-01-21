@@ -137,6 +137,38 @@ namespace HeroServer
         }
 
         // UPDATE
+        public static async Task<bool> Update(RegisterHappeningRequest registerHappeningRequest)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                // Update Post
+                bool postUpdated = await new PostDB().Update(registerHappeningRequest.Post);
+                if (!postUpdated)
+                    return false;
+
+                // Update Happening
+                // Soft Delete
+                await new HappeningDB().UpdateStatusByPostId(registerHappeningRequest.Post.Id, 1, 0);
+
+                registerHappeningRequest.Happening.PostId = registerHappeningRequest.Post.Id;
+                registerHappeningRequest.Happening.Status = 1;
+
+                if (registerHappeningRequest.Happening.Id <= 0)
+                {
+                    await Add(registerHappeningRequest.Happening);
+                }
+                else
+                {
+                    await Update(registerHappeningRequest.Happening);
+                    await UpdateStatus(registerHappeningRequest.Happening.Id, 1);
+                }
+
+                scope.Complete();
+                return true;
+            }
+        }
+
+
         public static async Task<bool> Update(Happening happening)
         {
             return await new HappeningDB().Update(happening);

@@ -167,6 +167,88 @@ namespace HeroServer
         }
 
         // UPDATE
+        public static async Task<bool> Update(RegisterRadioRequest registerRadioRequest)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                // Update Post
+                bool postUpdated = await new PostDB().Update(registerRadioRequest.Post);
+                if (!postUpdated)
+                    return false;
+
+                // Update Radio
+                // Soft Delete
+                await new RadioDB().UpdateStatusByPostId(registerRadioRequest.Post.Id, 1, 0);
+
+                registerRadioRequest.Radio.PostId = registerRadioRequest.Post.Id;
+                registerRadioRequest.Radio.Status = 1;
+
+                long radioId = -1;
+                if (registerRadioRequest.Radio.Id <= 0)
+                {
+                    radioId = await Add(registerRadioRequest.Radio);
+                }
+                else
+                {
+                    await Update(registerRadioRequest.Radio);
+                    await UpdateStatus(registerRadioRequest.Radio.Id, 1);
+                    radioId = registerRadioRequest.Radio.Id;
+                }
+
+                // Radio Types
+                // Soft Delete
+                await new RadioTypeDB().UpdateStatusByRadioId(radioId, 1, 0);
+
+                if (registerRadioRequest.RadioTypes != null && registerRadioRequest.RadioTypes.Count > 0)
+                {
+                    for (int i = 0; i < registerRadioRequest.RadioTypes.Count; i++)
+                    {
+                        RadioType radioType = registerRadioRequest.RadioTypes[i];
+                        radioType.RadioId = radioId;
+
+                        if (radioType.Id <= 0)
+                        {
+                            radioType.Status = 1;
+                            await new RadioTypeDB().Add(radioType);
+                        }
+                        else
+                        {
+                            await new RadioTypeDB().Update(radioType);
+                            await new RadioTypeDB().UpdateStatus(radioType.Id, 1);
+                        }
+                    }
+                }
+
+                // Radio Languates
+                // Soft Delete
+                await new RadioLanguageDB().UpdateStatusByRadioId(radioId, 1, 0);
+
+                if (registerRadioRequest.RadioLanguages != null && registerRadioRequest.RadioLanguages.Count > 0)
+                {
+                    for (int i = 0; i < registerRadioRequest.RadioLanguages.Count; i++)
+                    {
+                        RadioLanguage radioLanguage = registerRadioRequest.RadioLanguages[i];
+                        radioLanguage.RadioId = radioId;
+
+                        if (radioLanguage.Id <= 0)
+                        {
+                            radioLanguage.Status = 1;
+                            await new RadioLanguageDB().Add(radioLanguage);
+                        }
+                        else
+                        {
+                            await new RadioLanguageDB().Update(radioLanguage);
+                            await new RadioLanguageDB().UpdateStatus(
+                                radioLanguage.Id, 1);
+                        }
+                    }
+                }
+
+                scope.Complete();
+                return true;
+            }
+        }
+
         public static async Task<bool> Update(Radio radio)
         {
             return await new RadioDB().Update(radio);

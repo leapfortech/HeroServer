@@ -146,6 +146,45 @@ namespace HeroServer
         }
 
         // UPDATE
+        public static async Task<bool> Update(RegisterTaleRequest registerTaleRequest)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                // Update Post
+                bool postUpdated = await new PostDB().Update(registerTaleRequest.Post);
+                if (!postUpdated)
+                    return false;
+
+                // Update Tale
+                // Soft Delete
+                await new TaleDB().UpdateStatusByPostId(registerTaleRequest.Post.Id, 1, 0);
+
+                if (registerTaleRequest.Tale == null)
+                {
+                    registerTaleRequest.Tale = new Tale(-1, registerTaleRequest.Post.Id, DateTime.Now, DateTime.Now, 1);
+
+                    await Add(registerTaleRequest.Tale);
+                }
+                else
+                {
+                    registerTaleRequest.Tale.PostId = registerTaleRequest.Post.Id;
+                    registerTaleRequest.Tale.Status = 1;
+
+                    if (registerTaleRequest.Tale.Id <= 0)
+                        await Add(registerTaleRequest.Tale);
+                    else
+                    {
+                        await Update(registerTaleRequest.Tale);
+                        await UpdateStatus(registerTaleRequest.Tale.Id, 1);
+                    }
+                }
+
+                scope.Complete();
+            }
+
+            return true;
+        }
+
         public static async Task<bool> Update(Tale tale)
         {
             return await new TaleDB().Update(tale);

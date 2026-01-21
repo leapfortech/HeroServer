@@ -145,6 +145,65 @@ namespace HeroServer
         }
 
         // UPDATE
+        public static async Task<bool> Update(RegisterTreatmentRequest registerTreatmentRequest)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                // Update Post
+                bool postUpdated = await new PostDB().Update(registerTreatmentRequest.Post);
+                if (!postUpdated)
+                    return false;
+
+                // Update Treatment
+                // Soft Delete
+                await new TreatmentDB().UpdateStatusByPostId(registerTreatmentRequest.Post.Id, 1, 0);
+
+                registerTreatmentRequest.Treatment.PostId = registerTreatmentRequest.Post.Id;
+                registerTreatmentRequest.Treatment.Status = 1;
+
+                long treatmentId = -1;
+
+                if (registerTreatmentRequest.Treatment.Id <= 0)
+                {
+                    treatmentId = await Add(registerTreatmentRequest.Treatment);
+                }
+                else
+                {
+                    await Update(registerTreatmentRequest.Treatment);
+                    await UpdateStatus(registerTreatmentRequest.Treatment.Id, 1);
+                    treatmentId = registerTreatmentRequest.Treatment.Id;
+                }
+
+                // Diseases
+                // Soft Delete
+                await new DiseaseDB().UpdateStatusByTreatmentId(treatmentId, 1, 0);
+
+                if (registerTreatmentRequest.Diseases != null && registerTreatmentRequest.Diseases.Count > 0)
+                {
+                    for (int i = 0; i < registerTreatmentRequest.Diseases.Count; i++)
+                    {
+                        Disease disease = registerTreatmentRequest.Diseases[i];
+                        disease.TreatmentId = treatmentId;
+
+                        if (disease.Id <= 0)
+                        {
+                            disease.Status = 1;
+                            await new DiseaseDB().Add(disease);
+                        }
+                        else
+                        {
+                            await new DiseaseDB().Update(disease);
+                            await new DiseaseDB().UpdateStatus(disease.Id, 1);
+                        }
+                    }
+                }
+
+                scope.Complete();
+                return true;
+            }
+        }
+
+
         public static async Task<bool> Update(Treatment treatment)
         {
             return await new TreatmentDB().Update(treatment);

@@ -24,6 +24,7 @@ namespace HeroServer
             long postId = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
+                // Register Post
                 registerPostRequest.Post.PublicationDateTime = DateTime.Now;
                 registerPostRequest.Post.ApprovalDateTime = null;
                 registerPostRequest.Post.ExpirationDateTime = null;
@@ -31,6 +32,7 @@ namespace HeroServer
 
                 postId = await new PostDB().Add(registerPostRequest.Post);
 
+                // Register Contact
                 if (registerPostRequest.Contact != null)
                 {
                     registerPostRequest.Contact.PostId = postId;
@@ -38,6 +40,7 @@ namespace HeroServer
                     await new ContactDB().Add(registerPostRequest.Contact);
                 }
 
+                // Register Links
                 if (registerPostRequest.Links != null && registerPostRequest.Links.Count > 0)
                 {
                     for (int i = 0; i < registerPostRequest.Links.Count; i++)
@@ -51,6 +54,7 @@ namespace HeroServer
                 scope.Complete();
             }
 
+            // Register Images
             if (registerPostRequest.Images != null && registerPostRequest.Images.Count != 0)
                 await RegisterImages(postId, registerPostRequest.Images);
 
@@ -103,6 +107,60 @@ namespace HeroServer
             return await new LikeDB().Add(like);
         }
 
+        // UPDATE
+        public async Task<bool> UpdatePost(RegisterPostRequest registerPostRequest)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                // Update Post
+                bool postUpdated = await new PostDB().Update(registerPostRequest.Post);
+                
+                if (!postUpdated)
+                    return false;
+
+                // Update Conctact
+                // Soft Delete
+                if (registerPostRequest.Contact != null)
+                {
+                    await new ContactDB().UpdateStatusByPostId(registerPostRequest.Post.Id, 1, 0);
+
+                    registerPostRequest.Contact.PostId = registerPostRequest.Post.Id;
+                    registerPostRequest.Contact.Status = 1;
+                    await new ContactDB().Add(registerPostRequest.Contact);
+                }
+
+                // Update Links
+                // Soft Delete
+                await new LinkDB().UpdateStatusByPostId(registerPostRequest.Post.Id, 1, 0);
+
+                if (registerPostRequest.Links != null && registerPostRequest.Links.Count > 0)
+                {
+                    for (int i = 0; i < registerPostRequest.Links.Count; i++)
+                    {
+                        Link link = registerPostRequest.Links[i];
+                        link.PostId = registerPostRequest.Post.Id;
+
+                        if (link.Id <= 0)
+                        {
+                            link.Status = 1;
+                            await new LinkDB().Add(link);
+                        }
+                        else
+                        {
+                            await new LinkDB().Update(link);
+                            await new LinkDB().UpdateStatus(link.Id, 1);
+                        }
+                    }
+                }
+
+                scope.Complete();
+            }
+
+            await UpdateImages(registerPostRequest.Post.Id, registerPostRequest.Images);
+
+            return true;
+        }
+
         // IMAGES
         public static async Task<String> GetTitleImageById(long id)
         {
@@ -147,6 +205,34 @@ namespace HeroServer
                     continue;
 
                 await StorageFunctions.UpdateFile(containerName, $"{filename}|{i:D02}", "jpg", Convert.FromBase64String(images[i]));
+                count++;
+            }
+
+            await new PostDB().UpdateImageCount(postId, count);
+        }
+
+        public static async Task UpdateImages(long postId, List<String> images)
+        {
+            String containerName = "posts";
+            String filename = $"post{postId:D08}";
+
+            await DeleteImages(containerName, filename);
+
+            if (images == null)
+            {
+                await new PostDB().UpdateImageCount(postId, 0);
+                return;
+            }
+
+            await StorageFunctions.CreateContainer(containerName);
+
+            int count = 0;
+            for (int i = 0; i < images.Count; i++)
+            {
+                if (String.IsNullOrWhiteSpace(images[i]))
+                    continue;
+
+                await StorageFunctions.UpdateFile(containerName,$"{filename}|{count:D02}","jpg",Convert.FromBase64String(images[i]));
                 count++;
             }
 

@@ -55,11 +55,11 @@ namespace HeroServer.Controllers
 
         // PUT services/treatment
         [HttpPut]
-        public async Task<ActionResult<bool>> Update([FromBody] Treatment treatment)
+        public async Task<ActionResult<bool>> Update([FromBody] RegisterTreatmentRequest registerTreatmentRequest)
         {
             try
             {
-                return Ok(await TreatmentFunctions.Update(treatment));
+                return Ok(await TreatmentFunctions.Update(registerTreatmentRequest));
             }
             catch (Exception ex)
             {

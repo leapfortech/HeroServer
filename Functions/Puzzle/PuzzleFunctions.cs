@@ -148,6 +148,66 @@ namespace HeroServer
         }
 
         // UPDATE
+        public static async Task<bool> Update(RegisterPuzzleRequest registerPuzzleRequest)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                // Update Post
+                bool postUpdated = await new PostDB().Update(registerPuzzleRequest.Post);
+                if (!postUpdated)
+                    return false;
+
+                // Update Puzzle
+                // Soft Delete
+                await new PuzzleDB().UpdateStatusByPostId(registerPuzzleRequest.Post.Id, 1, 0);
+
+                registerPuzzleRequest.Puzzle.PostId = registerPuzzleRequest.Post.Id;
+                registerPuzzleRequest.Puzzle.Status = 1;
+
+                long puzzleId = -1;
+
+                if (registerPuzzleRequest.Puzzle.Id <= 0)
+                {
+                    puzzleId = await Add(registerPuzzleRequest.Puzzle);
+                }
+                else
+                {
+                    await Update(registerPuzzleRequest.Puzzle);
+                    await UpdateStatus(registerPuzzleRequest.Puzzle.Id, 1);
+                    puzzleId = registerPuzzleRequest.Puzzle.Id;
+                }
+
+                // Update PuzzleAnswers
+                // Soft delete all answers
+                await new PuzzleAnswerDB().UpdateStatusByPuzzleId(puzzleId, 1, 0);
+
+                if (registerPuzzleRequest.PuzzleAnswers != null &&
+                    registerPuzzleRequest.PuzzleAnswers.Count > 0)
+                {
+                    for (int i = 0; i < registerPuzzleRequest.PuzzleAnswers.Count; i++)
+                    {
+                        PuzzleAnswer puzzleAnswer = registerPuzzleRequest.PuzzleAnswers[i];
+                        puzzleAnswer.PuzzleId = puzzleId;
+
+                        if (puzzleAnswer.Id <= 0)
+                        {
+                            puzzleAnswer.Status = 1;
+                            await new PuzzleAnswerDB().Add(puzzleAnswer);
+                        }
+                        else
+                        {
+                            await new PuzzleAnswerDB().Update(puzzleAnswer);
+                            await new PuzzleAnswerDB().UpdateStatus(puzzleAnswer.Id, 1);
+                        }
+                    }
+                }
+
+                scope.Complete();
+                return true;
+            }
+        }
+
+
         public static async Task<bool> Update(Puzzle puzzle)
         {
             return await new PuzzleDB().Update(puzzle);

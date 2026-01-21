@@ -137,6 +137,37 @@ namespace HeroServer
         }
 
         // UPDATE
+        public static async Task<bool> Update(RegisterNewsRequest registerNewsRequest)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                // Update Post
+                bool postUpdated = await new PostDB().Update(registerNewsRequest.Post);
+                if (!postUpdated)
+                    return false;
+
+                // Update News
+                // Soft Delete
+                await new NewsDB().UpdateStatusByPostId(registerNewsRequest.Post.Id, 1, 0);
+
+                registerNewsRequest.News.PostId = registerNewsRequest.Post.Id;
+                registerNewsRequest.News.Status = 1;
+
+                if (registerNewsRequest.News.Id <= 0)
+                {
+                    await Add(registerNewsRequest.News);
+                }
+                else
+                {
+                    await Update(registerNewsRequest.News);
+                    await UpdateStatus(registerNewsRequest.News.Id, 1);
+                }
+
+                scope.Complete();
+                return true;
+            }
+        }
+
         public static async Task<bool> Update(News news)
         {
             return await new NewsDB().Update(news);

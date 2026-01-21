@@ -149,7 +149,7 @@ namespace HeroServer
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
                             $" WHERE {table}.Id = @Id;";
 
-            strCmd += "SELECT Id, PuzzleId, Description, IsCorrect" +
+            strCmd += "SELECT Id, PuzzleId, Description, IsCorrect, Status" +
                       " FROM [D-PuzzleAnswer]" +
                       " WHERE PuzzleId = @Id;";
 
@@ -220,7 +220,7 @@ namespace HeroServer
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
                             $" WHERE {table}.PostId = @PostId;";
 
-            strCmd += "SELECT Id, PuzzleId, Description, IsCorrect" +
+            strCmd += "SELECT Id, PuzzleId, Description, IsCorrect, Status" +
                       " FROM [D-PuzzleAnswer]" +
                       " WHERE PuzzleId IN" +
                       $" (SELECT Id FROM {table} WHERE PostId = @PostId);";
@@ -297,7 +297,7 @@ namespace HeroServer
                 strCmd += ";";
 
             strCmd +=  "SELECT PuzzleAnswer.Id, PuzzleAnswer.PuzzleId, PuzzleAnswer.Description," +
-                       " PuzzleAnswer.IsCorrect," +
+                       " PuzzleAnswer.IsCorrect, PuzzleAnswer.Status" +
                        " FROM [D-PuzzleAnswer] AS PuzzleAnswer" +
                       $" JOIN {table} ON (PuzzleAnswer.PuzzleId = {table}.Id)" +
                        " WHERE 1 = 1";
@@ -451,6 +451,26 @@ namespace HeroServer
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
+
+        public async Task<bool> UpdateStatusByPostId(long postId, int curStatus, int newStatus)
+        {
+            String strCmd = $"UPDATE {table}" +
+                            " SET UpdateDateTime = @UpdateDateTime, Status = @NewStatus" +
+                            " WHERE PostId = @PostId AND Status = @CurStatus";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            DBHelper.AddParam(command, "@CurStatus", SqlDbType.Int, curStatus);
+            DBHelper.AddParam(command, "@NewStatus", SqlDbType.Int, newStatus);
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
 
             using (conn)
             {

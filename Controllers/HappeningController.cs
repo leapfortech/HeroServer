@@ -55,11 +55,11 @@ namespace HeroServer.Controllers
 
         // PUT services/happening
         [HttpPut]
-        public async Task<ActionResult<bool>> Update([FromBody] Happening happening)
+        public async Task<ActionResult<bool>> Update([FromBody] RegisterHappeningRequest registerHappeningRequest)
         {
             try
             {
-                return Ok(await HappeningFunctions.Update(happening));
+                return Ok(await HappeningFunctions.Update(registerHappeningRequest));
             }
             catch (Exception ex)
             {

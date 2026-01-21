@@ -388,6 +388,26 @@ namespace HeroServer
             }
         }
 
+        public async Task<bool> UpdateStatusByPostId(long postId, int curStatus, int newStatus)
+        {
+            String strCmd = $"UPDATE {table}" +
+                            " SET UpdateDateTime = @UpdateDateTime, Status = @NewStatus" +
+                            " WHERE PostId = @PostId AND Status = @CurStatus";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            DBHelper.AddParam(command, "@CurStatus", SqlDbType.Int, curStatus);
+            DBHelper.AddParam(command, "@NewStatus", SqlDbType.Int, newStatus);
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
+
         // DELETE
         public async Task<int> DeleteAll()
         {

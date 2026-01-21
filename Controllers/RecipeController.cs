@@ -55,11 +55,11 @@ namespace HeroServer.Controllers
 
         // PUT services/recipe
         [HttpPut]
-        public async Task<ActionResult<bool>> Update([FromBody] Recipe recipe)
+        public async Task<ActionResult<bool>> Update([FromBody] RegisterRecipeRequest registerRecipeRequest)
         {
             try
             {
-                return Ok(await RecipeFunctions.Update(recipe));
+                return Ok(await RecipeFunctions.Update(registerRecipeRequest));
             }
             catch (Exception ex)
             {
