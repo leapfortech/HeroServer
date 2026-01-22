@@ -169,6 +169,38 @@ namespace HeroServer
             return true;
         }
 
+        public static async Task<bool> Accept(long postId, long recipeId)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                bool postOk = await PostFunctions.UpdateStatus(postId, 3);
+                bool recipeOk = await UpdateStatus(recipeId, 3);
+
+                if (!postOk || !recipeOk)
+                    return false;
+
+                scope.Complete();
+            }
+
+            return true;
+        }
+
+        public static async Task<bool> Reject(long postId, long recipeId)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                bool postOk = await PostFunctions.UpdateStatus(postId, 0);
+                bool recipeOk = await UpdateStatus(recipeId, 0);
+
+                if (!postOk || !recipeOk)
+                    return false;
+
+                scope.Complete();
+            }
+
+            return true;
+        }
+
         public static async Task<bool> Update(Recipe recipe)
         {
             return await new RecipeDB().Update(recipe);

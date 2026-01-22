@@ -249,6 +249,38 @@ namespace HeroServer
             }
         }
 
+        public static async Task<bool> Accept(long postId, long radioId)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                bool postOk = await PostFunctions.UpdateStatus(postId, 3);
+                bool radioOk = await UpdateStatus(radioId, 3);
+
+                if (!postOk || !radioOk)
+                    return false;
+
+                scope.Complete();
+            }
+
+            return true;
+        }
+
+        public static async Task<bool> Reject(long postId, long radioId)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                bool postOk = await PostFunctions.UpdateStatus(postId, 0);
+                bool radioOk = await UpdateStatus(radioId, 0);
+
+                if (!postOk || !radioOk)
+                    return false;
+
+                scope.Complete();
+            }
+
+            return true;
+        }
+
         public static async Task<bool> Update(Radio radio)
         {
             return await new RadioDB().Update(radio);

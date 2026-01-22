@@ -168,6 +168,38 @@ namespace HeroServer
             }
         }
 
+        public static async Task<bool> Accept(long postId, long newsId)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                bool postOk = await PostFunctions.UpdateStatus(postId, 3);
+                bool newsOk = await UpdateStatus(newsId, 3);
+
+                if (!postOk || !newsOk)
+                    return false;
+
+                scope.Complete();
+            }
+
+            return true;
+        }
+
+        public static async Task<bool> Reject(long postId, long newsId)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                bool postOk = await PostFunctions.UpdateStatus(postId, 0);
+                bool newsOk = await UpdateStatus(newsId, 0);
+
+                if (!postOk || !newsOk)
+                    return false;
+
+                scope.Complete();
+            }
+
+            return true;
+        }
+
         public static async Task<bool> Update(News news)
         {
             return await new NewsDB().Update(news);

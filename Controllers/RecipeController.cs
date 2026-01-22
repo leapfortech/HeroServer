@@ -66,5 +66,33 @@ namespace HeroServer.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        // PUT services/recipe/Accept
+        [HttpPut("Accept")]
+        public async Task<ActionResult<bool>> Accept([FromQuery] String postId, [FromQuery] String recipeId)
+        {
+            try
+            {
+                return Ok(await RecipeFunctions.Accept(Convert.ToInt64(postId), Convert.ToInt64(recipeId)));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // PUT services/recipe/Reject
+        [HttpPut("Reject")]
+        public async Task<ActionResult<bool>> Reject([FromQuery] String postId, [FromQuery] String recipeId)
+        {
+            try
+            {
+                return Ok(await RecipeFunctions.Reject(Convert.ToInt64(postId), Convert.ToInt64(recipeId)));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

@@ -81,5 +81,33 @@ namespace HeroServer.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        // PUT services/radio/Accept
+        [HttpPut("Accept")]
+        public async Task<ActionResult<bool>> Accept([FromQuery] String postId, [FromQuery] String radioId)
+        {
+            try
+            {
+                return Ok(await RadioFunctions.Accept(Convert.ToInt64(postId), Convert.ToInt64(radioId)));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // PUT services/radio/Reject
+        [HttpPut("Reject")]
+        public async Task<ActionResult<bool>> Reject([FromQuery] String postId, [FromQuery] String radioId)
+        {
+            try
+            {
+                return Ok(await RadioFunctions.Reject(Convert.ToInt64(postId), Convert.ToInt64(radioId)));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

@@ -207,6 +207,37 @@ namespace HeroServer
             }
         }
 
+        public static async Task<bool> Accept(long postId, long puzzleId)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                bool postOk = await PostFunctions.UpdateStatus(postId, 3);
+                bool puzzleOk = await UpdateStatus(puzzleId, 3);
+
+                if (!postOk || !puzzleOk)
+                    return false;
+
+                scope.Complete();
+            }
+
+            return true;
+        }
+
+        public static async Task<bool> Reject(long postId, long puzzleId)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                bool postOk = await PostFunctions.UpdateStatus(postId, 0);
+                bool puzzleOk = await UpdateStatus(puzzleId, 0);
+
+                if (!postOk || !puzzleOk)
+                    return false;
+
+                scope.Complete();
+            }
+
+            return true;
+        }
 
         public static async Task<bool> Update(Puzzle puzzle)
         {
