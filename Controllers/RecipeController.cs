@@ -69,11 +69,11 @@ namespace HeroServer.Controllers
 
         // PUT services/recipe/Accept
         [HttpPut("Accept")]
-        public async Task<ActionResult<bool>> Accept([FromQuery] String postId, [FromQuery] String recipeId)
+        public async Task<ActionResult<bool>> Accept([FromBody] PostModerationRequest postModerationRequest)
         {
             try
             {
-                return Ok(await RecipeFunctions.Accept(Convert.ToInt64(postId), Convert.ToInt64(recipeId)));
+                return Ok(await RecipeFunctions.Accept(postModerationRequest.PostId, postModerationRequest.SubtypeId));
             }
             catch (Exception ex)
             {
@@ -83,11 +83,11 @@ namespace HeroServer.Controllers
 
         // PUT services/recipe/Reject
         [HttpPut("Reject")]
-        public async Task<ActionResult<bool>> Reject([FromQuery] String postId, [FromQuery] String recipeId)
+        public async Task<ActionResult<bool>> Reject([FromBody] PostModerationRequest postModerationRequest)
         {
             try
             {
-                return Ok(await RecipeFunctions.Reject(Convert.ToInt64(postId), Convert.ToInt64(recipeId)));
+                return Ok(await RecipeFunctions.Reject(postModerationRequest.PostId, postModerationRequest.SubtypeId));
             }
             catch (Exception ex)
             {

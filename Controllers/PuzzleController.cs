@@ -69,11 +69,11 @@ namespace HeroServer.Controllers
 
         // PUT services/puzzle/Accept
         [HttpPut("Accept")]
-        public async Task<ActionResult<bool>> Accept([FromQuery] String postId, [FromQuery] String puzzleId)
+        public async Task<ActionResult<bool>> Accept([FromBody] PostModerationRequest postModerationRequest)
         {
             try
             {
-                return Ok(await PuzzleFunctions.Accept(Convert.ToInt64(postId), Convert.ToInt64(puzzleId)));
+                return Ok(await PuzzleFunctions.Accept(postModerationRequest.PostId, postModerationRequest.SubtypeId));
             }
             catch (Exception ex)
             {
@@ -83,11 +83,11 @@ namespace HeroServer.Controllers
 
         // PUT services/puzzle/Reject
         [HttpPut("Reject")]
-        public async Task<ActionResult<bool>> Reject([FromQuery] String postId, [FromQuery] String puzzleId)
+        public async Task<ActionResult<bool>> Reject([FromBody] PostModerationRequest postModerationRequest)
         {
             try
             {
-                return Ok(await PuzzleFunctions.Reject(Convert.ToInt64(postId), Convert.ToInt64(puzzleId)));
+                return Ok(await PuzzleFunctions.Reject(postModerationRequest.PostId, postModerationRequest.SubtypeId));
             }
             catch (Exception ex)
             {

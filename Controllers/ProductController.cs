@@ -83,11 +83,11 @@ namespace HeroServer.Controllers
 
         // PUT services/product/Accept
         [HttpPut("Accept")]
-        public async Task<ActionResult<bool>> Accept([FromQuery] String postId, [FromQuery] String productId)
+        public async Task<ActionResult<bool>> Accept([FromBody] PostModerationRequest postModerationRequest)
         {
             try
             {
-                return Ok(await ProductFunctions.Accept(Convert.ToInt64(postId), Convert.ToInt64(productId)));
+                return Ok(await ProductFunctions.Accept(postModerationRequest.PostId, postModerationRequest.SubtypeId));
             }
             catch (Exception ex)
             {
@@ -97,11 +97,11 @@ namespace HeroServer.Controllers
 
         // PUT services/product/Reject
         [HttpPut("Reject")]
-        public async Task<ActionResult<bool>> Reject([FromQuery] String postId, [FromQuery] String productId)
+        public async Task<ActionResult<bool>> Reject([FromBody] PostModerationRequest postModerationRequest)
         {
             try
             {
-                return Ok(await ProductFunctions.Reject(Convert.ToInt64(postId), Convert.ToInt64(productId)));
+                return Ok(await ProductFunctions.Reject(postModerationRequest.PostId, postModerationRequest.SubtypeId));
             }
             catch (Exception ex)
             {

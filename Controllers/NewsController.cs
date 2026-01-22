@@ -69,11 +69,11 @@ namespace HeroServer.Controllers
 
         // PUT services/news/Accept
         [HttpPut("Accept")]
-        public async Task<ActionResult<bool>> Accept([FromQuery] String postId, [FromQuery] String newsId)
+        public async Task<ActionResult<bool>> Accept([FromBody] PostModerationRequest postModerationRequest)
         {
             try
             {
-                return Ok(await NewsFunctions.Accept(Convert.ToInt64(postId), Convert.ToInt64(newsId)));
+                return Ok(await NewsFunctions.Accept(postModerationRequest.PostId, postModerationRequest.SubtypeId));
             }
             catch (Exception ex)
             {
@@ -83,11 +83,11 @@ namespace HeroServer.Controllers
 
         // PUT services/news/Reject
         [HttpPut("Reject")]
-        public async Task<ActionResult<bool>> Reject([FromQuery] String postId, [FromQuery] String newsId)
+        public async Task<ActionResult<bool>> Reject([FromBody] PostModerationRequest postModerationRequest)
         {
             try
             {
-                return Ok(await NewsFunctions.Reject(Convert.ToInt64(postId), Convert.ToInt64(newsId)));
+                return Ok(await NewsFunctions.Reject(postModerationRequest.PostId, postModerationRequest.SubtypeId));
             }
             catch (Exception ex)
             {
