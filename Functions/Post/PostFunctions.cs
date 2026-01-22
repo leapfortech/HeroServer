@@ -114,16 +114,16 @@ namespace HeroServer
         }
 
         // UPDATE
-        public async Task<bool> UpdatePost(RegisterPostRequest registerPostRequest)
+        public static async Task<bool> UpdatePost(RegisterPostRequest registerPostRequest)
         {
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 // Update Post
-                bool postUpdated = await new PostDB().Update(registerPostRequest.Post);
+                registerPostRequest.Post.PublicationDateTime = DateTime.Now;
+                registerPostRequest.Post.ApprovalDateTime = null;
+                registerPostRequest.Post.ExpirationDateTime = null;
+                await new PostDB().Update(registerPostRequest.Post);
                 
-                if (!postUpdated)
-                    return false;
-
                 // Update Conctact
                 // Soft Delete
                 if (registerPostRequest.Contact != null)

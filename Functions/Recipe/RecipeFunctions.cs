@@ -142,9 +142,7 @@ namespace HeroServer
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 // Update Post
-                bool postUpdated = await new PostDB().Update(registerRecipeRequest.Post);
-                if (!postUpdated)
-                    return false;
+                await PostFunctions.UpdatePost(registerRecipeRequest);
 
                 // Update Recipe
                 // Soft Delete
