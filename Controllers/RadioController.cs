@@ -14,11 +14,11 @@ namespace HeroServer.Controllers
     {
         // GET services/radio?id=1
         [HttpGet]
-        public async Task<ActionResult<Radio>> GetById([FromQuery] String id)
+        public async Task<ActionResult<RadioFull>> GetFullById([FromQuery] String id)
         {
             try
             {
-                return Ok(await RadioFunctions.GetById(Convert.ToInt64(id)));
+                return Ok(await RadioFunctions.GetFullById(Convert.ToInt64(id)));
             }
             catch (Exception ex)
             {

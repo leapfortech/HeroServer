@@ -13,11 +13,11 @@ namespace HeroServer.Controllers
     {
         // GET services/recipe?id=1
         [HttpGet]
-        public async Task<ActionResult<Recipe>> GetById([FromQuery] String id)
+        public async Task<ActionResult<RecipeFull>> GetFullById([FromQuery] String id)
         {
             try
             {
-                return Ok(await RecipeFunctions.GetById(Convert.ToInt64(id)));
+                return Ok(await RecipeFunctions.GetFullById(Convert.ToInt64(id)));
             }
             catch (Exception ex)
             {

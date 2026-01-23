@@ -13,11 +13,11 @@ namespace HeroServer.Controllers
     {
         // GET services/news?id=1
         [HttpGet]
-        public async Task<ActionResult<News>> GetById([FromQuery] String id)
+        public async Task<ActionResult<NewsFull>> GetFullById([FromQuery] String id)
         {
             try
             {
-                return Ok(await NewsFunctions.GetById(Convert.ToInt64(id)));
+                return Ok(await NewsFunctions.GetFullById(Convert.ToInt64(id)));
             }
             catch (Exception ex)
             {
