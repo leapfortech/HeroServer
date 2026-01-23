@@ -25,20 +25,6 @@ namespace HeroServer.Controllers
             }
         }
 
-        // GET services/post/FullsPaged
-        [HttpGet("FullsPaged")]
-        public async Task<ActionResult<PostFeedResponse>> GetPostFullsPaged([FromBody] PostFeedRequest request)
-        {
-            try
-            {
-                return Ok(await PostFunctions.GetPostFullsPaged(request));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         // GET services/post/ImagesById?id=1&first=true
         [HttpGet("ImagesById")]
         public async Task<ActionResult<List<String>>> GetImagesById([FromQuery] String id, [FromQuery] String first = "true")
@@ -46,6 +32,20 @@ namespace HeroServer.Controllers
             try
             {
                 return Ok(await PostFunctions.GetImagesById(Convert.ToInt64(id), first == "true"));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // POST services/post/FullsPaged
+        [HttpPost("FullsPaged")]
+        public async Task<ActionResult<PostFeedResponse>> PostFullsPaged([FromBody] PostFeedRequest request)
+        {
+            try
+            {
+                return Ok(await PostFunctions.GetPostFullsPaged(request));
             }
             catch (Exception ex)
             {
