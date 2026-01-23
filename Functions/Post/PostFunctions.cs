@@ -18,6 +18,17 @@ namespace HeroServer
             return await new PostDB().GetById(id);
         }
 
+        // FEED
+        public static async Task<PostFeedResponse> GetPostFullsPaged(PostFeedRequest request)
+        {
+            PostFeedResponse response = await new PostDB().GetPostFullsPaged(request);
+
+            for (int i = 0; i < response.PostFulls.Count; i++)
+                response.PostFulls[i].TitleImage = await GetTitleImageById(response.PostFulls[i].PostId);
+
+            return response;
+        }
+
         // REGISTER
         public static async Task<long> Register(RegisterPostRequest registerPostRequest)
         {

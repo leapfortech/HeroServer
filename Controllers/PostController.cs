@@ -25,6 +25,20 @@ namespace HeroServer.Controllers
             }
         }
 
+        // GET services/post/FullsPaged
+        [HttpGet("FullsPaged")]
+        public async Task<ActionResult<PostFeedResponse>> GetPostFullsPaged([FromBody] PostFeedRequest request)
+        {
+            try
+            {
+                return Ok(await PostFunctions.GetPostFullsPaged(request));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // GET services/post/ImagesById?id=1&first=true
         [HttpGet("ImagesById")]
         public async Task<ActionResult<List<String>>> GetImagesById([FromQuery] String id, [FromQuery] String first = "true")

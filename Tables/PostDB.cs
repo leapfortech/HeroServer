@@ -150,6 +150,80 @@ namespace HeroServer
             return imageCount;
         }
 
+        public async Task<PostFeedResponse> GetPostFullsPaged(PostFeedRequest request)
+        {
+            if (request.Page < 1)
+                request.Page = 1;
+
+            PostFeedResponse response = new PostFeedResponse(request.Page, request.PageSize);
+
+            int offset = (request.Page - 1) * request.PageSize;
+
+            // FILTERS
+            List<String> where = new List<String>();
+
+            if (request.Status != -1)
+                where.Add("Post.Status = @Status");
+            if (request.PostSubtypeId != -1)
+                where.Add("Post.PostSubtypeId = @PostSubtypeId");
+
+            String whereClause = where.Count > 0 ? "WHERE " + String.Join(" AND ", where) : "";
+
+            // QUERY FEED
+            String strCmd = "SELECT" +
+                            " Post.Id AS PostId," +
+                            " Post.AppUserId," +
+                            " AppUser.Alias AS AppUserAlias," +
+                            " Post.PostSubtypeId," +
+                            " Post.CountryId AS PostCountryId," +
+                            " Post.StateId AS PostStateId," +
+                            " Post.Title," +
+                            " Post.Summary," +
+                            " Post.Description," +
+                            " Post.ImageCount," +
+                            " Post.LikeCount," +
+                            " Post.PublicationDateTime," +
+                            " Post.Status AS PostStatus" +
+                            " FROM [D-Post] AS Post" +
+                            " INNER JOIN [D-AppUser] AS AppUser ON Post.AppUserId = AppUser.Id" +
+                            " " + whereClause +
+                            " ORDER BY Post.PublicationDateTime DESC, Post.Id DESC" +
+                            " OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;";
+
+            // QUERY COUNT
+            strCmd += "SELECT COUNT(1) FROM [D-Post] AS Post " +
+                      " INNER JOIN [D-AppUser] AS AppUser ON Post.AppUserId = AppUser.Id " +
+                      whereClause + ";";
+
+            using (SqlCommand command = new SqlCommand(strCmd, conn))
+            {
+
+                DBHelper.AddParam(command, "@Offset", SqlDbType.Int, offset);
+                DBHelper.AddParam(command, "@PageSize", SqlDbType.Int, request.PageSize);
+
+                if (request.Status != -1)
+                    DBHelper.AddParam(command, "@Status", SqlDbType.Int, request.Status);
+                if (request.PostSubtypeId != -1)
+                    DBHelper.AddParam(command, "@PostSubtypeId", SqlDbType.BigInt, request.PostSubtypeId);
+
+                using (conn)
+                {
+                    await conn.OpenAsync();
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                            response.PostFulls.Add(PostDB.GetPostFull(reader));
+
+                        await reader.NextResultAsync();
+                        if (await reader.ReadAsync())
+                            response.Total = reader.GetInt32(0);
+                    }
+                }
+            }
+
+            return response;
+        }
+
         // INSERT
         public async Task<long> Add(Post post)
         {
