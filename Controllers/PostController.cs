@@ -40,7 +40,7 @@ namespace HeroServer.Controllers
         }
 
         // POST services/post/Feed
-        [HttpPost("Feed")]
+        [HttpPost("PostFeed")]
         public async Task<ActionResult<PostFeedResponse>> GetPostFeed([FromBody] PostFeedRequest request)
         {
             try
