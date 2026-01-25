@@ -19,9 +19,9 @@ namespace HeroServer
         }
 
         // FEED
-        public static async Task<PostFeedResponse> GetPostFullsPaged(PostFeedRequest request)
+        public static async Task<PostFeedResponse> GetPostFeed(PostFeedRequest request)
         {
-            PostFeedResponse response = await new PostDB().GetPostFullsPaged(request);
+            PostFeedResponse response = await new PostDB().GetPostFeed(request);
 
             for (int i = 0; i < response.PostFulls.Count; i++)
                 response.PostFulls[i].TitleImage = await GetTitleImageById(response.PostFulls[i].PostId);

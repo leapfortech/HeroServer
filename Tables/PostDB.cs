@@ -150,27 +150,54 @@ namespace HeroServer
             return imageCount;
         }
 
-        public async Task<PostFeedResponse> GetPostFullsPaged(PostFeedRequest request)
+        public async Task<PostFeedResponse> GetPostFeed(PostFeedRequest request)
         {
-            if (request.Page < 1)
-                request.Page = 1;
-
-            PostFeedResponse response = new PostFeedResponse(request.Page, request.PageSize);
-
-            int offset = (request.Page - 1) * request.PageSize;
+            PostFeedResponse response = new PostFeedResponse(request.PageSize);
 
             // FILTERS
-            List<String> where = new List<String>();
+            List<String> where = [];
 
-            if (request.Status != -1)
-                where.Add("Post.Status = @Status");
+            if (request.AppUserId != -1)
+                where.Add("Post.AppUserId = @AppUserId");
+
             if (request.PostSubtypeId != -1)
                 where.Add("Post.PostSubtypeId = @PostSubtypeId");
 
-            String whereClause = where.Count > 0 ? "WHERE " + String.Join(" AND ", where) : "";
+            if (request.CountryId != -1)
+                where.Add("Post.CountryId = @CountryId");
+
+            if (request.StateId != -1)
+                where.Add("Post.StateId = @StateId");
+
+            if (request.Status != -1)
+                where.Add("Post.Status = @Status");
+
+            String whereCountClause = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
+
+            // CURSOR
+            List<String> whereFeed = [.. where];
+
+            switch (request.Direction)
+            {
+                case 1:
+                    whereFeed.Add("(Post.PublicationDateTime > @FirstPublicationDateTime" +
+                                  " OR (Post.PublicationDateTime = @FirstPublicationDateTime AND Post.Id > @FirstPostId))");
+                    break;
+
+                case 2:
+                    whereFeed.Add("(Post.PublicationDateTime < @LastPublicationDateTime" +
+                                  " OR (Post.PublicationDateTime = @LastPublicationDateTime AND Post.Id < @LastPostId))");
+                    break;
+
+                case 3:
+                default:
+                    break;
+            }
+
+            String whereFeedClause = whereFeed.Count > 0 ? " WHERE " + String.Join(" AND ", whereFeed) : "";
 
             // QUERY FEED
-            String strCmd = "SELECT" +
+            String strCmd = "SELECT TOP (@PageSize)" +
                             " Post.Id AS PostId," +
                             " Post.AppUserId," +
                             " AppUser.Alias AS AppUserAlias," +
@@ -186,25 +213,46 @@ namespace HeroServer
                             " Post.Status AS PostStatus" +
                             " FROM [D-Post] AS Post" +
                             " INNER JOIN [D-AppUser] AS AppUser ON Post.AppUserId = AppUser.Id" +
-                            " " + whereClause +
-                            " ORDER BY Post.PublicationDateTime DESC, Post.Id DESC" +
-                            " OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;";
+                            whereFeedClause +
+                            " ORDER BY Post.PublicationDateTime DESC, Post.Id DESC;";
 
             // QUERY COUNT
             strCmd += "SELECT COUNT(1) FROM [D-Post] AS Post " +
                       " INNER JOIN [D-AppUser] AS AppUser ON Post.AppUserId = AppUser.Id " +
-                      whereClause + ";";
+                      whereCountClause + ";";
+
 
             using (SqlCommand command = new SqlCommand(strCmd, conn))
             {
-
-                DBHelper.AddParam(command, "@Offset", SqlDbType.Int, offset);
                 DBHelper.AddParam(command, "@PageSize", SqlDbType.Int, request.PageSize);
+                
+                if(request.AppUserId != -1)
+                    DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, request.AppUserId);
+
+                if (request.PostSubtypeId != -1)
+                    DBHelper.AddParam(command, "@PostSubtypeId", SqlDbType.BigInt, request.PostSubtypeId);
+
+                if (request.CountryId != -1)
+                    DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, request.CountryId);
+
+                if (request.StateId != -1)
+                    DBHelper.AddParam(command, "@StateId", SqlDbType.BigInt, request.StateId);
 
                 if (request.Status != -1)
                     DBHelper.AddParam(command, "@Status", SqlDbType.Int, request.Status);
-                if (request.PostSubtypeId != -1)
-                    DBHelper.AddParam(command, "@PostSubtypeId", SqlDbType.BigInt, request.PostSubtypeId);
+
+
+                if (request.Direction == 1 && request.FirstPublicationDateTime.HasValue && request.FirstPostId != -1)
+                {
+                    DBHelper.AddParam(command, "@FirstPublicationDateTime", SqlDbType.DateTime2, request.FirstPublicationDateTime.Value);
+                    DBHelper.AddParam(command, "@FirstPostId", SqlDbType.BigInt, request.FirstPostId);
+                }
+
+                if (request.Direction == 2 && request.LastPublicationDateTime.HasValue && request.LastPostId != -1)
+                {
+                    DBHelper.AddParam(command, "@LastPublicationDateTime", SqlDbType.DateTime2, request.LastPublicationDateTime.Value);
+                    DBHelper.AddParam(command, "@LastPostId", SqlDbType.BigInt, request.LastPostId);
+                }
 
                 using (conn)
                 {
@@ -219,6 +267,18 @@ namespace HeroServer
                             response.Total = reader.GetInt32(0);
                     }
                 }
+            }
+
+            if (response.PostFulls.Count > 0)
+            {
+                PostFull first = response.PostFulls[0];
+                PostFull last = response.PostFulls[^1];
+
+                response.FirstPublicationDateTime = first.PublicationDateTime;
+                response.FirstPostId = first.PostId;
+
+                response.LastPublicationDateTime = last.PublicationDateTime;
+                response.LastPostId = last.PostId;
             }
 
             return response;

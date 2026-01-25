@@ -1,19 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace HeroServer
 {
     public class PostFeedResponse
     {
-        public List<PostFull> PostFulls { get; set; }
-        public int Page { get; set; }
-        public int PageSize { get; set; }
+        public List<PostFull> PostFulls { get; set; } = new();
+
         public int Total { get; set; }
 
-        public PostFeedResponse(int page, int pageSize)
+        // CURSORS
+        public DateTime? FirstPublicationDateTime { get; set; }
+        public long FirstPostId { get; set; }
+
+        public DateTime? LastPublicationDateTime { get; set; }
+        public long LastPostId { get; set; }
+
+        public PostFeedResponse(int pageSize)
         {
-            Page = page;
-            PageSize = pageSize;
-            PostFulls = new List<PostFull>();
+            PostFulls = new List<PostFull>(pageSize);
         }
     }
 }

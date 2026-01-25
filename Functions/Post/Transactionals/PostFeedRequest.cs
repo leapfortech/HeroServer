@@ -1,16 +1,27 @@
 ﻿
+using System;
+
 namespace HeroServer
 {
     public class PostFeedRequest
     {
-        public int Page { get; set; }
-        public int PageSize { get; set; }
-        public long PostSubtypeId { get; set; }
-        public int Status { get; set; }
+        // PARAMS
+        public int PageSize { get; set; } = 10;
 
-        public int Offset
-        {
-            get { return (Page - 1) * PageSize; }
-        }
+        // FILTERS
+        public long AppUserId { get; set; } = -1;
+        public long PostSubtypeId { get; set; } = -1;
+        public long CountryId { get; set; } = -1;
+        public long StateId { get; set; } = -1;
+        public int Status { get; set; } = -1;
+
+        // CURSORS
+        public DateTime? FirstPublicationDateTime { get; set; }
+        public long FirstPostId { get; set; } = -1;
+
+        public DateTime? LastPublicationDateTime { get; set; } = null;
+        public long LastPostId { get; set; } = -1;
+
+        public int Direction { get; set; } = 0;
     }
 }

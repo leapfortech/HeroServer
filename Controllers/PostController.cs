@@ -39,13 +39,13 @@ namespace HeroServer.Controllers
             }
         }
 
-        // POST services/post/FullsPaged
-        [HttpPost("FullsPaged")]
-        public async Task<ActionResult<PostFeedResponse>> PostFullsPaged([FromBody] PostFeedRequest request)
+        // POST services/post/Feed
+        [HttpPost("Feed")]
+        public async Task<ActionResult<PostFeedResponse>> GetPostFeed([FromBody] PostFeedRequest request)
         {
             try
             {
-                return Ok(await PostFunctions.GetPostFullsPaged(request));
+                return Ok(await PostFunctions.GetPostFeed(request));
             }
             catch (Exception ex)
             {
