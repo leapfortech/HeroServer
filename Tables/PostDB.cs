@@ -154,6 +154,8 @@ namespace HeroServer
         {
             PostFeedResponse response = new PostFeedResponse(request.PageSize);
 
+            FeedCursor cursor = FeedCursor.DecodeCursor(request.Cursor);
+
             // FILTERS
             List<String> where = [];
 
@@ -177,21 +179,20 @@ namespace HeroServer
             // CURSOR
             List<String> whereFeed = [.. where];
 
-            switch (request.Direction)
+            if (cursor != null)
             {
-                case 1:
-                    whereFeed.Add("(Post.PublicationDateTime > @FirstPublicationDateTime" +
-                                  " OR (Post.PublicationDateTime = @FirstPublicationDateTime AND Post.Id > @FirstPostId))");
-                    break;
-
-                case 2:
-                    whereFeed.Add("(Post.PublicationDateTime < @LastPublicationDateTime" +
-                                  " OR (Post.PublicationDateTime = @LastPublicationDateTime AND Post.Id < @LastPostId))");
-                    break;
-
-                case 3:
-                default:
-                    break;
+                if (request.Direction == 1) // REFRESH
+                {
+                    whereFeed.Add("(Post.PublicationDateTime > @CursorDate" +
+                                  " OR (Post.PublicationDateTime = @CursorDate AND Post.Id > @CursorPostId))"
+                    );
+                }
+                else if (request.Direction == 2) // OLDER
+                {
+                    whereFeed.Add("(Post.PublicationDateTime < @CursorDate" +
+                                  " OR (Post.PublicationDateTime = @CursorDate AND Post.Id < @CursorPostId))"
+                    );
+                }
             }
 
             String whereFeedClause = whereFeed.Count > 0 ? " WHERE " + String.Join(" AND ", whereFeed) : "";
@@ -242,16 +243,10 @@ namespace HeroServer
                     DBHelper.AddParam(command, "@Status", SqlDbType.Int, request.Status);
 
 
-                if (request.Direction == 1 && request.FirstPublicationDateTime.HasValue && request.FirstPostId != -1)
+                if (cursor != null)
                 {
-                    DBHelper.AddParam(command, "@FirstPublicationDateTime", SqlDbType.DateTime2, request.FirstPublicationDateTime.Value);
-                    DBHelper.AddParam(command, "@FirstPostId", SqlDbType.BigInt, request.FirstPostId);
-                }
-
-                if (request.Direction == 2 && request.LastPublicationDateTime.HasValue && request.LastPostId != -1)
-                {
-                    DBHelper.AddParam(command, "@LastPublicationDateTime", SqlDbType.DateTime2, request.LastPublicationDateTime.Value);
-                    DBHelper.AddParam(command, "@LastPostId", SqlDbType.BigInt, request.LastPostId);
+                    DBHelper.AddParam(command, "@CursorDate", SqlDbType.DateTime2, cursor.PublicationDateTime);
+                    DBHelper.AddParam(command, "@CursorPostId", SqlDbType.BigInt, cursor.PostId);
                 }
 
                 using (conn)
@@ -274,11 +269,8 @@ namespace HeroServer
                 PostFull first = response.PostFulls[0];
                 PostFull last = response.PostFulls[^1];
 
-                response.FirstPublicationDateTime = first.PublicationDateTime;
-                response.FirstPostId = first.PostId;
-
-                response.LastPublicationDateTime = last.PublicationDateTime;
-                response.LastPostId = last.PostId;
+                response.PrevCursor = FeedCursor.EncodeCursor(first);
+                response.NextCursor = FeedCursor.EncodeCursor(last);
             }
 
             return response;

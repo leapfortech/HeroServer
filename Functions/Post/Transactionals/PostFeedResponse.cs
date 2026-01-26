@@ -10,11 +10,8 @@ namespace HeroServer
         public int Total { get; set; }
 
         // CURSORS
-        public DateTime? FirstPublicationDateTime { get; set; }
-        public long FirstPostId { get; set; }
-
-        public DateTime? LastPublicationDateTime { get; set; }
-        public long LastPostId { get; set; }
+        public string NextCursor { get; set; }
+        public string PrevCursor { get; set; }
 
         public PostFeedResponse(int pageSize)
         {
