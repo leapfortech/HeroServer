@@ -42,7 +42,9 @@ namespace HeroServer
                                 null,   //LinkFulls
                                 null,   //CommentFulls
 
-                                Convert.ToInt32(reader["Status"]));
+                                Convert.ToInt32(reader["Status"]),
+
+                                null);  //Images
         }
 
         // GET

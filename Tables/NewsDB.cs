@@ -50,7 +50,8 @@ namespace HeroServer
                                 reader["Place"].ToString(),
                                 reader["Source"].ToString(),
                                 reader["DateTime"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["DateTime"]),
-                                Convert.ToInt32(reader["Status"]));
+                                Convert.ToInt32(reader["Status"]),
+                                null);  //Images);
         }
 
 

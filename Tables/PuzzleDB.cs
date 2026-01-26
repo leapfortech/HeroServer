@@ -57,7 +57,8 @@ namespace HeroServer
                                   Convert.ToInt32(reader["Points"]),
                                   Convert.ToInt32(reader["PlayCount"]),
                                   Convert.ToInt32(reader["Status"]),
-                                  null);     //PuzzleAnswerFulls 
+                                  null,     //PuzzleAnswerFulls 
+                                  null);  //Images);
         }
 
 

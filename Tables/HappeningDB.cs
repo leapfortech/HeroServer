@@ -67,7 +67,9 @@ namespace HeroServer
                                      reader["Latitude"] == DBNull.Value ? (double?)null : Convert.ToDouble(reader["Latitude"]),
                                      reader["Longitude"] == DBNull.Value ? (double?)null : Convert.ToDouble(reader["Longitude"]),
                                       
-                                     Convert.ToInt32(reader["Status"]));
+                                     Convert.ToInt32(reader["Status"]),
+
+                                     null);  //Images)
         }
 
 

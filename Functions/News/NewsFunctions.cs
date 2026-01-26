@@ -25,7 +25,7 @@ namespace HeroServer
             if (newsFull == null)
                 return null;
 
-            newsFull.TitleImage = await PostFunctions.GetTitleImageById(newsFull.PostId);
+            newsFull.Images = await PostFunctions.GetImagesById(newsFull.PostId, true);
 
             return newsFull;
         }
@@ -37,7 +37,7 @@ namespace HeroServer
             if (newsFull == null)
                 return null;
 
-            newsFull.TitleImage = await PostFunctions.GetTitleImageById(postId);
+            newsFull.Images = await PostFunctions.GetImagesById(newsFull.PostId, true);
 
             return newsFull;
         }
@@ -103,8 +103,8 @@ namespace HeroServer
 
                 newsFull.CommentFulls = comments;
 
-                // TitleImage
-                newsFull.TitleImage = await PostFunctions.GetTitleImageById(newsFull.PostId);
+                // Images
+                newsFull.Images = await PostFunctions.GetImagesById(newsFull.PostId, true);
 
                 newsFulls.Add(newsFull);
             }

@@ -13,6 +13,8 @@ namespace HeroServer
         public int CookingTime { get; set; }
         public int Status { get; set; }
 
+        public List<String> Images { get; set; }
+
         public RecipeFull()
         {
         }
@@ -26,7 +28,8 @@ namespace HeroServer
                           List<LinkFull> linkFulls,
                           List<CommentFull> commentFulls,
                           long recipeTypeId, String ingredients, String preparation,
-                          int portions, int cookingTime, int status)
+                          int portions, int cookingTime, int status,
+                          List<String> images)
             : base(postId, appUserId, appUserAlias, postSubtypeId,
                    postCountryId, postStateId, title, titleImage, summary, description,
                    imageCount, likeCount, publicationDateTime, postStatusId,
@@ -39,6 +42,7 @@ namespace HeroServer
             Portions = portions;
             CookingTime = cookingTime;
             Status = status;
+            Images = images;
         }
     }
 }

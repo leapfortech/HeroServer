@@ -17,6 +17,8 @@ namespace HeroServer
 
         public List<PuzzleAnswerFull> PuzzleAnswerFulls { get; set; }
 
+        public List<String> Images { get; set; }
+
 
         public PuzzleFull(long id, long postId, long appUserId, String appUserAlias,
                           long postSubtypeId,
@@ -31,7 +33,8 @@ namespace HeroServer
                           String question, String hint,
                           int difficulty, int points, int playCount,
                           int status,
-                          List<PuzzleAnswerFull> puzzleAnswerFulls)
+                          List<PuzzleAnswerFull> puzzleAnswerFulls,
+                          List<String> images)
             : base(postId, appUserId, appUserAlias, postSubtypeId,
                    postCountryId, postStateId, title, titleImage, summary, description,
                    imageCount, likeCount, publicationDateTime, postStatus,
@@ -48,6 +51,7 @@ namespace HeroServer
             Status = status;
 
             PuzzleAnswerFulls = puzzleAnswerFulls ?? new List<PuzzleAnswerFull>();
+            Images = images;
         }
     }
 }

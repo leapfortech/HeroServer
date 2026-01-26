@@ -25,7 +25,7 @@ namespace HeroServer
             if (radioFull == null)
                 return null;
 
-            radioFull.TitleImage = await PostFunctions.GetTitleImageById(radioFull.PostId);
+            radioFull.Images = await PostFunctions.GetImagesById(radioFull.PostId, true);
 
             return radioFull;
         }
@@ -37,7 +37,7 @@ namespace HeroServer
             if (radioFull == null)
                 return null;
 
-            radioFull.TitleImage = await PostFunctions.GetTitleImageById(postId);
+            radioFull.Images = await PostFunctions.GetImagesById(radioFull.PostId, true);
 
             return radioFull;
         }
@@ -103,8 +103,8 @@ namespace HeroServer
 
                 radioFull.CommentFulls = comments;
 
-                // TitleImage
-                radioFull.TitleImage = await PostFunctions.GetTitleImageById(radioFull.PostId);
+                // Images
+                radioFull.Images = await PostFunctions.GetImagesById(radioFull.PostId, true);
 
                 radioFulls.Add(radioFull);
             }

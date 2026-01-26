@@ -52,7 +52,9 @@ namespace HeroServer
                                   reader["Preparation"].ToString(),
                                   Convert.ToInt32(reader["Portions"]),
                                   Convert.ToInt32(reader["CookingTime"]),
-                                  Convert.ToInt32(reader["Status"]));
+                                  Convert.ToInt32(reader["Status"]),
+
+                                  null);  //Images);
         }
 
 

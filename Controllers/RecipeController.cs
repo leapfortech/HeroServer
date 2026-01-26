@@ -25,6 +25,19 @@ namespace HeroServer.Controllers
             }
         }
 
+        [HttpGet("FullByPostId")]
+        public async Task<ActionResult<TaleFull>> GetFullByPostId([FromQuery] String postId)
+        {
+            try
+            {
+                return Ok(await RecipeFunctions.GetFullByPostId(Convert.ToInt64(postId)));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // GET services/recipe/FullsByStatus/?status=1
         [HttpGet("FullsByStatus")]
         public async Task<ActionResult<List<RecipeFull>>> GetFullsByStatus([FromQuery] String status)

@@ -25,7 +25,7 @@ namespace HeroServer
             if (productFull == null)
                 return null;
 
-            productFull.TitleImage = await PostFunctions.GetTitleImageById(productFull.PostId);
+            productFull.Images = await PostFunctions.GetImagesById(productFull.PostId, true);
 
             return productFull;
         }
@@ -37,7 +37,7 @@ namespace HeroServer
             if (productFull == null)
                 return null;
 
-            productFull.TitleImage = await PostFunctions.GetTitleImageById(postId);
+            productFull.Images = await PostFunctions.GetImagesById(productFull.PostId, true);
 
             return productFull;
         }
@@ -103,8 +103,8 @@ namespace HeroServer
 
                 productFull.CommentFulls = comments;
 
-                // TitleImage
-                productFull.TitleImage = await PostFunctions.GetTitleImageById(productFull.PostId);
+                // Images
+                productFull.Images = await PostFunctions.GetImagesById(productFull.PostId, true);
 
                 productFulls.Add(productFull);
             }

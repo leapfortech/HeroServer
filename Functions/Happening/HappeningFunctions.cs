@@ -25,7 +25,7 @@ namespace HeroServer
             if (happeningFull == null)
                 return null;
 
-            happeningFull.TitleImage = await PostFunctions.GetTitleImageById(happeningFull.PostId);
+            happeningFull.Images = await PostFunctions.GetImagesById(happeningFull.PostId, true);
 
             return happeningFull;
         }
@@ -37,7 +37,7 @@ namespace HeroServer
             if (happeningFull == null)
                 return null;
 
-            happeningFull.TitleImage = await PostFunctions.GetTitleImageById(postId);
+            happeningFull.Images = await PostFunctions.GetImagesById(happeningFull.PostId, true);
 
             return happeningFull;
         }
@@ -103,8 +103,8 @@ namespace HeroServer
 
                 happeningFull.CommentFulls = comments;
 
-                // TitleImage
-                happeningFull.TitleImage = await PostFunctions.GetTitleImageById(happeningFull.PostId);
+                // Images
+                happeningFull.Images = await PostFunctions.GetImagesById(happeningFull.PostId, true);
 
                 happeningFulls.Add(happeningFull);
             }

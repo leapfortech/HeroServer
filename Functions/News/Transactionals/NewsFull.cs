@@ -12,6 +12,8 @@ namespace HeroServer
         public DateTime? DateTime { get; set; }
         public int Status { get; set; }
 
+        public List<String> Images { get; set; }
+
         public NewsFull()
         {
         }
@@ -27,7 +29,8 @@ namespace HeroServer
                         List<CommentFull> commentFulls,
                         long newsTypeId, String place,
                         String source, DateTime? dateTime,
-                        int status)
+                        int status,
+                        List<String> images)
             : base(postId, appUserId, appUserAlias, postSubtypeId,
                    postCountryId, postStateId, title, titleImage, summary, description,
                    imageCount, likeCount, publicationDateTime, postStatus,
@@ -39,6 +42,7 @@ namespace HeroServer
             Source = source;
             DateTime = dateTime;
             Status = status;
+            Images = images;
         }
     }
 }

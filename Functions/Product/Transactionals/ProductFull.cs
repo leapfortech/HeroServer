@@ -18,6 +18,8 @@ namespace HeroServer
 
         public List<ProductReviewFull> ProductReviewFulls { get; set; }
 
+        public List<String> Images { get; set; }
+
 
         public ProductFull(long id, long postId, long appUserId, String appUserAlias,
                            long postSubtypeId,
@@ -32,7 +34,8 @@ namespace HeroServer
                            long currencyId, double price, double discountPrice,
                            long deliveryTypeId, String annotation,
                            int status,
-                           List<ProductReviewFull> productReviewFulls)
+                           List<ProductReviewFull> productReviewFulls,
+                           List<String> images)
             : base(postId, appUserId, appUserAlias, postSubtypeId,
                    postCountryId, postStateId, title, titleImage, summary, description,
                    imageCount, likeCount, publicationDateTime, postStatus,
@@ -50,6 +53,8 @@ namespace HeroServer
             Status = status;
 
             ProductReviewFulls = productReviewFulls ?? new List<ProductReviewFull>();
+
+            Images = images;
         }
     }
 }

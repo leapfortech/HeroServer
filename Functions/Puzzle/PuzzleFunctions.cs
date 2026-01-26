@@ -25,7 +25,7 @@ namespace HeroServer
             if (puzzleFull == null)
                 return null;
 
-            puzzleFull.TitleImage = await PostFunctions.GetTitleImageById(puzzleFull.PostId);
+            puzzleFull.Images = await PostFunctions.GetImagesById(puzzleFull.PostId, true);
 
             return puzzleFull;
         }
@@ -37,7 +37,7 @@ namespace HeroServer
             if (puzzleFull == null)
                 return null;
 
-            puzzleFull.TitleImage = await PostFunctions.GetTitleImageById(postId);
+            puzzleFull.Images = await PostFunctions.GetImagesById(puzzleFull.PostId, true);
 
             return puzzleFull;
         }
@@ -103,8 +103,8 @@ namespace HeroServer
 
                 puzzleFull.CommentFulls = comments;
 
-                // TitleImage
-                puzzleFull.TitleImage = await PostFunctions.GetTitleImageById(puzzleFull.PostId);
+                // Images
+                puzzleFull.Images = await PostFunctions.GetImagesById(puzzleFull.PostId, true);
 
                 puzzleFulls.Add(puzzleFull);
             }

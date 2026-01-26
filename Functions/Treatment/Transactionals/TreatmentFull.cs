@@ -13,6 +13,8 @@ namespace HeroServer
         public int Status { get; set; }
         public List<DiseaseFull> DiseaseFulls { get; set; }
 
+        public List<String> Images { get; set; }
+
 
         public TreatmentFull(long id, long postId, long appUserId, String appUserAlias,
                              long postSubtypeId, long postCountryId, long postStateId,
@@ -23,7 +25,8 @@ namespace HeroServer
                              List<LinkFull> linkFulls,
                              List<CommentFull> commentFulls,
                              String ingredients, String preparation, String usage, String annotation,
-                             int status, List<DiseaseFull> diseaseFulls)
+                             int status, List<DiseaseFull> diseaseFulls,
+                             List<String> images)
             : base(postId, appUserId, appUserAlias, postSubtypeId,
                    postCountryId, postStateId, title, titleImage, summary, description,
                    imageCount, likeCount, publicationDateTime, postStatusId,
@@ -36,6 +39,7 @@ namespace HeroServer
             Annotation = annotation;
             Status = status;
             DiseaseFulls = diseaseFulls ?? new List<DiseaseFull>();
+            Images = images;
         }
     }
 }

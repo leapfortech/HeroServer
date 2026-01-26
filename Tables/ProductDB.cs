@@ -60,7 +60,8 @@ namespace HeroServer
                                    reader["Annotation"].ToString(),
                                    Convert.ToInt32(reader["Status"]),
 
-                                   null);   // ProductReviewFull
+                                   null,   // ProductReviewFull
+                                   null);  //Images);
         }
 
 

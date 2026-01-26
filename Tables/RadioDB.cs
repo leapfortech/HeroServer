@@ -44,7 +44,9 @@ namespace HeroServer
 
                                 Convert.ToInt32(reader["Status"]),
                                 null,   //RadioTypeFulls 
-                                null);  //RadioLanguageFulls
+                                null,   //RadioLanguageFulls
+
+                                null);  //Images);
         }
 
 

@@ -25,7 +25,7 @@ namespace HeroServer
             if (treatmentFull == null)
                 return null;
 
-            treatmentFull.TitleImage = await PostFunctions.GetTitleImageById(treatmentFull.PostId);
+            treatmentFull.Images = await PostFunctions.GetImagesById(treatmentFull.PostId, true);
 
             return treatmentFull;
         }
@@ -37,7 +37,7 @@ namespace HeroServer
             if (treatmentFull == null)
                 return null;
 
-            treatmentFull.TitleImage = await PostFunctions.GetTitleImageById(postId);
+            treatmentFull.Images = await PostFunctions.GetImagesById(treatmentFull.PostId, true);
 
             return treatmentFull;
         }
@@ -103,8 +103,8 @@ namespace HeroServer
 
                 treatmentFull.CommentFulls = comments;
 
-                // TitleImage
-                treatmentFull.TitleImage = await PostFunctions.GetTitleImageById(treatmentFull.PostId);
+                // Images
+                treatmentFull.Images = await PostFunctions.GetImagesById(treatmentFull.PostId, true);
 
                 treatmentFulls.Add(treatmentFull);
             }

@@ -52,7 +52,9 @@ namespace HeroServer
                                      reader["Annotation"].ToString(),
                                      Convert.ToInt32(reader["Status"]),
 
-                                     null ); // DiseaseFulls
+                                     null, // DiseaseFulls
+
+                                     null);  //Images);
         }
 
         // GET

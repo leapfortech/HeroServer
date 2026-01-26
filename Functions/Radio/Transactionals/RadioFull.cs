@@ -12,6 +12,8 @@ namespace HeroServer
         public List<RadioTypeFull> RadioTypeFulls { get; set; }
         public List<RadioLanguageFull> RadioLanguageFulls { get; set; }
 
+        public List<String> Images { get; set; }
+
         public RadioFull()
         {
         }
@@ -26,7 +28,8 @@ namespace HeroServer
                          List<CommentFull> commentFulls,
                          int status,
                          List<RadioTypeFull> radioTypeFulls,
-                         List<RadioLanguageFull> radioLanguageFulls)
+                         List<RadioLanguageFull> radioLanguageFulls,
+                         List<String> images)
             : base(postId, appUserId, appUserAlias, postSubtypeId,
                    postCountryId, postStateId, title, titleImage, summary, description,
                    imageCount, likeCount, publicationDateTime, postStatusId,
@@ -38,6 +41,7 @@ namespace HeroServer
 
             RadioTypeFulls = radioTypeFulls ?? new List<RadioTypeFull>();
             RadioLanguageFulls = radioLanguageFulls ?? new List<RadioLanguageFull>();
+            Images = images;
         }
     }
 }

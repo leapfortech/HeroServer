@@ -25,7 +25,7 @@ namespace HeroServer
             if (recipeFull == null)
                 return null;
 
-            recipeFull.TitleImage = await PostFunctions.GetTitleImageById(recipeFull.PostId);
+            recipeFull.Images = await PostFunctions.GetImagesById(recipeFull.PostId, true);
 
             return recipeFull;
         }
@@ -37,7 +37,7 @@ namespace HeroServer
             if (recipeFull == null)
                 return null;
 
-            recipeFull.TitleImage = await PostFunctions.GetTitleImageById(postId);
+            recipeFull.Images = await PostFunctions.GetImagesById(recipeFull.PostId, true);
 
             return recipeFull;
         }
@@ -103,8 +103,8 @@ namespace HeroServer
 
                 recipeFull.CommentFulls = comments;
 
-                // TitleImage
-                recipeFull.TitleImage = await PostFunctions.GetTitleImageById(recipeFull.PostId);
+                // Images
+                recipeFull.Images = await PostFunctions.GetImagesById(recipeFull.PostId, true);
 
                 recipeFulls.Add(recipeFull);
             }

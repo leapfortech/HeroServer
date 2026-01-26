@@ -8,6 +8,8 @@ namespace HeroServer
         public long Id { get; set; }
         public int Status { get; set; }
 
+        public List<String> Images { get; set; }
+
         public TaleFull()
         {
         }
@@ -20,7 +22,8 @@ namespace HeroServer
                         ContactFull contactFull,
                         List<LinkFull> linkFulls,
                         List<CommentFull> commentFulls,
-                        int status)
+                        int status,
+                        List<String> images)
             : base(postId, appUserId, appUserAlias, postSubtypeId,
                    postCountryId, postStateId, title, titleImage, summary, description,
                    imageCount, likeCount, publicationDateTime, postStatusId,
@@ -28,6 +31,7 @@ namespace HeroServer
         {
             Id = id;
             Status = status;
+            Images = images;
         }
     }
 }
