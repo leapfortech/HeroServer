@@ -178,6 +178,34 @@ namespace HeroServer
             return addressId;
         }
 
+        public async Task<(long, long)> GetIdsByAppUserId(long appUserId, int status = 1)
+        {
+            String strCmd = $"SELECT Id, AddressId FROM {table} WHERE AppUserId = @AppUserId";
+            if (status != -1)
+                strCmd += " AND Status = @Status";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, appUserId);
+            if (status != -1)
+                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+
+            long id = -1, identityId = -1;
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        id = Convert.ToInt64(reader["Id"]);
+                        identityId = Convert.ToInt64(reader["AddressId"]);
+                    }
+                }
+            }
+            return (id, identityId);
+        }
+
         public async Task<long> GetIdCountByAppUserId(long appUserId, int status = 1)
         {
             String strCmd = $"SELECT AddressId FROM {table} WHERE AppUserId = @AppUserId AND Status = @Status";

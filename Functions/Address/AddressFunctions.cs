@@ -27,37 +27,6 @@ namespace HeroServer
             return await new AddressDB().Add(address);
         }
 
-        public static async Task<long> Copy(long id, int status = -1)
-        {
-            Address address = await new AddressDB().GetById(id);
-            if (status != -1)
-                address.Status = status;
-            return await new AddressDB().Add(address);
-        }
-
-        public static async Task<(long, long)> CopyByAppUserId(long appUserId, int status = -1)
-        {
-            long addressAppUserId = -1;
-            long addressId = -1;
-
-            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {
-                AddressAppUser addressAppUser = await new AddressAppUserDB().GetByAppUserId(appUserId);
-                if (status != -1)
-                    addressAppUser.Status = status;
-                addressAppUserId = await new AddressAppUserDB().Add(addressAppUser);
-
-                Address address = await new AddressDB().GetById(addressAppUser.AddressId);
-                if (status != -1)
-                    address.Status = status;
-                addressId = await new AddressDB().Add(address);
-
-                scope.Complete();
-            }
-
-            return (addressAppUserId, addressId);
-        }
-
         public static async Task<long> RegisterByAppUser(long appUserId, Address address)
         {
             long addressId = -1;
@@ -96,46 +65,31 @@ namespace HeroServer
 
         public static async Task<long> UpdateByAppUser(long appUserId, Address address)
         {
-            long addressId = -1;
+            long id = -1;
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                AddressAppUser addressAppUser = await new AddressAppUserDB().GetByAppUserId(appUserId, address.Status);
-                if (addressAppUser == null)
+                (long addressAppUserId, long addressId) = await new AddressAppUserDB().GetIdsByAppUserId(appUserId, 1);
+
+                if ((addressAppUserId == -1) || (addressId == -1))
                     throw new Exception("AppUser not Found");
 
-                if (address.Status == 1)
-                {
-                    await UpdateStatus(address.Id, 0);
-                    addressId = await new AddressDB().Add(address);
+                await new AddressDB().UpdateStatus(addressId, 0);
+                await new AddressAppUserDB().UpdateStatus(addressAppUserId, 0);
 
-                    addressAppUser.AddressId = addressId;
-                    await new AddressAppUserDB().Update(addressAppUser);
-                }
-                else if (address.Status == 2)
-                {
-                    addressId = address.Id;
-
-                    await new AddressDB().Update(address);
-                }
+                address.Status = 1;
+                id = await new AddressDB().Add(address);
+                await new AddressAppUserDB().Add(new AddressAppUser(-1, appUserId, id, DateTime.Now, DateTime.Now, 1));
 
                 scope.Complete();
             }
 
-            return addressId;
+            return id;
         }
 
         public static async Task<bool> UpdateStatus(long id, int status)
         {
             return await new AddressDB().UpdateStatus(id, status);
-        }
-
-        public static async Task<bool> UpdateStatusByAppUserId(long appUserId, int curStatus, int newStatus)
-        {
-            long addressId = await new AddressAppUserDB().GetAddressIdByAppUserId(appUserId, curStatus);
-
-            await new AddressAppUserDB().UpdateStatusByAppUserId(appUserId, curStatus, newStatus);
-            return await new AddressDB().UpdateStatus(addressId, curStatus, newStatus);
         }
 
         public static async Task DeleteByAppUserId(long appUserId)

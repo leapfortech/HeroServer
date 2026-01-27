@@ -126,13 +126,26 @@ namespace HeroServer
         }
 
         // UPDATE
-        public static async Task<long> Update(long appUserId, Identity identity)
+        public static async Task<long> Update(Identity identity)
+        {
+            long identityId = -1;
+
+            if (await new IdentityDB().Update(identity))
+                identityId = identity.Id;
+
+            return identityId;
+        }
+
+        public static async Task<long> UpdateByAppUser(long appUserId, Identity identity)
         {
             long id = -1;
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 (long identityAppUserId, long identityId) = await new IdentityAppUserDB().GetIdsByAppUserId(appUserId, 1);
+
+                if ((identityAppUserId == -1) || (identityId == -1))
+                    throw new Exception("AppUser not Found");
 
                 await new IdentityDB().UpdateStatus(identityId, 0);
                 await new IdentityAppUserDB().UpdateStatus(identityAppUserId, 0);

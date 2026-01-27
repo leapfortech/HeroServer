@@ -54,7 +54,7 @@ namespace HeroServer.Controllers
 
         // PUT services/address/ByAppUser?appUserId=2
         [HttpPut("ByAppUser")]
-        public async Task<ActionResult<long>> UpdateByAppUser([FromQuery]String appUserId, [FromBody]Address address)
+        public async Task<ActionResult<long>> UpdateByAppUser([FromQuery] String appUserId, [FromBody] Address address)
         {
             try
             {

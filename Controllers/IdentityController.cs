@@ -109,13 +109,13 @@ namespace HeroServer.Controllers
             }
         }
 
-        //PUT services/identity/
-        [HttpPut]
-        public async Task<ActionResult<long>> Update([FromQuery] String appUserId, [FromBody] Identity identity)
+        //PUT services/identity/ByAppUser?appUserId=2
+        [HttpPut("ByAppUser")]
+        public async Task<ActionResult<long>> UpdateByAppUser([FromQuery] String appUserId, [FromBody] Identity identity)
         {
             try
             {
-                return Ok(await IdentityFunctions.Update(Convert.ToInt64(appUserId), identity));
+                return Ok(await IdentityFunctions.UpdateByAppUser(Convert.ToInt64(appUserId), identity));
             }
             catch (Exception ex)
             {
