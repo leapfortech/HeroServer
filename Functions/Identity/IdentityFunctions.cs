@@ -125,47 +125,27 @@ namespace HeroServer
             return await new IdentityDB().Add(identity);
         }
 
-        public static async Task<long> Copy(long id, int status = -1)
-        {
-            Identity identity = await new IdentityDB().GetById(id);
-            if (status != -1)
-                identity.Status = status;
-            return await new IdentityDB().Add(identity);
-        }
-
-        //public static async Task<long> CopyByAppUserId(long appUserId, int status = -1)
-        //{
-        //    Identity identity = await new IdentityDB().GetByAppUserId(appUserId);
-        //    if (status != -1)
-        //        identity.Status = status;
-        //    return await new IdentityDB().Add(identity);
-        //}
-
         // UPDATE
-        //public static async Task<long> Update(Identity identity)
-        //{
-        //    long identityId = -1;
+        public static async Task<long> Update(long appUserId, Identity identity)
+        {
+            long id = -1;
 
-        //    using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-        //    {
-        //        if (identity.Status == 1)
-        //        {
-        //            await new IdentityDB().UpdateStatusByAppUserId(identity.AppUserId, 1, 0);
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                (long identityAppUserId, long identityId) = await new IdentityAppUserDB().GetIdsByAppUserId(appUserId, 1);
 
-        //            identityId = await new IdentityDB().Add(identity);
-        //        }
-        //        else if (identity.Status == 2)
-        //        {
-        //            identityId = identity.Id;
+                await new IdentityDB().UpdateStatus(identityId, 0);
+                await new IdentityAppUserDB().UpdateStatus(identityAppUserId, 0);
 
-        //            await new IdentityDB().Update(identity);
-        //        }
+                identity.Status = 1;
+                id = await new IdentityDB().Add(identity);
+                await new IdentityAppUserDB().Add(new IdentityAppUser(-1, appUserId, id, DateTime.Now, DateTime.Now, 1));
 
-        //        scope.Complete();
-        //    }
+                scope.Complete();
+            }
 
-        //    return identityId;
-        //}
+            return id;
+        }
 
         public static async Task UpdatePortrait(long appUserId, String portrait)
         {

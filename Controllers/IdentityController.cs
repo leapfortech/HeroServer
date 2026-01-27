@@ -95,20 +95,6 @@ namespace HeroServer.Controllers
             return Ok(await IdentityFunctions.GetAllByAppUserId(Convert.ToInt64(appUserId), Convert.ToInt32(status)));
         }
 
-        // POST services/identity/RegisterByAppUser?appUserId=2
-        //[HttpPost("RegisterByAppUser")]
-        //public async Task<ActionResult<long>> RegisterByAppUser([FromQuery] String appUserId, [FromBody]IdentityRegister identityRegister)
-        //{
-        //    try
-        //    {
-        //        return Ok(await IdentityFunctions.RegisterByAppUser(Convert.ToInt64(appUserId), identityRegister));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
-
         // POST services/identity/
         [HttpPost]
         public async Task<ActionResult<long>> Add([FromBody]Identity identity)
@@ -123,19 +109,19 @@ namespace HeroServer.Controllers
             }
         }
 
-        // PUT services/identity/
-        //[HttpPut]
-        //public async Task<ActionResult<long>> Update([FromBody]Identity identity)
-        //{
-        //    try
-        //    {
-        //        return Ok(await IdentityFunctions.Update(identity));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
+        //PUT services/identity/
+        [HttpPut]
+        public async Task<ActionResult<long>> Update([FromQuery] String appUserId, [FromBody] Identity identity)
+        {
+            try
+            {
+                return Ok(await IdentityFunctions.Update(Convert.ToInt64(appUserId), identity));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         // PUT services/identity/Portrait?appUserId=3
         [HttpPut("Portrait")]
