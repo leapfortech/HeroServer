@@ -168,11 +168,6 @@ namespace HeroServer
             return await new IdentityDB().UpdateStatus(id, status);
         }
 
-        //public static async Task<bool> UpdateStatusByAppUserId(long appUserId, int curStatus, int newStatus)
-        //{
-        //    return await new IdentityDB().UpdateStatusByAppUserId(appUserId, curStatus, newStatus);
-        //}
-
         // DELETE
 
         public static async Task Delete(long id)
