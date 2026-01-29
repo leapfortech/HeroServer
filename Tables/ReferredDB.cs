@@ -172,11 +172,11 @@ namespace HeroServer
 
         public async Task<IEnumerable<ReferredFull>> GetHistory(long appUserId, DateTime startDate, DateTime endDate)
         {
-            String strCmd = @"SELECT referred.Id, referred.Code, identity.FirstName1, identity.FirstName2," +
-                             " identity.LastName1, identity.LastName2, identity.PhoneCountryId AS PhonePrefix," +
-                             " identity.Phone, identity.Email, referred.CreateDateTime" +
+            String strCmd = @"SELECT referred.Id, referred.Code, idt.FirstName1, idt.FirstName2," +
+                             " idt.LastName1, idt.LastName2, idt.PhoneCountryId AS PhonePrefix," +
+                             " idt.Phone, idt.Email, referred.CreateDateTime" +
                              " FROM [D-Referred] referred" +
-                             " INNER JOIN [D-Identity] identity ON identity.Id = referred.IdentityId" +
+                             " INNER JOIN [D-Identity] idt ON idt.Id = referred.IdentityId" +
                              " WHERE referred.AppUserId = @AppUserId AND referred.Status = 1" +
                              " AND referred.CreateDateTime BETWEEN @DateStart AND @DateEnd" +
                              " ORDER BY referred.CreateDateTime DESC";
@@ -304,9 +304,10 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('f'));
             DBHelper.AddParam(command, "@Code", SqlDbType.VarChar, referred.Code);
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.Int, referred.AppUserId);
-            DBHelper.AddParam(command, "@IdentityId", SqlDbType.Int, referred.IdentityId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, referred.AppUserId);
+            DBHelper.AddParam(command, "@IdentityId", SqlDbType.BigInt, referred.IdentityId);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, referred.Status);
@@ -327,7 +328,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@Code", SqlDbType.VarChar, referred.Code);
             DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, referred.AppUserId);
-            DBHelper.AddParam(command, "@IdentityId", SqlDbType.Int, referred.IdentityId);
+            DBHelper.AddParam(command, "@IdentityId", SqlDbType.BigInt, referred.IdentityId);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, referred.Id);
 

@@ -75,8 +75,8 @@ namespace HeroServer
                 registerReferredRequest.Identity.Status = 1;
                 long identityId = await new IdentityDB().Add(registerReferredRequest.Identity);
 
-                referred.Code = String.Format("{0}{1:yyMMddHHmm}", referred.AppUserId, DateTime.Now);
                 referred.AppUserId = registerReferredRequest.AppUserId;
+                referred.Code = String.Format("{0}{1:yyMMddHHmm}", referred.AppUserId, DateTime.Now);
                 referred.IdentityId = identityId;
                 referred.Status = 1;
                 referred.Id = await new ReferredDB().Add(referred);
