@@ -34,10 +34,10 @@ namespace HeroServer
             return await new ReferredDB().GetHistory(referredHistoryRequest.AppUserId, referredHistoryRequest.DateStart, referredHistoryRequest.DateEnd);
         }
 
-        //public static async Task<long> GetAppUserIdById(long id)
-        //{
-        //    return await new ReferredDB().GetAppUserIdById(id);
-        //}
+        public static async Task<long> GetAppUserIdById(long id)
+        {
+            return await new ReferredDB().GetAppUserIdById(id);
+        }
 
         public static async Task<Referred> GetByCode(String code)
         {

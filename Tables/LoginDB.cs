@@ -44,6 +44,7 @@ namespace HeroServer
                     ReferredCount referredCount = new ReferredCount();
                     if (await reader.ReadAsync())
                         referredCount.Count = Convert.ToInt32(reader["Count"]);
+                    loginAppInfo.ReferredCount = referredCount;
 
                     reader.NextResult();
                     if (await reader.ReadAsync())
