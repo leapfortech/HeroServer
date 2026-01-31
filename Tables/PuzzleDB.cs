@@ -152,7 +152,10 @@ namespace HeroServer
 
             strCmd += "SELECT Id, PuzzleId, Description, IsCorrect, Status" +
                       " FROM [D-PuzzleAnswer]" +
-                      " WHERE PuzzleId = @Id;";
+                      " WHERE PuzzleId IN" +
+                     $" (SELECT Id FROM {table} WHERE PostId = @PostId)" +
+                      " AND Status = 1" +
+                      " ORDER BY CreateDateTime ASC;";
 
             strCmd += "SELECT Id, PostId, Name, Status" +
                        " FROM [D-Contact]" +
@@ -224,7 +227,9 @@ namespace HeroServer
             strCmd += "SELECT Id, PuzzleId, Description, IsCorrect, Status" +
                       " FROM [D-PuzzleAnswer]" +
                       " WHERE PuzzleId IN" +
-                      $" (SELECT Id FROM {table} WHERE PostId = @PostId);";
+                     $" (SELECT Id FROM {table} WHERE PostId = @PostId)" +
+                      " AND Status = 1" +
+                      " ORDER BY CreateDateTime ASC;";
 
             strCmd += "SELECT Id, PostId, Name, Status" +
                        " FROM [D-Contact]" +
@@ -297,11 +302,13 @@ namespace HeroServer
             else
                 strCmd += ";";
 
-            strCmd +=  "SELECT PuzzleAnswer.Id, PuzzleAnswer.PuzzleId, PuzzleAnswer.Description," +
-                       " PuzzleAnswer.IsCorrect, PuzzleAnswer.Status" +
-                       " FROM [D-PuzzleAnswer] AS PuzzleAnswer" +
-                      $" JOIN {table} ON (PuzzleAnswer.PuzzleId = {table}.Id)" +
-                       " WHERE 1 = 1";
+            strCmd += "SELECT PuzzleAnswer.Id, PuzzleAnswer.PuzzleId, PuzzleAnswer.Description," +
+                      " PuzzleAnswer.IsCorrect, PuzzleAnswer.Status" +
+                      " FROM [D-PuzzleAnswer] AS PuzzleAnswer" +
+                     $" JOIN {table} ON (PuzzleAnswer.PuzzleId = {table}.Id)" +
+                      " WHERE 1 = 1" +
+                      " AND PuzzleAnswer.Status = 1" +
+                      " ORDER BY PuzzleAnswer.CreateDateTime ASC;";
 
             if (status != -1)
                 strCmd += $" AND {table}.Status = @Status;";
