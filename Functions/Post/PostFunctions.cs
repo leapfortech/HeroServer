@@ -114,8 +114,17 @@ namespace HeroServer
 
         public static async Task<long> RegisterLike(Like like)
         {
-            like.Status = 1;
-            return await new LikeDB().Add(like);
+            long likeId = -1;
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                like.Status = 1;
+                likeId = await new LikeDB().Add(like);
+                await new PostDB().IncrementLikeCount(like.PostId);
+
+                scope.Complete();
+            }
+
+            return likeId;
         }
 
         // ADD

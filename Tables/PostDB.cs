@@ -357,6 +357,23 @@ namespace HeroServer
             }
         }
 
+        public async Task<bool> IncrementLikeCount(long id)
+        {
+            String strCmd = $"UPDATE {table}" +
+                            " SET LikeCount = LikeCount + 1" +
+                            " WHERE Id = @Id";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
+
         public async Task<bool> UpdateStatus(long id, int status)
         {
             String strCmd = $"UPDATE {table}" +
