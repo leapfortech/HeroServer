@@ -157,7 +157,7 @@ namespace HeroServer
                 registerProductRequest.Product.PostId = registerProductRequest.Post.Id;
                 registerProductRequest.Product.Status = 1;
 
-                if (registerProductRequest.Product.Id <= 0)
+                if (registerProductRequest.Product.Id == -1 || registerProductRequest.Product.Id == 0)
                 {
                     await Add(registerProductRequest.Product);
                 }

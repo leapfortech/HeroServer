@@ -151,7 +151,7 @@ namespace HeroServer
                 registerRecipeRequest.Recipe.PostId = registerRecipeRequest.Post.Id;
                 registerRecipeRequest.Recipe.Status = 1;
 
-                if (registerRecipeRequest.Recipe.Id <= 0)
+                if (registerRecipeRequest.Recipe.Id == -1 || registerRecipeRequest.Recipe.Id == 0)
                 {
                     await Add(registerRecipeRequest.Recipe);
                 }

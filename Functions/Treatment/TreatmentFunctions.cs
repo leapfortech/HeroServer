@@ -161,7 +161,7 @@ namespace HeroServer
 
                 long treatmentId = -1;
 
-                if (registerTreatmentRequest.Treatment.Id <= 0)
+                if (registerTreatmentRequest.Treatment.Id == -1 || registerTreatmentRequest.Treatment.Id == 0)
                 {
                     treatmentId = await Add(registerTreatmentRequest.Treatment);
                 }
@@ -183,7 +183,7 @@ namespace HeroServer
                         Disease disease = registerTreatmentRequest.Diseases[i];
                         disease.TreatmentId = treatmentId;
 
-                        if (disease.Id <= 0)
+                        if (disease.Id == -1 || disease.Id == 0)
                         {
                             disease.Status = 1;
                             await new DiseaseDB().Add(disease);

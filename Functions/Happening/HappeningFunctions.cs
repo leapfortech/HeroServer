@@ -151,7 +151,7 @@ namespace HeroServer
                 registerHappeningRequest.Happening.PostId = registerHappeningRequest.Post.Id;
                 registerHappeningRequest.Happening.Status = 1;
 
-                if (registerHappeningRequest.Happening.Id <= 0)
+                if (registerHappeningRequest.Happening.Id == -1 || registerHappeningRequest.Happening.Id == 0)
                 {
                     await Add(registerHappeningRequest.Happening);
                 }

@@ -166,7 +166,7 @@ namespace HeroServer
                         Link link = registerPostRequest.Links[i];
                         link.PostId = registerPostRequest.Post.Id;
 
-                        if (link.Id <= 0)
+                        if (link.Id == -1 || link.Id == 0)
                         {
                             link.Status = 1;
                             await new LinkDB().Add(link);

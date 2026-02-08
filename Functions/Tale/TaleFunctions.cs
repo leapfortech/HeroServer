@@ -168,8 +168,10 @@ namespace HeroServer
                     registerTaleRequest.Tale.PostId = registerTaleRequest.Post.Id;
                     registerTaleRequest.Tale.Status = 1;
 
-                    if (registerTaleRequest.Tale.Id <= 0)
+                    if (registerTaleRequest.Tale.Id == -1 || registerTaleRequest.Tale.Id == 0)
+                    {
                         await Add(registerTaleRequest.Tale);
+                    }
                     else
                     {
                         await Update(registerTaleRequest.Tale);

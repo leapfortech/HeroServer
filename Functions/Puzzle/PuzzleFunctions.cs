@@ -164,7 +164,7 @@ namespace HeroServer
 
                 long puzzleId = -1;
 
-                if (registerPuzzleRequest.Puzzle.Id <= 0)
+                if (registerPuzzleRequest.Puzzle.Id == -1 || registerPuzzleRequest.Puzzle.Id == 0)
                 {
                     puzzleId = await Add(registerPuzzleRequest.Puzzle);
                 }
@@ -187,7 +187,7 @@ namespace HeroServer
                         PuzzleAnswer puzzleAnswer = registerPuzzleRequest.PuzzleAnswers[i];
                         puzzleAnswer.PuzzleId = puzzleId;
 
-                        if (puzzleAnswer.Id <= 0)
+                        if (puzzleAnswer.Id == -1 || puzzleAnswer.Id == 0)
                         {
                             puzzleAnswer.Status = 1;
                             await new PuzzleAnswerDB().Add(puzzleAnswer);

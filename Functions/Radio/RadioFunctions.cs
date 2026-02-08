@@ -182,7 +182,7 @@ namespace HeroServer
                 registerRadioRequest.Radio.Status = 1;
 
                 long radioId = -1;
-                if (registerRadioRequest.Radio.Id <= 0)
+                if (registerRadioRequest.Radio.Id == -1 || registerRadioRequest.Radio.Id == 0)
                 {
                     radioId = await Add(registerRadioRequest.Radio);
                 }
@@ -204,7 +204,7 @@ namespace HeroServer
                         RadioType radioType = registerRadioRequest.RadioTypes[i];
                         radioType.RadioId = radioId;
 
-                        if (radioType.Id <= 0)
+                        if (radioType.Id == -1 || radioType.Id == 0)
                         {
                             radioType.Status = 1;
                             await new RadioTypeDB().Add(radioType);
@@ -228,7 +228,7 @@ namespace HeroServer
                         RadioLanguage radioLanguage = registerRadioRequest.RadioLanguages[i];
                         radioLanguage.RadioId = radioId;
 
-                        if (radioLanguage.Id <= 0)
+                        if (radioLanguage.Id == -1 || radioLanguage.Id == 0)
                         {
                             radioLanguage.Status = 1;
                             await new RadioLanguageDB().Add(radioLanguage);

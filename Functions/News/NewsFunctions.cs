@@ -151,7 +151,7 @@ namespace HeroServer
                 registerNewsRequest.News.PostId = registerNewsRequest.Post.Id;
                 registerNewsRequest.News.Status = 1;
 
-                if (registerNewsRequest.News.Id <= 0)
+                if (registerNewsRequest.News.Id == -1 || registerNewsRequest.News.Id == 0)
                 {
                     await Add(registerNewsRequest.News);
                 }
