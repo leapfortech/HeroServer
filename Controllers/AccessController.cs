@@ -100,7 +100,7 @@ namespace HeroServer.Controllers
 
         // POST services/access/RegisterBoard
         [HttpPost("RegisterBoard")]
-        public async Task<ActionResult<int>> RegisterBoard([FromBody]RegisterBoardRequest registerBoardRequest)
+        public async Task<ActionResult<long>> RegisterBoard([FromBody]RegisterBoardRequest registerBoardRequest)
         {
             try
             {

@@ -45,7 +45,7 @@ namespace HeroServer.Controllers
         {
             try
             {
-                return Ok(await BoardUserFunctions.GetById(Convert.ToInt32(id)));
+                return Ok(await BoardUserFunctions.GetById(Convert.ToInt64(id)));
             }
             catch (Exception ex)
             {
@@ -120,7 +120,7 @@ namespace HeroServer.Controllers
                 //if (!await FirebaseFunctions.AuthorizeAppUser(bntConnString, HttpContext, Convert.ToInt32(id), "AppUser.SetStatus"))
                 //    return Unauthorized();
 
-                if (!await BoardUserFunctions.UpdateStatus(Convert.ToInt32(id), Convert.ToInt32(status)))
+                if (!await BoardUserFunctions.UpdateStatus(Convert.ToInt64(id), Convert.ToInt32(status)))
                     return BadRequest("[STAT]");
 
                 return Ok();

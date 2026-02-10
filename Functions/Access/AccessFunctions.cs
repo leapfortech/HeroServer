@@ -179,9 +179,9 @@ namespace HeroServer
                         await WebSysUserFunctions.UpdatePhone(new PhoneRequest(webSysUser.Id, registerBoardRequest.PhoneCountryId, registerBoardRequest.Phone));
                 }
 
-                long identityId = await IdentityFunctions.RegisterByBoardUser(boardUserId, registerBoardRequest);
+                await IdentityFunctions.RegisterByBoardUser(boardUserId, registerBoardRequest);
 
-                boardUser = new BoardUser(-1, webSysUser.Id, identityId, 1);
+                boardUser = new BoardUser(-1, webSysUser.Id, registerBoardRequest.Alias, 1);
 
                 boardUser.Id = await BoardUserFunctions.Add(boardUser);
 

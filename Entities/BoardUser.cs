@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace HeroServer
 {
@@ -7,7 +6,7 @@ namespace HeroServer
     {
         public long Id { get; set; }
         public long WebSysUserId { get; set; }
-        public long EntityId { get; set; }
+        public String Alias { get; set; }
         public DateTime CreateDateTime { get; set; }
         public DateTime UpdateDateTime { get; set; }
         public int BoardUserStatusId { get; set; }
@@ -17,21 +16,22 @@ namespace HeroServer
         {
         }
 
-        public BoardUser(long id, long webSysUserId, long entityId, DateTime createDateTime, DateTime updateDateTime, int boardUserStatusId)
+        public BoardUser(long id, long webSysUserId, String alias, DateTime createDateTime,
+                         DateTime updateDateTime, int boardUserStatusId)
         {
             Id = id;
             WebSysUserId = webSysUserId;
-            EntityId = entityId;
+            Alias = alias;
             CreateDateTime = createDateTime;
             UpdateDateTime = updateDateTime;
             BoardUserStatusId = boardUserStatusId;
         }
 
-        public BoardUser(long id, long webSysUserId, long entityId, int boardUserStatusId)
+        public BoardUser(long id, long webSysUserId, String alias, int boardUserStatusId)
         {
             Id = id;
             WebSysUserId = webSysUserId;
-            EntityId = entityId;
+            Alias = alias;
             BoardUserStatusId = boardUserStatusId;
         }
     }
