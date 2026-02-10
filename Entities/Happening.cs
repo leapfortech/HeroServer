@@ -6,7 +6,7 @@ namespace HeroServer
     {
         public long Id { get; set; }
         public long PostId { get; set; }
-        public long EventTypeId { get; set; }
+        public long HappeningTypeId { get; set; }
         public long CountryId { get; set; }
         public long StateId { get; set; }
         public int IsPublic { get; set; }
@@ -24,14 +24,14 @@ namespace HeroServer
 
         public Happening() { }
 
-        public Happening(long id, long postId, long eventTypeId, long countryId, long stateId,
+        public Happening(long id, long postId, long happeningTypeId, long countryId, long stateId,
                          int isPublic, int hasSignup, int hasPayment, String paymentDetails,
                          DateTime? startDateTime, DateTime? endDateTime, String location, double? latitude,
                          double? longitude, DateTime createDateTime, DateTime updateDateTime, int status)
         {
             Id = id;
             PostId = postId;
-            EventTypeId = eventTypeId;
+            HappeningTypeId = happeningTypeId;
             CountryId = countryId;
             StateId = stateId;
             IsPublic = isPublic;

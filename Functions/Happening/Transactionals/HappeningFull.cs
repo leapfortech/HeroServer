@@ -6,7 +6,7 @@ namespace HeroServer
     public class HappeningFull : PostFull
     {
         public long Id { get; set; }
-        public long EventTypeId { get; set; }
+        public long HappeningTypeId { get; set; }
         public long CountryId { get; set; }
         public long StateId { get; set; }
         public int IsPublic { get; set; }
@@ -35,7 +35,7 @@ namespace HeroServer
                              ContactFull contactFull,
                              List<LinkFull> linkFulls,
                              List<CommentFull> commentFulls,
-                             long eventTypeId, long countryId, long stateId,
+                             long happeningTypeId, long countryId, long stateId,
                              int isPublic, int hasSignup, int hasPayment, String paymentDetails,
                              DateTime? startDateTime, DateTime? endDateTime,
                              String location, double? latitude, double? longitude,
@@ -47,7 +47,7 @@ namespace HeroServer
                    contactFull, linkFulls, commentFulls)
         {
             Id = id;
-            EventTypeId = eventTypeId;
+            HappeningTypeId = happeningTypeId;
             CountryId = countryId;
             StateId = stateId;
             IsPublic = isPublic;
