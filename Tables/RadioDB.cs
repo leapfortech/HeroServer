@@ -139,11 +139,13 @@ namespace HeroServer
 
             strCmd += "SELECT Id, RadioTypeId, Status" +
                       " FROM [J-RadioType]" +
-                      " WHERE RadioId = @Id;";
+                      " WHERE Status = 1" +
+                      " AND RadioId = @Id;";
 
             strCmd += "SELECT Id, LanguageId, Status" +
                       " FROM [J-RadioLanguage]" +
-                      " WHERE RadioId = @Id;";
+                      " WHERE Status = 1" +
+                      " AND RadioId = @Id;";
 
             strCmd += "SELECT Id, PostId, Name, Status" +
                        " FROM [D-Contact]" +
@@ -219,12 +221,14 @@ namespace HeroServer
 
             strCmd += "SELECT Id, RadioTypeId, Status" +
                       " FROM [J-RadioType]" +
-                      " WHERE RadioId IN" +
+                      " WHERE Status = 1" +
+                      " AND RadioId IN" +
                       $" (SELECT Id FROM {table} WHERE PostId = @PostId);";
 
             strCmd += "SELECT Id, LanguageId, Status" +
                       " FROM [J-RadioLanguage]" +
-                      " WHERE RadioId IN" +
+                      " WHERE Status = 1" +
+                      " AND RadioId IN" +
                       $" (SELECT Id FROM {table} WHERE PostId = @PostId);";
 
             strCmd += "SELECT Id, PostId, Name, Status" +
@@ -306,7 +310,7 @@ namespace HeroServer
             strCmd += "SELECT RadioType.Id, RadioType.RadioTypeId, RadioType.Status" +
                        " FROM [J-RadioType] AS RadioType" +
                       $" JOIN {table} ON (RadioType.RadioId = {table}.Id)" +
-                       " WHERE 1 = 1";
+                       " WHERE 1 = 1 AND RadioType.Status = 1";
 
             if (status != -1)
                 strCmd += $" AND {table}.Status = @Status;";
@@ -316,7 +320,7 @@ namespace HeroServer
             strCmd += "SELECT RadioLanguage.Id, RadioLanguage.LanguageId, RadioLanguage.Status" +
                        " FROM [J-RadioLanguage] AS RadioLanguage" +
                       $" JOIN {table} ON (RadioLanguage.RadioId = {table}.Id)" +
-                       " WHERE 1 = 1";
+                       " WHERE 1 = 1 AND RadioLanguage.Status = 1";
 
             if (status != -1)
                 strCmd += $" AND {table}.Status = @Status;";
