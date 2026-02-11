@@ -47,9 +47,20 @@ namespace HeroServer
         public async Task<IEnumerable<BoardUserFull>> GetFulls()
         {
             String strCmd = $"SELECT {table}.Id AS Id, WebSysUserId, Alias, {table}.CreateDateTime, {table}.UpdateDateTime, BoardUserStatusId," +
-                             " Roles, AuthUserId, Email, PhoneCountryId, Phone, Pin, PinFails, PinDateTime, [D-WebSysUser].CreateDateTime AS WSUCreate, [D-WebSysUser].UpdateDateTime AS WSUUpdate, WebSysUserStatusId" +
+                             " Roles, AuthUserId, [D-WebSysUser].Email, [D-WebSysUser].PhoneCountryId, [D-WebSysUser].Phone, Pin, PinFails, PinDateTime, [D-WebSysUser].CreateDateTime AS WSUCreate, [D-WebSysUser].UpdateDateTime AS WSUUpdate, WebSysUserStatusId," +
+                             " [D-Identity].FirstName1," +
+                             " [D-Identity].FirstName2," +
+                             " [D-Identity].LastName1," +
+                             " [D-Identity].LastName2," +
+                             " [D-Identity].GenderId," +
+                             " [D-Identity].BirthDate," +
+                             " [D-Identity].OriginCountryId," +
+                             " [D-Identity].OriginStateId," +
+                             " [D-Identity].Status" +
                             $" FROM {table}" +
-                             " INNER JOIN [D-WebSysUser] ON ([D-WebSysUser].Id = WebSysUserId)";
+                             " INNER JOIN [D-WebSysUser] ON ([D-WebSysUser].Id = WebSysUserId)" +
+                             " LEFT JOIN [J-IdentityBoardUser] ON ([J-IdentityBoardUser].BoardUserId = " + table + ".Id AND [J-IdentityBoardUser].Status = 1)" +
+                             " LEFT JOIN [D-Identity] ON ([D-Identity].Id = [J-IdentityBoardUser].IdentityId)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -63,10 +74,11 @@ namespace HeroServer
                     {
                         BoardUser boardUser = GetBoardUser(reader);
                         WebSysUser webSysUser = WebSysUserDB.GetWebSysUser(reader);
+                        Identity identity = IdentityDB.GetIdentity(reader);
                         webSysUser.Id = boardUser.WebSysUserId;
                         webSysUser.CreateDateTime = Convert.ToDateTime(reader["WSUCreate"]);
                         webSysUser.UpdateDateTime = Convert.ToDateTime(reader["WSUUpdate"]);
-                        boardUserFulls.Add(new BoardUserFull(boardUser, webSysUser));
+                        boardUserFulls.Add(new BoardUserFull(boardUser, webSysUser, identity));
                     }
                 }
             }
