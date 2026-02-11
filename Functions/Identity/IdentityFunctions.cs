@@ -160,6 +160,30 @@ namespace HeroServer
             return id;
         }
 
+        public static async Task<long> UpdateByBoardUser(long boardUserId, Identity identity)
+        {
+            long id = -1;
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                (long identityBoardUserId, long identityId) = await new IdentityBoardUserDB().GetIdsByBoardUserId(boardUserId, 1);
+
+                if ((identityBoardUserId == -1) || (identityId == -1))
+                    throw new Exception("BoardUser not Found");
+
+                await new IdentityDB().UpdateStatus(identityId, 0);
+                await new IdentityBoardUserDB().UpdateStatus(identityBoardUserId, 0);
+
+                identity.Status = 1;
+                id = await new IdentityDB().Add(identity);
+                await new IdentityBoardUserDB().Add(new IdentityBoardUser(-1, boardUserId, id, DateTime.Now, DateTime.Now, 1));
+
+                scope.Complete();
+            }
+
+            return id;
+        }
+
         public static async Task UpdatePortrait(long appUserId, String portrait)
         {
             if (String.IsNullOrEmpty(portrait))

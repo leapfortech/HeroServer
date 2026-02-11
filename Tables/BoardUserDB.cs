@@ -48,7 +48,7 @@ namespace HeroServer
         {
             String strCmd = $@"SELECT BU.Id, BU.WebSysUserId, BU.Alias, BU.CreateDateTime,
                                BU.UpdateDateTime, BU.BoardUserStatusId,
-                               WSU.Id, WSU.Roles, WSU.AuthUserId, WSU.Email, WSU.PhoneCountryId,
+                               WSU.Id AS WSUId, WSU.Roles, WSU.AuthUserId, WSU.Email, WSU.PhoneCountryId,
                                WSU.Phone, WSU.Pin, WSU.PinFails, WSU.PinDateTime, WSU.CreateDateTime,
                                WSU.UpdateDateTime, WSU.WebSysUserStatusId
                                FROM {table} BU
@@ -76,6 +76,7 @@ namespace HeroServer
                     {
                         BoardUser boardUser = GetBoardUser(reader);
                         WebSysUser webSysUser = WebSysUserDB.GetWebSysUser(reader);
+                        webSysUser.Id = Convert.ToInt64(reader["WSUId"]);
 
                         boardUserFulls.Add(new BoardUserFull(boardUser, webSysUser, null));
                     }
@@ -318,7 +319,7 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, boardUser.WebSysUserId);
-            DBHelper.AddParam(command, "@Alias", SqlDbType.BigInt, boardUser.Alias);
+            DBHelper.AddParam(command, "@Alias", SqlDbType.VarChar, boardUser.Alias);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, boardUser.Id);
 

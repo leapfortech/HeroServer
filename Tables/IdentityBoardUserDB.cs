@@ -177,6 +177,34 @@ namespace HeroServer
             return identityId;
         }
 
+        public async Task<(long, long)> GetIdsByBoardUserId(long boardUserId, int status = 1)
+        {
+            String strCmd = $"SELECT Id, IdentityId FROM {table} WHERE BoardUserId = @BoardUserId";
+            if (status != -1)
+                strCmd += " AND Status = @Status";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@BoardUserId", SqlDbType.BigInt, boardUserId);
+            if (status != -1)
+                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+
+            long id = -1, identityId = -1;
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        id = Convert.ToInt64(reader["Id"]);
+                        identityId = Convert.ToInt64(reader["IdentityId"]);
+                    }
+                }
+            }
+            return (id, identityId);
+        }
+
         // INSERT
         public async Task<long> Add(IdentityBoardUser identityBoardUser)
         {
