@@ -33,6 +33,21 @@ namespace HeroServer.Controllers
             }
         }
 
+        // GET services/GetUid?type=A
+        [HttpGet("GetUidDetails")]
+        [AllowAnonymous]
+        public ActionResult<long[]> GetUidDetails([FromQuery] String type)
+        {
+            try
+            {
+                return Ok(SecurityFunctions.GetUidDetails(type[0]));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // POST services/StartApp
         [HttpPost("StartApp")]
         public async Task<ActionResult<StartResponse>> StartApp([FromBody]StartRequest request)
