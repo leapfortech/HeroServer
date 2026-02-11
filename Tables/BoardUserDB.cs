@@ -46,42 +46,51 @@ namespace HeroServer
 
         public async Task<IEnumerable<BoardUserFull>> GetFulls()
         {
-            String strCmd = $"SELECT {table}.Id AS Id, WebSysUserId, Alias, {table}.CreateDateTime, {table}.UpdateDateTime, BoardUserStatusId," +
-                             " Roles, AuthUserId, [D-WebSysUser].Email, [D-WebSysUser].PhoneCountryId, [D-WebSysUser].Phone, Pin, PinFails, PinDateTime, [D-WebSysUser].CreateDateTime AS WSUCreate, [D-WebSysUser].UpdateDateTime AS WSUUpdate, WebSysUserStatusId," +
-                             " [D-Identity].FirstName1," +
-                             " [D-Identity].FirstName2," +
-                             " [D-Identity].LastName1," +
-                             " [D-Identity].LastName2," +
-                             " [D-Identity].GenderId," +
-                             " [D-Identity].BirthDate," +
-                             " [D-Identity].OriginCountryId," +
-                             " [D-Identity].OriginStateId," +
-                             " [D-Identity].Status" +
-                            $" FROM {table}" +
-                             " INNER JOIN [D-WebSysUser] ON ([D-WebSysUser].Id = WebSysUserId)" +
-                             " LEFT JOIN [J-IdentityBoardUser] ON ([J-IdentityBoardUser].BoardUserId = " + table + ".Id AND [J-IdentityBoardUser].Status = 1)" +
-                             " LEFT JOIN [D-Identity] ON ([D-Identity].Id = [J-IdentityBoardUser].IdentityId)";
+            String strCmd = $@"SELECT BU.Id, BU.WebSysUserId, BU.Alias, BU.CreateDateTime,
+                               BU.UpdateDateTime, BU.BoardUserStatusId,
+                               WSU.Id, WSU.Roles, WSU.AuthUserId, WSU.Email, WSU.PhoneCountryId,
+                               WSU.Phone, WSU.Pin, WSU.PinFails, WSU.PinDateTime, WSU.CreateDateTime,
+                               WSU.UpdateDateTime, WSU.WebSysUserStatusId
+                               FROM {table} BU
+                               INNER JOIN [D-WebSysUser] WSU ON WSU.Id = BU.WebSysUserId;
+
+                               SELECT I.Id, I.FirstName1, I.FirstName2, I.LastName1, I.LastName2,
+                               I.GenderId, I.BirthDate, I.OriginCountryId, I.OriginStateId,
+                               I.PhoneCountryId, I.Phone, I.Email, I.CreateDateTime, I.UpdateDateTime,
+                               I.Status
+                               FROM {table} BU INNER JOIN [J-IdentityBoardUser] JIBU ON JIBU.BoardUserId = BU.Id 
+                               AND JIBU.Status = 1
+                               INNER JOIN [D-Identity] I ON I.Id = JIBU.IdentityId;";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<BoardUserFull> boardUserFulls = [];
+            List<BoardUserFull> boardUserFulls = new();
+
             using (conn)
             {
                 await conn.OpenAsync();
+
                 using (SqlDataReader reader = await command.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
                         BoardUser boardUser = GetBoardUser(reader);
                         WebSysUser webSysUser = WebSysUserDB.GetWebSysUser(reader);
+
+                        boardUserFulls.Add(new BoardUserFull(boardUser, webSysUser, null));
+                    }
+
+                    await reader.NextResultAsync();
+                    int index = 0;
+                    while (await reader.ReadAsync())
+                    {
                         Identity identity = IdentityDB.GetIdentity(reader);
-                        webSysUser.Id = boardUser.WebSysUserId;
-                        webSysUser.CreateDateTime = Convert.ToDateTime(reader["WSUCreate"]);
-                        webSysUser.UpdateDateTime = Convert.ToDateTime(reader["WSUUpdate"]);
-                        boardUserFulls.Add(new BoardUserFull(boardUser, webSysUser, identity));
+                        boardUserFulls[index].Identity = identity;
+                        index++;
                     }
                 }
             }
+
             return boardUserFulls;
         }
 
