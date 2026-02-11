@@ -15,7 +15,7 @@ namespace HeroServer
         {
             return new BoardUser(Convert.ToInt64(reader["Id"]),
                                  Convert.ToInt64(reader["WebSysUserId"]),
-                                 Convert.ToInt64(reader["EntityId"]),
+                                 reader["Alias"].ToString(),
                                  Convert.ToDateTime(reader["CreateDateTime"]),
                                  Convert.ToDateTime(reader["UpdateDateTime"]),
                                  Convert.ToInt32(reader["BoardUserStatusId"]));
@@ -46,7 +46,7 @@ namespace HeroServer
 
         public async Task<IEnumerable<BoardUserFull>> GetFulls()
         {
-            String strCmd = $"SELECT {table}.Id AS Id, WebSysUserId, EntityId, {table}.CreateDateTime, {table}.UpdateDateTime, BoardUserStatusId," +
+            String strCmd = $"SELECT {table}.Id AS Id, WebSysUserId, Alias, {table}.CreateDateTime, {table}.UpdateDateTime, BoardUserStatusId," +
                              " Roles, AuthUserId, Email, PhoneCountryId, Phone, Pin, PinFails, PinDateTime, [D-WebSysUser].CreateDateTime AS WSUCreate, [D-WebSysUser].UpdateDateTime AS WSUUpdate, WebSysUserStatusId" +
                             $" FROM {table}" +
                              " INNER JOIN [D-WebSysUser] ON ([D-WebSysUser].Id = WebSysUserId)";
@@ -268,15 +268,15 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(BoardUser boardUser)
         {
-            String strCmd = $"INSERT INTO {table}(Id, WebSysUserId, EntityId, CreateDateTime, UpdateDateTime, BoardUserStatusId)" + 
+            String strCmd = $"INSERT INTO {table}(Id, WebSysUserId, Alias, CreateDateTime, UpdateDateTime, BoardUserStatusId)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @WebSysUserId, @EntityId, @CreateDateTime, @UpdateDateTime, @BoardUserStatusId)";
+                            " VALUES (@Id, @WebSysUserId, @Alias, @CreateDateTime, @UpdateDateTime, @BoardUserStatusId)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('B'));
             DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, boardUser.WebSysUserId);
-            DBHelper.AddParam(command, "@EntityId", SqlDbType.BigInt, boardUser.EntityId);
+            DBHelper.AddParam(command, "@Alias", SqlDbType.BigInt, boardUser.Alias);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@BoardUserStatusId", SqlDbType.Int, boardUser.BoardUserStatusId);
@@ -291,13 +291,13 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(BoardUser boardUser)
         {
-            String strCmd = $"UPDATE {table} SET WebSysUserId = @WebSysUserId, EntityId = @EntityId," +
+            String strCmd = $"UPDATE {table} SET WebSysUserId = @WebSysUserId, Alias = @Alias," +
                              " UpdateDateTime = @UpdateDateTime WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, boardUser.WebSysUserId);
-            DBHelper.AddParam(command, "@EntityId", SqlDbType.BigInt, boardUser.EntityId);
+            DBHelper.AddParam(command, "@Alias", SqlDbType.BigInt, boardUser.Alias);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, boardUser.Id);
 

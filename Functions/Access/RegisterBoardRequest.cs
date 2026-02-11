@@ -4,6 +4,7 @@ namespace HeroServer
 {
     public class RegisterBoardRequest
     {
+        public String Alias { get; set; }
         public String FirstName1 { get; set; }
         public String FirstName2 { get; set; }
         public String LastName1 { get; set; }
