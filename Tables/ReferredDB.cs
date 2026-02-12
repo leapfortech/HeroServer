@@ -26,6 +26,7 @@ namespace HeroServer
         {
             return new ReferredFull(Convert.ToInt64(reader["Id"]),
                                     reader["Code"].ToString(),
+                                    Convert.ToInt64(reader["AppUserId"]),
                                     reader["FirstName1"].ToString(),
                                     reader["FirstName2"].ToString(),
                                     reader["LastName1"].ToString(),
@@ -33,7 +34,8 @@ namespace HeroServer
                                     reader["PhonePrefix"].ToString(),
                                     reader["Phone"].ToString(),
                                     reader["Email"].ToString(),
-                                    Convert.ToDateTime(reader["CreateDateTime"]));
+                                    Convert.ToDateTime(reader["CreateDateTime"]),
+                                    GetReferrerFull(reader));
         }
 
         private static ReferrerFull GetReferrerFull(SqlDataReader reader)
@@ -73,12 +75,38 @@ namespace HeroServer
 
         public async Task<List<ReferredFull>> GetFullAll()
         {
-            String strCmd = "SELECT Referred.Id, Referred.Code, Referred.AppUserId, Referred.Firstname, Referred.LastName, RCountry.PhonePrefix, Referred.Phone, Referred.Email, Referred.CreateDateTime," +
-                            " Identty.Id AS IdentityId, Identty.FirstName1, Identty.FirstName2, Identty.LastName1, Identty.LastName2, ICountry.PhonePrefix AS IPhonePrefix," +
-                            $" Identty.Phone AS IPhone, Identty.Email AS IEmail FROM {table} AS Referred" +
-                            " INNER JOIN [D-Identity] AS Identty ON Referred.AppUserId = Identty.AppUserId AND Identty.Status = 1" +
-                            " INNER JOIN [K-Country] AS RCountry ON Identty.PhoneCountryId = RCountry.Id" +
-                            " INNER JOIN [K-Country] AS ICountry ON Identty.PhoneCountryId = ICountry.Id";
+            String strCmd = "SELECT" +
+                            " Referred.Id," +
+                            " Referred.Code," +
+                            " Referred.AppUserId," +
+                            " Referred.CreateDateTime," +
+
+                            " IReferred.Id AS IdentityId," +
+                            " IReferred.FirstName1," +
+                            " IReferred.FirstName2," +
+                            " IReferred.LastName1," +
+                            " IReferred.LastName2," +
+                            " CReferred.PhonePrefix AS PhonePrefix," +
+                            " IReferred.Phone," +
+                            " IReferred.Email," +
+
+                            " IReferrer.Id AS ReferrerIdentityId," +
+                            " IReferrer.FirstName1 AS RefFirstName1," +
+                            " IReferrer.FirstName2 AS RefFirstName2," +
+                            " IReferrer.LastName1 AS RefLastName1," +
+                            " IReferrer.LastName2 AS RefLastName2," +
+                            " CReferrer.PhonePrefix AS IPhonePrefix," +
+                            " IReferrer.Phone AS IPhone," +
+                            " IReferrer.Email AS IEmail" +
+
+                            " FROM [D-Referred] AS Referred" +
+
+                            " INNER JOIN [D-Identity] IReferred ON IReferred.Id = Referred.IdentityId AND IReferred.Status = 1" +
+                            " INNER JOIN [K-Country] CReferred ON CReferred.Id = IReferred.PhoneCountryId " +
+
+                            " INNER JOIN [J-IdentityAppUser] IAU ON IAU.AppUserId = Referred.AppUserId AND IAU.Status = 1" +
+                            " INNER JOIN [D-Identity] IReferrer ON IReferrer.Id = IAU.IdentityId" +
+                            " INNER JOIN [K-Country] CReferrer ON CReferrer.Id = IReferrer.PhoneCountryId";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
