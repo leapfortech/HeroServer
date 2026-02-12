@@ -14,55 +14,20 @@ namespace HeroServer
         {
             DateTime dt = DateTime.Now;
             Random rnd = new Random(dt.Millisecond);
-            long uid = 0;
-            uid += (uid << 5) + rnd.Next(0, 31);
-            uid += (uid << 7) + ((dt.Year - 2000L) & 0x7F);
-            uid += (uid << 6) + dt.Second;
-            uid += (uid << 4) + dt.Month;
-            uid += (uid << 10) + dt.Millisecond;
-            uid += (uid << 6) + dt.Minute;
-            uid += (uid << 5) + dt.Day;
-            uid += (uid << 3) + rnd.Next(0, 7);
-            uid += (uid << 5) + dt.Hour;
-            uid += (uid << 8) + type;
-            uid += (uid << 4) + rnd.Next(0, 15);
+            long uid = 0L;
+            uid = (uid << 5) + rnd.Next(0, 31);
+            uid = (uid << 7) + ((dt.Year - 2000L) & 0x7F);
+            uid = (uid << 6) + dt.Second;
+            uid = (uid << 4) + dt.Month;
+            uid = (uid << 10) + dt.Millisecond;
+            uid = (uid << 6) + dt.Minute;
+            uid = (uid << 5) + dt.Day;
+            uid = (uid << 3) + rnd.Next(0, 7);
+            uid = (uid << 5) + dt.Hour;
+            uid = (uid << 8) + type;
+            uid = (uid << 4) + rnd.Next(0, 15);
             return uid;
         }
-
-        public static long[] GetUidDetails(char type)
-        {
-            DateTime dt = DateTime.Now;
-            Random rnd = new Random(dt.Millisecond);
-            long uid = 0;
-            long[] uids = new long[12];
-            uids[0] = rnd.Next(0, 31);
-            uids[1] = (dt.Year - 2000L) & 0x7F;
-            uids[2] = dt.Second;
-            uids[3] = dt.Month;
-            uids[4] = dt.Millisecond;
-            uids[5] = dt.Minute;
-            uids[6] = dt.Day;
-            uids[7] = rnd.Next(0, 7);
-            uids[8] = dt.Hour;
-            uids[9] = type;
-            uids[10] = rnd.Next(0, 15);
-
-            uid += (uid << 5) + uids[0];
-            uid += (uid << 7) + uids[1];
-            uid += (uid << 6) + uids[2];
-            uid += (uid << 4) + uids[3];
-            uid += (uid << 10) + uids[4];
-            uid += (uid << 6) + uids[5];
-            uid += (uid << 5) + uids[6];
-            uid += (uid << 3) + uids[7];
-            uid += (uid << 5) + uids[8];
-            uid += (uid << 8) + uids[9];
-            uid += (uid << 4) + uids[10];
-            uids[11] = uid;
-
-            return uids;
-        }
-
 
         public static (byte[], byte[]) GetBobKeys(String alice)
         {
