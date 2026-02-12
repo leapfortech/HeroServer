@@ -64,7 +64,7 @@ namespace HeroServer
         {
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                await new BoardUserDB().UpdateStatusByWebSysUserId(boardUserFull.BoardUser.WebSysUserId, 0);
+                //await new BoardUserDB().UpdateStatusByWebSysUserId(boardUserFull.BoardUser.WebSysUserId, 0);
 
                 boardUserFull.BoardUser.BoardUserStatusId = 1;
                 if (!await new BoardUserDB().Update(boardUserFull.BoardUser))

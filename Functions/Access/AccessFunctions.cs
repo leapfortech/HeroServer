@@ -28,8 +28,8 @@ namespace HeroServer
                     if (webSysUser == null)
                     {
                         UserRecord userRecord = await FirebaseFunctions.Register(null, registerAppRequest.Email, registerAppRequest.Password, false);
-
                         createdAuthUserId = userRecord.Uid;
+
                         webSysUser = new WebSysUser(-1, userRecord.Uid, registerAppRequest.Email, registerAppRequest.Roles, registerAppRequest.PhoneCountryId, registerAppRequest.Phone, 1);
                         webSysUser.Id = await WebSysUserFunctions.Add(webSysUser);
                     }
@@ -160,35 +160,57 @@ namespace HeroServer
 
             BoardUser boardUser;
             bool emptyPassword = String.IsNullOrEmpty(registerBoardRequest.Password);
-            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+
+            String createdAuthUserId = null;
+            try
             {
-                if (webSysUser == null)
+                using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    registerBoardRequest.Password = emptyPassword ? FirebaseFunctions.GeneratePassword(10) : registerBoardRequest.Password;
+                    if (webSysUser == null)
+                    {
+                        registerBoardRequest.Password = emptyPassword ? FirebaseFunctions.GeneratePassword(10) : registerBoardRequest.Password;
 
-                    UserRecord userRecord = await FirebaseFunctions.Register(registerBoardRequest.GetCompleteName(), registerBoardRequest.Email, registerBoardRequest.Password, true);
+                        UserRecord userRecord = await FirebaseFunctions.Register(registerBoardRequest.GetCompleteName(), registerBoardRequest.Email, registerBoardRequest.Password, true);
+                        createdAuthUserId = userRecord.Uid;
 
-                    webSysUser = new WebSysUser(-1, userRecord.Uid, registerBoardRequest.Email, registerBoardRequest.Roles, registerBoardRequest.PhoneCountryId, registerBoardRequest.Phone, 1);
-                    webSysUser.Id = await WebSysUserFunctions.Add(webSysUser);
+                        webSysUser = new WebSysUser(-1, userRecord.Uid, registerBoardRequest.Email, registerBoardRequest.Roles, registerBoardRequest.PhoneCountryId, registerBoardRequest.Phone, 1);
+                        webSysUser.Id = await WebSysUserFunctions.Add(webSysUser);
+                    }
+                    else
+                    {
+                        await WebSysUserFunctions.AddRoles(webSysUser.Id, registerBoardRequest.Roles);
+
+                        if (registerBoardRequest.PhoneCountryId != -1)
+                            await WebSysUserFunctions.UpdatePhone(new PhoneRequest(webSysUser.Id, registerBoardRequest.PhoneCountryId, registerBoardRequest.Phone));
+                    }
+
+                    boardUser = new BoardUser(-1, webSysUser.Id, registerBoardRequest.Alias, 1);
+
+                    boardUser.Id = await BoardUserFunctions.Add(boardUser);
+
+                    await IdentityFunctions.RegisterByBoardUser(boardUser.Id, registerBoardRequest);
+
+                    scope.Complete();
                 }
-                else
-                {
-                    await WebSysUserFunctions.AddRoles(webSysUser.Id, registerBoardRequest.Roles);
 
-                    if (registerBoardRequest.PhoneCountryId != -1)
-                        await WebSysUserFunctions.UpdatePhone(new PhoneRequest(webSysUser.Id, registerBoardRequest.PhoneCountryId, registerBoardRequest.Phone));
-                }
-
-                await IdentityFunctions.RegisterByBoardUser(boardUserId, registerBoardRequest);
-
-                boardUser = new BoardUser(-1, webSysUser.Id, registerBoardRequest.Alias, 1);
-
-                boardUser.Id = await BoardUserFunctions.Add(boardUser);
-
-                scope.Complete();
+                await SendBoardUserEmail(boardUser, webSysUser.Email, registerBoardRequest.Password);
             }
+            catch
+            {
+                if (createdAuthUserId != null)
+                {
+                    try
+                    {
+                        await FirebaseAuth.DefaultInstance.DeleteUserAsync(createdAuthUserId);
+                    }
+                    catch
+                    {
 
-            await SendBoardUserEmail(boardUser, webSysUser.Email, registerBoardRequest.Password);
+                    }
+                }
+
+                throw;
+            }
 
             return boardUser.Id;
         }

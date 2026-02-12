@@ -49,17 +49,18 @@ namespace HeroServer
             String strCmd = $@"SELECT BU.Id, BU.WebSysUserId, BU.Alias, BU.CreateDateTime,
                                BU.UpdateDateTime, BU.BoardUserStatusId,
                                WSU.Id AS WSUId, WSU.Roles, WSU.AuthUserId, WSU.Email, WSU.PhoneCountryId,
-                               WSU.Phone, WSU.Pin, WSU.PinFails, WSU.PinDateTime, WSU.CreateDateTime,
-                               WSU.UpdateDateTime, WSU.WebSysUserStatusId
+                               WSU.Phone, WSU.Pin, WSU.PinFails, WSU.PinDateTime, WSU.CreateDateTime AS WSUCreate,
+                               WSU.UpdateDateTime AS WSUUpdate, WSU.WebSysUserStatusId
                                FROM {table} BU
                                INNER JOIN [D-WebSysUser] WSU ON WSU.Id = BU.WebSysUserId;
 
-                               SELECT I.Id, I.FirstName1, I.FirstName2, I.LastName1, I.LastName2,
+                               SELECT BU.Id AS BoardUserId,
+                               I.Id, I.FirstName1, I.FirstName2, I.LastName1, I.LastName2,
                                I.GenderId, I.BirthDate, I.OriginCountryId, I.OriginStateId,
-                               I.PhoneCountryId, I.Phone, I.Email, I.CreateDateTime, I.UpdateDateTime,
-                               I.Status
-                               FROM {table} BU INNER JOIN [J-IdentityBoardUser] JIBU ON JIBU.BoardUserId = BU.Id 
-                               AND JIBU.Status = 1
+                               I.PhoneCountryId, I.Phone, I.Email,
+                               I.CreateDateTime, I.UpdateDateTime, I.Status
+                               FROM {table} BU
+                               INNER JOIN [J-IdentityBoardUser] JIBU ON JIBU.BoardUserId = BU.Id AND JIBU.Status = 1
                                INNER JOIN [D-Identity] I ON I.Id = JIBU.IdentityId;";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
@@ -77,17 +78,25 @@ namespace HeroServer
                         BoardUser boardUser = GetBoardUser(reader);
                         WebSysUser webSysUser = WebSysUserDB.GetWebSysUser(reader);
                         webSysUser.Id = Convert.ToInt64(reader["WSUId"]);
+                        webSysUser.CreateDateTime = Convert.ToDateTime(reader["WSUCreate"]);
+                        webSysUser.UpdateDateTime = Convert.ToDateTime(reader["WSUUpdate"]);
 
                         boardUserFulls.Add(new BoardUserFull(boardUser, webSysUser, null));
                     }
 
                     await reader.NextResultAsync();
-                    int index = 0;
                     while (await reader.ReadAsync())
                     {
+                        long boardUserId = Convert.ToInt64(reader["BoardUserId"]);
                         Identity identity = IdentityDB.GetIdentity(reader);
-                        boardUserFulls[index].Identity = identity;
-                        index++;
+                        for (int i = 0; i < boardUserFulls.Count; i++)
+                        {
+                            if (boardUserFulls[i].BoardUser.Id == boardUserId)
+                            {
+                                boardUserFulls[i].Identity = identity;
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -298,7 +307,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('B'));
             DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, boardUser.WebSysUserId);
-            DBHelper.AddParam(command, "@Alias", SqlDbType.BigInt, boardUser.Alias);
+            DBHelper.AddParam(command, "@Alias", SqlDbType.VarChar, boardUser.Alias);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@BoardUserStatusId", SqlDbType.Int, boardUser.BoardUserStatusId);
