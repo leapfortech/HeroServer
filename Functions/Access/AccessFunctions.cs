@@ -220,7 +220,7 @@ namespace HeroServer
             Identity identity = await IdentityFunctions.GetByBoardUserId(boardUser.Id, 1);
 
             String subject = "Registro plataforma Héroes Migrantes";
-            String body = $"{identity.FirstName1 + " " + identity.LastName1}, fuiste registrado en la plataforma HpbBoard con las credenciales siguientes.<br><br>" +
+            String body = $"{identity.FirstName1 + " " + identity.LastName1}, fuiste registrado en la plataforma de Héroes Migrantes con las credenciales siguientes.<br><br>" +
                           $"Email: {eMail}<br>" +
                           $"Contraseña: {password}";
 
