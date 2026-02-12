@@ -40,14 +40,14 @@ namespace HeroServer
 
         private static ReferrerFull GetReferrerFull(SqlDataReader reader)
         {
-            return new ReferrerFull(Convert.ToInt64(reader["IdentityId"]),
-                                    reader["FirstName1"].ToString(),
-                                    reader["FirstName2"].ToString(),
-                                    reader["LastName1"].ToString(),
-                                    reader["LastName2"].ToString(),
-                                    reader["IPhonePrefix"].ToString(),
-                                    reader["IPhone"].ToString(),
-                                    reader["IEmail"].ToString());
+            return new ReferrerFull(Convert.ToInt64(reader["ReferrerIdentityId"]),
+                                    reader["ReferrerFirstName1"].ToString(),
+                                    reader["ReferrerFirstName2"].ToString(),
+                                    reader["ReferrerLastName1"].ToString(),
+                                    reader["ReferrerLastName2"].ToString(),
+                                    reader["ReferrerPhonePrefix"].ToString(),
+                                    reader["ReferrerPhone"].ToString(),
+                                    reader["ReferrerEmail"].ToString());
         }
 
         // GET
@@ -91,13 +91,13 @@ namespace HeroServer
                             " IReferred.Email," +
 
                             " IReferrer.Id AS ReferrerIdentityId," +
-                            " IReferrer.FirstName1 AS RefFirstName1," +
-                            " IReferrer.FirstName2 AS RefFirstName2," +
-                            " IReferrer.LastName1 AS RefLastName1," +
-                            " IReferrer.LastName2 AS RefLastName2," +
-                            " CReferrer.PhonePrefix AS IPhonePrefix," +
-                            " IReferrer.Phone AS IPhone," +
-                            " IReferrer.Email AS IEmail" +
+                            " IReferrer.FirstName1 AS ReferrerFirstName1," +
+                            " IReferrer.FirstName2 AS ReferrerFirstName2," +
+                            " IReferrer.LastName1 AS ReferrerLastName1," +
+                            " IReferrer.LastName2 AS ReferrerLastName2," +
+                            " CReferrer.PhonePrefix AS ReferrerPhonePrefix," +
+                            " IReferrer.Phone AS ReferrerPhone," +
+                            " IReferrer.Email AS ReferrerEmail" +
 
                             " FROM [D-Referred] AS Referred" +
 
