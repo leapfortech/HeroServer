@@ -82,17 +82,21 @@ namespace HeroServer
 
         public async Task<List<IdentityFull>> GetFullsByStatus(int status = -1)
         {
-            String strCmd = "SELECT Identty.Id, FirstName1, FirstName2,LastName1, LastName2, KGender.Name AS Gender," +
+            String strCmd = "SELECT Idt.Id, FirstName1, FirstName2,LastName1, LastName2, KGender.Name AS Gender," +
                              " BirthDate, KCountry.Name AS OriginCountry, KState.Name AS OriginState," +
                              " KPhoneCountry.PhonePrefix AS PhonePrefix, Phone, Email," +
-                             " Identty.CreateDateTime, Identty.UpdateDateTime, AppUser.AppUserStatusId, Identty.Status" +
-                            $" FROM {table} AS Identty" +
-                             " INNER JOIN [K-Gender] AS KGender ON (KGender.Id = Identty.GenderId)" +
-                             " INNER JOIN [K-Country] AS KCountry ON (KCountry.Id = Identty.OriginCountryId)" +
-                             " INNER JOIN [K-State] AS KState ON (KState.Id = Identty.OriginStateId)" +
-                             " INNER JOIN [K-Country] AS KPhoneCountry ON (KPhoneCountry.Id = Identty.PhoneCountryId)";
+                             " Idt.CreateDateTime, Idt.UpdateDateTime, AppUser.AppUserStatusId, Idt.Status" +
+                            $" FROM {table} AS Idt" +
+                             " INNER JOIN [K-Gender] AS KGender ON (KGender.Id = Idt.GenderId)" +
+                             " INNER JOIN [K-Country] AS KCountry ON (KCountry.Id = Idt.OriginCountryId)" +
+                             " INNER JOIN [K-State] AS KState ON (KState.Id = Idt.OriginStateId)" +
+                             " INNER JOIN [K-Country] AS KPhoneCountry ON (KPhoneCountry.Id = Idt.PhoneCountryId)" +
+
+                             " INNER JOIN [J-IdentityAppUser] AS IAU ON IAU.IdentityId = Idt.Id AND IAU.Status = 1" +
+                             " INNER JOIN [D-AppUser] AS AppUser ON AppUser.Id = IAU.AppUserId";
+
             if (status != -1)
-                strCmd += " WHERE Identty.Status = @Status";
+                strCmd += " WHERE Idt.Status = @Status";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -224,16 +228,16 @@ namespace HeroServer
 
         public async Task<IdentityFull> GetFullByAppUserId(long appUserId, int status = 1)
         {
-            String strCmd =  "SELECT Identty.Id, J.AppUserId, FirstName1, FirstName2, LastName1, LastName2," +
+            String strCmd = "SELECT Idt.Id, J.AppUserId, FirstName1, FirstName2, LastName1, LastName2," +
                              " KGender.Name AS Gender, BirthDate, KCountry.Name AS OriginCountry, KState.Name AS OriginState," +
                              " KPhoneCountry.PhonePrefix AS PhonePrefix, Phone, Email," +
-                             " Identty.CreateDateTime, Identty.UpdateDateTime, Identty.Status" +
-                            $" FROM {table} AS Identty" +
-                             " INNER JOIN [D-IdentityAppUser] AS J ON J.IdentityId = Identty.Id" +
-                             " INNER JOIN [K-Gender] AS KGender ON KGender.Id = Identty.GenderId" +
-                             " INNER JOIN [K-Country] AS KCountry ON KCountry.Id = Identty.OriginCountryId" +
-                             " INNER JOIN [K-State] AS KState ON KState.Id = Identty.OriginStateId" +
-                             " INNER JOIN [K-Country] AS KPhoneCountry ON KPhoneCountry.Id = Identty.PhoneCountryId" +
+                             " Idt.CreateDateTime, Idt.UpdateDateTime, Idt.Status" +
+                            $" FROM {table} AS Idt" +
+                             " INNER JOIN [D-IdentityAppUser] AS J ON J.IdentityId = Idt.Id" +
+                             " INNER JOIN [K-Gender] AS KGender ON KGender.Id = Idt.GenderId" +
+                             " INNER JOIN [K-Country] AS KCountry ON KCountry.Id = Idt.OriginCountryId" +
+                             " INNER JOIN [K-State] AS KState ON KState.Id = Idt.OriginStateId" +
+                             " INNER JOIN [K-Country] AS KPhoneCountry ON KPhoneCountry.Id = Idt.PhoneCountryId" +
                              " WHERE J.AppUserId = @AppUserId AND J.Status = @Status";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
