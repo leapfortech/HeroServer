@@ -247,7 +247,7 @@ namespace HeroServer
             UserRecordArgs userRecordArgs = new UserRecordArgs()
             {
                 Uid = webSysUser.AuthUserId,
-                Password = passwordRequest.Password
+                Password = passwordRequest.NewPassword
             };
 
             try

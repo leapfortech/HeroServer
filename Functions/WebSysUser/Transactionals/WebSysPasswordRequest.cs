@@ -5,16 +5,16 @@ namespace HeroServer
     public class WebSysPasswordRequest
     {
         public long WebSysUserId { get; set; }
-        public String Password { get; set; }
+        public String NewPassword { get; set; }
 
         public WebSysPasswordRequest()
         {
         }
 
-        public WebSysPasswordRequest(long webSysUserId, String password)
+        public WebSysPasswordRequest(long webSysUserId, String newPassword)
         {
             WebSysUserId = webSysUserId;
-            Password = password;
+            NewPassword = newPassword;
         }
     }
 }
