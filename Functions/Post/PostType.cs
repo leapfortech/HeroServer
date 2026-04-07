@@ -1,6 +1,6 @@
 ﻿namespace HeroServer
 {
-    public enum PostSubtype
+    public enum PostType
     {
         Tale = 1,
         Recipe = 2,

@@ -215,9 +215,9 @@ namespace HeroServer
                 await DeleteReactionByPostId(id);
                 await DeleteLikeByPostId(id);
 
-                long postSubtypeId = await new PostDB().GetPostSubtypeId(id);
+                long postTypeId = await new PostDB().GetPostTypeId(id);
 
-                switch (postSubtypeId)
+                switch (postTypeId)
                 {
                     case 1: await TaleFunctions.DeleteByPostId(id); break;
                     case 2: await RecipeFunctions.DeleteByPostId(id); break;

@@ -15,7 +15,7 @@ namespace HeroServer
         {
             return new Post(Convert.ToInt64(reader["Id"]),
                             Convert.ToInt64(reader["AppUserId"]),
-                            Convert.ToInt64(reader["PostSubtypeId"]),
+                            Convert.ToInt64(reader["PostTypeId"]),
                             Convert.ToInt64(reader["CountryId"]),
                             Convert.ToInt64(reader["StateId"]),
                             reader["Title"].ToString(),
@@ -36,7 +36,7 @@ namespace HeroServer
             return new PostFull(Convert.ToInt64(reader["PostId"]),
                                 Convert.ToInt64(reader["AppUserId"]),
                                 reader["AppUserAlias"].ToString(),
-                                Convert.ToInt64(reader["PostSubtypeId"]),
+                                Convert.ToInt64(reader["PostTypeId"]),
                                 Convert.ToInt64(reader["PostCountryId"]),
                                 Convert.ToInt64(reader["PostStateId"]),
                                 reader["Title"].ToString(),
@@ -104,9 +104,9 @@ namespace HeroServer
             return post;
         }
 
-        public async Task<long> GetPostSubtypeId(long id)
+        public async Task<long> GetPostTypeId(long id)
         {
-            String strCmd = $"SELECT PostSubtypeId FROM {table} WHERE Id = @Id";
+            String strCmd = $"SELECT PostTypeId FROM {table} WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -120,7 +120,7 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                        postSubtypeId = Convert.ToInt64(reader["PostSubtypeId"]);
+                        postSubtypeId = Convert.ToInt64(reader["PostTypeId"]);
                     }
                 }
             }
@@ -162,8 +162,8 @@ namespace HeroServer
             if (request.AppUserId != -1)
                 where.Add("Post.AppUserId = @AppUserId");
 
-            if (request.PostSubtypeId != -1)
-                where.Add("Post.PostSubtypeId = @PostSubtypeId");
+            if (request.PostTypeId != -1)
+                where.Add("Post.PostTypeId = @PostTypeId");
 
             if (request.CountryId != -1)
                 where.Add("Post.CountryId = @CountryId");
@@ -202,7 +202,7 @@ namespace HeroServer
                             " Post.Id AS PostId," +
                             " Post.AppUserId," +
                             " AppUser.Alias AS AppUserAlias," +
-                            " Post.PostSubtypeId," +
+                            " Post.PostTypeId," +
                             " Post.CountryId AS PostCountryId," +
                             " Post.StateId AS PostStateId," +
                             " Post.Title," +
@@ -230,8 +230,8 @@ namespace HeroServer
                 if(request.AppUserId != -1)
                     DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, request.AppUserId);
 
-                if (request.PostSubtypeId != -1)
-                    DBHelper.AddParam(command, "@PostSubtypeId", SqlDbType.BigInt, request.PostSubtypeId);
+                if (request.PostTypeId != -1)
+                    DBHelper.AddParam(command, "@PostTypeId", SqlDbType.BigInt, request.PostTypeId);
 
                 if (request.CountryId != -1)
                     DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, request.CountryId);
@@ -279,15 +279,15 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(Post post)
         {
-            String strCmd = $"INSERT INTO {table}(Id, AppUserId, PostSubtypeId, CountryId, StateId, Title, Summary, Description, ImageCount, LikeCount, PublicationDateTime, ApprovalDateTime, ExpirationDateTime, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(Id, AppUserId, PostTypeId, CountryId, StateId, Title, Summary, Description, ImageCount, LikeCount, PublicationDateTime, ApprovalDateTime, ExpirationDateTime, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @AppUserId, @PostSubtypeId, @CountryId, @StateId, @Title, @Summary, @Description, @ImageCount, @LikeCount, @PublicationDateTime, @ApprovalDateTime, @ExpirationDateTime, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@Id, @AppUserId, @PostTypeId, @CountryId, @StateId, @Title, @Summary, @Description, @ImageCount, @LikeCount, @PublicationDateTime, @ApprovalDateTime, @ExpirationDateTime, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('P'));
             DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, post.AppUserId);
-            DBHelper.AddParam(command, "@PostSubtypeId", SqlDbType.BigInt, post.PostSubtypeId);
+            DBHelper.AddParam(command, "@PostTypeId", SqlDbType.BigInt, post.PostTypeId);
             DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, post.CountryId);
             DBHelper.AddParam(command, "@StateId", SqlDbType.BigInt, post.StateId);
             DBHelper.AddParam(command, "@Title", SqlDbType.VarChar, post.Title);
@@ -312,12 +312,12 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(Post post)
         {
-            String strCmd = $"UPDATE {table} SET AppUserId = @AppUserId, PostSubtypeId = @PostSubtypeId, CountryId = @CountryId, StateId = @StateId, Title = @Title, Summary = @Summary, Description = @Description, ImageCount = @ImageCount, LikeCount = @LikeCount, PublicationDateTime = @PublicationDateTime, ApprovalDateTime = @ApprovalDateTime, ExpirationDateTime = @ExpirationDateTime, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET AppUserId = @AppUserId, PostTypeId = @PostTypeId, CountryId = @CountryId, StateId = @StateId, Title = @Title, Summary = @Summary, Description = @Description, ImageCount = @ImageCount, LikeCount = @LikeCount, PublicationDateTime = @PublicationDateTime, ApprovalDateTime = @ApprovalDateTime, ExpirationDateTime = @ExpirationDateTime, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, post.AppUserId);
-            DBHelper.AddParam(command, "@PostSubtypeId", SqlDbType.BigInt, post.PostSubtypeId);
+            DBHelper.AddParam(command, "@PostTypeId", SqlDbType.BigInt, post.PostTypeId);
             DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, post.CountryId);
             DBHelper.AddParam(command, "@StateId", SqlDbType.BigInt, post.StateId);
             DBHelper.AddParam(command, "@Title", SqlDbType.VarChar, post.Title);

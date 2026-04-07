@@ -118,7 +118,7 @@ namespace HeroServer
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                registerTreatmentRequest.Post.PostSubtypeId = (long)PostSubtype.Treatment;
+                registerTreatmentRequest.Post.PostTypeId = (long)PostType.Treatment;
                 registerTreatmentRequest.Treatment.PostId = await PostFunctions.Register(registerTreatmentRequest);
 
                 registerTreatmentRequest.Treatment.Status = 1;

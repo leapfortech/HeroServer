@@ -118,7 +118,7 @@ namespace HeroServer
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                registerPuzzleRequest.Post.PostSubtypeId = (long)PostSubtype.Puzzle;
+                registerPuzzleRequest.Post.PostTypeId = (long)PostType.Puzzle;
 
                 registerPuzzleRequest.Puzzle.PostId = await PostFunctions.Register(registerPuzzleRequest);
 

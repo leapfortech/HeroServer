@@ -6,7 +6,7 @@ namespace HeroServer
     {
         public long Id { get; set; }
         public long AppUserId { get; set; }
-        public long PostSubtypeId { get; set; }
+        public long PostTypeId { get; set; }
         public long CountryId { get; set; }
         public long StateId { get; set; }
         public String Title { get; set; }
@@ -23,14 +23,14 @@ namespace HeroServer
 
         public Post() { }
 
-        public Post(long id, long appUserId, long postSubtypeId, long countryId,
+        public Post(long id, long appUserId, long postTypeId, long countryId,
                     long stateId, String title, String summary, String description, int imageCount,
                     int likeCount, DateTime publicationDateTime, DateTime? approvalDateTime,
                     DateTime? expirationDateTime, DateTime createDateTime, DateTime updateDateTime, int status)
         {
             Id = id;
             AppUserId = appUserId;
-            PostSubtypeId = postSubtypeId;
+            PostTypeId = postTypeId;
             CountryId = countryId;
             StateId = stateId;
             Title = title;

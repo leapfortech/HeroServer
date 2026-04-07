@@ -118,7 +118,7 @@ namespace HeroServer
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                registerTaleRequest.Post.PostSubtypeId = (long)PostSubtype.Tale;
+                registerTaleRequest.Post.PostTypeId = (long)PostType.Tale;
                 registerTaleRequest.Post.Id = await PostFunctions.Register(registerTaleRequest);
 
                 if (registerTaleRequest.Tale == null)

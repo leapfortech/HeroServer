@@ -118,7 +118,7 @@ namespace HeroServer
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                registerRadioRequest.Post.PostSubtypeId = (long)PostSubtype.Radio;
+                registerRadioRequest.Post.PostTypeId = (long)PostType.Radio;
                 registerRadioRequest.Post.Id = await PostFunctions.Register(registerRadioRequest);
 
                 if (registerRadioRequest.Radio == null)
