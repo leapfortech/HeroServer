@@ -5,7 +5,7 @@ namespace HeroServer
     public class Reaction
     {
         public long Id { get; set; }
-        public long ReactionTypeId { get; set; }
+        public long ReactionPhraseId { get; set; }
         public long PostId { get; set; }
         public long AppUserId { get; set; }
         public DateTime CreateDateTime { get; set; }
@@ -14,11 +14,11 @@ namespace HeroServer
 
         public Reaction() { }
 
-        public Reaction(long id, long reactionTypeId, long postId, long appUserId, DateTime createDateTime,
+        public Reaction(long id, long reactionPhraseId, long postId, long appUserId, DateTime createDateTime,
                         DateTime updateDateTime, int status)
         {
             Id = id;
-            ReactionTypeId = reactionTypeId;
+            ReactionPhraseId = reactionPhraseId;
             PostId = postId;
             AppUserId = appUserId;
             CreateDateTime = createDateTime;

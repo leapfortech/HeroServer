@@ -14,7 +14,7 @@ namespace HeroServer
         private static Reaction GetReaction(SqlDataReader reader)
         {
             return new Reaction(Convert.ToInt64(reader["Id"]),
-                                Convert.ToInt64(reader["ReactionTypeId"]),
+                                Convert.ToInt64(reader["ReactionPhraseId"]),
                                 Convert.ToInt64(reader["PostId"]),
                                 Convert.ToInt64(reader["AppUserId"]),
                                 Convert.ToDateTime(reader["CreateDateTime"]),
@@ -71,13 +71,13 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(Reaction reaction)
         {
-            String strCmd = $"INSERT INTO {table}(ReactionTypeId, PostId, AppUserId, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(ReactionPhraseId, PostId, AppUserId, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@ReactionTypeId, @PostId, @AppUserId, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@ReactionPhraseId, @PostId, @AppUserId, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@ReactionTypeId", SqlDbType.BigInt, reaction.ReactionTypeId);
+            DBHelper.AddParam(command, "@ReactionPhraseId", SqlDbType.BigInt, reaction.ReactionPhraseId);
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, reaction.PostId);
             DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, reaction.AppUserId);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
@@ -94,11 +94,11 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(Reaction reaction)
         {
-            String strCmd = $"UPDATE {table} SET ReactionTypeId = @ReactionTypeId, PostId = @PostId, AppUserId = @AppUserId, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET ReactionPhraseId = @ReactionPhraseId, PostId = @PostId, AppUserId = @AppUserId, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@ReactionTypeId", SqlDbType.BigInt, reaction.ReactionTypeId);
+            DBHelper.AddParam(command, "@ReactionPhraseId", SqlDbType.BigInt, reaction.ReactionPhraseId);
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, reaction.PostId);
             DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, reaction.AppUserId);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
