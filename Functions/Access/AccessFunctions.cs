@@ -50,12 +50,8 @@ namespace HeroServer
 
                     await UpdateCSToken(appUserId, webSysUser.Email);
 
-                    registerAppRequest.IdentityRegister.Identity.PhoneCountryId = registerAppRequest.PhoneCountryId;
-                    registerAppRequest.IdentityRegister.Identity.Phone = registerAppRequest.Phone;
-                    registerAppRequest.IdentityRegister.Identity.Email = registerAppRequest.Email;
-
-                    await IdentityFunctions.RegisterByAppUser(appUserId, registerAppRequest.IdentityRegister);
-                    await AddressFunctions.RegisterByAppUser(appUserId, registerAppRequest.Address);
+                    // Onboarding = 1
+                    await AppUserFunctions.UpdateOption(appUserId, 0, 1);
 
                     scope.Complete();
                 }
@@ -95,6 +91,30 @@ namespace HeroServer
                 await Task.Delay(1000);
             }
             return appUserMails.Count;
+        }
+
+        // Onboarding
+        public static async Task<OnboardingResponse> Onboarding(OnboardingRequest onboardingRequest)
+        {
+            OnboardingResponse onboardingResponse = new OnboardingResponse();
+            
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+
+                onboardingResponse.IdentityId = await IdentityFunctions.RegisterByAppUser(onboardingRequest.AppUserId, onboardingRequest.Identity);
+                onboardingResponse.AddressId = await AddressFunctions.RegisterByAppUser(onboardingRequest.AppUserId, onboardingRequest.Address);
+
+                if (onboardingRequest.Portrait != null && onboardingRequest.Portrait.Length > 0)
+                    await AppUserFunctions.RegisterPortrait(onboardingRequest.AppUserId, onboardingRequest.Portrait);
+
+
+                // Onboarding = 2
+                await AppUserFunctions.UpdateOption(onboardingRequest.AppUserId, 0, 2);
+                
+                scope.Complete();
+            }
+
+            return onboardingResponse;
         }
 
         // Login
@@ -142,7 +162,7 @@ namespace HeroServer
         public static async Task<LoginAppInfo> GetLoginAppInfo(long appUserId, long webSysUserId)
         {
             LoginAppInfo loginAppInfo = await new LoginDB().GetLoginAppInfo(appUserId, webSysUserId);
-            loginAppInfo.Portrait = await IdentityFunctions.GetPortraitByAppUserId(appUserId);
+            loginAppInfo.Portrait = await AppUserFunctions.GetPortrait(appUserId);
 
             return loginAppInfo;
         }

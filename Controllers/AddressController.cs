@@ -52,6 +52,20 @@ namespace HeroServer.Controllers
             }
         }
 
+        //PUT services/address/City
+        [HttpPut("City")]
+        public async Task<ActionResult<long>> UpdateCity([FromBody] AddressCity addressCity)
+        {
+            try
+            {
+                return Ok(await AddressFunctions.UpdateCity(addressCity));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // PUT services/address/ByAppUser?appUserId=2
         [HttpPut("ByAppUser")]
         public async Task<ActionResult<long>> UpdateByAppUser([FromQuery] String appUserId, [FromBody] Address address)

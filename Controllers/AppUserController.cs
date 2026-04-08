@@ -95,6 +95,13 @@ namespace HeroServer.Controllers
             }
         }
 
+        // GET services/appUser/Portrait?appUserId=1
+        [HttpGet("Portrait")]
+        public async Task<ActionResult<String>> GetPortrait([FromQuery] String appUserId)
+        {
+            return Ok(await AppUserFunctions.GetPortrait(Convert.ToInt64(appUserId)));
+        }
+
         // POST services/appUser/ValidateAlias
         [HttpPost("ValidateAlias")]
         public async Task<ActionResult<AliasResponse>> ValidateAlias([FromBody] AliasRequest aliasRequest)
@@ -189,6 +196,21 @@ namespace HeroServer.Controllers
             try
             {
                 return await AppUserFunctions.UpdateReferred(Convert.ToInt64(id), referredCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // PUT services/appUser/Portrait?appUserId=3
+        [HttpPut("Portrait")]
+        public async Task<ActionResult> UpdatePortrait([FromQuery] String appUserId, [FromBody] String portrait)
+        {
+            try
+            {
+                await AppUserFunctions.UpdatePortrait(Convert.ToInt64(appUserId), portrait);
+                return Ok();
             }
             catch (Exception ex)
             {

@@ -64,6 +64,20 @@ namespace HeroServer.Controllers
             }
         }
 
+        // POST services/access/Onboarding
+        [HttpPost("Onboarding")]
+        public async Task<ActionResult<OnboardingResponse>> Onboarding([FromBody] OnboardingRequest onboardingRequest)
+        {
+            try
+            {
+                return Ok(await AccessFunctions.Onboarding(onboardingRequest));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // POST services/access/RegisterCSTokens
         //[HttpPost("RegisterCSTokens")]
         //public async Task<ActionResult<int>> RegisterCSTokens()

@@ -78,10 +78,31 @@ namespace HeroServer
             return new AliasResponse(await new AppUserDB().GetMailByAlias(aliasRequest.Alias, 1));
         }
 
+        public static async Task<String> GetPortrait(long appUserId)
+        {
+            String portrait = null;
+
+            byte[] portraitImg = await StorageFunctions.ReadFile($"user{appUserId:D08}", $"prt{appUserId:D08}", "jpg");
+
+            if (portraitImg != null)
+                portrait = Convert.ToBase64String(portraitImg);
+
+            return portrait;
+        }
+
         // ADD
         public static async Task<long> Add(AppUser appUser)
         {
             return await new AppUserDB().Add(appUser);
+        }
+
+        public static async Task RegisterPortrait(long appUserId, String portrait)
+        {
+            String containerName = "user" + appUserId.ToString("D08");
+            await StorageFunctions.CreateContainer(containerName);
+
+            if (portrait != null && portrait.Length > 0)
+                await StorageFunctions.UpdateFile(containerName, "prt" + appUserId, "jpg", Convert.FromBase64String(portrait));
         }
 
         // UPDATE
@@ -110,6 +131,22 @@ namespace HeroServer
             return await new AppUserDB().UpdateOptions(id, options);
         }
 
+        public static async Task<long> UpdateOption(long id, int index, int newStatus)
+        {
+            AppUser appUser = await new AppUserDB().GetById(id);
+
+            long options = appUser.Options;
+
+            long power = (long)Math.Pow(10, index);
+            long currentStatus = (options / power) % 10;
+
+            long updatedOptions = options + (newStatus - currentStatus) * power;
+
+            await new AppUserDB().UpdateOptions(id, updatedOptions);
+
+            return updatedOptions;
+        }
+
         public static async Task<bool> UpdateStatus(long id, int status)
         {
             return await new AppUserDB().UpdateStatus(id, status);
@@ -130,6 +167,22 @@ namespace HeroServer
             }
 
             return referred != null ? referred.AppUserId : -1;
+        }
+
+        public static async Task UpdatePortrait(long appUserId, String portrait)
+        {
+            if (String.IsNullOrEmpty(portrait))
+                throw new ArgumentException("No Data to Update.");
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                String id = appUserId.ToString("D08");
+                String containerName = "user" + id;
+
+                await StorageFunctions.UpdateCFile(containerName, "prt" + id, "jpg", Convert.FromBase64String(portrait));
+
+                scope.Complete();
+            }
         }
 
         // DELETE

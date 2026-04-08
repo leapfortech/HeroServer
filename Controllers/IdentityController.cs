@@ -81,13 +81,6 @@ namespace HeroServer.Controllers
             }
         }
 
-        // GET services/identity/PortraitByAppUserId?appUserId=1
-        [HttpGet("PortraitByAppUserId")]
-        public async Task<ActionResult<String>> GetPortraitByAppUserId([FromQuery]String appUserId)
-        {
-            return Ok(await IdentityFunctions.GetPortraitByAppUserId(Convert.ToInt64(appUserId)));
-        }
-
         // GET services/identity/AllByAppUserId?appUserId=1&status=0
         [HttpGet("AllByAppUserId")]
         public async Task<ActionResult<List<Identity>>> GetAllByAppUserId([FromQuery] String appUserId, [FromQuery] String status = "1")
@@ -109,13 +102,13 @@ namespace HeroServer.Controllers
             }
         }
 
-        //PUT services/identity/ByAppUser?appUserId=2
-        [HttpPut("ByAppUser")]
-        public async Task<ActionResult<long>> UpdateByAppUser([FromQuery] String appUserId, [FromBody] Identity identity)
+        //PUT services/identity/Personal
+        [HttpPut("Personal")]
+        public async Task<ActionResult<long>> UpdatePersonal([FromBody] IdentityPersonal identityPersonal)
         {
             try
             {
-                return Ok(await IdentityFunctions.UpdateByAppUser(Convert.ToInt64(appUserId), identity));
+                return Ok(await IdentityFunctions.UpdatePersonal(identityPersonal));
             }
             catch (Exception ex)
             {
@@ -123,14 +116,27 @@ namespace HeroServer.Controllers
             }
         }
 
-        // PUT services/identity/Portrait?appUserId=3
-        [HttpPut("Portrait")]
-        public async Task<ActionResult> UpdatePortrait([FromQuery]String appUserId, [FromBody]String portrait)
+        //PUT services/identity/Origin
+        [HttpPut("Origin")]
+        public async Task<ActionResult<long>> UpdateOrigin([FromBody] IdentityOrigin identityOrigin)
         {
             try
             {
-                await IdentityFunctions.UpdatePortrait(Convert.ToInt64(appUserId), portrait);
-                return Ok();
+                return Ok(await IdentityFunctions.UpdateOrigin(identityOrigin));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //PUT services/identity/ByAppUser?appUserId=2
+        [HttpPut("ByAppUser")]
+        public async Task<ActionResult<long>> UpdateByAppUser([FromQuery] String appUserId, [FromBody] Identity identity)
+        {
+            try
+            {
+                return Ok(await IdentityFunctions.UpdateByAppUser(Convert.ToInt64(appUserId), identity));
             }
             catch (Exception ex)
             {

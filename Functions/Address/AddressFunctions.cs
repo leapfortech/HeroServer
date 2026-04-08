@@ -63,6 +63,26 @@ namespace HeroServer
             return addressId;
         }
 
+        public static async Task<long> UpdateCity(AddressCity addressCity)
+        {
+            long id = -1;
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                Address address = await new AddressDB().GetById(addressCity.AddressId);
+
+                address.CountryId = addressCity.CountryId != -1 ? addressCity.CountryId : address.CountryId;
+                address.StateId = addressCity.StateId != -1 ? addressCity.StateId : address.StateId;
+                address.CityId = addressCity.CityId != -1 ? addressCity.CityId : address.CityId;
+
+                id = await RegisterByAppUser(addressCity.AppUserId, address);
+
+                scope.Complete();
+            }
+
+            return id;
+        }
+
         public static async Task<long> UpdateByAppUser(long appUserId, Address address)
         {
             long id = -1;

@@ -37,18 +37,6 @@ namespace HeroServer
             return await new IdentityDB().GetById(identityId);
         }
 
-        public static async Task<String> GetPortraitByAppUserId(long appUserId)
-        {
-            String portrait = null;
-            
-            byte[] portraitImg = await StorageFunctions.ReadFile($"user{appUserId:D08}", $"prt{appUserId:D08}", "jpg");
-
-            if (portraitImg != null)
-                portrait = Convert.ToBase64String(portraitImg);
-
-            return portrait;
-        }
-
         public static async Task<IdentityFull> GetFullByAppUserId(long appUserId, int status)
         {
             return await new IdentityDB().GetFullByAppUserId(appUserId, status);
@@ -60,7 +48,7 @@ namespace HeroServer
         }
 
         // REGISTER
-        public static async Task<long> RegisterByAppUser(long appUserId, IdentityRegister identityRegister)
+        public static async Task<long> RegisterByAppUser(long appUserId, Identity identity)
         {
             long identityId;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -72,18 +60,11 @@ namespace HeroServer
                     await new IdentityDB().UpdateStatus(identityAppUser.AppUserId, 1, 0);
                 }
 
-                identityRegister.Identity.Status = 1;
-                identityId = await new IdentityDB().Add(identityRegister.Identity);
+                identity.Status = 1;
+                identityId = await new IdentityDB().Add(identity);
 
                 identityAppUser = new IdentityAppUser(-1, appUserId, identityId, DateTime.Now, DateTime.Now, 1);
                 identityAppUser.Id = await new IdentityAppUserDB().Add(identityAppUser);
-
-                // Portrait
-                String containerName = "user" + appUserId.ToString("D08");
-                await StorageFunctions.CreateContainer(containerName);
-
-                if (identityRegister.Portrait.Length > 0)
-                    await StorageFunctions.UpdateFile(containerName, "prt" + appUserId, "jpg", Convert.FromBase64String(identityRegister.Portrait));
 
                 scope.Complete();
             }
@@ -136,6 +117,50 @@ namespace HeroServer
             return identityId;
         }
 
+        public static async Task<long> UpdatePersonal(IdentityPersonal identityPersonal)
+        {
+            long id = -1;
+            DateTime sqlMinDate = new DateTime(1753, 1, 1);
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                Identity identity = await new IdentityDB().GetById(identityPersonal.IdentityId);
+
+                identity.FirstName1 = identityPersonal.FirstName1 != null ? identityPersonal.FirstName1 : identity.FirstName1;
+                identity.FirstName2 = identityPersonal.FirstName2 != null ? identityPersonal.FirstName2 : identity.FirstName2;
+                identity.LastName1 = identityPersonal.LastName1 != null ? identityPersonal.LastName1 : identity.LastName1;
+                identity.LastName2 = identityPersonal.LastName2 != null ? identityPersonal.LastName2 : identity.LastName2;
+                identity.BirthDate = identityPersonal.BirthDate != sqlMinDate ? identityPersonal.BirthDate : identity.BirthDate;
+                identity.GenderId = identityPersonal.GenderId != -1 ? identityPersonal.GenderId : identity.GenderId;
+
+                id = await RegisterByAppUser(identityPersonal.AppUserId, identity);
+
+                scope.Complete();
+            }
+
+            return id;
+        }
+
+        public static async Task<long> UpdateOrigin(IdentityOrigin identityOrigin)
+        {
+            long id = -1;
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                Identity identity = await new IdentityDB().GetById(identityOrigin.IdentityId);
+
+                identity.OriginCountryId = identityOrigin.OriginCountryId != -1 ? identityOrigin.OriginCountryId : identity.OriginCountryId;
+                identity.OriginStateId = identityOrigin.OriginStateId != -1 ? identityOrigin.OriginStateId : identity.OriginStateId;
+                //identity.OriginCityId = identityOrigin.OriginCityId != -1 ? identityOrigin.OriginCityId : identity.OriginCityId;
+
+                id = await RegisterByAppUser(identityOrigin.AppUserId, identity);
+
+                scope.Complete();
+            }
+
+            return id;
+        }
+
         public static async Task<long> UpdateByAppUser(long appUserId, Identity identity)
         {
             long id = -1;
@@ -182,22 +207,6 @@ namespace HeroServer
             }
 
             return id;
-        }
-
-        public static async Task UpdatePortrait(long appUserId, String portrait)
-        {
-            if (String.IsNullOrEmpty(portrait))
-                throw new ArgumentException("No Data to Update.");
-
-            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {
-                String id = appUserId.ToString("D08");
-                String containerName = "user" + id;
-
-                await StorageFunctions.UpdateCFile(containerName, "prt" + id, "jpg", Convert.FromBase64String(portrait));
-
-                scope.Complete();
-            }
         }
 
         public static async Task<bool> UpdateStatus(long id, int status)
