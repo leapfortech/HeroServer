@@ -23,6 +23,15 @@ namespace HeroServer
                             // Address AppUser
                             "SELECT Adr.* FROM [D-Address] AS Adr INNER JOIN [J-AddressAppUser] AS AdrApp ON (AdrApp.AddressId = Adr.Id) WHERE AdrApp.AppUserId = @AppUserId AND AdrApp.Status = 1; " +
 
+                            // InterestLocality
+                            "SELECT * FROM [D-Locality] WHERE AppUserId = @AppUserId AND LocalityType = 1 AND Status = 1; " +
+
+                            // CurrentLocality
+                            "SELECT * FROM [D-Locality] WHERE AppUserId = @AppUserId AND LocalityType = 2 AND Status = 1; " +
+
+                            // Card
+                            "SELECT * FROM [D-Card] WHERE AppUserId = @AppUserId AND Status = 1; " +
+
                             // Card
                             "SELECT * FROM [D-Card] WHERE AppUserId = @AppUserId AND Status = 1; " +
 
@@ -53,6 +62,14 @@ namespace HeroServer
                     reader.NextResult();
                     if (await reader.ReadAsync())
                         loginAppInfo.Address = AddressDB.GetAddress(reader);
+
+                    reader.NextResult();
+                    if (await reader.ReadAsync())
+                        loginAppInfo.InterestLocality = LocalityDB.GetLocality(reader);
+
+                    reader.NextResult();
+                    if (await reader.ReadAsync())
+                        loginAppInfo.CurrentLocality = LocalityDB.GetLocality(reader);
 
                     reader.NextResult();
                     if (await reader.ReadAsync())

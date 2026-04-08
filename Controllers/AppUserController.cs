@@ -116,6 +116,20 @@ namespace HeroServer.Controllers
             }
         }
 
+        // POST services/appUser/RegisterLocality
+        [HttpPost("RegisterLocality")]
+        public async Task<ActionResult<LocalityResponse>> RegisterLocality([FromBody] LocalityRequest localityRequest)
+        {
+            try
+            {
+                return Ok(await AppUserFunctions.RegisterLocality(localityRequest));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // PUT services/appUser
         [HttpPut]
         public async Task<ActionResult> Update([FromBody]AppUser appUser)
@@ -210,6 +224,24 @@ namespace HeroServer.Controllers
             try
             {
                 await AppUserFunctions.UpdatePortrait(Convert.ToInt64(appUserId), portrait);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // PUT services/appUser/UpdateLocality
+        [HttpPut("UpdateLocality")]
+        public async Task<ActionResult<long>> UpdateLocality([FromBody] Locality locality)
+        {
+            try
+            {
+                //if (!await FirebaseFunctions.AuthorizeAppUser(blcConnString, HttpContext, Convert.ToInt32(id), "AppUser.UpdateOptions"))
+                //    return Unauthorized();
+
+                await AppUserFunctions.UpdateLocality(locality);
                 return Ok();
             }
             catch (Exception ex)

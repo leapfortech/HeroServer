@@ -9,6 +9,8 @@ namespace HeroServer
         public Identity Identity { get; set; }
         public Address Address { get; set; }
         public String Portrait { get; set; }
+        public Locality InterestLocality { get; set; }
+        public Locality CurrentLocality { get; set; }
         public Card Card { get; set; }
         public List<Notification> Notifications { get; set; }
 
@@ -18,13 +20,15 @@ namespace HeroServer
         }
 
         public LoginAppInfo(ReferredCount referredCount, Identity identity, Address address, String portrait,
-                            Card card, List<Notification> notifications)
+                            Locality interestLocality, Locality currentLocality, Card card, List<Notification> notifications)
         {
             ReferredCount = referredCount;
             Identity = identity;
             Address = address;
             Portrait = portrait;
             Card = card;
+            InterestLocality = interestLocality;
+            CurrentLocality = currentLocality;
             Notifications = notifications;
         }
     }

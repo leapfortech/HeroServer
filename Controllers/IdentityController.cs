@@ -136,7 +136,7 @@ namespace HeroServer.Controllers
         {
             try
             {
-                return Ok(await IdentityFunctions.UpdateByAppUser(Convert.ToInt64(appUserId), identity));
+                return Ok(await IdentityFunctions.UpdateByAppUserId(Convert.ToInt64(appUserId), identity));
             }
             catch (Exception ex)
             {

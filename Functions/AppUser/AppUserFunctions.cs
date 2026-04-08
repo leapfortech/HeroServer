@@ -105,6 +105,27 @@ namespace HeroServer
                 await StorageFunctions.UpdateFile(containerName, "prt" + appUserId, "jpg", Convert.FromBase64String(portrait));
         }
 
+        public static async Task<LocalityResponse> RegisterLocality(LocalityRequest localityRequest)
+        {
+
+            LocalityResponse localityResponse = new LocalityResponse();
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                await new LocalityDB().UpdateStatusByAppUserId(localityRequest.InterestLocality.AppUserId, 1, 0);
+
+                localityRequest.InterestLocality.Status = 1;
+                localityResponse.InterestLocalityId = await new LocalityDB().Add(localityRequest.InterestLocality);
+                
+                localityRequest.CurrentLocality.Status = 1;
+                localityResponse.CurrentLocalityId = await new LocalityDB().Add(localityRequest.CurrentLocality);
+
+                scope.Complete();
+            }
+
+            return localityResponse;
+        }
+
         // UPDATE
         public static async Task Update(AppUser appUser)
         {
@@ -183,6 +204,23 @@ namespace HeroServer
 
                 scope.Complete();
             }
+        }
+
+        public static async Task<long> UpdateLocality(Locality locality)
+        {
+            long id = -1;
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                await new LocalityDB().UpdateStatus(locality.Id, 0);
+
+                locality.Status = 1;
+                id = await new LocalityDB().Add(locality);
+
+                scope.Complete();
+            }
+
+            return id;
         }
 
         // DELETE

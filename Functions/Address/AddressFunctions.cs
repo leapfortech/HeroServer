@@ -83,7 +83,7 @@ namespace HeroServer
             return id;
         }
 
-        public static async Task<long> UpdateByAppUser(long appUserId, Address address)
+        public static async Task<long> UpdateByAppUserId(long appUserId, Address address)
         {
             long id = -1;
 

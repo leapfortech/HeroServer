@@ -161,7 +161,7 @@ namespace HeroServer
             return id;
         }
 
-        public static async Task<long> UpdateByAppUser(long appUserId, Identity identity)
+        public static async Task<long> UpdateByAppUserId(long appUserId, Identity identity)
         {
             long id = -1;
 
@@ -185,7 +185,7 @@ namespace HeroServer
             return id;
         }
 
-        public static async Task<long> UpdateByBoardUser(long boardUserId, Identity identity)
+        public static async Task<long> UpdateByBoardUserId(long boardUserId, Identity identity)
         {
             long id = -1;
 

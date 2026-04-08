@@ -70,7 +70,7 @@ namespace HeroServer
                 if (!await new BoardUserDB().Update(boardUserFull.BoardUser))
                     throw new Exception("UAU¶Cannot Update BoardUser");
 
-                if (await IdentityFunctions.UpdateByBoardUser(boardUserFull.BoardUser.Id, boardUserFull.Identity) == -1)
+                if (await IdentityFunctions.UpdateByBoardUserId(boardUserFull.BoardUser.Id, boardUserFull.Identity) == -1)
                     throw new Exception("UAU¶Cannot Update BoardUser");
 
                 boardUserFull.WebSysUser.WebSysUserStatusId = 1;

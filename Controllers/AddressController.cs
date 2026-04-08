@@ -72,7 +72,7 @@ namespace HeroServer.Controllers
         {
             try
             {
-                return Ok(await AddressFunctions.UpdateByAppUser(Convert.ToInt64(appUserId), address));
+                return Ok(await AddressFunctions.UpdateByAppUserId(Convert.ToInt64(appUserId), address));
             }
             catch (Exception ex)
             {
