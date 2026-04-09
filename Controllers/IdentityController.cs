@@ -116,13 +116,13 @@ namespace HeroServer.Controllers
             }
         }
 
-        //PUT services/identity/Origin
-        [HttpPut("Origin")]
-        public async Task<ActionResult<long>> UpdateOrigin([FromBody] IdentityOrigin identityOrigin)
+        //PUT services/identity/Place
+        [HttpPut("Place")]
+        public async Task<ActionResult<long>> UpdatePlace([FromBody] IdentityPlace identityPlace)
         {
             try
             {
-                return Ok(await IdentityFunctions.UpdateOrigin(identityOrigin));
+                return Ok(await IdentityFunctions.UpdatePlace(identityPlace));
             }
             catch (Exception ex)
             {

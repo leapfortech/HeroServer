@@ -11,9 +11,10 @@ namespace HeroServer
         public String LastName2 { get; set; }
         public long GenderId { get; set; }
         public DateTime BirthDate { get; set; }
-        public long OriginCountryId { get; set; }
-        public long OriginStateId { get; set; }
-       
+        public long BirthCountryId { get; set; }
+        public long BirthStateId { get; set; }
+        public long BirthCityId { get; set; }
+
         public long PhoneCountryId { get; set; }
         public String Phone { get; set; }
         public String Email { get; set; }
@@ -28,7 +29,7 @@ namespace HeroServer
         }
 
         public Identity(long id, String firstName1, String firstName2, String lastName1, String lastName2,
-                        long genderId, DateTime birthDate, long originCountryId, long originStateId,
+                        long genderId, DateTime birthDate, long birthCountryId, long birthStateId, long birthCityId,
                         long phoneCountryId, String phone, String email,
                         DateTime createDateTime, DateTime updateDateTime, int status)
         {
@@ -39,8 +40,9 @@ namespace HeroServer
             LastName2 = lastName2;
             GenderId = genderId;
             BirthDate = birthDate;
-            OriginCountryId = originCountryId;
-            OriginStateId = originStateId;
+            BirthCountryId = birthCountryId;
+            BirthStateId = birthStateId;
+            BirthCityId = birthCityId;
           
             PhoneCountryId = phoneCountryId;
             Phone = phone;
@@ -52,7 +54,7 @@ namespace HeroServer
         }
 
         public Identity(long id, String firstName1, String firstName2, String lastName1, String lastName2,
-                        long genderId, DateTime birthDate, long originCountryId, long originStateId,
+                        long genderId, DateTime birthDate, long birthCountryId, long birthStateId, long birthCityId,
                         long phoneCountryId, String phone, String email, int status)
         {
             Id = id;
@@ -62,8 +64,9 @@ namespace HeroServer
             LastName2 = lastName2;
             GenderId = genderId;
             BirthDate = birthDate;
-            OriginCountryId = originCountryId;
-            OriginStateId = originStateId;
+            BirthCountryId = birthCountryId;
+            BirthStateId = birthStateId;
+            BirthCityId = birthCityId;
 
             PhoneCountryId = phoneCountryId;
             Phone = phone;

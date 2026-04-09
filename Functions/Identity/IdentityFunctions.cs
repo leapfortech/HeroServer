@@ -89,7 +89,7 @@ namespace HeroServer
                                                                       registerBoardRequest.LastName1,
                                                                       registerBoardRequest.LastName2,
                                                                       -1, registerBoardRequest.BirthDate,
-                                                                      -1, -1, -1, null, null, 1));
+                                                                      -1, -1, -1, -1, null, null, 1));
 
                 identityBoardUser = new IdentityBoardUser(-1, boardUserId, identityId, DateTime.Now, DateTime.Now, 1);
                 identityBoardUser.Id = await new IdentityBoardUserDB().Add(identityBoardUser);
@@ -141,19 +141,19 @@ namespace HeroServer
             return id;
         }
 
-        public static async Task<long> UpdateOrigin(IdentityOrigin identityOrigin)
+        public static async Task<long> UpdatePlace(IdentityPlace identityPlace)
         {
             long id = -1;
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                Identity identity = await new IdentityDB().GetById(identityOrigin.IdentityId);
+                Identity identity = await new IdentityDB().GetById(identityPlace.IdentityId);
 
-                identity.OriginCountryId = identityOrigin.OriginCountryId != -1 ? identityOrigin.OriginCountryId : identity.OriginCountryId;
-                identity.OriginStateId = identityOrigin.OriginStateId != -1 ? identityOrigin.OriginStateId : identity.OriginStateId;
-                //identity.OriginCityId = identityOrigin.OriginCityId != -1 ? identityOrigin.OriginCityId : identity.OriginCityId;
+                identity.BirthCountryId = identityPlace.BirthCountryId != -1 ? identityPlace.BirthCountryId : identity.BirthCountryId;
+                identity.BirthStateId = identityPlace.BirthStateId != -1 ? identityPlace.BirthStateId : identity.BirthStateId;
+                identity.BirthCityId = identityPlace.BirthCityId != -1 ? identityPlace.BirthCityId : identity.BirthCityId;
 
-                id = await RegisterByAppUser(identityOrigin.AppUserId, identity);
+                id = await RegisterByAppUser(identityPlace.AppUserId, identity);
 
                 scope.Complete();
             }

@@ -20,8 +20,9 @@ namespace HeroServer
                                 reader["LastName2"].ToString(),
                                 Convert.ToInt64(reader["GenderId"]),
                                 Convert.ToDateTime(reader["BirthDate"]),
-                                Convert.ToInt64(reader["OriginCountryId"]),
-                                Convert.ToInt64(reader["OriginStateId"]),
+                                Convert.ToInt64(reader["BirthCountryId"]),
+                                Convert.ToInt64(reader["BirthStateId"]),
+                                Convert.ToInt64(reader["BirthCityId"]),
                                 Convert.ToInt64(reader["PhoneCountryId"]),
                                 reader["Phone"].ToString(),
                                 reader["Email"].ToString(),
@@ -39,9 +40,10 @@ namespace HeroServer
                                     reader["LastName2"].ToString(),
                                     reader["Gender"].ToString(),
                                     Convert.ToDateTime(reader["BirthDate"]),
-                                    reader["OriginCountry"].ToString(),
-                                    reader["OriginState"].ToString(),
-                                  
+                                    reader["BirthCountry"].ToString(),
+                                    reader["BirthState"].ToString(),
+                                    reader["BirthState"].ToString(),
+
                                     reader["PhonePrefix"].ToString(),
                                     reader["Phone"].ToString(),
                                     reader["Email"].ToString(),
@@ -83,13 +85,14 @@ namespace HeroServer
         public async Task<List<IdentityFull>> GetFullsByStatus(int status = -1)
         {
             String strCmd = "SELECT Idt.Id, FirstName1, FirstName2,LastName1, LastName2, KGender.Name AS Gender," +
-                             " BirthDate, KCountry.Name AS OriginCountry, KState.Name AS OriginState," +
+                             " BirthDate, KCountry.Name AS BirthCountry, KState.Name AS BirthState, KCity.Name AS BirthCity," +
                              " KPhoneCountry.PhonePrefix AS PhonePrefix, Phone, Email," +
                              " Idt.CreateDateTime, Idt.UpdateDateTime, AppUser.AppUserStatusId, Idt.Status" +
                             $" FROM {table} AS Idt" +
                              " INNER JOIN [K-Gender] AS KGender ON (KGender.Id = Idt.GenderId)" +
-                             " INNER JOIN [K-Country] AS KCountry ON (KCountry.Id = Idt.OriginCountryId)" +
-                             " INNER JOIN [K-State] AS KState ON (KState.Id = Idt.OriginStateId)" +
+                             " INNER JOIN [K-Country] AS KCountry ON (KCountry.Id = Idt.BirthCountryId)" +
+                             " INNER JOIN [K-State] AS KState ON (KState.Id = Idt.BirthStateId)" +
+                             " INNER JOIN [K-City] AS KCity ON (KCity.Id = Idt.BirthCityId)" +
                              " INNER JOIN [K-Country] AS KPhoneCountry ON (KPhoneCountry.Id = Idt.PhoneCountryId)" +
 
                              " INNER JOIN [J-IdentityAppUser] AS IAU ON IAU.IdentityId = Idt.Id AND IAU.Status = 1" +
@@ -229,14 +232,15 @@ namespace HeroServer
         public async Task<IdentityFull> GetFullByAppUserId(long appUserId, int status = 1)
         {
             String strCmd = "SELECT Idt.Id, J.AppUserId, FirstName1, FirstName2, LastName1, LastName2," +
-                             " KGender.Name AS Gender, BirthDate, KCountry.Name AS OriginCountry, KState.Name AS OriginState," +
+                             " KGender.Name AS Gender, BirthDate, KCountry.Name AS BirthCountry, KState.Name AS BirthState, KCity.Name AS BirthCity," +
                              " KPhoneCountry.PhonePrefix AS PhonePrefix, Phone, Email," +
                              " Idt.CreateDateTime, Idt.UpdateDateTime, Idt.Status" +
                             $" FROM {table} AS Idt" +
                              " INNER JOIN [D-IdentityAppUser] AS J ON J.IdentityId = Idt.Id" +
                              " INNER JOIN [K-Gender] AS KGender ON KGender.Id = Idt.GenderId" +
-                             " INNER JOIN [K-Country] AS KCountry ON KCountry.Id = Idt.OriginCountryId" +
-                             " INNER JOIN [K-State] AS KState ON KState.Id = Idt.OriginStateId" +
+                             " INNER JOIN [K-Country] AS KCountry ON KCountry.Id = Idt.BirthCountryId" +
+                             " INNER JOIN [K-State] AS KState ON KState.Id = Idt.BirthStateId" +
+                             " INNER JOIN [K-City] AS KCity ON KCity.Id = Idt.BirthCityId" +
                              " INNER JOIN [K-Country] AS KPhoneCountry ON KPhoneCountry.Id = Idt.PhoneCountryId" +
                              " WHERE J.AppUserId = @AppUserId AND J.Status = @Status";
 
@@ -297,12 +301,12 @@ namespace HeroServer
         public async Task<long> Add(Identity identity)
         {
             String strCmd = $"INSERT INTO {table}(Id, FirstName1, FirstName2, LastName1, LastName2, GenderId," +
-                            " BirthDate, OriginCountryId, OriginStateId," +
+                            " BirthDate, BirthCountryId, BirthStateId, BirthCityId," +
                             " PhoneCountryId, Phone, Email," +
                             " CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
                             " VALUES (@Id, @FirstName1, @FirstName2, @LastName1, @LastName2, @GenderId," +
-                            " @BirthDate, @OriginCountryId, @OriginStateId," +
+                            " @BirthDate, @BirthCountryId, @BirthStateId, @BirthCityId," +
                             " @PhoneCountryId, @Phone, @Email," +
                             " @CreateDateTime, @UpdateDateTime, @Status)";
 
@@ -316,9 +320,10 @@ namespace HeroServer
             DBHelper.AddParam(command, "@GenderId", SqlDbType.Int, identity.GenderId);
 
             DBHelper.AddParam(command, "@BirthDate", SqlDbType.DateTime2, identity.BirthDate);
-            DBHelper.AddParam(command, "@OriginCountryId", SqlDbType.Int, identity.OriginCountryId);
-            DBHelper.AddParam(command, "@OriginStateId", SqlDbType.Int, identity.OriginStateId);
-            
+            DBHelper.AddParam(command, "@BirthCountryId", SqlDbType.Int, identity.BirthCountryId);
+            DBHelper.AddParam(command, "@BirthStateId", SqlDbType.Int, identity.BirthStateId);
+            DBHelper.AddParam(command, "@BirthCityId", SqlDbType.Int, identity.BirthCityId);
+
             DBHelper.AddParam(command, "@PhoneCountryId", SqlDbType.Int, identity.PhoneCountryId);
             DBHelper.AddParam(command, "@Phone", SqlDbType.VarChar, identity.Phone);
             DBHelper.AddParam(command, "@Email", SqlDbType.VarChar, identity.Email);
@@ -339,8 +344,8 @@ namespace HeroServer
         {
             String strCmd = $"UPDATE {table} SET FirstName1 = @FirstName1, FirstName2 = @FirstName2," +
                             " LastName1 = @LastName1, LastName2 = @LastName2, GenderId = @GenderId," +
-                            " BirthDate = @BirthDate, OriginCountryId = @OriginCountryId, OriginStateId = @OriginStateId," +
-                            " PhoneCountryId = @PhoneCountryId, Phone = @Phone, Email = @Email," +
+                            " BirthDate = @BirthDate, BirthCountryId = @BirthCountryId, BirthStateId = @BirthStateId," +
+                            " BirthCityId = @BirthCityId, PhoneCountryId = @PhoneCountryId, Phone = @Phone, Email = @Email," +
                             " UpdateDateTime = @UpdateDateTime WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
@@ -351,8 +356,9 @@ namespace HeroServer
             DBHelper.AddParam(command, "@LastName2", SqlDbType.VarChar, identity.LastName2);
             DBHelper.AddParam(command, "@GenderId", SqlDbType.Int, identity.GenderId);
             DBHelper.AddParam(command, "@BirthDate", SqlDbType.DateTime2, identity.BirthDate);
-            DBHelper.AddParam(command, "@OriginCountryId", SqlDbType.Int, identity.OriginCountryId);
-            DBHelper.AddParam(command, "@OriginStateId", SqlDbType.Int, identity.OriginStateId);
+            DBHelper.AddParam(command, "@BirthCountryId", SqlDbType.Int, identity.BirthCountryId);
+            DBHelper.AddParam(command, "@BirthStateId", SqlDbType.Int, identity.BirthStateId);
+            DBHelper.AddParam(command, "@BirthCityId", SqlDbType.Int, identity.BirthCityId);
             DBHelper.AddParam(command, "@PhoneCountryId", SqlDbType.Int, identity.PhoneCountryId);
             DBHelper.AddParam(command, "@Phone", SqlDbType.VarChar, identity.Phone);
             DBHelper.AddParam(command, "@Email", SqlDbType.VarChar, identity.Email);
