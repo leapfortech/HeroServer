@@ -107,7 +107,6 @@ namespace HeroServer
                 if (onboardingRequest.Portrait != null && onboardingRequest.Portrait.Length > 0)
                     await AppUserFunctions.RegisterPortrait(onboardingRequest.AppUserId, onboardingRequest.Portrait);
 
-
                 // Onboarding = 2
                 await AppUserFunctions.UpdateOption(onboardingRequest.AppUserId, 0, 2);
                 

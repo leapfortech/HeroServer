@@ -57,7 +57,7 @@ namespace HeroServer
                 if (identityAppUser != null)
                 {
                     await new IdentityAppUserDB().UpdateStatus(identityAppUser.Id, 1, 0);
-                    await new IdentityDB().UpdateStatus(identityAppUser.AppUserId, 1, 0);
+                    await new IdentityDB().UpdateStatus(identityAppUser.IdentityId, 1, 0);
                 }
 
                 identity.Status = 1;

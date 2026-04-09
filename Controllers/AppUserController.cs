@@ -279,5 +279,20 @@ namespace HeroServer.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        // PUT services/appUser/Portrait?appUserId=3
+        [HttpDelete("Portrait")]
+        public async Task<ActionResult> DeletePortrait([FromQuery] String appUserId)
+        {
+            try
+            {
+                await AppUserFunctions.DeletePortrait(Convert.ToInt64(appUserId));
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

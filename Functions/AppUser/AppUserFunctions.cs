@@ -96,15 +96,6 @@ namespace HeroServer
             return await new AppUserDB().Add(appUser);
         }
 
-        public static async Task RegisterPortrait(long appUserId, String portrait)
-        {
-            String containerName = "user" + appUserId.ToString("D08");
-            await StorageFunctions.CreateContainer(containerName);
-
-            if (portrait != null && portrait.Length > 0)
-                await StorageFunctions.UpdateFile(containerName, "prt" + appUserId, "jpg", Convert.FromBase64String(portrait));
-        }
-
         public static async Task<LocalityResponse> RegisterLocality(LocalityRequest localityRequest)
         {
 
@@ -124,6 +115,15 @@ namespace HeroServer
             }
 
             return localityResponse;
+        }
+
+        public static async Task RegisterPortrait(long appUserId, String portrait)
+        {
+            String containerName = "user" + appUserId;
+            await StorageFunctions.CreateContainer(containerName);
+
+            if (portrait != null && portrait.Length > 0)
+                await StorageFunctions.UpdateFile(containerName, "prt" + appUserId, "jpg", Convert.FromBase64String(portrait));
         }
 
         // UPDATE
@@ -190,22 +190,6 @@ namespace HeroServer
             return referred != null ? referred.AppUserId : -1;
         }
 
-        public static async Task UpdatePortrait(long appUserId, String portrait)
-        {
-            if (String.IsNullOrEmpty(portrait))
-                throw new ArgumentException("No Data to Update.");
-
-            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {
-                String id = appUserId.ToString("D08");
-                String containerName = "user" + id;
-
-                await StorageFunctions.UpdateCFile(containerName, "prt" + id, "jpg", Convert.FromBase64String(portrait));
-
-                scope.Complete();
-            }
-        }
-
         public static async Task<long> UpdateLocality(Locality locality)
         {
             long id = -1;
@@ -223,7 +207,28 @@ namespace HeroServer
             return id;
         }
 
+        public static async Task UpdatePortrait(long appUserId, String portrait)
+        {
+            if (String.IsNullOrEmpty(portrait))
+                throw new ArgumentException("No Data to Update.");
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                String containerName = "user" + appUserId;
+
+                //RM REVIEW
+                bool existContainer = await StorageFunctions.ExistContainer(containerName);
+                if (!existContainer)
+                    await RegisterPortrait(appUserId, portrait);
+                else
+                    await StorageFunctions.UpdateFile(containerName, "prt" + appUserId, "jpg", Convert.FromBase64String(portrait));
+
+                scope.Complete();
+            }
+        }
+
         // DELETE
+
         public static async Task DeleteById(long id, bool delAuthUser = true)
         {
             long webSysUserId = await new AppUserDB().GetWebSysUserId(id);
@@ -265,6 +270,18 @@ namespace HeroServer
             if (appUserId == -1)
                 throw new Exception("Email NOT Found");
             await DeleteById(appUserId, delAuthUser);
+        }
+
+        public static async Task DeletePortrait(long appUserId)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                String containerName = "user" + appUserId;
+
+                await StorageFunctions.DeleteSoftFile(containerName, "prt" + appUserId, "jpg");
+
+                scope.Complete();
+            }
         }
     }
 }
