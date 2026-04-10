@@ -126,12 +126,12 @@ namespace HeroServer
             {
                 Identity identity = await new IdentityDB().GetById(identityPersonal.IdentityId);
 
-                identity.FirstName1 = identityPersonal.FirstName1 != null ? identityPersonal.FirstName1 : identity.FirstName1;
-                identity.FirstName2 = identityPersonal.FirstName2 != null ? identityPersonal.FirstName2 : identity.FirstName2;
-                identity.LastName1 = identityPersonal.LastName1 != null ? identityPersonal.LastName1 : identity.LastName1;
-                identity.LastName2 = identityPersonal.LastName2 != null ? identityPersonal.LastName2 : identity.LastName2;
-                identity.BirthDate = identityPersonal.BirthDate != sqlMinDate ? identityPersonal.BirthDate : identity.BirthDate;
-                identity.GenderId = identityPersonal.GenderId != -1 ? identityPersonal.GenderId : identity.GenderId;
+                identity.FirstName1 = identityPersonal.FirstName1;
+                identity.FirstName2 = identityPersonal.FirstName2;
+                identity.LastName1 = identityPersonal.LastName1;
+                identity.LastName2 = identityPersonal.LastName2;
+                identity.BirthDate = identityPersonal.BirthDate;
+                identity.GenderId = identityPersonal.GenderId;
 
                 id = await RegisterByAppUser(identityPersonal.AppUserId, identity);
 
@@ -149,9 +149,9 @@ namespace HeroServer
             {
                 Identity identity = await new IdentityDB().GetById(identityPlace.IdentityId);
 
-                identity.BirthCountryId = identityPlace.BirthCountryId != -1 ? identityPlace.BirthCountryId : identity.BirthCountryId;
-                identity.BirthStateId = identityPlace.BirthStateId != -1 ? identityPlace.BirthStateId : identity.BirthStateId;
-                identity.BirthCityId = identityPlace.BirthCityId != -1 ? identityPlace.BirthCityId : identity.BirthCityId;
+                identity.BirthCountryId = identityPlace.BirthCountryId;
+                identity.BirthStateId = identityPlace.BirthStateId;
+                identity.BirthCityId = identityPlace.BirthCityId;
 
                 id = await RegisterByAppUser(identityPlace.AppUserId, identity);
 

@@ -71,9 +71,9 @@ namespace HeroServer
             {
                 Address address = await new AddressDB().GetById(addressCity.AddressId);
 
-                address.CountryId = addressCity.CountryId != -1 ? addressCity.CountryId : address.CountryId;
-                address.StateId = addressCity.StateId != -1 ? addressCity.StateId : address.StateId;
-                address.CityId = addressCity.CityId != -1 ? addressCity.CityId : address.CityId;
+                address.CountryId = addressCity.CountryId;
+                address.StateId = addressCity.StateId;
+                address.CityId = addressCity.CityId;
 
                 id = await RegisterByAppUser(addressCity.AppUserId, address);
 
