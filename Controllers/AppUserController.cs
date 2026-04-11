@@ -241,8 +241,7 @@ namespace HeroServer.Controllers
                 //if (!await FirebaseFunctions.AuthorizeAppUser(blcConnString, HttpContext, Convert.ToInt32(id), "AppUser.UpdateOptions"))
                 //    return Unauthorized();
 
-                await AppUserFunctions.UpdateLocality(locality);
-                return Ok();
+                return Ok(await AppUserFunctions.UpdateLocality(locality));
             }
             catch (Exception ex)
             {

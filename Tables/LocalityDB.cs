@@ -128,7 +128,7 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('L'));
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, locality.CountryId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, locality.AppUserId);
             DBHelper.AddParam(command, "@LocalityType", SqlDbType.Int, locality.LocalityType);
             DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, locality.CountryId);
             DBHelper.AddParam(command, "@StateId", SqlDbType.BigInt, locality.StateId);
@@ -154,7 +154,7 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('L'));
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, locality.CountryId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, locality.AppUserId);
             DBHelper.AddParam(command, "@LocalityType", SqlDbType.Int, locality.LocalityType);
             DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, locality.CountryId);
             DBHelper.AddParam(command, "@StateId", SqlDbType.BigInt, locality.StateId);
