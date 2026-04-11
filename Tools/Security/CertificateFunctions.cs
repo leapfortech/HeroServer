@@ -84,17 +84,17 @@ namespace HeroServer
                 throw new Exception("A0 : " + azureUrl + "\n" + ex.Message);
             }
 
-            //try
-            //{
-            //    await GetCybersourceCertificate();
-            //}
-            //catch (Exception ex)
-            //{
-            //    if (cybersourceCert.Length == 0)
-            //        throw new Exception("A1 : " + ex.Message);
-            //}
+            try
+            {
+                await GetCybersourceCertificate();
+            }
+            catch (Exception ex)
+            {
+                if (cybersourceCert.Length == 0)
+                    throw new Exception("A1 : " + ex.Message);
+            }
 
-            cybersourceCert = "Issuer|Subject|Thumbprint";
+            //cybersourceCert = "Issuer|Subject|Thumbprint";
 
             // B
             (byte[] bobPublicKey, byte[] commonKey) b;
