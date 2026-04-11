@@ -249,6 +249,26 @@ namespace HeroServer.Controllers
             }
         }
 
+        // PUT services/appUser/UpdateAlias
+        [HttpPut("UpdateAlias")]
+        public async Task<ActionResult> UpdateAlias([FromBody] AliasRequest aliasRequest)
+        {
+            try
+            {
+                //if (!await FirebaseFunctions.AuthorizeAppUser(bntConnString, HttpContext, Convert.ToInt32(id), "AppUser.SetStatus"))
+                //    return Unauthorized();
+
+                if (!await AppUserFunctions.UpdateAlias(aliasRequest))
+                    return BadRequest("[STAT]");
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // DELETE services/appUser/ById?id=3&authUser=1
         [HttpDelete("ById")]
         public async Task<ActionResult<long>> DeleteById([FromQuery]String id, [FromQuery]String authUser = "1")

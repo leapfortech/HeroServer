@@ -677,6 +677,25 @@ namespace HeroServer
             }
         }
 
+        public async Task<bool> UpdateAlias(long id, String alias)
+        {
+            String strCmd = $"UPDATE {table}" +
+                            " SET UpdateDateTime = @UpdateDateTime, Alias = @Alias" +
+                            " WHERE Id = @Id";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            DBHelper.AddParam(command, "@Alias", SqlDbType.VarChar, alias);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
+
         // DELETE
         public async Task<int> DeleteAll()
         {

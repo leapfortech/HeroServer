@@ -227,6 +227,11 @@ namespace HeroServer
             }
         }
 
+        public static async Task<bool> UpdateAlias(AliasRequest aliasRequest)
+        {
+            return await new AppUserDB().UpdateAlias(aliasRequest.AppUserId, aliasRequest.Alias);
+        }
+
         // DELETE
 
         public static async Task DeleteById(long id, bool delAuthUser = true)
