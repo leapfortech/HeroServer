@@ -6,35 +6,36 @@ using System.Threading.Tasks;
 
 namespace HeroServer
 {
-    public class PhoneDB
+    public class PrecheckPhoneDB
     {
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
-        readonly String table = "[D-Phone]";
+        readonly String table = "[D-PrecheckPhone]";
 
-        public static Phone GetPhone(SqlDataReader reader)
+        public static PrecheckPhone GetPrecheckPhone(SqlDataReader reader)
         {
-            return new Phone(Convert.ToInt64(reader["Id"]),
-                             Convert.ToInt64(reader["CountryId"]),
-                             reader["Number"].ToString(),
-                             reader["CountryCode"].ToString(),
-                             reader["CallerName"].ToString(),
-                             reader["CarrierCountryCode"].ToString(),
-                             reader["CarrierNetworkCode"].ToString(),
-                             reader["CarrierName"].ToString(),
-                             reader["CarrierType"].ToString(),
-                             Convert.ToDateTime(reader["CreateDateTime"]),
-                             Convert.ToDateTime(reader["UpdateDateTime"]),
-                             Convert.ToInt32(reader["Status"]));
+            return new PrecheckPhone(Convert.ToInt64(reader["Id"]),
+                                     Convert.ToInt64(reader["CountryId"]),
+                                     reader["Number"].ToString(),
+                                     reader["Code"].ToString(),
+                                     reader["CountryCode"].ToString(),
+                                     reader["CallerName"].ToString(),
+                                     reader["CarrierCountryCode"].ToString(),
+                                     reader["CarrierNetworkCode"].ToString(),
+                                     reader["CarrierName"].ToString(),
+                                     reader["CarrierType"].ToString(),
+                                     Convert.ToDateTime(reader["CreateDateTime"]),
+                                     Convert.ToDateTime(reader["UpdateDateTime"]),
+                                     Convert.ToInt32(reader["Status"]));
         }
 
         // GET
-        public async Task<IEnumerable<Phone>> GetAll()
+        public async Task<IEnumerable<PrecheckPhone>> GetAll()
         {
             String strCmd = $"SELECT * FROM {table}";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<Phone> phoneCodes = [];
+            List<PrecheckPhone> precheckPhones = [];
             using (conn)
             {
                 await conn.OpenAsync();
@@ -42,15 +43,15 @@ namespace HeroServer
                 {
                     while (await reader.ReadAsync())
                     {
-                        Phone phone = GetPhone(reader);
-                        phoneCodes.Add(phone);
+                        PrecheckPhone precheckPhone = GetPrecheckPhone(reader);
+                        precheckPhones.Add(precheckPhone);
                     }
                 }
             }
-            return phoneCodes;
+            return precheckPhones;
         }
 
-        public async Task<Phone> GetById(long id)
+        public async Task<PrecheckPhone> GetById(long id)
         {
             String strCmd = $"SELECT * FROM {table} WHERE Id = @Id";
 
@@ -58,7 +59,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
-            Phone phone = null;
+            PrecheckPhone precheckPhone = null;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -66,14 +67,14 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                        phone = GetPhone(reader);
+                        precheckPhone = GetPrecheckPhone(reader);
                     }
                 }
             }
-            return phone;
+            return precheckPhone;
         }
 
-        public async Task<Phone> GetByPhoneNumber(long phoneCountryId, String phoneNumber, int status)
+        public async Task<PrecheckPhone> GetByPhoneNumber(long phoneCountryId, String phoneNumber, int status)
         {
             String strCmd = $"SELECT * FROM {table} WHERE CountryId = @CountryId AND Number = @Number AND Status = @Status";
 
@@ -83,7 +84,7 @@ namespace HeroServer
             DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, phoneNumber);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
-            Phone phone = null;
+            PrecheckPhone precheckPhone = null;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -91,34 +92,35 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                        phone = GetPhone(reader);
+                        precheckPhone = GetPrecheckPhone(reader);
                     }
                 }
             }
-            return phone;
+            return precheckPhone;
         }
 
         // INSERT
-        public async Task<long> Add(Phone phone)
+        public async Task<long> Add(PrecheckPhone precheckPhone)
         {
-            String strCmd = $"INSERT INTO {table}(Id, CountryId, Number, CountryCode, CallerName, CarrierCountryCode, CarrierNetworkCode, CarrierName, CarrierType, CreateDateTime, UpdateDateTime, Status)" +
+            String strCmd = $"INSERT INTO {table}(Id, CountryId, Number, Code, CountryCode, CallerName, CarrierCountryCode, CarrierNetworkCode, CarrierName, CarrierType, CreateDateTime, UpdateDateTime, Status)" +
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @CountryId, @Number, @CountryCode, @CallerName, @CarrierCountryCode, @CarrierNetworkCode, @CarrierName, @CarrierType, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@Id, @CountryId, @Number, @Code, @CountryCode, @CallerName, @CarrierCountryCode, @CarrierNetworkCode, @CarrierName, @CarrierType, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('H'));
-            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, phone.CountryId);
-            DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, phone.Number);
-            DBHelper.AddParam(command, "@CountryCode", SqlDbType.VarChar, phone.CountryCode);
-            DBHelper.AddParam(command, "@CallerName", SqlDbType.VarChar, phone.CallerName);
-            DBHelper.AddParam(command, "@CarrierCountryCode", SqlDbType.VarChar, phone.CarrierCountryCode);
-            DBHelper.AddParam(command, "@CarrierNetworkCode", SqlDbType.VarChar, phone.CarrierNetworkCode);
-            DBHelper.AddParam(command, "@CarrierName", SqlDbType.VarChar, phone.CarrierName);
-            DBHelper.AddParam(command, "@CarrierType", SqlDbType.VarChar, phone.CarrierType);
+            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, precheckPhone.CountryId);
+            DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, precheckPhone.Number);
+            DBHelper.AddParam(command, "@Code", SqlDbType.VarChar, precheckPhone.Code);
+            DBHelper.AddParam(command, "@CountryCode", SqlDbType.VarChar, precheckPhone.CountryCode);
+            DBHelper.AddParam(command, "@CallerName", SqlDbType.VarChar, precheckPhone.CallerName);
+            DBHelper.AddParam(command, "@CarrierCountryCode", SqlDbType.VarChar, precheckPhone.CarrierCountryCode);
+            DBHelper.AddParam(command, "@CarrierNetworkCode", SqlDbType.VarChar, precheckPhone.CarrierNetworkCode);
+            DBHelper.AddParam(command, "@CarrierName", SqlDbType.VarChar, precheckPhone.CarrierName);
+            DBHelper.AddParam(command, "@CarrierType", SqlDbType.VarChar, precheckPhone.CarrierType);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, phone.Status);
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, precheckPhone.Status);
 
             using (conn)
             {
@@ -128,24 +130,25 @@ namespace HeroServer
         }
 
         // UPDATE
-        public async Task<bool> Update(Phone phone)
+        public async Task<bool> Update(PrecheckPhone precheckPhone)
         {
-            String strCmd = $"UPDATE {table} SET CountryId = @CountryId, Number = @Number, CountryCode = @CountryCode, CallerName = @CallerName," +
+            String strCmd = $"UPDATE {table} SET CountryId = @CountryId, Number = @Number, Code = @Code, CountryCode = @CountryCode, CallerName = @CallerName," +
                             " CarrierCountryCode = @CarrierCountryCode, CarrierNetworkCode = @CarrierNetworkCode, CarrierName = @CarrierName, CarrierType = @CarrierType," +
                             " UpdateDateTime = @UpdateDateTime WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, phone.CountryId);
-            DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, phone.Number);
-            DBHelper.AddParam(command, "@CountryCode", SqlDbType.VarChar, phone.CountryCode);
-            DBHelper.AddParam(command, "@CallerName", SqlDbType.VarChar, phone.CallerName);
-            DBHelper.AddParam(command, "@CarrierCountryCode", SqlDbType.VarChar, phone.CarrierCountryCode);
-            DBHelper.AddParam(command, "@CarrierNetworkCode", SqlDbType.VarChar, phone.CarrierNetworkCode);
-            DBHelper.AddParam(command, "@CarrierName", SqlDbType.VarChar, phone.CarrierName);
-            DBHelper.AddParam(command, "@CarrierType", SqlDbType.VarChar, phone.CarrierType);
+            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, precheckPhone.CountryId);
+            DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, precheckPhone.Number);
+            DBHelper.AddParam(command, "@Code", SqlDbType.VarChar, precheckPhone.Code);
+            DBHelper.AddParam(command, "@CountryCode", SqlDbType.VarChar, precheckPhone.CountryCode);
+            DBHelper.AddParam(command, "@CallerName", SqlDbType.VarChar, precheckPhone.CallerName);
+            DBHelper.AddParam(command, "@CarrierCountryCode", SqlDbType.VarChar, precheckPhone.CarrierCountryCode);
+            DBHelper.AddParam(command, "@CarrierNetworkCode", SqlDbType.VarChar, precheckPhone.CarrierNetworkCode);
+            DBHelper.AddParam(command, "@CarrierName", SqlDbType.VarChar, precheckPhone.CarrierName);
+            DBHelper.AddParam(command, "@CarrierType", SqlDbType.VarChar, precheckPhone.CarrierType);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, phone.Id);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, precheckPhone.Id);
 
             using (conn)
             {

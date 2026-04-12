@@ -120,7 +120,7 @@ namespace HeroServer
 
             String appUserName = identityReferrer == null ? "" : $"por {identityReferrer.FirstName1} {identityReferrer.LastName1} ";
             String referredName = $"{identityReferred.FirstName1} {identityReferred.LastName1}";
-            String link = "https://lefortech.com/";
+            String link = "https://www.heroesmigrantes.com/";
 
             String body = $"Estimad@ {referredName}," +
                           $" fuiste referido {appUserName}para descargar la aplicación móvil de Héroes Migrantes.<br><br>" +
@@ -129,7 +129,7 @@ namespace HeroServer
                           " No olvides ingresar el siguiente código al momento de tu registro" +
                           $" para obtener los mejores beneficios: <strong>{referred.Id}</strong>.";
 
-            String message = HtmlHelper.GetConfirmResultHtml("Expande", body, "#666666");
+            String message = HtmlHelper.GetConfirmResultHtml("Heroes Migrantes", body, "#666666");
             if (message == null)
                 return 3;
 
