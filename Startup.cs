@@ -36,8 +36,6 @@ namespace HeroServer
 
             KeyVaultHelper keyVaultHelper = WebEnvConfig.Initialize(Configuration).Result;
 
-            MailHelper.Initialize();
-
             CertificateFunctions.Initialize();
             CybersourceFunctions.Initialize();
 
@@ -45,9 +43,12 @@ namespace HeroServer
             WebSysUserFunctions.Initialize();
             FirebaseFunctions.Initialize();
             StorageFunctions.Initialize();
+            MailHelper.Initialize();
 
             CardFunctions.Initialize();
             PrecheckFunctions.Initialize();
+
+
 
             services.AddControllers()
                     .AddJsonOptions(options =>
@@ -95,6 +96,10 @@ namespace HeroServer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
+            //MailHelper.SetLogger(logger);
+
+            //MailHelper.Initialize().GetAwaiter().GetResult();
+
             logger.LogWarning("INFO : Environment = {Flag}", WebEnvConfig.Flag);
 
             if (env.IsDevelopment())

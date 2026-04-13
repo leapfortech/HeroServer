@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -11,8 +12,13 @@ namespace HeroServer.Controllers
     [ApiController]
     public class PrecheckController : Controller
     {
+        public PrecheckController(IWebHostEnvironment environment)
+        {
+            HtmlHelper.Initialize(environment.ContentRootPath);
+        }
+
         // SMS
-        
+
         // POST services/precheck/SendOTPSms?phoneNumber=50263547362
         [HttpPost("SendOTPSms")]
         public async Task<ActionResult<VerificationResource>> SendOTPSms([FromQuery]String phoneNumber)

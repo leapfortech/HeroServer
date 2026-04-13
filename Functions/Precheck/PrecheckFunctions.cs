@@ -54,7 +54,7 @@ namespace HeroServer
 
             String phoneComplete = await GenValuesFunctions.GetStringById("K-Country", phoneCountryId, "PhonePrefix") + phoneNumber;
 
-            int result = 1;
+            int result = 21;
             if (checkInfo)
             {
                 PhoneInfo phoneInfo = await GetPhoneInfoTwilio(phoneComplete);
@@ -75,7 +75,7 @@ namespace HeroServer
                     return "MOBILE";
             }
             else
-                await new PrecheckPhoneDB().Add(new PrecheckPhone(-1, phoneCountryId, phoneNumber, null, null, null, null, null, null, null, DateTime.Now, DateTime.Now, 1));
+                await new PrecheckPhoneDB().Add(new PrecheckPhone(-1, phoneCountryId, phoneNumber, null, null, null, null, null, null, null, DateTime.Now, DateTime.Now, 21));
 
             await SendOTPSms(phoneComplete);
             return "OK";
@@ -201,16 +201,17 @@ namespace HeroServer
         // EMAIL
         public static async Task<int> SendOTPEmail(String email, String code)
         {
-
+            String subject = "Código de verificación Heroes Migrantes";
             String body = $"Código de verificación de identidad: <strong>{code}</strong>";
 
-            String message = HtmlHelper.GetConfirmResultHtml("Heroes Migrantes", body, "#666666");
+            String message = HtmlHelper.GetConfirmResultHtml(subject, body, "#666666");
+
             if (message == null)
                 return 3;
 
             try
             {
-                await MailHelper.SendMail(email, null, "Código de verificación Heroes Migrantes", message, true);
+                await MailHelper.SendMail(email, "Heroes Migrantes", subject, message, true);
             }
             catch
             {

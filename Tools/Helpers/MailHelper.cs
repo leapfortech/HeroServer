@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.Extensions.Logging;
 using MimeKit;
 using MimeKit.Text;
 
@@ -13,6 +14,13 @@ namespace HeroServer
         static String smtpServer, smtpName, smtpMail, smtpPwd;
         static int smtpPort;
 
+        //private static ILogger _logger;
+
+        //public static void SetLogger(ILogger logger)
+        //{
+        //    _logger = logger;
+        //}
+
         public static async void Initialize()
         {
             smtpServer = await new SystemParamDB().GetValue("SmtpServer");
@@ -20,6 +28,12 @@ namespace HeroServer
             smtpName = await new SystemParamDB().GetValue("SmtpName");
             smtpMail = await new SystemParamDB().GetValue("SmtpMail");
             smtpPwd = await new SystemParamDB().GetValue("SmtpPwd");
+
+            //_logger?.LogInformation("Mail initialized - Server: {Server}, Port: {Port}, Name: {Name}, Mail: {Mail}",
+            //                        smtpServer,
+            //                        smtpPort,
+            //                        smtpName,
+            //                        smtpMail);
         }
 
         public static async Task SendMail(String receiverMail, String receiverName, String subject, String message, bool bHtml = false)
