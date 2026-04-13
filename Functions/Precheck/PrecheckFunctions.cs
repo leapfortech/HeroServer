@@ -201,8 +201,8 @@ namespace HeroServer
         // EMAIL
         public static async Task<int> SendOTPEmail(String email, String code)
         {
-            String subject = "Código de verificación Heroes Migrantes";
-            String body = $"Código de verificación de identidad: <strong>{code}</strong>";
+            String subject = "Código de verificación Heroes Migrantes App";
+            String body = $"Intresa el siguiente código en la App: <strong>{code}</strong>";
 
             String message = HtmlHelper.GetConfirmResultHtml(subject, body, "#666666");
 

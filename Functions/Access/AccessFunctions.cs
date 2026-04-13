@@ -17,7 +17,7 @@ namespace HeroServer
             long appUserId = webSysUser == null ? -1 : await AppUserFunctions.GetIdByWebSysUserId(webSysUser.Id);
 
             if (appUserId != -1)
-                throw new Exception($"El usuario {registerAppRequest.Email} ya fue registrado.");
+                throw new Exception($"El usuario ya fue registrado.");
 
             int verified = 0;
             String createdAuthUserId = null;
@@ -27,7 +27,7 @@ namespace HeroServer
                 {
                     if (webSysUser == null)
                     {
-                        UserRecord userRecord = await FirebaseFunctions.Register(null, registerAppRequest.Email, registerAppRequest.Password, false);
+                        UserRecord userRecord = await FirebaseFunctions.Register(null, registerAppRequest.Email, registerAppRequest.Password, true);
                         createdAuthUserId = userRecord.Uid;
 
                         webSysUser = new WebSysUser(-1, userRecord.Uid, registerAppRequest.Email, registerAppRequest.Roles, registerAppRequest.PhoneCountryId, registerAppRequest.Phone, 1);
@@ -48,7 +48,8 @@ namespace HeroServer
                     AppUser appUser = new AppUser(-1, webSysUser.Id, registerAppRequest.Alias, referredAppUserId, 1);
                     appUserId = await new AppUserDB().Add(appUser);
 
-                    await UpdateCSToken(appUserId, webSysUser.Email);
+                    // RM REVIEW ERROR CYBERSOURCE
+                    // await UpdateCSToken(appUserId, webSysUser.Email);
 
                     // Onboarding = 1
                     await AppUserFunctions.UpdateOption(appUserId, 0, 1);
