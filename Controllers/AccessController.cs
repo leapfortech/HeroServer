@@ -126,6 +126,25 @@ namespace HeroServer.Controllers
             }
         }
 
+        // GET services/access/ResetPassword
+        [HttpPost("ResetPassword")]
+        public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordRequest resetPasswordRequest)
+        {
+            try
+            {
+                // UID ?
+                //if (!await FirebaseFunctions.Authorize(bntConnString, HttpContext, eMail))
+                //    return Unauthorized();
+
+                await AccessFunctions.ResetPassword(resetPasswordRequest);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // DELETE services/access/id
         //[HttpDelete("{id}")]
         //public ActionResult Delete(int webSysUSerId)

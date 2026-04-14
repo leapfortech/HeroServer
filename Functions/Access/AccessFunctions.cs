@@ -287,5 +287,25 @@ namespace HeroServer
 
             return new LoginBoardResponse(boardUser, webSysUser, 1);
         }
+
+        public static async Task ResetPassword(ResetPasswordRequest request)
+        {
+            WebSysUser webSysUser = await new WebSysUserDB().GetByEmail(request.Email);
+
+            if (webSysUser == null)
+                throw new Exception("No existe registro con esos datos.");
+
+            if (request.Method == 1)
+            {
+                if (request.Channel == 1)
+                    await PrecheckFunctions.RegisterPhoneWA(request.PhoneCountryId, request.Phone);
+                else
+                    await PrecheckFunctions.RegisterPhoneSms(request.PhoneCountryId, request.Phone);
+            }
+            else
+            {
+                await PrecheckFunctions.RegisterEmail(request.Email);
+            }
+        }
     }
 }
