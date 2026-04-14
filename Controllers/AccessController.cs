@@ -128,7 +128,7 @@ namespace HeroServer.Controllers
 
         // GET services/access/ResetPassword
         [HttpPost("ResetPassword")]
-        public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordRequest resetPasswordRequest)
+        public async Task<ActionResult<long>> ResetPassword([FromBody] ResetPasswordRequest resetPasswordRequest)
         {
             try
             {
@@ -136,7 +136,25 @@ namespace HeroServer.Controllers
                 //if (!await FirebaseFunctions.Authorize(bntConnString, HttpContext, eMail))
                 //    return Unauthorized();
 
-                await AccessFunctions.ResetPassword(resetPasswordRequest);
+                return Ok(await AccessFunctions.ResetPassword(resetPasswordRequest));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // GET services/access/UpdatePassword
+        [HttpPut("UpdatePassword")]
+        public async Task<ActionResult> UpdatePassword([FromBody] UpdatePasswordRequest updatePasswordRequest)
+        {
+            try
+            {
+                // UID ?
+                //if (!await FirebaseFunctions.Authorize(bntConnString, HttpContext, eMail))
+                //    return Unauthorized();
+
+                await AccessFunctions.UpdatePassword(updatePasswordRequest);
                 return Ok();
             }
             catch (Exception ex)

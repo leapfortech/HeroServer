@@ -288,7 +288,7 @@ namespace HeroServer
             return new LoginBoardResponse(boardUser, webSysUser, 1);
         }
 
-        public static async Task ResetPassword(ResetPasswordRequest request)
+        public static async Task<long> ResetPassword(ResetPasswordRequest request)
         {
             WebSysUser webSysUser = await new WebSysUserDB().GetByEmail(request.Email);
 
@@ -306,6 +306,13 @@ namespace HeroServer
             {
                 await PrecheckFunctions.RegisterEmail(request.Email);
             }
+
+            return webSysUser.Id;
+        }
+
+        public static async Task UpdatePassword(UpdatePasswordRequest request)
+        {
+            await WebSysUserFunctions.SetPassword(new WebSysPasswordRequest(request.WebSysUserId, request.Password));
         }
     }
 }
