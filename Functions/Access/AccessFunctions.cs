@@ -288,31 +288,66 @@ namespace HeroServer
             return new LoginBoardResponse(boardUser, webSysUser, 1);
         }
 
-        public static async Task<long> ResetPassword(ResetPasswordRequest request)
+        public static async Task<long> ResetPassword(PasswordRequest passwordRequest)
         {
-            WebSysUser webSysUser = await new WebSysUserDB().GetByEmail(request.Email);
+            WebSysUser webSysUser = await new WebSysUserDB().GetByEmail(passwordRequest.Email);
 
             if (webSysUser == null)
                 throw new Exception("No existe registro con esos datos.");
 
-            if (request.Method == 1)
+            if (passwordRequest.Method == 1)
             {
-                if (request.Channel == 1)
-                    await PrecheckFunctions.RegisterPhoneWA(request.PhoneCountryId, request.Phone);
+                if (passwordRequest.PhoneChannel == 1)
+                    await PrecheckFunctions.RegisterPhoneWA(passwordRequest.PhoneCountryId, passwordRequest.Phone);
                 else
-                    await PrecheckFunctions.RegisterPhoneSms(request.PhoneCountryId, request.Phone);
+                    await PrecheckFunctions.RegisterPhoneSms(passwordRequest.PhoneCountryId, passwordRequest.Phone);
             }
             else
             {
-                await PrecheckFunctions.RegisterEmail(request.Email);
+                await PrecheckFunctions.RegisterEmail(passwordRequest.Email);
             }
 
             return webSysUser.Id;
         }
 
-        public static async Task UpdatePassword(UpdatePasswordRequest request)
+        public static async Task UpdatePassword(UpdatePasswordRequest updatePasswordRequest)
         {
-            await WebSysUserFunctions.SetPassword(new WebSysPasswordRequest(request.WebSysUserId, request.Password));
+            await WebSysUserFunctions.SetPassword(new WebSysPasswordRequest(updatePasswordRequest.WebSysUserId, updatePasswordRequest.Password));
+        }
+
+        public static async Task ResetAccount(AccountRequest accountRequest)
+        {
+            WebSysUser webSysUser = await new WebSysUserDB().GetById(accountRequest.WebSysUserId);
+
+            if (webSysUser == null)
+                throw new Exception("No existe registro con esos datos.");
+
+            if (accountRequest.Method == 1)
+            {
+                if (accountRequest.PhoneChannel == 1)
+                    await PrecheckFunctions.RegisterPhoneWA(accountRequest.PhoneCountryId, accountRequest.Phone);
+                else
+                    await PrecheckFunctions.RegisterPhoneSms(accountRequest.PhoneCountryId, accountRequest.Phone);
+            }
+            else
+            {
+                await PrecheckFunctions.RegisterEmail(accountRequest.Email);
+            }
+        }
+
+        public static async Task UpdateAccount(UpdateAccountRequest updateAccountRequest)
+        {
+            if (updateAccountRequest.PhoneCountryId == -1)
+            {
+                await WebSysUserFunctions.UpdateMail(updateAccountRequest.WebSysUserId, updateAccountRequest.Email);
+                await WebSysUserFunctions.UpdatePhone(new PhoneRequest(updateAccountRequest.WebSysUserId,
+                                                                       updateAccountRequest.PhoneCountryId,
+                                                                       updateAccountRequest.Phone));
+            }
+            else
+            {
+                await WebSysUserFunctions.UpdateMail(updateAccountRequest.WebSysUserId, updateAccountRequest.Email);
+            }
         }
     }
 }

@@ -218,7 +218,7 @@ namespace HeroServer
             }
         }
 
-        public static async Task UpdateMail(int webSysUserId, String newEmail)
+        public static async Task UpdateMail(long webSysUserId, String newEmail)
         {
             String authUserId = (await new WebSysUserDB().GetById(webSysUserId)).AuthUserId;
 
