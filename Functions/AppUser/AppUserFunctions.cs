@@ -141,12 +141,6 @@ namespace HeroServer
             }
         }
 
-        public static async Task UpdatePhone(PhoneRequest phoneRequest)
-        {
-            phoneRequest.Id = await AppUserFunctions.GetWebSysUserId(phoneRequest.Id);
-            await WebSysUserFunctions.UpdatePhone(phoneRequest);
-        }
-
         public static async Task<bool> UpdateOptions(long id, long options)
         {
             return await new AppUserDB().UpdateOptions(id, options);
@@ -233,7 +227,6 @@ namespace HeroServer
         }
 
         // DELETE
-
         public static async Task DeleteById(long id, bool delAuthUser = true)
         {
             long webSysUserId = await new AppUserDB().GetWebSysUserId(id);

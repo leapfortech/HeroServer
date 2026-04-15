@@ -145,24 +145,6 @@ namespace HeroServer.Controllers
             }
         }
 
-        // PUT services/appUser/UpdatePhone?id=1&options=1
-        [HttpPut("UpdatePhone")]
-        public async Task<ActionResult> UpdatePhone([FromBody]PhoneRequest phoneRequest)
-        {
-            try
-            {
-                //if (!await FirebaseFunctions.AuthorizeAppUser(blcConnString, HttpContext, Convert.ToInt32(id), "AppUser.UpdateOptions"))
-                //    return Unauthorized();
-
-                await AppUserFunctions.UpdatePhone(phoneRequest);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         // PUT services/appUser/UpdateOptions?id=1&options=1
         [HttpPut("UpdateOptions")]
         public async Task<ActionResult> UpdateOptions([FromQuery]String id, [FromQuery]String options)
