@@ -337,7 +337,7 @@ namespace HeroServer
 
         public static async Task UpdateAccount(UpdateAccountRequest updateAccountRequest)
         {
-            if (updateAccountRequest.PhoneCountryId == -1)
+            if (updateAccountRequest.PhoneCountryId != -1)
             {
                 await WebSysUserFunctions.UpdateMail(updateAccountRequest.WebSysUserId, updateAccountRequest.Email);
                 await WebSysUserFunctions.UpdatePhone(new PhoneRequest(updateAccountRequest.WebSysUserId,
