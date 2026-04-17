@@ -19,7 +19,7 @@ namespace HeroServer
         }
 
         public RadioFull(long id, long postId, long appUserId, String appUserAlias,
-                         long postSubtypeId, long postCountryId, long postStateId,
+                         long postTypeId, long postCountryId, long postStateId,
                          String title, String titleImage, String summary, String description,
                          int imageCount, int likeCount, DateTime publicationDateTime,
                          int postStatusId,
@@ -30,7 +30,7 @@ namespace HeroServer
                          List<RadioTypeFull> radioTypeFulls,
                          List<RadioLanguageFull> radioLanguageFulls,
                          List<String> images)
-            : base(postId, appUserId, appUserAlias, postSubtypeId,
+            : base(postId, appUserId, appUserAlias, postTypeId,
                    postCountryId, postStateId, title, titleImage, summary, description,
                    imageCount, likeCount, publicationDateTime, postStatusId,
                    contactFull, linkFulls, commentFulls)

@@ -20,7 +20,7 @@ namespace HeroServer
         }
 
         public RecipeFull(long id, long postId, long appUserId, String appUserAlias,
-                          long postSubtypeId, long postCountryId, long postStateId,
+                          long postTypeId, long postCountryId, long postStateId,
                           String title, String titleImage, String summary, String description,
                           int imageCount, int likeCount, DateTime publicationDateTime,
                           int postStatusId,
@@ -30,7 +30,7 @@ namespace HeroServer
                           long recipeTypeId, String ingredients, String preparation,
                           int portions, int cookingTime, int status,
                           List<String> images)
-            : base(postId, appUserId, appUserAlias, postSubtypeId,
+            : base(postId, appUserId, appUserAlias, postTypeId,
                    postCountryId, postStateId, title, titleImage, summary, description,
                    imageCount, likeCount, publicationDateTime, postStatusId,
                    contactFull, linkFulls, commentFulls)

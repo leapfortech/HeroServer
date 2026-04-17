@@ -112,7 +112,7 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
-            long postSubtypeId = 0;
+            long postTypeId = 0;
             using (conn)
             {
                 await conn.OpenAsync();
@@ -120,11 +120,11 @@ namespace HeroServer
                 {
                     if (await reader.ReadAsync())
                     {
-                        postSubtypeId = Convert.ToInt64(reader["PostTypeId"]);
+                        postTypeId = Convert.ToInt64(reader["PostTypeId"]);
                     }
                 }
             }
-            return postSubtypeId;
+            return postTypeId;
         }
 
         public async Task<int> GetImageCount(long id)

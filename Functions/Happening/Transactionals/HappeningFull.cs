@@ -27,7 +27,7 @@ namespace HeroServer
         }
 
         public HappeningFull(long id, long postId, long appUserId, String appUserAlias,
-                             long postSubtypeId,
+                             long postTypeId,
                              long postCountryId, long postStateId,
                              String title, String titleImage, String summary, String description,
                              int imageCount, int likeCount, DateTime publicationDateTime,
@@ -41,7 +41,7 @@ namespace HeroServer
                              String location, double? latitude, double? longitude,
                              int status,
                              List<String> images)
-            : base(postId, appUserId, appUserAlias, postSubtypeId,
+            : base(postId, appUserId, appUserAlias, postTypeId,
                    countryId, stateId, title, titleImage, summary, description,
                    imageCount, likeCount, publicationDateTime, postStatus,
                    contactFull, linkFulls, commentFulls)
