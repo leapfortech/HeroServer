@@ -106,7 +106,7 @@ namespace HeroServer
 
                             " INNER JOIN [J-IdentityAppUser] IAU ON IAU.AppUserId = Referred.AppUserId AND IAU.Status = 1" +
                             " INNER JOIN [D-Identity] IReferrer ON IReferrer.Id = IAU.IdentityId" +
-                            " INNER JOIN [K-Country] CReferrer ON CReferrer.Id = IReferrer.PhoneCountryId";
+                            " LEFT JOIN [K-Country] CReferrer ON CReferrer.Id = IReferrer.PhoneCountryId";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -200,7 +200,7 @@ namespace HeroServer
 
         public async Task<IEnumerable<ReferredFull>> GetHistory(long appUserId, DateTime startDate, DateTime endDate)
         {
-            String strCmd = @"SELECT referred.Id, referred.Code, idt.FirstName1, idt.FirstName2," +
+            String strCmd = @"SELECT referred.Id, referred.Code, referred.AppUserId, idt.FirstName1, idt.FirstName2," +
                              " idt.LastName1, idt.LastName2, idt.PhoneCountryId AS PhonePrefix," +
                              " idt.Phone, idt.Email, referred.CreateDateTime" +
                              " FROM [D-Referred] referred" +
