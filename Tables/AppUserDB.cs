@@ -169,7 +169,8 @@ namespace HeroServer
                             $" FROM {table} AS AppUser" +
                             " INNER JOIN [D-WebSysUser] AS WebSysUser ON (WebSysUser.Id = AppUser.WebSysUserId)" +
                             " LEFT JOIN [K-Country] AS KPhoneCountry ON (KPhoneCountry.Id = WebSysUser.PhoneCountryId)" +
-                            " WHERE AppUser.AppUserStatusId = @AppUserStatusId";
+                            " WHERE AppUser.Options = 1 AND AppUser.AppUserStatusId = @AppUserStatusId";
+                            // AppUser.Options = 1 - Onboarding == 1
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
