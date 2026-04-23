@@ -22,8 +22,14 @@ namespace HeroServer
                                 Convert.ToInt32(reader["Status"]));
         }
 
-        private static ReferredFull GetReferredFull(SqlDataReader reader)
+        private static ReferredFull GetReferredFull(SqlDataReader reader, bool includeReferrer)
         {
+            ReferrerFull referrer = null;
+
+            if (includeReferrer)
+                referrer = GetReferrerFull(reader);
+
+
             return new ReferredFull(Convert.ToInt64(reader["Id"]),
                                     reader["Code"].ToString(),
                                     Convert.ToInt64(reader["AppUserId"]),
@@ -35,7 +41,7 @@ namespace HeroServer
                                     reader["Phone"].ToString(),
                                     reader["Email"].ToString(),
                                     Convert.ToDateTime(reader["CreateDateTime"]),
-                                    GetReferrerFull(reader));
+                                    referrer);
         }
 
         private static ReferrerFull GetReferrerFull(SqlDataReader reader)
@@ -118,7 +124,7 @@ namespace HeroServer
                 {
                     while (await reader.ReadAsync())
                     {
-                        ReferredFull referredFull = GetReferredFull(reader);
+                        ReferredFull referredFull = GetReferredFull(reader, true);
                         referredFulls.Add(referredFull);
                     }
                 }
@@ -223,7 +229,7 @@ namespace HeroServer
                 {
                     while (await reader.ReadAsync())
                     {
-                        ReferredFull referredFull = GetReferredFull(reader);
+                        ReferredFull referredFull = GetReferredFull(reader, false);
                         referredFulls.Add(referredFull);
                     }
                 }
