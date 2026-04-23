@@ -56,7 +56,7 @@ namespace HeroServer
 
                                SELECT BU.Id AS BoardUserId,
                                I.Id, I.FirstName1, I.FirstName2, I.LastName1, I.LastName2,
-                               I.GenderId, I.BirthDate, I.OriginCountryId, I.OriginStateId,
+                               I.GenderId, I.BirthDate, I.BirthCountryId, I.BirthStateId, I.BirthCityId,
                                I.PhoneCountryId, I.Phone, I.Email,
                                I.CreateDateTime, I.UpdateDateTime, I.Status
                                FROM {table} BU
