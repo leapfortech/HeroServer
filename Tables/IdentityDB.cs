@@ -89,11 +89,11 @@ namespace HeroServer
                              " KPhoneCountry.PhonePrefix AS PhonePrefix, Phone, Email," +
                              " Idt.CreateDateTime, Idt.UpdateDateTime, AppUser.AppUserStatusId, Idt.Status" +
                             $" FROM {table} AS Idt" +
-                             " INNER JOIN [K-Gender] AS KGender ON (KGender.Id = Idt.GenderId)" +
-                             " INNER JOIN [K-Country] AS KCountry ON (KCountry.Id = Idt.BirthCountryId)" +
-                             " INNER JOIN [K-State] AS KState ON (KState.Id = Idt.BirthStateId)" +
-                             " INNER JOIN [K-City] AS KCity ON (KCity.Id = Idt.BirthCityId)" +
-                             " INNER JOIN [K-Country] AS KPhoneCountry ON (KPhoneCountry.Id = Idt.PhoneCountryId)" +
+                             " LEFT JOIN [K-Gender] AS KGender ON (KGender.Id = Idt.GenderId)" +
+                             " LEFT JOIN [K-Country] AS KCountry ON (KCountry.Id = Idt.BirthCountryId)" +
+                             " LEFT JOIN [K-State] AS KState ON (KState.Id = Idt.BirthStateId)" +
+                             " LEFT JOIN [K-City] AS KCity ON (KCity.Id = Idt.BirthCityId)" +
+                             " LEFT JOIN [K-Country] AS KPhoneCountry ON (KPhoneCountry.Id = Idt.PhoneCountryId)" +
 
                              " INNER JOIN [J-IdentityAppUser] AS IAU ON IAU.IdentityId = Idt.Id AND IAU.Status = 1" +
                              " INNER JOIN [D-AppUser] AS AppUser ON AppUser.Id = IAU.AppUserId";

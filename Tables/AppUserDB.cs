@@ -168,7 +168,7 @@ namespace HeroServer
                             " AppUser.CreateDateTime, AppUser.UpdateDateTime, AppUser.AppUserStatusId" +
                             $" FROM {table} AS AppUser" +
                             " INNER JOIN [D-WebSysUser] AS WebSysUser ON (WebSysUser.Id = AppUser.WebSysUserId)" +
-                            " INNER JOIN [K-Country] AS KPhoneCountry ON (KPhoneCountry.Id = WebSysUser.PhoneCountryId)" +
+                            " LEFT JOIN [K-Country] AS KPhoneCountry ON (KPhoneCountry.Id = WebSysUser.PhoneCountryId)" +
                             " WHERE AppUser.AppUserStatusId = @AppUserStatusId";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
