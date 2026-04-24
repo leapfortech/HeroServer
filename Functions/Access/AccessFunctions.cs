@@ -266,6 +266,7 @@ namespace HeroServer
             FirebaseToken token = await FirebaseFunctions.GetAuthToken(httpContext);
             WebSysUser webSysUser = await WebSysUserFunctions.GetByEmail(loginRequest.Email);
             BoardUser boardUser = await BoardUserFunctions.GetByWebSysUserId(webSysUser.Id);
+            Identity identity = await IdentityFunctions.GetByBoardUserId(boardUser.Id, 1);
 
             // Log
             int statusId = boardUser == null ? 0 : 1;
@@ -285,7 +286,7 @@ namespace HeroServer
             if (statusId == 0)
                 throw new Exception("Board User not found.");
 
-            return new LoginBoardResponse(boardUser, webSysUser, 1);
+            return new LoginBoardResponse(boardUser, webSysUser, identity, 1);
         }
 
         public static async Task<long> ResetPassword(PasswordRequest passwordRequest)
