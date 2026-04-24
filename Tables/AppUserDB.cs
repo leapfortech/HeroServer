@@ -199,6 +199,7 @@ namespace HeroServer
             List<UserInfo> userInfos = new List<UserInfo>();
             List<AppUserFull> appUserFulls = new List<AppUserFull>();
             Dictionary<long, IdentityFull> identityByAppUserId = new Dictionary<long, IdentityFull>();
+            Dictionary<long, AddressFull> addressByAppUserId = new Dictionary<long, AddressFull>();
 
             String strCmd = @"  SELECT 
                                     AppUser.Id,
@@ -242,7 +243,29 @@ namespace HeroServer
                                 LEFT JOIN [K-Country] AS KPhoneCountry ON KPhoneCountry.Id = Idt.PhoneCountryId
                                 INNER JOIN [J-IdentityAppUser] AS IAU ON IAU.IdentityId = Idt.Id AND IAU.Status = 1
                                 INNER JOIN [D-AppUser] AS AppUser ON AppUser.Id = IAU.AppUserId
-                                WHERE AppUser.AppUserStatusId = @AppUserStatusId;";
+                                WHERE Idt.Status = 1 AND AppUser.AppUserStatusId = @AppUserStatusId;
+
+
+                                SELECT 
+                                    Adr.Id,
+                                    KCountry.Name AS Country,
+                                    KState.Name AS State,
+                                    KCity.Name AS City,
+                                    Adr.Address1,
+                                    Adr.Address2,
+                                    Adr.Zone,
+                                    Adr.ZipCode,
+                                    Adr.Latitude,
+                                    Adr.Longitude,
+                                    Adr.Status,
+                                    JAA.AppUserId
+                                FROM [D-Address] AS Adr
+                                LEFT JOIN [K-Country] AS KCountry ON KCountry.Id = Adr.CountryId
+                                LEFT JOIN [K-State] AS KState ON KState.Id = Adr.StateId
+                                LEFT JOIN [K-City] AS KCity ON KCity.Id = Adr.CityId
+                                INNER JOIN [J-AddressAppUser] AS JAA ON JAA.AddressId = Adr.Id AND JAA.Status = 1
+                               INNER JOIN [D-AppUser] AS AppUser ON AppUser.Id = JAA.AppUserId
+                               WHERE Adr.Status = 1 AND AppUser.AppUserStatusId = @AppUserStatusId;";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
             DBHelper.AddParam(command, "@AppUserStatusId", SqlDbType.Int, status);
@@ -269,18 +292,34 @@ namespace HeroServer
                         if (!identityByAppUserId.ContainsKey(appUserId))
                             identityByAppUserId.Add(appUserId, identity);
                     }
+
+                    await reader.NextResultAsync();
+
+                    while (await reader.ReadAsync())
+                    {
+                        AddressFull address = AddressDB.GetAddressFull(reader);
+                        long appUserId = Convert.ToInt64(reader["AppUserId"]);
+
+                        if (!addressByAppUserId.ContainsKey(appUserId))
+                            addressByAppUserId.Add(appUserId, address);
+                    }
                 }
             }
 
             for (int i = 0; i < appUserFulls.Count; i++)
             {
                 AppUserFull appUserFull = appUserFulls[i];
+
                 IdentityFull identityFull = null;
+                AddressFull addressFull = null;
 
                 if (identityByAppUserId.ContainsKey(appUserFull.Id))
                     identityFull = identityByAppUserId[appUserFull.Id];
 
-                userInfos.Add(new UserInfo(appUserFull, identityFull));
+                if (addressByAppUserId.ContainsKey(appUserFull.Id))
+                    addressFull = addressByAppUserId[appUserFull.Id];
+
+                userInfos.Add(new UserInfo(appUserFull, identityFull, addressFull));
             }
 
             return userInfos;

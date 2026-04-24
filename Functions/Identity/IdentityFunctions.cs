@@ -75,6 +75,8 @@ namespace HeroServer
         public static async Task<long> RegisterByBoardUser(long boardUserId, RegisterBoardRequest registerBoardRequest)
         {
             long identityId;
+            DateTime sqlMinDate = new DateTime(1753, 1, 1);
+
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 IdentityBoardUser identityBoardUser = await new IdentityBoardUserDB().GetByBoardUserId(boardUserId);
@@ -88,7 +90,7 @@ namespace HeroServer
                                                                       registerBoardRequest.FirstName2,
                                                                       registerBoardRequest.LastName1,
                                                                       registerBoardRequest.LastName2,
-                                                                      -1, registerBoardRequest.BirthDate,
+                                                                      -1, sqlMinDate,
                                                                       -1, -1, -1, -1, null, null, 1));
 
                 identityBoardUser = new IdentityBoardUser(-1, boardUserId, identityId, DateTime.Now, DateTime.Now, 1);
