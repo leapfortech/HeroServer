@@ -48,6 +48,7 @@ namespace HeroServer
         {
             return new AppUserFull(Convert.ToInt64(reader["Id"]),
                                    reader["AuthUserId"].ToString(),
+                                   reader["Alias"].ToString(),
                                    reader["Email"].ToString(),
                                    reader["PhonePrefix"].ToString(),
                                    reader["Phone"].ToString(),
@@ -164,7 +165,7 @@ namespace HeroServer
 
         public async Task<List<AppUserFull>> GetFullByStatus(int status)
         {
-            String strCmd = "SELECT AppUser.Id, WebSysUser.AuthUserId, WebSysUser.Email, KPhoneCountry.PhonePrefix, WebSysUser.Phone," +
+            String strCmd = "SELECT AppUser.Id, WebSysUser.AuthUserId, AppUser.Alias, WebSysUser.Email, KPhoneCountry.PhonePrefix, WebSysUser.Phone," +
                             " AppUser.CreateDateTime, AppUser.UpdateDateTime, AppUser.AppUserStatusId" +
                             $" FROM {table} AS AppUser" +
                             " INNER JOIN [D-WebSysUser] AS WebSysUser ON (WebSysUser.Id = AppUser.WebSysUserId)" +
@@ -191,6 +192,98 @@ namespace HeroServer
             }
 
             return appUserFulls;
+        }
+
+        public async Task<List<UserInfo>> GetUserInfoByStatus(int status)
+        {
+            List<UserInfo> userInfos = new List<UserInfo>();
+            List<AppUserFull> appUserFulls = new List<AppUserFull>();
+            Dictionary<long, IdentityFull> identityByAppUserId = new Dictionary<long, IdentityFull>();
+
+            String strCmd = @"  SELECT 
+                                    AppUser.Id,
+                                    WebSysUser.AuthUserId,
+                                    AppUser.Alias,
+                                    WebSysUser.Email,
+                                    KPhoneCountry.PhonePrefix,
+                                    WebSysUser.Phone,
+                                    AppUser.CreateDateTime,
+                                    AppUser.UpdateDateTime,
+                                    AppUser.AppUserStatusId
+                                FROM [D-AppUser] AS AppUser
+                                INNER JOIN [D-WebSysUser] AS WebSysUser ON WebSysUser.Id = AppUser.WebSysUserId
+                                LEFT JOIN [K-Country] AS KPhoneCountry ON KPhoneCountry.Id = WebSysUser.PhoneCountryId
+                                WHERE AppUser.AppUserStatusId = @AppUserStatusId;
+
+                                SELECT 
+                                    Idt.Id,
+                                    Idt.FirstName1,
+                                    Idt.FirstName2,
+                                    Idt.LastName1,
+                                    Idt.LastName2,
+                                    KGender.Name AS Gender,
+                                    Idt.BirthDate,
+                                    KCountry.Name AS BirthCountry,
+                                    KState.Name AS BirthState,
+                                    KCity.Name AS BirthCity,
+                                    KPhoneCountry.PhonePrefix,
+                                    Idt.Phone,
+                                    Idt.Email,
+                                    Idt.CreateDateTime,
+                                    Idt.UpdateDateTime,
+                                    AppUser.AppUserStatusId,
+                                    Idt.Status,
+                                    IAU.AppUserId
+                                FROM [D-Identity] AS Idt
+                                LEFT JOIN [K-Gender] AS KGender ON KGender.Id = Idt.GenderId
+                                LEFT JOIN [K-Country] AS KCountry ON KCountry.Id = Idt.BirthCountryId
+                                LEFT JOIN [K-State] AS KState ON KState.Id = Idt.BirthStateId
+                                LEFT JOIN [K-City] AS KCity ON KCity.Id = Idt.BirthCityId
+                                LEFT JOIN [K-Country] AS KPhoneCountry ON KPhoneCountry.Id = Idt.PhoneCountryId
+                                INNER JOIN [J-IdentityAppUser] AS IAU ON IAU.IdentityId = Idt.Id AND IAU.Status = 1
+                                INNER JOIN [D-AppUser] AS AppUser ON AppUser.Id = IAU.AppUserId
+                                WHERE AppUser.AppUserStatusId = @AppUserStatusId;";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+            DBHelper.AddParam(command, "@AppUserStatusId", SqlDbType.Int, status);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        AppUserFull appUser = AppUserDB.GetAppUserFull(reader);
+                        appUserFulls.Add(appUser);
+                    }
+
+                    await reader.NextResultAsync();
+
+                    while (await reader.ReadAsync())
+                    {
+                        IdentityFull identity = IdentityDB.GetIdentityFull(reader);
+                        long appUserId = Convert.ToInt64(reader["AppUserId"]);
+
+                        if (!identityByAppUserId.ContainsKey(appUserId))
+                            identityByAppUserId.Add(appUserId, identity);
+                    }
+                }
+            }
+
+            for (int i = 0; i < appUserFulls.Count; i++)
+            {
+                AppUserFull appUserFull = appUserFulls[i];
+                IdentityFull identityFull = null;
+
+                if (identityByAppUserId.ContainsKey(appUserFull.Id))
+                    identityFull = identityByAppUserId[appUserFull.Id];
+
+                userInfos.Add(new UserInfo(appUserFull, identityFull));
+            }
+
+            return userInfos;
         }
 
         public async Task<int> GetCountAll()
