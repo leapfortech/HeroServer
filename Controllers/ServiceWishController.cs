@@ -27,7 +27,7 @@ namespace HeroServer.Controllers
 
         // POST services/servicewish/AllByType/
         [HttpPost("AllByType")]
-        public async Task<ActionResult<ServiceWishAllRsp>> GetAllByType([FromQuery] ServiceWishAllByTypeReq req)
+        public async Task<ActionResult<ServiceWishAllRsp>> GetAllByType([FromBody] ServiceWishAllByTypeReq req)
         {
             try
             {

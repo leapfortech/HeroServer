@@ -73,7 +73,7 @@ namespace HeroServer
         {
             int offset = (req.Page - 1) * req.PageSize;
 
-            String strCmd =// Total count
+            String strCmd = // Total count
                             "SELECT COUNT(SW.Id) AS TotalCount " +
                             "FROM [D-ServiceWish] AS SW " +
                             "WHERE (@Status = -1 OR SW.Status = @Status) " +
