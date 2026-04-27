@@ -76,7 +76,8 @@ namespace HeroServer
                 long identityId = await new IdentityDB().Add(registerReferredRequest.Identity);
 
                 referred.AppUserId = registerReferredRequest.AppUserId;
-                referred.Code = String.Format("{0}{1:yyMMddHHmm}", referred.AppUserId, DateTime.Now);
+                //referred.Code = String.Format("{0}{1:yyMMddHHmm}", referred.AppUserId, DateTime.Now);
+                referred.Code = GenerateCode(referred.AppUserId);
                 referred.IdentityId = identityId;
                 referred.Status = 1;
                 referred.Id = await new ReferredDB().Add(referred);
@@ -112,6 +113,34 @@ namespace HeroServer
             await new ReferredDB().DeleteByAppUserId(appUserId);
         }
 
+        private static string Base36(long value)
+        {
+            const String chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            if (value == 0) return "0";
+
+            string result = "";
+            while (value > 0)
+            {
+                result = chars[(int)(value % 36)] + result;
+                value /= 36;
+            }
+            return result;
+        }
+
+        public static String GenerateCode(long appUserId)
+        {
+            long mixed = appUserId ^ DateTime.UtcNow.Ticks;
+
+            string code = Base36(Math.Abs(mixed));
+
+            if (code.Length > 8)
+                code = code.Substring(0, 8);
+            else
+                code = code.PadLeft(8, '0');
+
+            return code;
+        }
+
         // Email
         public static async Task<int> SendEmail(Referred referred, ILogger logger)
         {
@@ -123,11 +152,11 @@ namespace HeroServer
             String link = "https://www.heroesmigrantes.com/";
 
             String body = $"Estimad@ {referredName}," +
-                          $" fuiste referido {appUserName}para descargar la aplicación móvil de Héroes Migrantes.<br><br>" +
+                          $" fuiste referid@ por {appUserName} para descargar la aplicación móvil de Héroes Migrantes.<br><br>" +
                           " Presiona el siguiente link para descargarla.<br><br>" +
                           $" <a href='{link}'>Descargar</a><br><br>" +
                           " No olvides ingresar el siguiente código al momento de tu registro" +
-                          $" para obtener los mejores beneficios: <strong>{referred.Id}</strong>.";
+                          $" para obtener los mejores beneficios: <strong>{referred.Code}</strong>.";
 
             String message = HtmlHelper.GetConfirmResultHtml("Heroes Migrantes", body, "#666666");
             if (message == null)
