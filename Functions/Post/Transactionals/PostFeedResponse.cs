@@ -9,13 +9,9 @@ namespace HeroServer
 
         public int Total { get; set; }
 
-        // CURSORS
-        public string NextCursor { get; set; }
-        public string PrevCursor { get; set; }
-
-        public PostFeedResponse(int pageSize)
+        public PostFeedResponse(int count)
         {
-            PostFulls = new List<PostFull>(pageSize);
+            PostFulls = new List<PostFull>(count);
         }
     }
 }
