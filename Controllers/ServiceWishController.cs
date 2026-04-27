@@ -11,20 +11,6 @@ namespace HeroServer.Controllers
     [ApiController]
     public class ServiceWishController : Controller
     {
-        // GET services/servicewish/AllByType/
-        [HttpGet("AllByType")]
-        public async Task<ActionResult<ServiceWishAllRsp>> GetAllByType([FromQuery] ServiceWishAllByTypeReq req)
-        {
-            try
-            {
-                return Ok(await ServiceWishFunctions.GetAllByType(req));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         // GET services/servicewish/GetById/?id=1
         [HttpGet("GetById")]
         public async Task<ActionResult<List<ServiceWish>>> GetById([FromQuery] String id)
@@ -32,6 +18,20 @@ namespace HeroServer.Controllers
             try
             {
                 return Ok(await ServiceWishFunctions.GetById(Convert.ToInt64(id)));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // POST services/servicewish/AllByType/
+        [HttpPost("AllByType")]
+        public async Task<ActionResult<ServiceWishAllRsp>> GetAllByType([FromQuery] ServiceWishAllByTypeReq req)
+        {
+            try
+            {
+                return Ok(await ServiceWishFunctions.GetAllByType(req));
             }
             catch (Exception ex)
             {
