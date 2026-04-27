@@ -11,13 +11,13 @@ namespace HeroServer.Controllers
     [ApiController]
     public class ServiceWishController : Controller
     {
-        // GET services/servicewish/GetAllByStatus/?status=1
-        [HttpGet("FullsByStatus")]
-        public async Task<ActionResult<List<ServiceWish>>> GetAllByStatus([FromQuery] String status)
+        // GET services/servicewish/AllByType/
+        [HttpGet("AllByType")]
+        public async Task<ActionResult<ServiceWishAllRsp>> GetAllByType([FromQuery] ServiceWishAllByTypeReq req)
         {
             try
             {
-                return Ok(await ServiceWishFunctions.GetAllByStatus(Convert.ToInt32(status)));
+                return Ok(await ServiceWishFunctions.GetAllByType(req));
             }
             catch (Exception ex)
             {

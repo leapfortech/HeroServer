@@ -11,7 +11,7 @@ namespace HeroServer
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
         readonly String table = "[D-ServiceWish]";
 
-        private static ServiceWish GetServiceWish(SqlDataReader reader)
+        public static ServiceWish GetServiceWish(SqlDataReader reader)
         {
             return new ServiceWish(Convert.ToInt64(reader["Id"]),
                                    Convert.ToInt64(reader["AppUserId"]),
@@ -67,6 +67,62 @@ namespace HeroServer
                 }
             }
             return serviceWishs;
+        }
+
+        public async Task<ServiceWishAllRsp> GetAllByType(ServiceWishAllByTypeReq req)
+        {
+            int offset = (req.Page - 1) * req.PageSize;
+
+            String strCmd =// Total count
+                            "SELECT COUNT(SW.Id) AS TotalCount " +
+                            "FROM [D-ServiceWish] AS SW " +
+                            "WHERE (@Status = -1 OR SW.Status = @Status) " +
+                            "AND (@ServiceWishTypeId = -1 OR SW.ServiceTypeId = @ServiceWishTypeId);" +
+
+                            // Data
+                            "SELECT SW.Id, SW.AppUserId, SW.ServiceTypeId, SW.Comment, " +
+                            "SW.CreateDateTime, SW.UpdateDateTime, SW.Status " +
+                            "FROM [D-ServiceWish] AS SW " +
+                            "WHERE (@Status = -1 OR SW.Status = @Status) " +
+                            "AND (@ServiceWishTypeId = -1 OR SW.ServiceTypeId = @ServiceWishTypeId) " +
+                            "ORDER BY SW.CreateDateTime DESC " +
+                            "OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, req.Status);
+            DBHelper.AddParam(command, "@ServiceWishTypeId", SqlDbType.BigInt, req.ServiceWishTypeId);
+            DBHelper.AddParam(command, "@Offset", SqlDbType.Int, offset);
+            DBHelper.AddParam(command, "@PageSize", SqlDbType.Int, req.PageSize);
+
+            ServiceWishAllRsp response = null;
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    // 1. Total count
+                    int totalCount = 0;
+                    if (await reader.ReadAsync())
+                        totalCount = Convert.ToInt32(reader["TotalCount"]);
+
+                    int totalPages = (int)Math.Ceiling((double)totalCount / req.PageSize);
+
+                    // 2. Data
+                    await reader.NextResultAsync();
+
+                    List<ServiceWish> serviceWishs = new List<ServiceWish>();
+
+                    while (await reader.ReadAsync())
+                        serviceWishs.Add(GetServiceWish(reader));
+
+                    response = new ServiceWishAllRsp(req.Page, totalPages, serviceWishs);
+                }
+            }
+
+            return response;
         }
 
         public async Task<ServiceWish> GetById(long id)

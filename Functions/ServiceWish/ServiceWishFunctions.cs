@@ -8,9 +8,9 @@ namespace HeroServer
     public class ServiceWishFunctions
     {
         // GET
-        public static async Task<List<ServiceWish>> GetAllByStatus(int status)
+        public static async Task<ServiceWishAllRsp> GetAllByType(ServiceWishAllByTypeReq req)
         {
-            return await new ServiceWishDB().GetAllByStatus(status);
+            return await new ServiceWishDB().GetAllByType(req);
         }
 
         public static async Task<ServiceWish> GetById(long id)
