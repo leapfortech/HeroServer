@@ -8,6 +8,8 @@ namespace HeroServer
         public long CountryId { get; set; }
         public String Number { get; set; }
         public String Code { get; set; }
+        public String WACode { get; set; }
+        public String WAStatus { get; set; }
         public String CountryCode { get; set; }
         public String CallerName { get; set; }
         public String CarrierCountryCode { get; set; }
@@ -22,13 +24,15 @@ namespace HeroServer
         {
         }
 
-        public PrecheckPhone(long id, long countryId, String number, String code, String countryCode, String callerName, String carrierCountryCode,
+        public PrecheckPhone(long id, long countryId, String number, String code, String wACode, String wAStatus, String countryCode, String callerName, String carrierCountryCode,
                              String carrierNetworkCode, String carrierName, String carrierType, DateTime createDateTime,
                              DateTime updateDateTime, int status)
         {
             Id = id;
             CountryId = countryId;
             Code = code;
+            WACode = wACode;
+            WAStatus = wAStatus;
             Number = number;
             CountryCode = countryCode;
             CallerName = callerName;

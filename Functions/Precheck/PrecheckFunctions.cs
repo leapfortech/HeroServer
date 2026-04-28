@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using System.Net;
 using System.Net.Http;
@@ -19,11 +21,21 @@ namespace HeroServer
         private static String twilioAuthToken = "";
         private static String twilioVerifySid = "";
 
+        private static String waUrl = "";
+        private static String waAccessToken = "";
+        private static String waPhoneNumberId = "";
+
+        private static HttpClient httpClient = new HttpClient();
+
         public static async void Initialize()
         {
             twilioAccountSid = await new SystemParamDB().GetValue("TwilioAccountSid");
             twilioAuthToken = await new SystemParamDB().GetValue("TwilioAuthToken");
             twilioVerifySid = await new SystemParamDB().GetValue("TwilioVerifySid");
+
+            waUrl = await new SystemParamDB().GetValue("WaUrl"); ;
+            waAccessToken = await new SystemParamDB().GetValue("WaAccessToken"); ;
+            waPhoneNumberId = await new SystemParamDB().GetValue("WaPhoneNumberId"); ;
         }
 
         // SMS
@@ -64,7 +76,7 @@ namespace HeroServer
                 else if (phoneInfo.Carrier != null && phoneInfo.Carrier.Type != "mobile")
                     result = -102;
 
-                await new PrecheckPhoneDB().Add(new PrecheckPhone(-1, phoneCountryId, phoneNumber, null, phoneInfo.CountryCode, phoneInfo.Caller?.Name,
+                await new PrecheckPhoneDB().Add(new PrecheckPhone(-1, phoneCountryId, phoneNumber, null, null, null, phoneInfo.CountryCode, phoneInfo.Caller?.Name,
                                                                   phoneInfo.Carrier?.MobileCountryCode, phoneInfo.Carrier?.MobileNetworkCode,
                                                                   phoneInfo.Carrier?.Name, phoneInfo.Carrier?.Type, DateTime.Now, DateTime.Now, result));
 
@@ -75,7 +87,7 @@ namespace HeroServer
                     return "MOBILE";
             }
             else
-                await new PrecheckPhoneDB().Add(new PrecheckPhone(-1, phoneCountryId, phoneNumber, null, null, null, null, null, null, null, DateTime.Now, DateTime.Now, 21));
+                await new PrecheckPhoneDB().Add(new PrecheckPhone(-1, phoneCountryId, phoneNumber, null, null, null, null, null, null, null, null, null, DateTime.Now, DateTime.Now, 21));
 
             await SendOTPSms(phoneComplete);
             return "OK";
@@ -159,10 +171,67 @@ namespace HeroServer
         }
 
         // WHATSAPP
-        //public static async Task SendOTPWA(String phoneNumber, String code)
-        //{
-        //    // WA CALL
-        //}
+        public static async Task<WAResponse> SendOTPWA(String phoneNumber, String code)
+        {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", waAccessToken);
+
+            String url = waUrl + waPhoneNumberId + "/messages";
+
+            WATemplateRequest request = new WATemplateRequest();
+            request.MessagingProduct = "whatsapp";
+            request.To = phoneNumber;
+            request.Type = "template";
+
+            request.Template = new WATemplateData();
+            request.Template.Name = "otp_verification_v1";
+
+            request.Template.Language = new WALanguageData();
+            request.Template.Language.Code = "es_MX";
+
+            request.Template.Components = new List<WAComponentData>();
+
+            // BODY
+            WAComponentData bodyComponent = new WAComponentData();
+            bodyComponent.Type = "body";
+            bodyComponent.Parameters = new List<WAParameterData>();
+
+            WAParameterData bodyParam = new WAParameterData();
+            bodyParam.Type = "text";
+            bodyParam.Text = code;
+
+            bodyComponent.Parameters.Add(bodyParam);
+
+            request.Template.Components.Add(bodyComponent);
+
+            // BUTTON
+            WAComponentData component = new WAComponentData();
+            component.Type = "button";
+            component.SubType = "url";
+            component.Index = "0";
+
+            component.Parameters = new List<WAParameterData>();
+
+            WAParameterData param = new WAParameterData();
+            param.Type = "text";
+            param.Text = code;
+
+            component.Parameters.Add(param);
+
+            request.Template.Components.Add(component);
+
+            String json = JsonSerializer.Serialize(request);
+            StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await httpClient.PostAsync(url, content);
+            String responseMessage = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+                throw new System.Exception("Error WhatsApp API: " + response.StatusCode + " - " + responseMessage);
+
+            WAResponse waResponse = JsonSerializer.Deserialize<WAResponse>(responseMessage);
+
+            return waResponse;
+        }
 
         public static async Task<String> RegisterPhoneWA(long phoneCountryId, String phoneNumber)
         {
@@ -173,9 +242,22 @@ namespace HeroServer
             
             String code = GenerateCode();
 
-            await new PrecheckPhoneDB().Add(new PrecheckPhone(-1, phoneCountryId, phoneNumber, code, null, null, null, null, null, null, DateTime.Now, DateTime.Now, 11));
+            long precheckId = await new PrecheckPhoneDB().Add(new PrecheckPhone(-1, phoneCountryId, phoneNumber, code, null, null, null, null, null, null, null, null, DateTime.Now, DateTime.Now, 11));
 
-            //await SendOTPWA(phoneComplete, code);
+            WAResponse waResponse = await SendOTPWA(phoneComplete, code);
+
+            String wamid = null;
+            String waStatus = null;
+
+            if (waResponse != null && waResponse.Messages != null && waResponse.Messages.Count > 0)
+            {
+                wamid = waResponse.Messages[0].Id;
+                waStatus = waResponse.Messages[0].MessageStatus;
+            }
+
+            await new PrecheckPhoneDB().UpdateWACode(precheckId, wamid);
+            await new PrecheckPhoneDB().UpdateWAStatus(precheckId, waStatus);
+            
             return "OK";
         }
 
