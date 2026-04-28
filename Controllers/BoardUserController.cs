@@ -25,20 +25,6 @@ namespace HeroServer.Controllers
             }
         }
 
-        // GET services/appUser/Fulls
-        [HttpGet("Fulls")]
-        public async Task<ActionResult<List<BoardUser>>> GetFulls()
-        {
-            try
-            {
-                return Ok(await BoardUserFunctions.GetFulls());
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         // GET services/boardUser/ById?id=1
         [HttpGet("ById")]
         public async Task<ActionResult<BoardUser>> GetById([FromQuery] String id)
@@ -74,6 +60,20 @@ namespace HeroServer.Controllers
             try
             {
                 return Ok(await BoardUserFunctions.GetCountByStatus(Convert.ToInt32(status)));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // POST services/boardUser/FullAllByName
+        [HttpPost("FullAllByName")]
+        public async Task<ActionResult<BoardUserFullAllRsp>> GetFullAllByName([FromBody] BoardUserAllByNameReq req)
+        {
+            try
+            {
+                return Ok(await BoardUserFunctions.GetFullAllByName(req));
             }
             catch (Exception ex)
             {

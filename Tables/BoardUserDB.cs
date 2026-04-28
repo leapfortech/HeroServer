@@ -44,28 +44,76 @@ namespace HeroServer
             return boardUsers;
         }
 
-        public async Task<IEnumerable<BoardUserFull>> GetFulls()
+        public async Task<BoardUserFullAllRsp> GetFullAllByName(BoardUserAllByNameReq req)
         {
-            String strCmd = $@"SELECT BU.Id, BU.WebSysUserId, BU.Alias, BU.CreateDateTime,
-                               BU.UpdateDateTime, BU.BoardUserStatusId,
-                               WSU.Id AS WSUId, WSU.Roles, WSU.AuthUserId, WSU.Email, WSU.PhoneCountryId,
-                               WSU.Phone, WSU.Pin, WSU.PinFails, WSU.PinDateTime, WSU.CreateDateTime AS WSUCreate,
-                               WSU.UpdateDateTime AS WSUUpdate, WSU.WebSysUserStatusId
-                               FROM {table} BU
-                               INNER JOIN [D-WebSysUser] WSU ON WSU.Id = BU.WebSysUserId;
+            req.Page = Math.Max(1, req.Page);
+            req.PageSize = Math.Max(1, req.PageSize);
 
-                               SELECT BU.Id AS BoardUserId,
-                               I.Id, I.FirstName1, I.FirstName2, I.LastName1, I.LastName2,
-                               I.GenderId, I.BirthDate, I.BirthCountryId, I.BirthStateId, I.BirthCityId,
-                               I.PhoneCountryId, I.Phone, I.Email,
-                               I.CreateDateTime, I.UpdateDateTime, I.Status
-                               FROM {table} BU
-                               INNER JOIN [J-IdentityBoardUser] JIBU ON JIBU.BoardUserId = BU.Id AND JIBU.Status = 1
-                               INNER JOIN [D-Identity] I ON I.Id = JIBU.IdentityId;";
+            int offset = (req.Page - 1) * req.PageSize;
+
+            List<BoardUserFull> boardUserFulls = new List<BoardUserFull>();
+
+            String strCmd = // Count
+                              @"SELECT COUNT(BU.Id) AS TotalCount
+                              FROM [D-BoardUser] BU
+                              INNER JOIN [D-WebSysUser] WSU ON WSU.Id = BU.WebSysUserId
+                              LEFT JOIN [J-IdentityBoardUser] JIBU ON JIBU.BoardUserId = BU.Id AND JIBU.Status = 1
+                              LEFT JOIN [D-Identity] I ON I.Id = JIBU.IdentityId
+                              WHERE (@Status = -1 OR BU.BoardUserStatusId = @Status)
+                              AND (@Name IS NULL OR 
+                                    (I.FirstName1 + ' ' + I.LastName1) LIKE '%' + @Name + '%' OR
+                                    BU.Alias LIKE '%' + @Name + '%');" +
+
+                              // BoardUser + WebSysUser
+                              @"SELECT 
+                                    BU.Id, BU.WebSysUserId, BU.Alias, BU.CreateDateTime,
+                                    BU.UpdateDateTime, BU.BoardUserStatusId,
+                                    WSU.Id AS WSUId, WSU.Roles, WSU.AuthUserId, WSU.Email, WSU.PhoneCountryId,
+                                    WSU.Phone, WSU.Pin, WSU.PinFails, WSU.PinDateTime,
+                                    WSU.CreateDateTime AS WSUCreate,
+                                    WSU.UpdateDateTime AS WSUUpdate,
+                                    WSU.WebSysUserStatusId
+                              FROM [D-BoardUser] BU
+                              INNER JOIN [D-WebSysUser] WSU ON WSU.Id = BU.WebSysUserId
+                              LEFT JOIN [J-IdentityBoardUser] JIBU ON JIBU.BoardUserId = BU.Id AND JIBU.Status = 1
+                              LEFT JOIN [D-Identity] I ON I.Id = JIBU.IdentityId
+                              WHERE (@Status = -1 OR BU.BoardUserStatusId = @Status)
+                              AND (@Name IS NULL OR 
+                                    (I.FirstName1 + ' ' + I.LastName1) LIKE '%' + @Name + '%' OR
+                                    BU.Alias LIKE '%' + @Name + '%')
+                              ORDER BY BU.CreateDateTime DESC
+                              OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;" +
+
+                              // Identity
+                              @"SELECT 
+                                    BU.Id AS BoardUserId,
+                                    I.Id, I.FirstName1, I.FirstName2, I.LastName1, I.LastName2,
+                                    I.GenderId, I.BirthDate, I.BirthCountryId, I.BirthStateId, I.BirthCityId,
+                                    I.PhoneCountryId, I.Phone, I.Email,
+                                    I.CreateDateTime, I.UpdateDateTime, I.Status
+                              FROM [D-BoardUser] BU
+                              INNER JOIN [J-IdentityBoardUser] JIBU ON JIBU.BoardUserId = BU.Id AND JIBU.Status = 1
+                              INNER JOIN [D-Identity] I ON I.Id = JIBU.IdentityId
+                              WHERE BU.Id IN (
+                                    SELECT BU.Id
+                                    FROM [D-BoardUser] BU
+                                    LEFT JOIN [J-IdentityBoardUser] JIBU ON JIBU.BoardUserId = BU.Id AND JIBU.Status = 1
+                                    LEFT JOIN [D-Identity] I ON I.Id = JIBU.IdentityId
+                                    WHERE (@Status = -1 OR BU.BoardUserStatusId = @Status)
+                                    AND (@Name IS NULL OR 
+                                        (I.FirstName1 + ' ' + I.LastName1) LIKE '%' + @Name + '%' OR
+                                        BU.Alias LIKE '%' + @Name + '%')
+                                    ORDER BY BU.CreateDateTime DESC
+                                    OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY);";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<BoardUserFull> boardUserFulls = new();
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, req.Status);
+            DBHelper.AddParam(command, "@Name", SqlDbType.VarChar, String.IsNullOrWhiteSpace(req.Name) ? DBNull.Value : req.Name);
+            DBHelper.AddParam(command, "@Offset", SqlDbType.Int, offset);
+            DBHelper.AddParam(command, "@PageSize", SqlDbType.Int, req.PageSize);
+
+            int totalCount = 0;
 
             using (conn)
             {
@@ -73,9 +121,18 @@ namespace HeroServer
 
                 using (SqlDataReader reader = await command.ExecuteReaderAsync())
                 {
+                    // 1. Count
+                    if (await reader.ReadAsync())
+                        totalCount = Convert.ToInt32(reader["TotalCount"]);
+
+                    int totalPages = (int)Math.Ceiling((double)totalCount / req.PageSize);
+
+                    // 2. BoardUser + WebSysUser
+                    await reader.NextResultAsync();
                     while (await reader.ReadAsync())
                     {
                         BoardUser boardUser = GetBoardUser(reader);
+
                         WebSysUser webSysUser = WebSysUserDB.GetWebSysUser(reader);
                         webSysUser.Id = Convert.ToInt64(reader["WSUId"]);
                         webSysUser.CreateDateTime = Convert.ToDateTime(reader["WSUCreate"]);
@@ -84,11 +141,13 @@ namespace HeroServer
                         boardUserFulls.Add(new BoardUserFull(boardUser, webSysUser, null));
                     }
 
+                    // 3. Identity
                     await reader.NextResultAsync();
                     while (await reader.ReadAsync())
                     {
                         long boardUserId = Convert.ToInt64(reader["BoardUserId"]);
                         Identity identity = IdentityDB.GetIdentity(reader);
+
                         for (int i = 0; i < boardUserFulls.Count; i++)
                         {
                             if (boardUserFulls[i].BoardUser.Id == boardUserId)
@@ -98,10 +157,10 @@ namespace HeroServer
                             }
                         }
                     }
+
+                    return new BoardUserFullAllRsp(req.Page, totalPages, boardUserFulls);
                 }
             }
-
-            return boardUserFulls;
         }
 
         public async Task<BoardUser> GetById(long id)

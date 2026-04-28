@@ -13,9 +13,9 @@ namespace HeroServer
             return await new BoardUserDB().GetAll();
         }
 
-        public static async Task<IEnumerable<BoardUserFull>> GetFulls()
+        public static async Task<BoardUserFullAllRsp> GetFullAllByName(BoardUserAllByNameReq req)
         {
-            return await new BoardUserDB().GetFulls();
+            return await new BoardUserDB().GetFullAllByName(req);
         }
 
         public static async Task<BoardUser> GetById(long id)

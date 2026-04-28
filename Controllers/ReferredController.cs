@@ -51,7 +51,7 @@ namespace HeroServer.Controllers
 
         // POST services/referred/FullAllByCode
         [HttpPost("FullAllByCode")]
-        public async Task<ActionResult<ReferredFullAllRsp>> GetFullAll([FromBody] ReferredAllByCodeReq req)
+        public async Task<ActionResult<ReferredFullAllRsp>> GetFullAllByCode([FromBody] ReferredAllByCodeReq req)
         {
             try
             {
