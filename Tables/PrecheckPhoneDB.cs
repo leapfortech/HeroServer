@@ -101,6 +101,29 @@ namespace HeroServer
             return precheckPhone;
         }
 
+        public async Task<PrecheckPhone> GetByWACode(String waCode)
+        {
+            String strCmd = $"SELECT * FROM {table} WHERE WACode = @WACode";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@WACode", SqlDbType.VarChar, waCode);
+
+            PrecheckPhone precheckPhone = null;
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        precheckPhone = GetPrecheckPhone(reader);
+                    }
+                }
+            }
+            return precheckPhone;
+        }
+
         // INSERT
         public async Task<long> Add(PrecheckPhone precheckPhone)
         {

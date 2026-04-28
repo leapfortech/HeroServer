@@ -280,6 +280,18 @@ namespace HeroServer
             return "OK";
         }
 
+        public static async Task ProcessWAStatus(String waCode, String status)
+        {
+            if (String.IsNullOrEmpty(waCode) || String.IsNullOrEmpty(status))
+                return;
+            PrecheckPhone precheck = await new PrecheckPhoneDB().GetByWACode(waCode);
+
+            if (precheck == null)
+                return;
+
+            await new PrecheckPhoneDB().UpdateWAStatus(precheck.Id, status);
+        }
+
         // EMAIL
         public static async Task<int> SendOTPEmail(String email, String code)
         {
