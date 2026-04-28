@@ -194,81 +194,117 @@ namespace HeroServer
             return appUserFulls;
         }
 
-        public async Task<List<UserInfo>> GetUserInfoByStatus(int status)
+        public async Task<UserInfoAllRsp> GetUserInfoAllByAlias(UserInfoAllByAlias req)
         {
+            req.Page = Math.Max(1, req.Page);
+            req.PageSize = Math.Max(1, req.PageSize);
+
+            int offset = (req.Page - 1) * req.PageSize;
+
             List<UserInfo> userInfos = new List<UserInfo>();
             List<AppUserFull> appUserFulls = new List<AppUserFull>();
             Dictionary<long, IdentityFull> identityByAppUserId = new Dictionary<long, IdentityFull>();
             Dictionary<long, AddressFull> addressByAppUserId = new Dictionary<long, AddressFull>();
 
-            String strCmd = @"  SELECT 
-                                    AppUser.Id,
-                                    WebSysUser.AuthUserId,
-                                    AppUser.Alias,
-                                    WebSysUser.Email,
-                                    KPhoneCountry.PhonePrefix,
-                                    WebSysUser.Phone,
-                                    AppUser.CreateDateTime,
-                                    AppUser.UpdateDateTime,
-                                    AppUser.AppUserStatusId
+            String strCmd = // Count
+                            @"SELECT COUNT(AppUser.Id) AS TotalCount
+                              FROM [D-AppUser] AS AppUser
+                              INNER JOIN [D-WebSysUser] AS WebSysUser ON WebSysUser.Id = AppUser.WebSysUserId
+                              WHERE (@Status = -1 OR AppUser.AppUserStatusId = @Status)
+                              AND (@Alias IS NULL OR AppUser.Alias LIKE '%' + @Alias + '%');" +
+
+                            // AppUser
+                            @"SELECT 
+                                AppUser.Id,
+                                WebSysUser.AuthUserId,
+                                AppUser.Alias,
+                                WebSysUser.Email,
+                                KPhoneCountry.PhonePrefix,
+                                WebSysUser.Phone,
+                                AppUser.CreateDateTime,
+                                AppUser.UpdateDateTime,
+                                AppUser.AppUserStatusId
+                              FROM [D-AppUser] AS AppUser
+                              INNER JOIN [D-WebSysUser] AS WebSysUser ON WebSysUser.Id = AppUser.WebSysUserId
+                              LEFT JOIN [K-Country] AS KPhoneCountry ON KPhoneCountry.Id = WebSysUser.PhoneCountryId
+                              WHERE (@Status = -1 OR AppUser.AppUserStatusId = @Status)
+                              AND (@Alias IS NULL OR AppUser.Alias LIKE '%' + @Alias + '%')
+                              ORDER BY AppUser.CreateDateTime DESC
+                              OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;" +
+
+                            // Identity
+                            @"SELECT 
+                                Idt.Id,
+                                Idt.FirstName1,
+                                Idt.FirstName2,
+                                Idt.LastName1,
+                                Idt.LastName2,
+                                KGender.Name AS Gender,
+                                Idt.BirthDate,
+                                KCountry.Name AS BirthCountry,
+                                KState.Name AS BirthState,
+                                KCity.Name AS BirthCity,
+                                KPhoneCountry.PhonePrefix,
+                                Idt.Phone,
+                                Idt.Email,
+                                Idt.CreateDateTime,
+                                Idt.UpdateDateTime,
+                                AppUser.AppUserStatusId,
+                                Idt.Status,
+                                IAU.AppUserId
+                            FROM [D-Identity] AS Idt
+                            LEFT JOIN [K-Gender] AS KGender ON KGender.Id = Idt.GenderId
+                            LEFT JOIN [K-Country] AS KCountry ON KCountry.Id = Idt.BirthCountryId
+                            LEFT JOIN [K-State] AS KState ON KState.Id = Idt.BirthStateId
+                            LEFT JOIN [K-City] AS KCity ON KCity.Id = Idt.BirthCityId
+                            LEFT JOIN [K-Country] AS KPhoneCountry ON KPhoneCountry.Id = Idt.PhoneCountryId
+                            INNER JOIN [J-IdentityAppUser] AS IAU ON IAU.IdentityId = Idt.Id AND IAU.Status = 1
+                            INNER JOIN [D-AppUser] AS AppUser ON AppUser.Id = IAU.AppUserId
+                            WHERE Idt.Status = 1
+                            AND IAU.AppUserId IN (
+                                SELECT AppUser.Id 
                                 FROM [D-AppUser] AS AppUser
-                                INNER JOIN [D-WebSysUser] AS WebSysUser ON WebSysUser.Id = AppUser.WebSysUserId
-                                LEFT JOIN [K-Country] AS KPhoneCountry ON KPhoneCountry.Id = WebSysUser.PhoneCountryId
-                                WHERE AppUser.AppUserStatusId = @AppUserStatusId;
+                                WHERE (@Status = -1 OR AppUser.AppUserStatusId = @Status)
+                                AND (@Alias IS NULL OR AppUser.Alias LIKE '%' + @Alias + '%')
+                                ORDER BY AppUser.CreateDateTime DESC
+                                OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY);" +
 
-                                SELECT 
-                                    Idt.Id,
-                                    Idt.FirstName1,
-                                    Idt.FirstName2,
-                                    Idt.LastName1,
-                                    Idt.LastName2,
-                                    KGender.Name AS Gender,
-                                    Idt.BirthDate,
-                                    KCountry.Name AS BirthCountry,
-                                    KState.Name AS BirthState,
-                                    KCity.Name AS BirthCity,
-                                    KPhoneCountry.PhonePrefix,
-                                    Idt.Phone,
-                                    Idt.Email,
-                                    Idt.CreateDateTime,
-                                    Idt.UpdateDateTime,
-                                    AppUser.AppUserStatusId,
-                                    Idt.Status,
-                                    IAU.AppUserId
-                                FROM [D-Identity] AS Idt
-                                LEFT JOIN [K-Gender] AS KGender ON KGender.Id = Idt.GenderId
-                                LEFT JOIN [K-Country] AS KCountry ON KCountry.Id = Idt.BirthCountryId
-                                LEFT JOIN [K-State] AS KState ON KState.Id = Idt.BirthStateId
-                                LEFT JOIN [K-City] AS KCity ON KCity.Id = Idt.BirthCityId
-                                LEFT JOIN [K-Country] AS KPhoneCountry ON KPhoneCountry.Id = Idt.PhoneCountryId
-                                INNER JOIN [J-IdentityAppUser] AS IAU ON IAU.IdentityId = Idt.Id AND IAU.Status = 1
-                                INNER JOIN [D-AppUser] AS AppUser ON AppUser.Id = IAU.AppUserId
-                                WHERE Idt.Status = 1 AND AppUser.AppUserStatusId = @AppUserStatusId;
-
-
-                                SELECT 
-                                    Adr.Id,
-                                    KCountry.Name AS Country,
-                                    KState.Name AS State,
-                                    KCity.Name AS City,
-                                    Adr.Address1,
-                                    Adr.Address2,
-                                    Adr.Zone,
-                                    Adr.ZipCode,
-                                    Adr.Latitude,
-                                    Adr.Longitude,
-                                    Adr.Status,
-                                    JAA.AppUserId
-                                FROM [D-Address] AS Adr
-                                LEFT JOIN [K-Country] AS KCountry ON KCountry.Id = Adr.CountryId
-                                LEFT JOIN [K-State] AS KState ON KState.Id = Adr.StateId
-                                LEFT JOIN [K-City] AS KCity ON KCity.Id = Adr.CityId
-                                INNER JOIN [J-AddressAppUser] AS JAA ON JAA.AddressId = Adr.Id AND JAA.Status = 1
-                               INNER JOIN [D-AppUser] AS AppUser ON AppUser.Id = JAA.AppUserId
-                               WHERE Adr.Status = 1 AND AppUser.AppUserStatusId = @AppUserStatusId;";
+                            // Address
+                            @"SELECT 
+                                Adr.Id,
+                                KCountry.Name AS Country,
+                                KState.Name AS State,
+                                KCity.Name AS City,
+                                Adr.Address1,
+                                Adr.Address2,
+                                Adr.Zone,
+                                Adr.ZipCode,
+                                Adr.Latitude,
+                                Adr.Longitude,
+                                Adr.Status,
+                                JAA.AppUserId
+                            FROM [D-Address] AS Adr
+                            LEFT JOIN [K-Country] AS KCountry ON KCountry.Id = Adr.CountryId
+                            LEFT JOIN [K-State] AS KState ON KState.Id = Adr.StateId
+                            LEFT JOIN [K-City] AS KCity ON KCity.Id = Adr.CityId
+                            INNER JOIN [J-AddressAppUser] AS JAA ON JAA.AddressId = Adr.Id AND JAA.Status = 1
+                            WHERE Adr.Status = 1
+                            AND JAA.AppUserId IN (
+                                SELECT AppUser.Id 
+                                FROM [D-AppUser] AS AppUser
+                                WHERE (@Status = -1 OR AppUser.AppUserStatusId = @Status)
+                                AND (@Alias IS NULL OR AppUser.Alias LIKE '%' + @Alias + '%')
+                                ORDER BY AppUser.CreateDateTime DESC
+                                OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY);";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
-            DBHelper.AddParam(command, "@AppUserStatusId", SqlDbType.Int, status);
+
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, req.Status);
+            DBHelper.AddParam(command, "@Alias", SqlDbType.VarChar, string.IsNullOrWhiteSpace(req.Alias) ? DBNull.Value : req.Alias);
+            DBHelper.AddParam(command, "@Offset", SqlDbType.Int, offset);
+            DBHelper.AddParam(command, "@PageSize", SqlDbType.Int, req.PageSize);
+
+            int totalCount = 0;
 
             using (conn)
             {
@@ -276,14 +312,22 @@ namespace HeroServer
 
                 using (SqlDataReader reader = await command.ExecuteReaderAsync())
                 {
+                    // 1. Count
+                    if (await reader.ReadAsync())
+                        totalCount = Convert.ToInt32(reader["TotalCount"]);
+
+                    int totalPages = (int)Math.Ceiling((double)totalCount / req.PageSize);
+
+                    // 2. AppUser
+                    await reader.NextResultAsync();
                     while (await reader.ReadAsync())
                     {
                         AppUserFull appUser = AppUserDB.GetAppUserFull(reader);
                         appUserFulls.Add(appUser);
                     }
 
+                    // 3. Identity
                     await reader.NextResultAsync();
-
                     while (await reader.ReadAsync())
                     {
                         IdentityFull identity = IdentityDB.GetIdentityFull(reader);
@@ -293,8 +337,8 @@ namespace HeroServer
                             identityByAppUserId.Add(appUserId, identity);
                     }
 
+                    // 4. Address
                     await reader.NextResultAsync();
-
                     while (await reader.ReadAsync())
                     {
                         AddressFull address = AddressDB.GetAddressFull(reader);
@@ -303,26 +347,27 @@ namespace HeroServer
                         if (!addressByAppUserId.ContainsKey(appUserId))
                             addressByAppUserId.Add(appUserId, address);
                     }
+
+                    // Result
+                    for (int i = 0; i < appUserFulls.Count; i++)
+                    {
+                        AppUserFull appUser = appUserFulls[i];
+
+                        IdentityFull identity = null;
+                        AddressFull address = null;
+
+                        if (identityByAppUserId.ContainsKey(appUser.Id))
+                            identity = identityByAppUserId[appUser.Id];
+
+                        if (addressByAppUserId.ContainsKey(appUser.Id))
+                            address = addressByAppUserId[appUser.Id];
+
+                        userInfos.Add(new UserInfo(appUser, identity, address));
+                    }
+
+                    return new UserInfoAllRsp(req.Page, totalPages, userInfos);
                 }
             }
-
-            for (int i = 0; i < appUserFulls.Count; i++)
-            {
-                AppUserFull appUserFull = appUserFulls[i];
-
-                IdentityFull identityFull = null;
-                AddressFull addressFull = null;
-
-                if (identityByAppUserId.ContainsKey(appUserFull.Id))
-                    identityFull = identityByAppUserId[appUserFull.Id];
-
-                if (addressByAppUserId.ContainsKey(appUserFull.Id))
-                    addressFull = addressByAppUserId[appUserFull.Id];
-
-                userInfos.Add(new UserInfo(appUserFull, identityFull, addressFull));
-            }
-
-            return userInfos;
         }
 
         public async Task<int> GetCountAll()

@@ -79,57 +79,87 @@ namespace HeroServer
             return referreds;
         }
 
-        public async Task<List<ReferredFull>> GetFullAll()
+        public async Task<ReferredFullAllRsp> GetFullAllByCode(ReferredAllByCodeReq req)
         {
-            String strCmd = "SELECT" +
-                            " Referred.Id," +
-                            " Referred.Code," +
-                            " Referred.AppUserId," +
-                            " Referred.CreateDateTime," +
+            req.Page = Math.Max(1, req.Page);
+            req.PageSize = Math.Max(1, req.PageSize);
 
-                            " IReferred.Id AS IdentityId," +
-                            " IReferred.FirstName1," +
-                            " IReferred.FirstName2," +
-                            " IReferred.LastName1," +
-                            " IReferred.LastName2," +
-                            " CReferred.PhonePrefix AS PhonePrefix," +
-                            " IReferred.Phone," +
-                            " IReferred.Email," +
+            int offset = (req.Page - 1) * req.PageSize;
 
-                            " IReferrer.Id AS ReferrerIdentityId," +
-                            " IReferrer.FirstName1 AS ReferrerFirstName1," +
-                            " IReferrer.FirstName2 AS ReferrerFirstName2," +
-                            " IReferrer.LastName1 AS ReferrerLastName1," +
-                            " IReferrer.LastName2 AS ReferrerLastName2," +
-                            " CReferrer.PhonePrefix AS ReferrerPhonePrefix," +
-                            " IReferrer.Phone AS ReferrerPhone," +
-                            " IReferrer.Email AS ReferrerEmail" +
+            String strCmd = // Count
+                            "SELECT COUNT(Referred.Id) AS TotalCount " +
+                            "FROM [D-Referred] AS Referred " +
+                            "INNER JOIN [D-Identity] IReferred ON IReferred.Id = Referred.IdentityId AND IReferred.Status = 1 " +
+                            "INNER JOIN [J-IdentityAppUser] IAU ON IAU.AppUserId = Referred.AppUserId AND IAU.Status = 1 " +
+                            "WHERE (@Status = -1 OR Referred.Status = @Status) " +
+                            "AND (@Code IS NULL OR Referred.Code LIKE '%' + @Code + '%');" +
 
-                            " FROM [D-Referred] AS Referred" +
+                            // Data
+                            "SELECT " +
+                            " Referred.Id, Referred.Code, Referred.AppUserId, Referred.CreateDateTime, " +
 
-                            " INNER JOIN [D-Identity] IReferred ON IReferred.Id = Referred.IdentityId AND IReferred.Status = 1" +
-                            " INNER JOIN [K-Country] CReferred ON CReferred.Id = IReferred.PhoneCountryId " +
+                            " IReferred.Id AS IdentityId, " +
+                            " IReferred.FirstName1, IReferred.FirstName2, IReferred.LastName1, IReferred.LastName2, " +
+                            " CReferred.PhonePrefix, IReferred.Phone, IReferred.Email, " +
 
-                            " INNER JOIN [J-IdentityAppUser] IAU ON IAU.AppUserId = Referred.AppUserId AND IAU.Status = 1" +
-                            " INNER JOIN [D-Identity] IReferrer ON IReferrer.Id = IAU.IdentityId" +
-                            " LEFT JOIN [K-Country] CReferrer ON CReferrer.Id = IReferrer.PhoneCountryId";
+                            " IReferrer.Id AS ReferrerIdentityId, " +
+                            " IReferrer.FirstName1 AS ReferrerFirstName1, " +
+                            " IReferrer.FirstName2 AS ReferrerFirstName2, " +
+                            " IReferrer.LastName1 AS ReferrerLastName1, " +
+                            " IReferrer.LastName2 AS ReferrerLastName2, " +
+                            " CReferrer.PhonePrefix AS ReferrerPhonePrefix, " +
+                            " IReferrer.Phone AS ReferrerPhone, " +
+                            " IReferrer.Email AS ReferrerEmail " +
+
+                            "FROM [D-Referred] AS Referred " +
+                            "INNER JOIN [D-Identity] IReferred ON IReferred.Id = Referred.IdentityId AND IReferred.Status = 1 " +
+                            "INNER JOIN [K-Country] CReferred ON CReferred.Id = IReferred.PhoneCountryId " +
+
+                            "INNER JOIN [J-IdentityAppUser] IAU ON IAU.AppUserId = Referred.AppUserId AND IAU.Status = 1 " +
+                            "INNER JOIN [D-Identity] IReferrer ON IReferrer.Id = IAU.IdentityId " +
+                            "LEFT JOIN [K-Country] CReferrer ON CReferrer.Id = IReferrer.PhoneCountryId " +
+
+                            "WHERE (@Status = -1 OR Referred.Status = @Status) " +
+                            "AND (@Code IS NULL OR Referred.Code LIKE '%' + @Code + '%') " +
+
+                            "ORDER BY Referred.CreateDateTime DESC " +
+                            "OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            List<ReferredFull> referredFulls = [];
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, req.Status);
+            DBHelper.AddParam(command, "@Code", SqlDbType.VarChar, String.IsNullOrWhiteSpace(req.Code) ? DBNull.Value : req.Code);
+            DBHelper.AddParam(command, "@Offset", SqlDbType.Int, offset);
+            DBHelper.AddParam(command, "@PageSize", SqlDbType.Int, req.PageSize);
+
+            ReferredFullAllRsp response = null;
+
             using (conn)
             {
                 await conn.OpenAsync();
+
                 using (SqlDataReader reader = await command.ExecuteReaderAsync())
                 {
+                    // 1. Count
+                    int totalCount = 0;
+                    if (await reader.ReadAsync())
+                        totalCount = Convert.ToInt32(reader["TotalCount"]);
+
+                    int totalPages = (int)Math.Ceiling((double)totalCount / req.PageSize);
+
+                    // 2. Data
+                    await reader.NextResultAsync();
+
+                    List<ReferredFull> referredFulls = new List<ReferredFull>();
+
                     while (await reader.ReadAsync())
-                    {
-                        ReferredFull referredFull = GetReferredFull(reader, true);
-                        referredFulls.Add(referredFull);
-                    }
+                        referredFulls.Add(GetReferredFull(reader, true));
+
+                    response = new ReferredFullAllRsp(req.Page, totalPages, referredFulls);
                 }
             }
-            return referredFulls;
+
+            return response;
         }
 
         public async Task<Referred> GetById(long id)

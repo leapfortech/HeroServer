@@ -23,9 +23,9 @@ namespace HeroServer
             return await new AppUserDB().GetFullByStatus(status);
         }
 
-        public static async Task<List<UserInfo>> GetUserInfoByStatus(int status)
+        public static async Task<UserInfoAllRsp> GetUserInfoAllByAlias(UserInfoAllByAlias req)
         {
-            return await new AppUserDB().GetUserInfoByStatus(status);
+            return await new AppUserDB().GetUserInfoAllByAlias(req);
         }
 
         public static async Task<AppUser> GetById(long id)

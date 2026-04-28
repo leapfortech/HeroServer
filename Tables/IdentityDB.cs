@@ -42,7 +42,7 @@ namespace HeroServer
                                     Convert.ToDateTime(reader["BirthDate"]),
                                     reader["BirthCountry"].ToString(),
                                     reader["BirthState"].ToString(),
-                                    reader["BirthState"].ToString(),
+                                    reader["BirthCity"].ToString(),
 
                                     reader["PhonePrefix"].ToString(),
                                     reader["Phone"].ToString(),
