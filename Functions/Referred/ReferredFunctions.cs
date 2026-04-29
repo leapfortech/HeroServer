@@ -147,7 +147,7 @@ namespace HeroServer
             Identity identityReferrer = await IdentityFunctions.GetByAppUserId(referred.AppUserId, 1);
             Identity identityReferred = await IdentityFunctions.GetById(referred.IdentityId);
 
-            String appUserName = identityReferrer == null ? "" : $"por {identityReferrer.FirstName1} {identityReferrer.LastName1} ";
+            String appUserName = identityReferrer == null ? "" : $"{identityReferrer.FirstName1} {identityReferrer.LastName1}";
             String referredName = $"{identityReferred.FirstName1} {identityReferred.LastName1}";
             String link = "https://www.heroesmigrantes.com/";
 
@@ -155,8 +155,8 @@ namespace HeroServer
                           $" fuiste referid@ por {appUserName} para descargar la aplicación móvil de Héroes Migrantes.<br><br>" +
                           " Presiona el siguiente link para descargarla.<br><br>" +
                           $" <a href='{link}'>Descargar</a><br><br>" +
-                          " No olvides ingresar el siguiente código al momento de tu registro" +
-                          $" para obtener los mejores beneficios: <strong>{referred.Code}</strong>.";
+                          " No olvides ingresar el siguiente código al momento de tu registro:" +
+                          $" <strong>{referred.Code}</strong>.";
 
             String message = HtmlHelper.GetConfirmResultHtml("Heroes Migrantes", body, "#666666");
             if (message == null)
