@@ -6,9 +6,9 @@ namespace HeroServer
     public class PostFeedRequest
     {
         // PARAMS
-        public int Count { get; set; } = 20;
         public DateTime StartDateTime { get; set; }
-        public DateTime EndDateTime { get; set; }
+        public int Direction { get; set; } = -1;
+        public int Count { get; set; } = 20;
 
         // FILTERS
         public long AppUserId { get; set; } = -1;

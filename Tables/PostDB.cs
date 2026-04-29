@@ -227,7 +227,7 @@ namespace HeroServer
 
 
                 DBHelper.AddParam(command, "@StartDate", SqlDbType.DateTime2, request.StartDateTime);
-                DBHelper.AddParam(command, "@EndDate", SqlDbType.DateTime2, request.EndDateTime);
+                //DBHelper.AddParam(command, "@EndDate", SqlDbType.DateTime2, request.EndDateTime);
 
                 using (conn)
                 {
