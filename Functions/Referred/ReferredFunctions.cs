@@ -14,9 +14,9 @@ namespace HeroServer
             return await new ReferredDB().GetAll();
         }
 
-        public static async Task<List<ReferredFull>> GetFullAll()
+        public static async Task<ReferredFullAllRsp> GetFullAllByCode(ReferredAllByCodeReq req)
         {
-            return await new ReferredDB().GetFullAll();
+            return await new ReferredDB().GetFullAllByCode(req);
         }
 
         public static async Task<Referred> GetById(long id)

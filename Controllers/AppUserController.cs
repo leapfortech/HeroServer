@@ -53,20 +53,6 @@ namespace HeroServer.Controllers
             }
         }
 
-        // GET services/appUser/UserInfoByStatus?status=1
-        [HttpGet("UserInfoByStatus")]
-        public async Task<ActionResult<List<AppUserNamed>>> GetUserInfoByStatus([FromQuery] String status = "1")
-        {
-            try
-            {
-                return Ok(await AppUserFunctions.GetUserInfoByStatus(Convert.ToInt32(status)));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         // GET services/appUser/ById?id=1
         [HttpGet("ById")]
         public async Task<ActionResult<AppUser>> GetById([FromQuery] String id)
@@ -114,6 +100,20 @@ namespace HeroServer.Controllers
         public async Task<ActionResult<String>> GetPortrait([FromQuery] String appUserId)
         {
             return Ok(await AppUserFunctions.GetPortrait(Convert.ToInt64(appUserId)));
+        }
+
+        // POST services/appUser/UserInfoAllByAlias
+        [HttpPost("UserInfoAllByAlias")]
+        public async Task<ActionResult<UserInfoAllRsp>> GetUserInfoAllByAlias([FromBody] UserInfoAllByAlias req)
+        {
+            try
+            {
+                return Ok(await AppUserFunctions.GetUserInfoAllByAlias(req));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // POST services/appUser/ValidateAlias

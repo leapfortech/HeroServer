@@ -21,20 +21,6 @@ namespace HeroServer.Controllers
             return Ok(await ReferredFunctions.GetAll());
         }
 
-        // GET services/referred/FullAll
-        [HttpGet("FullAll")]
-        public async Task<ActionResult<List<ReferredFull>>> GetFullAll()
-        {
-            try
-            {
-                return Ok(await ReferredFunctions.GetFullAll());
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         // GET services/referred/ById?id=1
         [HttpGet("ById")]
         public async Task<ActionResult<Referred>> GetById([FromQuery]String id)
@@ -56,12 +42,25 @@ namespace HeroServer.Controllers
             return Ok(await ReferredFunctions.GetIdByCode(code));
         }
 
-
         // GET services/referred/Validate?code=
         [HttpGet("Validate")]     // JAD : Remove
         public async Task<ActionResult<long>> Validate([FromQuery] String code)
         {
             return Ok(await ReferredFunctions.Validate(code));
+        }
+
+        // POST services/referred/FullAllByCode
+        [HttpPost("FullAllByCode")]
+        public async Task<ActionResult<ReferredFullAllRsp>> GetFullAllByCode([FromBody] ReferredAllByCodeReq req)
+        {
+            try
+            {
+                return Ok(await ReferredFunctions.GetFullAllByCode(req));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // POST services/referred/History

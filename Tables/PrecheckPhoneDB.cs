@@ -17,6 +17,8 @@ namespace HeroServer
                                      Convert.ToInt64(reader["CountryId"]),
                                      reader["Number"].ToString(),
                                      reader["Code"].ToString(),
+                                     reader["WACode"].ToString(),
+                                     reader["WAStatus"].ToString(),
                                      reader["CountryCode"].ToString(),
                                      reader["CallerName"].ToString(),
                                      reader["CarrierCountryCode"].ToString(),
@@ -99,12 +101,35 @@ namespace HeroServer
             return precheckPhone;
         }
 
+        public async Task<PrecheckPhone> GetByWACode(String waCode)
+        {
+            String strCmd = $"SELECT * FROM {table} WHERE WACode = @WACode";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@WACode", SqlDbType.VarChar, waCode);
+
+            PrecheckPhone precheckPhone = null;
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        precheckPhone = GetPrecheckPhone(reader);
+                    }
+                }
+            }
+            return precheckPhone;
+        }
+
         // INSERT
         public async Task<long> Add(PrecheckPhone precheckPhone)
         {
-            String strCmd = $"INSERT INTO {table}(Id, CountryId, Number, Code, CountryCode, CallerName, CarrierCountryCode, CarrierNetworkCode, CarrierName, CarrierType, CreateDateTime, UpdateDateTime, Status)" +
+            String strCmd = $"INSERT INTO {table}(Id, CountryId, Number, Code, WACode, WAStatus, CountryCode, CallerName, CarrierCountryCode, CarrierNetworkCode, CarrierName, CarrierType, CreateDateTime, UpdateDateTime, Status)" +
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @CountryId, @Number, @Code, @CountryCode, @CallerName, @CarrierCountryCode, @CarrierNetworkCode, @CarrierName, @CarrierType, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@Id, @CountryId, @Number, @Code, @WACode, @WAStatus, @CountryCode, @CallerName, @CarrierCountryCode, @CarrierNetworkCode, @CarrierName, @CarrierType, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -112,6 +137,8 @@ namespace HeroServer
             DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, precheckPhone.CountryId);
             DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, precheckPhone.Number);
             DBHelper.AddParam(command, "@Code", SqlDbType.VarChar, precheckPhone.Code);
+            DBHelper.AddParam(command, "@WACode", SqlDbType.VarChar, precheckPhone.WACode);
+            DBHelper.AddParam(command, "@WAStatus", SqlDbType.VarChar, precheckPhone.WAStatus);
             DBHelper.AddParam(command, "@CountryCode", SqlDbType.VarChar, precheckPhone.CountryCode);
             DBHelper.AddParam(command, "@CallerName", SqlDbType.VarChar, precheckPhone.CallerName);
             DBHelper.AddParam(command, "@CarrierCountryCode", SqlDbType.VarChar, precheckPhone.CarrierCountryCode);
@@ -132,7 +159,7 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(PrecheckPhone precheckPhone)
         {
-            String strCmd = $"UPDATE {table} SET CountryId = @CountryId, Number = @Number, Code = @Code, CountryCode = @CountryCode, CallerName = @CallerName," +
+            String strCmd = $"UPDATE {table} SET CountryId = @CountryId, Number = @Number, Code = @Code, WACode = @WACode, WAStatus = @WAStatus, CountryCode = @CountryCode, CallerName = @CallerName," +
                             " CarrierCountryCode = @CarrierCountryCode, CarrierNetworkCode = @CarrierNetworkCode, CarrierName = @CarrierName, CarrierType = @CarrierType," +
                             " UpdateDateTime = @UpdateDateTime WHERE Id = @Id";
 
@@ -141,6 +168,8 @@ namespace HeroServer
             DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, precheckPhone.CountryId);
             DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, precheckPhone.Number);
             DBHelper.AddParam(command, "@Code", SqlDbType.VarChar, precheckPhone.Code);
+            DBHelper.AddParam(command, "@WACode", SqlDbType.VarChar, precheckPhone.WACode);
+            DBHelper.AddParam(command, "@WAStatus", SqlDbType.VarChar, precheckPhone.WAStatus);
             DBHelper.AddParam(command, "@CountryCode", SqlDbType.VarChar, precheckPhone.CountryCode);
             DBHelper.AddParam(command, "@CallerName", SqlDbType.VarChar, precheckPhone.CallerName);
             DBHelper.AddParam(command, "@CarrierCountryCode", SqlDbType.VarChar, precheckPhone.CarrierCountryCode);
@@ -167,6 +196,44 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
+
+        public async Task<bool> UpdateWACode(long id, String waCode)
+        {
+            String strCmd = $"UPDATE {table}" +
+                            " SET UpdateDateTime = @UpdateDateTime, WACode = @WACode" +
+                            " WHERE Id = @Id";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            DBHelper.AddParam(command, "@WACode", SqlDbType.VarChar, waCode);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
+
+        public async Task<bool> UpdateWAStatus(long id, String waStatus)
+        {
+            String strCmd = $"UPDATE {table}" +
+                            " SET UpdateDateTime = @UpdateDateTime, WAStatus = @WAStatus" +
+                            " WHERE Id = @Id";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            DBHelper.AddParam(command, "@WAStatus", SqlDbType.VarChar, waStatus);
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
