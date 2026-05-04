@@ -3,15 +3,11 @@ using System.Collections.Generic;
 
 namespace HeroServer
 {
-    public class PostFeedResponse
+    public class PostFeedResponse(int chunk, int count)
     {
-        public List<PostFull> PostFulls { get; set; } = new();
+        public int Chunk { get; set; } = chunk;
 
-        public int Total { get; set; }
-
-        public PostFeedResponse(int count)
-        {
-            PostFulls = new List<PostFull>(count);
-        }
+        public List<PostFull> PostFulls { get; set; } = new List<PostFull>(count);
+        public int Total { get; set; } = 0;
     }
 }

@@ -28,13 +28,9 @@ namespace HeroServer
         {
         }
 
-        public PostFull(long postId, long appUserId, String appUserAlias,
-                        long postTypeId, long postCountryId, long postStateId,
-                        String title, String titleImage, String summary, String description,
-                        int imageCount, int likeCount, DateTime publicationDateTime, int postStatus,
-                        ContactFull contactFull,
-                        List<LinkFull> linkFulls,
-                        List<CommentFull> commentFulls)
+        public PostFull(long postId, long appUserId, String appUserAlias, long postTypeId, long postCountryId, long postStateId, String title, String titleImage,
+                        String summary, String description, int imageCount, int likeCount, DateTime publicationDateTime, int postStatus,
+                        ContactFull contactFull, List<LinkFull> linkFulls, List<CommentFull> commentFulls)
         {
             PostId = postId;
             AppUserId = appUserId;

@@ -6,6 +6,8 @@ namespace HeroServer
     public class PostFeedRequest
     {
         // PARAMS
+        public int Chunk { get; set; } = -1;
+
         public DateTime StartDateTime { get; set; }
         public int Direction { get; set; } = -1;
         public int Count { get; set; } = 20;

@@ -152,16 +152,16 @@ namespace HeroServer
 
         public async Task<PostFeedResponse> GetPostFeed(PostFeedRequest request)
         {
-            PostFeedResponse response = new PostFeedResponse(request.Count);
+            PostFeedResponse response = new PostFeedResponse(request.Chunk, request.Count);
 
             // FILTERS
             List<String> where = [];
 
-            if (request.AppUserId != -1)
-                where.Add("Post.AppUserId = @AppUserId");
-
             if (request.PostTypeId != -1)
                 where.Add("Post.PostTypeId = @PostTypeId");
+
+            if (request.AppUserId != -1)
+                where.Add("Post.AppUserId = @AppUserId");
 
             if (request.CountryId != -1)
                 where.Add("Post.CountryId = @CountryId");
@@ -175,8 +175,10 @@ namespace HeroServer
             String whereCount = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
 
             // DATE
-            where.Add("Post.PublicationDateTime >= @StartDate");
-            where.Add("Post.PublicationDateTime <= @EndDate");
+            if (request.Direction == 1)
+                where.Add("Post.PublicationDateTime > @StartDate");
+            else
+                where.Add("Post.PublicationDateTime < @StartDate");
 
             String whereFeed = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
 
@@ -198,23 +200,20 @@ namespace HeroServer
                             " FROM [D-Post] AS Post" +
                             " INNER JOIN [D-AppUser] AS AppUser ON Post.AppUserId = AppUser.Id" +
                             whereFeed +
-                            " ORDER BY Post.PublicationDateTime DESC, Post.Id DESC;";
+                            " ORDER BY Post.PublicationDateTime DESC;";
 
             // QUERY COUNT
-            strCmd += "SELECT COUNT(1) AS Count FROM [D-Post] AS Post " +
-                      " INNER JOIN [D-AppUser] AS AppUser ON Post.AppUserId = AppUser.Id " +
-                      whereCount + ";";
-
+            strCmd += "SELECT COUNT(1) AS Total FROM [D-Post] AS Post" + whereCount + ";";
 
             using (SqlCommand command = new SqlCommand(strCmd, conn))
             {
                 DBHelper.AddParam(command, "@Count", SqlDbType.Int, request.Count);
                 
-                if(request.AppUserId != -1)
-                    DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, request.AppUserId);
-
                 if (request.PostTypeId != -1)
                     DBHelper.AddParam(command, "@PostTypeId", SqlDbType.BigInt, request.PostTypeId);
+
+                if (request.AppUserId != -1)
+                    DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, request.AppUserId);
 
                 if (request.CountryId != -1)
                     DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, request.CountryId);
@@ -227,7 +226,6 @@ namespace HeroServer
 
 
                 DBHelper.AddParam(command, "@StartDate", SqlDbType.DateTime2, request.StartDateTime);
-                //DBHelper.AddParam(command, "@EndDate", SqlDbType.DateTime2, request.EndDateTime);
 
                 using (conn)
                 {
@@ -239,7 +237,7 @@ namespace HeroServer
 
                         await reader.NextResultAsync();
                         if (await reader.ReadAsync())
-                            response.Total = reader.GetInt32(Convert.ToInt32(reader["Count"]));
+                            response.Total = Convert.ToInt32(reader["Total"]);
                     }
                 }
             }
