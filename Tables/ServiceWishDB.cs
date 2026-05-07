@@ -80,11 +80,35 @@ namespace HeroServer
                             "AND (@ServiceWishTypeId = -1 OR SW.ServiceTypeId = @ServiceWishTypeId);" +
 
                             // Data
-                            "SELECT SW.Id, SW.AppUserId, SW.ServiceTypeId, SW.Comment, " +
-                            "SW.CreateDateTime, SW.UpdateDateTime, SW.Status " +
+                            "SELECT " +
+                            "SW.Id, SW.AppUserId, SW.ServiceTypeId, SW.Comment, " +
+                            "SW.CreateDateTime, SW.UpdateDateTime, SW.Status, " +
+
+                            // WebSysUser
+                            "WSU.Email, WSU.PhoneCountryId, WSU.Phone, " +
+
+                            // Identity
+                            "I.FirstName1, I.FirstName2, I.FirstName3, " +
+                            "I.LastName1, I.LastName2, I.LastName3, " +
+                            "I.GenderId, I.BirthDate, " +
+                            "I.BirthCountryId, I.BirthStateId, I.BirthCityId, " +
+
+                            // Address
+                            "A.CountryId, A.StateId, A.CityId " +
+
                             "FROM [D-ServiceWish] AS SW " +
+                            "LEFT JOIN [D-AppUser] AS AU ON AU.Id = SW.AppUserId " +
+                            "LEFT JOIN [D-WebSysUser] AS WSU ON WSU.Id = AU.WebSysUserId " +
+                            "LEFT JOIN [J-IdentityAppUser] AS IAU " +
+                            "ON IAU.AppUserId = AU.Id AND IAU.Status = 1 " +
+                            "LEFT JOIN [D-Identity] AS I ON I.Id = IAU.IdentityId " +
+                            "LEFT JOIN [J-AddressAppUser] AS AAU " +
+                            "ON AAU.AppUserId = AU.Id AND AAU.Status = 1 " +
+                            "LEFT JOIN [D-Address] AS A ON A.Id = AAU.AddressId " +
+
                             "WHERE (@Status = -1 OR SW.Status = @Status) " +
                             "AND (@ServiceWishTypeId = -1 OR SW.ServiceTypeId = @ServiceWishTypeId) " +
+
                             "ORDER BY SW.CreateDateTime DESC " +
                             "OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;";
 
@@ -113,12 +137,34 @@ namespace HeroServer
                     // 2. Data
                     await reader.NextResultAsync();
 
-                    List<ServiceWish> serviceWishs = new List<ServiceWish>();
+                    List<ServiceWishInfo> serviceWishInfos = new List<ServiceWishInfo>();
 
                     while (await reader.ReadAsync())
-                        serviceWishs.Add(GetServiceWish(reader));
+                    {
+                        ServiceWish serviceWish = GetServiceWish(reader);
 
-                    response = new ServiceWishAllRsp(req.Page, totalPages, serviceWishs);
+                        ServiceWishUser serviceWishUser = new ServiceWishUser(
+                            serviceWish,
+                            reader["PhoneCountryId"] == DBNull.Value ? -1 : Convert.ToInt64(reader["PhoneCountryId"]),
+                            reader["Phone"] == DBNull.Value ? "" : reader["Phone"].ToString(),
+                            reader["Email"] == DBNull.Value ? "" : reader["Email"].ToString(),
+                            reader["FirstName1"] == DBNull.Value ? "" : reader["FirstName1"].ToString(),
+                            reader["FirstName2"] == DBNull.Value ? "" : reader["FirstName2"].ToString(),
+                            reader["LastName1"] == DBNull.Value ? "" : reader["LastName1"].ToString(),
+                            reader["LastName2"] == DBNull.Value ? "" : reader["LastName2"].ToString(),
+                            reader["GenderId"] == DBNull.Value ? -1 : Convert.ToInt64(reader["GenderId"]),
+                            reader["BirthDate"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(reader["BirthDate"]),
+                            reader["BirthCountryId"] == DBNull.Value ? -1 : Convert.ToInt64(reader["BirthCountryId"]),
+                            reader["BirthStateId"] == DBNull.Value ? -1 : Convert.ToInt64(reader["BirthStateId"]),
+                            reader["BirthCityId"] == DBNull.Value ? -1 : Convert.ToInt64(reader["BirthCityId"]),
+                            reader["CountryId"] == DBNull.Value ? -1 : Convert.ToInt64(reader["CountryId"]),
+                            reader["StateId"] == DBNull.Value ? -1 : Convert.ToInt64(reader["StateId"]),
+                            reader["CityId"] == DBNull.Value ? -1 : Convert.ToInt64(reader["CityId"]));
+
+                        serviceWishInfos.Add(new ServiceWishInfo(serviceWish, serviceWishUser));
+                    }
+
+                    response = new ServiceWishAllRsp(req.Page, totalPages, serviceWishInfos);
                 }
             }
 
