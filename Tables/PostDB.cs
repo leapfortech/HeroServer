@@ -152,7 +152,7 @@ namespace HeroServer
 
         public async Task<PostFeedResponse> GetPostFeed(PostFeedRequest request)
         {
-            PostFeedResponse response = new PostFeedResponse(request.Chunk, request.Count);
+            PostFeedResponse response = new PostFeedResponse(request.Chunk, request.Direction, request.Count);
 
             // FILTERS
             List<String> where = [];
@@ -183,7 +183,7 @@ namespace HeroServer
             String whereFeed = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
 
             // QUERY FEED
-            String strCmd = "SELECT TOP (@Count)" +
+            String strCmd = "SELECT TOP(@Count)" +
                             " Post.Id AS PostId," +
                             " Post.AppUserId," +
                             " AppUser.Alias AS AppUserAlias," +
@@ -200,10 +200,13 @@ namespace HeroServer
                             " FROM [D-Post] AS Post" +
                             " INNER JOIN [D-AppUser] AS AppUser ON Post.AppUserId = AppUser.Id" +
                             whereFeed +
-                            " ORDER BY Post.PublicationDateTime DESC;";
+                            " ORDER BY Post.PublicationDateTime" +
+                            (request.Direction == 1 ? ";" : " DESC;");
 
             // QUERY COUNT
             strCmd += "SELECT COUNT(1) AS Total FROM [D-Post] AS Post" + whereCount + ";";
+            strCmd += "SELECT TOP(1) Post.Id AS FirstPostId, Post.PublicationDateTime AS FirstDateTime FROM [D-Post] AS Post" + whereCount + ";";
+            strCmd += "SELECT TOP(1) Post.Id AS LastPostId, Post.PublicationDateTime AS LastDateTime FROM [D-Post] AS Post" + whereCount + " ORDER BY Post.PublicationDateTime DESC;";
 
             using (SqlCommand command = new SqlCommand(strCmd, conn))
             {
@@ -238,6 +241,20 @@ namespace HeroServer
                         await reader.NextResultAsync();
                         if (await reader.ReadAsync())
                             response.Total = Convert.ToInt32(reader["Total"]);
+
+                        await reader.NextResultAsync();
+                        if (await reader.ReadAsync())
+                        {
+                            response.FirstPostId = Convert.ToInt64(reader["FirstPostId"]);
+                            response.FirstDateTime = Convert.ToDateTime(reader["FirstDateTime"]);
+                        }
+
+                        await reader.NextResultAsync();
+                        if (await reader.ReadAsync())
+                        {
+                            response.LastPostId = Convert.ToInt64(reader["LastPostId"]);
+                            response.LastDateTime = Convert.ToDateTime(reader["LastDateTime"]);
+                        }
                     }
                 }
             }
