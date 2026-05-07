@@ -88,8 +88,8 @@ namespace HeroServer
                             "WSU.Email, WSU.PhoneCountryId, WSU.Phone, " +
 
                             // Identity
-                            "I.FirstName1, I.FirstName2, I.FirstName3, " +
-                            "I.LastName1, I.LastName2, I.LastName3, " +
+                            "I.FirstName1, I.FirstName2, " +
+                            "I.LastName1, I.LastName2, " +
                             "I.GenderId, I.BirthDate, " +
                             "I.BirthCountryId, I.BirthStateId, I.BirthCityId, " +
 
