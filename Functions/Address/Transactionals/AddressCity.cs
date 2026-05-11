@@ -1,4 +1,3 @@
-using System;
 
 namespace HeroServer
 {
@@ -14,8 +13,7 @@ namespace HeroServer
         {
         }
 
-        public AddressCity(long appUserId, long addressId,
-                           long countryId, long stateId, long cityId)
+        public AddressCity(long appUserId, long addressId, long countryId, long stateId, long cityId)
         {
             AppUserId = appUserId;
             AddressId = addressId;
