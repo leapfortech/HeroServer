@@ -53,6 +53,20 @@ namespace HeroServer.Controllers
             }
         }
 
+        // POST services/post/Feed
+        [HttpPost("FullsPagedByType")]
+        public async Task<ActionResult<PostFullsPagedResponse>> GetFullsPagedByType([FromBody] PostTypePagedRequest request)
+        {
+            try
+            {
+                return Ok(await PostFunctions.GetFullsPagedByType(request));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // POST services/post/RegisterShare
         [HttpPost("RegisterShare")]
         public async Task<ActionResult<long>> RegisterShare([FromBody] Share share)

@@ -29,6 +29,17 @@ namespace HeroServer
             return response;
         }
 
+        // PAGED
+        public static async Task<PostFullsPagedResponse> GetFullsPagedByType(PostTypePagedRequest request)
+        {
+            PostFullsPagedResponse response = await new PostDB().GetFullsPagedByType(request);
+
+            for (int i = 0; i < response.PostFulls.Count; i++)
+                response.PostFulls[i].TitleImage = await GetTitleImageById(response.PostFulls[i].PostId);
+
+            return response;
+        }
+
         // REGISTER
         public static async Task<long> Register(RegisterPostRequest registerPostRequest)
         {

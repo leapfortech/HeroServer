@@ -262,6 +262,78 @@ namespace HeroServer
             return response;
         }
 
+        public async Task<PostFullsPagedResponse> GetFullsPagedByType(PostTypePagedRequest request)
+        {
+            request.Page = Math.Max(1, request.Page);
+            request.PageSize = Math.Max(1, request.PageSize);
+
+            int offset = (request.Page - 1) * request.PageSize;
+
+            List<PostFull> postFulls = new List<PostFull>();
+
+            String strCmd = // Count
+                            @"SELECT COUNT(Post.Id) AS TotalCount
+                                FROM [D-Post] AS Post
+                                WHERE (@PostTypeId = -1 OR Post.PostTypeId = @PostTypeId)
+                                AND (@Status = -1 OR Post.Status = @Status);" +
+
+                            // Posts
+                            @"SELECT
+                                Post.Id AS PostId,
+                                Post.AppUserId,
+                                AppUser.Alias AS AppUserAlias,
+                                Post.PostTypeId,
+                                Post.CountryId AS PostCountryId,
+                                Post.StateId AS PostStateId,
+                                Post.Title,
+                                Post.Summary,
+                                Post.Description,
+                                Post.ImageCount,
+                                Post.LikeCount,
+                                Post.PublicationDateTime,
+                                Post.Status AS PostStatus
+                                FROM [D-Post] AS Post
+                                INNER JOIN [D-AppUser] AS AppUser 
+                                    ON Post.AppUserId = AppUser.Id
+                                WHERE (@PostTypeId = -1 OR Post.PostTypeId = @PostTypeId)
+                                AND (@Status = -1 OR Post.Status = @Status)
+                                ORDER BY Post.PublicationDateTime DESC
+                                OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@PostTypeId", SqlDbType.BigInt, request.PostTypeId);
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, request.Status);
+            DBHelper.AddParam(command, "@Offset", SqlDbType.Int, offset);
+            DBHelper.AddParam(command, "@PageSize", SqlDbType.Int, request.PageSize);
+
+            int totalCount = 0;
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    // 1. Count
+                    if (await reader.ReadAsync())
+                        totalCount = Convert.ToInt32(reader["TotalCount"]);
+
+                    int totalPages = (int)Math.Ceiling((double)totalCount / request.PageSize);
+
+                    // 2. Posts
+                    await reader.NextResultAsync();
+                    while (await reader.ReadAsync())
+                    {
+                        PostFull postFull = GetPostFull(reader);
+                        postFulls.Add(postFull);
+                    }
+
+                    return new PostFullsPagedResponse(request.Page, totalPages, postFulls);
+                }
+            }
+        }
+
         // INSERT
         public async Task<long> Add(Post post)
         {
