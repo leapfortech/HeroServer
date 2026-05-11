@@ -297,7 +297,7 @@ namespace HeroServer
                                     ON Post.AppUserId = AppUser.Id
                                 WHERE (@PostTypeId = -1 OR Post.PostTypeId = @PostTypeId)
                                 AND (@Status = -1 OR Post.Status = @Status)
-                                ORDER BY Post.PublicationDateTime DESC
+                                ORDER BY Post.PublicationDateTime ASC
                                 OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
