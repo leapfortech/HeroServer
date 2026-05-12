@@ -86,7 +86,7 @@ namespace HeroServer.Controllers
         {
             try
             {
-                return Ok(await NewsFunctions.Accept(postModerationRequest.PostId, postModerationRequest.SubtypeId));
+                return Ok(await NewsFunctions.Accept(postModerationRequest.PostId, postModerationRequest.Id));
             }
             catch (Exception ex)
             {
@@ -100,7 +100,7 @@ namespace HeroServer.Controllers
         {
             try
             {
-                return Ok(await NewsFunctions.Reject(postModerationRequest.PostId, postModerationRequest.SubtypeId));
+                return Ok(await NewsFunctions.Reject(postModerationRequest.PostId, postModerationRequest.Id));
             }
             catch (Exception ex)
             {

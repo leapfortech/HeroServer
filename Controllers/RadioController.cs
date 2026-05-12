@@ -101,7 +101,7 @@ namespace HeroServer.Controllers
         {
             try
             {
-                return Ok(await RadioFunctions.Accept(postModerationRequest.PostId, postModerationRequest.SubtypeId));
+                return Ok(await RadioFunctions.Accept(postModerationRequest.PostId, postModerationRequest.Id));
             }
             catch (Exception ex)
             {
@@ -115,7 +115,7 @@ namespace HeroServer.Controllers
         {
             try
             {
-                return Ok(await RadioFunctions.Reject(postModerationRequest.PostId, postModerationRequest.SubtypeId));
+                return Ok(await RadioFunctions.Reject(postModerationRequest.PostId, postModerationRequest.Id));
             }
             catch (Exception ex)
             {
