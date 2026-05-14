@@ -8,14 +8,14 @@ namespace HeroServer
     public class FaqFunctions
     {
         // GET
-        public static async Task<List<Faq>> GetByType(long faqTypeId)
-        {
-            return await new FaqDB().GetByType(faqTypeId);
-        }
-
         public static async Task<Faq> GetById(long id)
         {
             return await new FaqDB().GetById(id);
+        }
+
+        public static async Task<List<Faq>> GetAllByType(long faqTypeId)
+        {
+            return await new FaqDB().GetAllByType(faqTypeId);
         }
 
         // REGISTER

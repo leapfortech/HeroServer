@@ -25,13 +25,13 @@ namespace HeroServer.Controllers
             }
         }
 
-        // POST services/faq/ByType/
-        [HttpPost("ByType")]
-        public async Task<ActionResult<List<Faq>>> GetByType([FromQuery] long faqTypeId)
+        // POST services/faq/AllByType/
+        [HttpPost("AllByType")]
+        public async Task<ActionResult<List<Faq>>> GetAllByType([FromQuery] long faqTypeId)
         {
             try
             {
-                return Ok(await FaqFunctions.GetByType(faqTypeId));
+                return Ok(await FaqFunctions.GetAllByType(faqTypeId));
             }
             catch (Exception ex)
             {

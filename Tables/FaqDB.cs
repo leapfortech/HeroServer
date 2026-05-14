@@ -46,7 +46,7 @@ namespace HeroServer
             return faqs;
         }
 
-        public async Task<List<Faq>> GetByType(long faqTypeId)
+        public async Task<List<Faq>> GetAllByType(long faqTypeId)
         {
             String strCmd = $"SELECT * FROM {table} WHERE FaqTypeId = @FaqTypeId";
 
