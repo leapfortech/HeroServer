@@ -26,7 +26,7 @@ namespace HeroServer.Controllers
         }
 
         // POST services/faq/AllByType/
-        [HttpPost("AllByType")]
+        [HttpGet("AllByType")]
         public async Task<ActionResult<List<Faq>>> GetAllByType([FromQuery] long faqTypeId)
         {
             try

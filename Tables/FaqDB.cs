@@ -46,13 +46,14 @@ namespace HeroServer
             return faqs;
         }
 
-        public async Task<List<Faq>> GetAllByType(long faqTypeId)
+        public async Task<List<Faq>> GetAllByType(long faqTypeId, int status = 1)
         {
-            String strCmd = $"SELECT * FROM {table} WHERE FaqTypeId = @FaqTypeId";
+            String strCmd = $"SELECT * FROM {table} WHERE FaqTypeId = @FaqTypeId AND Status = @Status";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@FaqTypeId", SqlDbType.BigInt, faqTypeId);
+            DBHelper.AddParam(command, "@Status", SqlDbType.BigInt, status);
 
             List<Faq> faqs = [];
             using (conn)

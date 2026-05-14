@@ -15,7 +15,7 @@ namespace HeroServer
 
         public static async Task<List<Faq>> GetAllByType(long faqTypeId)
         {
-            return await new FaqDB().GetAllByType(faqTypeId);
+            return await new FaqDB().GetAllByType(faqTypeId, 1);
         }
 
         // REGISTER
