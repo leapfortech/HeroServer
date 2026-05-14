@@ -11,8 +11,8 @@ namespace HeroServer.Controllers
     [ApiController]
     public class FaqController : Controller
     {
-        // GET services/faq/GetById/?id=1
-        [HttpGet("GetById")]
+        // GET services/faq/ById/?id=1
+        [HttpGet("ById")]
         public async Task<ActionResult<List<Faq>>> GetById([FromQuery] String id)
         {
             try
