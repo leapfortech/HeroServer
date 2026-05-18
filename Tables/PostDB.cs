@@ -183,35 +183,45 @@ namespace HeroServer
             String whereFeed = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
 
             // QUERY FEED
-            String strCmd = "SELECT TOP(@Count)" +
-                            " Post.Id AS PostId," +
-                            " Post.AppUserId," +
-                            " AppUser.Alias AS AppUserAlias," +
-                            " Post.PostTypeId," +
-                            " Post.CountryId AS PostCountryId," +
-                            " Post.StateId AS PostStateId," +
-                            " Post.Title," +
-                            " Post.Summary," +
-                            " Post.Description," +
-                            " Post.ImageCount," +
-                            " Post.LikeCount," +
-                            " Post.PublicationDateTime," +
-                            " Post.Status AS PostStatus" +
-                            " FROM [D-Post] AS Post" +
-                            " INNER JOIN [D-AppUser] AS AppUser ON Post.AppUserId = AppUser.Id" +
-                            whereFeed +
-                            " ORDER BY Post.PublicationDateTime" +
-                            (request.Direction == 1 ? ";" : " DESC;");
+            String strCmd = "SELECT ";
+            if (request.Direction == 1)
+                strCmd += " * FROM (SELECT TOP(@Count2)" +
+                          " ROW_NUMBER() OVER (ORDER BY Post.PublicationDateTime DESC) AS RowNumber,";
+            else
+                strCmd += " TOP(@Count)";
+            strCmd +=   " Post.Id AS PostId," +
+                        " Post.AppUserId," +
+                        " AppUser.Alias AS AppUserAlias," +
+                        " Post.PostTypeId," +
+                        " Post.CountryId AS PostCountryId," +
+                        " Post.StateId AS PostStateId," +
+                        " Post.Title," +
+                        " Post.Summary," +
+                        " Post.Description," +
+                        " Post.ImageCount," +
+                        " Post.LikeCount," +
+                        " Post.PublicationDateTime," +
+                        " Post.Status AS PostStatus" +
+                        " FROM [D-Post] AS Post" +
+                        " INNER JOIN [D-AppUser] AS AppUser ON Post.AppUserId = AppUser.Id" +
+                        whereFeed +
+                        " ORDER BY Post.PublicationDateTime DESC";
+            if (request.Direction == 1)
+                strCmd += ") Temp WHERE RowNumber > @Count;";
+            else
+                strCmd += ";";
 
-            // QUERY COUNT
+                // QUERY COUNT
             strCmd += "SELECT COUNT(1) AS Total FROM [D-Post] AS Post" + whereCount + ";";
             strCmd += "SELECT TOP(1) Post.Id AS FirstPostId, Post.PublicationDateTime AS FirstDateTime FROM [D-Post] AS Post" + whereCount + ";";
             strCmd += "SELECT TOP(1) Post.Id AS LastPostId, Post.PublicationDateTime AS LastDateTime FROM [D-Post] AS Post" + whereCount + " ORDER BY Post.PublicationDateTime DESC;";
 
             using (SqlCommand command = new SqlCommand(strCmd, conn))
             {
+                if (request.Direction == 1)
+                    DBHelper.AddParam(command, "@Count2", SqlDbType.Int, request.Count * 2);
                 DBHelper.AddParam(command, "@Count", SqlDbType.Int, request.Count);
-                
+
                 if (request.PostTypeId != -1)
                     DBHelper.AddParam(command, "@PostTypeId", SqlDbType.BigInt, request.PostTypeId);
 
