@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 
@@ -57,11 +59,48 @@ namespace HeroServer
             }
         }
 
+        // READ N
+        public static async Task<List<byte[]>> ReadFiles(String containerName, List<(String fileName, String fileExt)> files)
+        {
+            BlobContainerClient container = blobServiceClient.GetBlobContainerClient(containerName);
+
+            List<Task<byte[]>> tasks = new List<Task<byte[]>>();
+
+            foreach ((String fileName, String fileExt) file in files)
+                tasks.Add(ReadBlob(container, file.fileName, file.fileExt));
+
+            byte[][] results = await Task.WhenAll(tasks);
+
+            return new List<byte[]>(results);
+        }
+
+        private static async Task<byte[]> ReadBlob(BlobContainerClient container, String fileName, String fileExt)
+        {
+            BlobClient blob = container.GetBlobClient(fileName + "." + fileExt);
+
+            try
+            {
+                BlobDownloadInfo downloadInfo = await blob.DownloadAsync();
+
+                using MemoryStream memoryStream = new MemoryStream();
+                await downloadInfo.Content.CopyToAsync(memoryStream);
+
+                return memoryStream.ToArray();
+            }
+            catch (RequestFailedException ex)
+            {
+                if (ex.Status == 404)
+                    return null;
+
+                throw;
+            }
+        }
+
         // CREATE
         public static async Task CreateFile(String containerName, String fileName, String fileExt, byte[] content)
         {
             BlobContainerClient container = blobServiceClient.GetBlobContainerClient(containerName);
-            BlobClient blob = container.GetBlobClient(fileName + "." + fileExt);
+            BlobClient blob = container.GetBlobClient($"{fileName}.{fileExt}");
 
             using (MemoryStream stream = new MemoryStream(content))
             {
