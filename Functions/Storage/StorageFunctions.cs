@@ -45,36 +45,24 @@ namespace HeroServer
             BlobContainerClient container = blobServiceClient.GetBlobContainerClient(containerName);
             BlobClient blob = container.GetBlobClient(fileName + "." + fileExt);
 
-            if (!blob.Exists())
-                return null;
-
-            BlobDownloadInfo downloadInfo = await blob.DownloadAsync();
-
-            using (MemoryStream memoryStream = new MemoryStream())
+            try
             {
-                await downloadInfo.Content.CopyToAsync(memoryStream);
-                memoryStream.Close();
+                BlobDownloadInfo downloadInfo = await blob.DownloadAsync();
 
+                MemoryStream memoryStream = new MemoryStream();
+                await downloadInfo.Content.CopyToAsync(memoryStream);
                 return memoryStream.ToArray();
+            }
+            catch (RequestFailedException ex)
+            {
+                if (ex.Status == 404)
+                    return null;
+
+                throw;
             }
         }
 
-        // READ N
-        public static async Task<List<byte[]>> ReadFiles(String containerName, List<(String fileName, String fileExt)> files)
-        {
-            BlobContainerClient container = blobServiceClient.GetBlobContainerClient(containerName);
-
-            List<Task<byte[]>> tasks = new List<Task<byte[]>>();
-
-            foreach ((String fileName, String fileExt) file in files)
-                tasks.Add(ReadBlob(container, file.fileName, file.fileExt));
-
-            byte[][] results = await Task.WhenAll(tasks);
-
-            return new List<byte[]>(results);
-        }
-
-        private static async Task<byte[]> ReadBlob(BlobContainerClient container, String fileName, String fileExt)
+        private static async Task<byte[]> ReadFile(BlobContainerClient container, String fileName, String fileExt)
         {
             BlobClient blob = container.GetBlobClient(fileName + "." + fileExt);
 
@@ -94,6 +82,18 @@ namespace HeroServer
 
                 throw;
             }
+        }
+
+        public static async Task<byte[][]> ReadFiles(String containerName, List<(String fileName, String fileExt)> files)
+        {
+            BlobContainerClient container = blobServiceClient.GetBlobContainerClient(containerName);
+
+            List<Task<byte[]>> tasks = new List<Task<byte[]>>();
+
+            foreach ((String fileName, String fileExt) file in files)
+                tasks.Add(ReadFile(container, file.fileName, file.fileExt));
+
+            return await Task.WhenAll(tasks);
         }
 
         // CREATE

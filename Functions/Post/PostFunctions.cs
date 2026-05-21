@@ -23,8 +23,14 @@ namespace HeroServer
         {
             PostFeedResponse response = await new PostDB().GetPostFeed(request);
 
+            List<Task<String>> tasks = new List<Task<String>>();
             for (int i = 0; i < response.PostFulls.Count; i++)
-                response.PostFulls[i].TitleImage = await GetTitleImageById(response.PostFulls[i].PostId);
+                tasks.Add(GetTitleImageById(response.PostFulls[i].PostId));
+
+            String[] titleImages = await Task.WhenAll(tasks);
+
+            for (int i = 0; i < response.PostFulls.Count; i++)
+                response.PostFulls[i].TitleImage = titleImages[i];
 
             return response;
         }
