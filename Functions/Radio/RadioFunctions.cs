@@ -18,9 +18,9 @@ namespace HeroServer
             return await new RadioDB().GetById(id);
         }
 
-        public static async Task<RadioFull> GetFullById(long id)
+        public static async Task<RadioFull> GetFullById(long id, long likeAppUserId)
         {
-            RadioFull radioFull = await new RadioDB().GetFullById(id);
+            RadioFull radioFull = await new RadioDB().GetFullById(id, likeAppUserId);
 
             if (radioFull == null)
                 return null;
@@ -30,9 +30,9 @@ namespace HeroServer
             return radioFull;
         }
 
-        public static async Task<RadioFull> GetFullByPostId(long postId)
+        public static async Task<RadioFull> GetFullByPostId(long postId, long likeAppUserId)
         {
-            RadioFull radioFull = await new RadioDB().GetFullByPostId(postId);
+            RadioFull radioFull = await new RadioDB().GetFullByPostId(postId, likeAppUserId);
 
             if (radioFull == null)
                 return null;

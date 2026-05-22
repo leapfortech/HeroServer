@@ -18,9 +18,9 @@ namespace HeroServer
             return await new TaleDB().GetById(id);
         }
 
-        public static async Task<TaleFull> GetFullById(long id)
+        public static async Task<TaleFull> GetFullById(long id, long likeAppUserId)
         {
-            TaleFull taleFull = await new TaleDB().GetFullById(id);
+            TaleFull taleFull = await new TaleDB().GetFullById(id, likeAppUserId);
 
             if (taleFull == null)
                 return null;
@@ -30,9 +30,9 @@ namespace HeroServer
             return taleFull;
         }
 
-        public static async Task<TaleFull> GetFullByPostId(long postId)
+        public static async Task<TaleFull> GetFullByPostId(long postId, long likeAppUserId)
         {
-            TaleFull taleFull = await new TaleDB().GetFullByPostId(postId);
+            TaleFull taleFull = await new TaleDB().GetFullByPostId(postId, likeAppUserId);
 
             if (taleFull == null)
                 return null;

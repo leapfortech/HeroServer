@@ -17,7 +17,7 @@ namespace HeroServer
         public TaleFull(long id, long postId, long appUserId, String appUserAlias,
                         long postTypeId, long postCountryId, long postStateId,
                         String title, String titleImage, String summary, String description,
-                        int imageCount, int likeCount, DateTime publicationDateTime,
+                        int imageCount, int favorite, int like, int likeCount, DateTime publicationDateTime,
                         int postStatusId,
                         ContactFull contactFull,
                         List<LinkFull> linkFulls,
@@ -26,7 +26,7 @@ namespace HeroServer
                         List<String> images)
             : base(postId, appUserId, appUserAlias, postTypeId,
                    postCountryId, postStateId, title, titleImage, summary, description,
-                   imageCount, likeCount, publicationDateTime, postStatusId,
+                   imageCount, favorite, like, likeCount, publicationDateTime, postStatusId,
                    contactFull, linkFulls, commentFulls)
         {
             Id = id;

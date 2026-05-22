@@ -18,9 +18,9 @@ namespace HeroServer
             return await new PuzzleDB().GetById(id);
         }
 
-        public static async Task<PuzzleFull> GetFullById(long id)
+        public static async Task<PuzzleFull> GetFullById(long id, long likeAppUserId)
         {
-            PuzzleFull puzzleFull = await new PuzzleDB().GetFullById(id);
+            PuzzleFull puzzleFull = await new PuzzleDB().GetFullById(id, likeAppUserId);
 
             if (puzzleFull == null)
                 return null;
@@ -30,9 +30,9 @@ namespace HeroServer
             return puzzleFull;
         }
 
-        public static async Task<PuzzleFull> GetFullByPostId(long postId)
+        public static async Task<PuzzleFull> GetFullByPostId(long postId, long likeAppUserId)
         {
-            PuzzleFull puzzleFull = await new PuzzleDB().GetFullByPostId(postId);
+            PuzzleFull puzzleFull = await new PuzzleDB().GetFullByPostId(postId, likeAppUserId);
 
             if (puzzleFull == null)
                 return null;

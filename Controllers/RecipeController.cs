@@ -13,11 +13,11 @@ namespace HeroServer.Controllers
     {
         // GET services/recipe?id=1
         [HttpGet]
-        public async Task<ActionResult<RecipeFull>> GetFullById([FromQuery] String id)
+        public async Task<ActionResult<RecipeFull>> GetFullById([FromQuery] String id, [FromQuery] long likeAppUserId)
         {
             try
             {
-                return Ok(await RecipeFunctions.GetFullById(Convert.ToInt64(id)));
+                return Ok(await RecipeFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(likeAppUserId)));
             }
             catch (Exception ex)
             {
@@ -26,11 +26,11 @@ namespace HeroServer.Controllers
         }
 
         [HttpGet("FullByPostId")]
-        public async Task<ActionResult<TaleFull>> GetFullByPostId([FromQuery] String postId)
+        public async Task<ActionResult<TaleFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] long likeAppUserId)
         {
             try
             {
-                return Ok(await RecipeFunctions.GetFullByPostId(Convert.ToInt64(postId)));
+                return Ok(await RecipeFunctions.GetFullByPostId(Convert.ToInt64(postId), Convert.ToInt64(likeAppUserId)));
             }
             catch (Exception ex)
             {

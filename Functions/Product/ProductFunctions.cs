@@ -18,9 +18,9 @@ namespace HeroServer
             return await new ProductDB().GetById(id);
         }
 
-        public static async Task<ProductFull> GetFullById(long id)
+        public static async Task<ProductFull> GetFullById(long id, long likeAppUserId)
         {
-            ProductFull productFull = await new ProductDB().GetFullById(id);
+            ProductFull productFull = await new ProductDB().GetFullById(id, likeAppUserId);
 
             if (productFull == null)
                 return null;
@@ -30,9 +30,9 @@ namespace HeroServer
             return productFull;
         }
 
-        public static async Task<ProductFull> GetFullByPostId(long postId)
+        public static async Task<ProductFull> GetFullByPostId(long postId, long likeAppUserId)
         {
-            ProductFull productFull = await new ProductDB().GetFullByPostId(postId);
+            ProductFull productFull = await new ProductDB().GetFullByPostId(postId, likeAppUserId);
 
             if (productFull == null)
                 return null;

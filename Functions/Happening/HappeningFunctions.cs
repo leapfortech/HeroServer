@@ -18,9 +18,9 @@ namespace HeroServer
             return await new HappeningDB().GetById(id);
         }
 
-        public static async Task<HappeningFull> GetFullById(long id)
+        public static async Task<HappeningFull> GetFullById(long id, long likeAppUserId)
         {
-            HappeningFull happeningFull = await new HappeningDB().GetFullById(id);
+            HappeningFull happeningFull = await new HappeningDB().GetFullById(id, likeAppUserId);
 
             if (happeningFull == null)
                 return null;
@@ -30,9 +30,9 @@ namespace HeroServer
             return happeningFull;
         }
 
-        public static async Task<HappeningFull> GetFullByPostId(long postId)
+        public static async Task<HappeningFull> GetFullByPostId(long postId, long likeAppUserId)
         {
-            HappeningFull happeningFull = await new HappeningDB().GetFullByPostId(postId);
+            HappeningFull happeningFull = await new HappeningDB().GetFullByPostId(postId, likeAppUserId);
 
             if (happeningFull == null)
                 return null;

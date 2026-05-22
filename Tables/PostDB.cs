@@ -44,6 +44,8 @@ namespace HeroServer
                                 reader["Summary"].ToString(),
                                 reader["Description"].ToString(),
                                 Convert.ToInt32(reader["ImageCount"]),
+                                Convert.ToInt32(reader["Favorite"]),
+                                Convert.ToInt32(reader["Like"]),
                                 Convert.ToInt32(reader["LikeCount"]),
                                 Convert.ToDateTime(reader["PublicationDateTime"]),
                                 Convert.ToInt32(reader["PostStatus"]),
@@ -199,11 +201,15 @@ namespace HeroServer
                         " Post.Summary," +
                         " Post.Description," +
                         " Post.ImageCount," +
+                        " CASE WHEN Fav.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
+                        " ISNULL(Lik.[Rank], -1) AS [Like]," +
                         " Post.LikeCount," +
                         " Post.PublicationDateTime," +
                         " Post.Status AS PostStatus" +
                         " FROM [D-Post] AS Post" +
                         " INNER JOIN [D-AppUser] AS AppUser ON Post.AppUserId = AppUser.Id" +
+                        " LEFT JOIN [J-Favorite] AS Fav ON Fav.PostId = Post.Id AND Fav.AppUserId = @LikeAppUserId " +
+                        " LEFT JOIN [D-Like] AS Lik ON Lik.PostId = Post.Id AND Lik.AppUserId = @LikeAppUserId " +
                         whereFeed +
                         " ORDER BY Post.PublicationDateTime DESC";
             if (request.Direction == 1)
@@ -221,6 +227,7 @@ namespace HeroServer
                 if (request.Direction == 1)
                     DBHelper.AddParam(command, "@Count2", SqlDbType.Int, request.Count * 2);
                 DBHelper.AddParam(command, "@Count", SqlDbType.Int, request.Count);
+                DBHelper.AddParam(command, "@LikeAppUserId", SqlDbType.BigInt, request.LikeAppUserId);
 
                 if (request.PostTypeId != -1)
                     DBHelper.AddParam(command, "@PostTypeId", SqlDbType.BigInt, request.PostTypeId);
@@ -299,6 +306,8 @@ namespace HeroServer
                                 Post.Summary,
                                 Post.Description,
                                 Post.ImageCount,
+                                0 AS Favorite,
+                                -1 AS [Like],
                                 Post.LikeCount,
                                 Post.PublicationDateTime,
                                 Post.Status AS PostStatus

@@ -35,6 +35,8 @@ namespace HeroServer
                                 reader["Summary"].ToString(),
                                 reader["Description"].ToString(),
                                 Convert.ToInt32(reader["ImageCount"]),
+                                Convert.ToInt32(reader["Favorite"]),
+                                Convert.ToInt32(reader["Like"]),
                                 Convert.ToInt32(reader["LikeCount"]),
                                 Convert.ToDateTime(reader["PublicationDateTime"]),
                                 Convert.ToInt32(reader["Status"]),
@@ -99,18 +101,23 @@ namespace HeroServer
         }
 
         // GET FULL
-        public async Task<TaleFull> GetFullById(long id)
+        public async Task<TaleFull> GetFullById(long id, long likeAppUserId)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias," +
                              " Post.PostTypeId," +
                              " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId," +
                              " Post.Title, Post.Summary, Post.Description," +
-                             " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.Status," +
+                             " Post.ImageCount," +
+                             " CASE WHEN Fav.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
+                             " ISNULL(Lik.[Rank], -1) AS [Like]," +                             
+                             " Post.LikeCount, Post.PublicationDateTime, Post.Status," +
                             $" {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
+                            " LEFT JOIN [J-Favorite] AS Fav ON Fav.PostId = Post.Id AND Fav.AppUserId = @LikeAppUserId " +
+                            " LEFT JOIN [D-Like] AS Lik ON Lik.PostId = Post.Id AND Lik.AppUserId = @LikeAppUserId " +
                             $" WHERE {table}.Id = @Id;";
 
             strCmd +=  "SELECT Id, PostId, Name, Status" +
@@ -129,6 +136,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            DBHelper.AddParam(command, "@LikeAppUserId", SqlDbType.BigInt, likeAppUserId);
 
             TaleFull taleFull = null;
             using (conn)
@@ -163,17 +171,22 @@ namespace HeroServer
             return taleFull;
         }
 
-        public async Task<TaleFull> GetFullByPostId(long postId)
+        public async Task<TaleFull> GetFullByPostId(long postId, long likeAppUserId)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                             " Post.AppUserId, AppUser.Alias AS AppUserAlias," +
                             " Post.PostTypeId," +
                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
-                            " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.Status," +
+                            " Post.ImageCount," +
+                            " CASE WHEN Fav.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
+                            " ISNULL(Lik.[Rank], -1) AS [Like]," +
+                            " Post.LikeCount, Post.PublicationDateTime, Post.Status," +
                             $" {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
+                            " LEFT JOIN [J-Favorite] AS Fav ON Fav.PostId = Post.Id AND Fav.AppUserId = @LikeAppUserId " +
+                            " LEFT JOIN [D-Like] AS Lik ON Lik.PostId = Post.Id AND Lik.AppUserId = @LikeAppUserId " +
                             $" WHERE {table}.PostId = @PostId;";
 
             strCmd +=  "SELECT Id, PostId, Name, Status" +
@@ -192,6 +205,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+            DBHelper.AddParam(command, "@LikeAppUserId", SqlDbType.BigInt, likeAppUserId);
 
             TaleFull taleFull = null;
             using (conn)
@@ -231,7 +245,7 @@ namespace HeroServer
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId," +
                              " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
-                             " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.Status," +
+                             " Post.ImageCount, 0 AS Favorite, -1 AS [Like], Post.LikeCount, Post.PublicationDateTime, Post.Status," +
                             $" {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +

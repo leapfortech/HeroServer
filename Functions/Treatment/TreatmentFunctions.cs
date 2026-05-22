@@ -18,9 +18,9 @@ namespace HeroServer
             return await new TreatmentDB().GetById(id);
         }
 
-        public static async Task<TreatmentFull> GetFullById(long id)
+        public static async Task<TreatmentFull> GetFullById(long id, long likeAppUserId)
         {
-            TreatmentFull treatmentFull = await new TreatmentDB().GetFullById(id);
+            TreatmentFull treatmentFull = await new TreatmentDB().GetFullById(id, likeAppUserId);
 
             if (treatmentFull == null)
                 return null;
@@ -30,9 +30,9 @@ namespace HeroServer
             return treatmentFull;
         }
 
-        public static async Task<TreatmentFull> GetFullByPostId(long postId)
+        public static async Task<TreatmentFull> GetFullByPostId(long postId, long likeAppUserId)
         {
-            TreatmentFull treatmentFull = await new TreatmentDB().GetFullByPostId(postId);
+            TreatmentFull treatmentFull = await new TreatmentDB().GetFullByPostId(postId, likeAppUserId);
 
             if (treatmentFull == null)
                 return null;

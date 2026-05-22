@@ -18,9 +18,9 @@ namespace HeroServer
             return await new NewsDB().GetById(id);
         }
 
-        public static async Task<NewsFull> GetFullById(long id)
+        public static async Task<NewsFull> GetFullById(long id, long likeAppUserId)
         {
-            NewsFull newsFull = await new NewsDB().GetFullById(id);
+            NewsFull newsFull = await new NewsDB().GetFullById(id, likeAppUserId);
 
             if (newsFull == null)
                 return null;
@@ -30,9 +30,9 @@ namespace HeroServer
             return newsFull;
         }
 
-        public static async Task<NewsFull> GetFullByPostId(long postId)
+        public static async Task<NewsFull> GetFullByPostId(long postId, long likeAppUserId)
         {
-            NewsFull newsFull = await new NewsDB().GetFullByPostId(postId);
+            NewsFull newsFull = await new NewsDB().GetFullByPostId(postId, likeAppUserId);
 
             if (newsFull == null)
                 return null;

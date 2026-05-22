@@ -14,11 +14,11 @@ namespace HeroServer.Controllers
     {
         // GET services/radio?id=1
         [HttpGet]
-        public async Task<ActionResult<RadioFull>> GetFullById([FromQuery] String id)
+        public async Task<ActionResult<RadioFull>> GetFullById([FromQuery] String id, [FromQuery] String likeAppUserId)
         {
             try
             {
-                return Ok(await RadioFunctions.GetFullById(Convert.ToInt64(id)));
+                return Ok(await RadioFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(likeAppUserId)));
             }
             catch (Exception ex)
             {
@@ -27,11 +27,11 @@ namespace HeroServer.Controllers
         }
 
         [HttpGet("FullByPostId")]
-        public async Task<ActionResult<TaleFull>> GetFullByPostId([FromQuery] String postId)
+        public async Task<ActionResult<TaleFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] String likeAppUserId)
         {
             try
             {
-                return Ok(await RadioFunctions.GetFullByPostId(Convert.ToInt64(postId)));
+                return Ok(await RadioFunctions.GetFullByPostId(Convert.ToInt64(postId), Convert.ToInt64(likeAppUserId)));
             }
             catch (Exception ex)
             {

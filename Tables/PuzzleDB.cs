@@ -42,6 +42,8 @@ namespace HeroServer
                                   reader["Summary"].ToString(),
                                   reader["Description"].ToString(),
                                   Convert.ToInt32(reader["ImageCount"]),
+                                  Convert.ToInt32(reader["Favorite"]),
+                                  Convert.ToInt32(reader["Like"]),
                                   Convert.ToInt32(reader["LikeCount"]),
                                   Convert.ToDateTime(reader["PublicationDateTime"]),
                                   Convert.ToInt32(reader["Status"]),
@@ -137,23 +139,28 @@ namespace HeroServer
         }
 
         // GET FULL
-        public async Task<PuzzleFull> GetFullById(long id)
+        public async Task<PuzzleFull> GetFullById(long id, long likeAppUserId)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId," +
                              " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
-                             " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.Status," +
+                             " Post.ImageCount," +
+                             " CASE WHEN Fav.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
+                             " ISNULL(Lik.[Rank], -1) AS [Like]," +
+                             " Post.LikeCount, Post.PublicationDateTime, Post.Status," +
                             $" {table}.PuzzleSubtypeId, {table}.CountryId, {table}.Question, {table}.Hint," +
                             $" {table}.Difficulty, {table}.Points, {table}.PlayCount, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
+                            " LEFT JOIN [J-Favorite] AS Fav ON Fav.PostId = Post.Id AND Fav.AppUserId = @LikeAppUserId " +
+                            " LEFT JOIN [D-Like] AS Lik ON Lik.PostId = Post.Id AND Lik.AppUserId = @LikeAppUserId " +
                             $" WHERE {table}.Id = @Id;";
 
             strCmd += "SELECT Id, PuzzleId, Description, IsCorrect, Status" +
                       " FROM [D-PuzzleAnswer]" +
                       " WHERE PuzzleId IN" +
-                     $" (SELECT Id FROM {table} WHERE PostId = @PostId)" +
+                     $" (SELECT Id FROM {table} WHERE Id = @Id)" +
                       " AND Status = 1" +
                       " ORDER BY CreateDateTime ASC;";
 
@@ -173,6 +180,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            DBHelper.AddParam(command, "@LikeAppUserId", SqlDbType.BigInt, likeAppUserId);
 
             PuzzleFull puzzleFull = null;
             using (conn)
@@ -211,17 +219,22 @@ namespace HeroServer
             return puzzleFull;
         }
 
-        public async Task<PuzzleFull> GetFullByPostId(long postId)
+        public async Task<PuzzleFull> GetFullByPostId(long postId, long likeAppUserId)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId," +
                              " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
-                             " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.Status," +
+                             " Post.ImageCount," +
+                             " CASE WHEN Fav.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
+                             " ISNULL(Lik.[Rank], -1) AS [Like]," +
+                             " Post.LikeCount, Post.PublicationDateTime, Post.Status," +
                             $" {table}.PuzzleSubtypeId, {table}.CountryId, {table}.Question, {table}.Hint," +
                             $" {table}.Difficulty, {table}.Points, {table}.PlayCount, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
+                            " LEFT JOIN [J-Favorite] AS Fav ON Fav.PostId = Post.Id AND Fav.AppUserId = @LikeAppUserId " +
+                            " LEFT JOIN [D-Like] AS Lik ON Lik.PostId = Post.Id AND Lik.AppUserId = @LikeAppUserId " +
                             $" WHERE {table}.PostId = @PostId;";
 
             strCmd += "SELECT Id, PuzzleId, Description, IsCorrect, Status" +
@@ -247,6 +260,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+            DBHelper.AddParam(command, "@LikeAppUserId", SqlDbType.BigInt, likeAppUserId);
 
             PuzzleFull puzzleFull = null;
             using (conn)
@@ -290,7 +304,7 @@ namespace HeroServer
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId," +
                              " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
-                             " Post.ImageCount, Post.LikeCount, Post.PublicationDateTime, Post.Status," +
+                             " Post.ImageCount, 0 AS Favorite, -1 AS [Like], Post.LikeCount, Post.PublicationDateTime, Post.Status," +
                             $" {table}.PuzzleSubtypeId, {table}.CountryId, {table}.Question, {table}.Hint," +
                             $" {table}.Difficulty, {table}.Points, {table}.PlayCount, {table}.Status" +
                             $" FROM {table}" +
@@ -307,13 +321,12 @@ namespace HeroServer
                       " FROM [D-PuzzleAnswer] AS PuzzleAnswer" +
                      $" JOIN {table} ON (PuzzleAnswer.PuzzleId = {table}.Id)" +
                       " WHERE 1 = 1" +
-                      " AND PuzzleAnswer.Status = 1" +
-                      " ORDER BY PuzzleAnswer.CreateDateTime ASC;";
+                      " AND PuzzleAnswer.Status = 1";
 
-            if (status != -1)
-                strCmd += $" AND {table}.Status = @Status;";
-            else
-                strCmd += ";";
+                        if (status != -1)
+                            strCmd += $" AND {table}.Status = @Status";
+
+                        strCmd += " ORDER BY PuzzleAnswer.CreateDateTime ASC;";
 
             strCmd += "SELECT Contact.Id, Contact.PostId, Contact.Name, Contact.Status" +
                       " FROM [D-Contact] AS Contact" +

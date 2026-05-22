@@ -18,9 +18,9 @@ namespace HeroServer
             return await new RecipeDB().GetById(id);
         }
 
-        public static async Task<RecipeFull> GetFullById(long id)
+        public static async Task<RecipeFull> GetFullById(long id, long likeAppUserId)
         {
-            RecipeFull recipeFull = await new RecipeDB().GetFullById(id);
+            RecipeFull recipeFull = await new RecipeDB().GetFullById(id, likeAppUserId);
 
             if (recipeFull == null)
                 return null;
@@ -30,9 +30,9 @@ namespace HeroServer
             return recipeFull;
         }
 
-        public static async Task<RecipeFull> GetFullByPostId(long postId)
+        public static async Task<RecipeFull> GetFullByPostId(long postId, long likeAppUserId)
         {
-            RecipeFull recipeFull = await new RecipeDB().GetFullByPostId(postId);
+            RecipeFull recipeFull = await new RecipeDB().GetFullByPostId(postId, likeAppUserId);
 
             if (recipeFull == null)
                 return null;
