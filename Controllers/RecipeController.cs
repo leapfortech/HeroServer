@@ -26,7 +26,7 @@ namespace HeroServer.Controllers
         }
 
         [HttpGet("FullByPostId")]
-        public async Task<ActionResult<TaleFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] long likeAppUserId)
+        public async Task<ActionResult<RecipeFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] long likeAppUserId)
         {
             try
             {

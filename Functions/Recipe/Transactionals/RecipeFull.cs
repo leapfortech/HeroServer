@@ -22,8 +22,8 @@ namespace HeroServer
         public RecipeFull(long id, long postId, long appUserId, String appUserAlias,
                           long postTypeId, long postCountryId, long postStateId,
                           String title, String titleImage, String summary, String description,
-                          int imageCount, int favorite, int like, int likeCount, DateTime publicationDateTime,
-                          int postStatusId,
+                          int imageCount, int favorite, int like, int likeCount,
+                          DateTime publicationDateTime, int postStatus,
                           ContactFull contactFull,
                           List<LinkFull> linkFulls,
                           List<CommentFull> commentFulls,
@@ -32,7 +32,7 @@ namespace HeroServer
                           List<String> images)
             : base(postId, appUserId, appUserAlias, postTypeId,
                    postCountryId, postStateId, title, titleImage, summary, description,
-                   imageCount, favorite, like, likeCount, publicationDateTime, postStatusId,
+                   imageCount, favorite, like, likeCount, publicationDateTime, postStatus,
                    contactFull, linkFulls, commentFulls)
         {
             Id = id;
