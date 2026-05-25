@@ -6,26 +6,19 @@ namespace HeroServer
     {
         public long Id { get; set; }
         public long AppUserId { get; set; }
-        public int Rank { get; set; }
-        public int PuzzleCount { get; set; }
-        public int TotalPoints { get; set; }
-        public DateTime LastPlayDateTime { get; set; }
         public DateTime CreateDateTime { get; set; }
         public DateTime UpdateDateTime { get; set; }
+        public int Status { get; set; }
 
         public Player() { }
 
-        public Player(long id, long appUserId, int rank, int puzzleCount, int totalPoints, DateTime lastPlayDateTime,
-                      DateTime createDateTime, DateTime updateDateTime)
+        public Player(long id, long appUserId, DateTime createDateTime, DateTime updateDateTime, int status)
         {
             Id = id;
             AppUserId = appUserId;
-            Rank = rank;
-            PuzzleCount = puzzleCount;
-            TotalPoints = totalPoints;
-            LastPlayDateTime = lastPlayDateTime;
             CreateDateTime = createDateTime;
             UpdateDateTime = updateDateTime;
+            Status = status;
         }
     }
 }

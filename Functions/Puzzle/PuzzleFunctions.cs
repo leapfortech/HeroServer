@@ -8,6 +8,11 @@ namespace HeroServer
     public class PuzzleFunctions
     {
         // GET
+        public static async Task<PuzzleAllRsp> GetAllByDifficulty(PuzzleAllByDifficultyReq req)
+        {
+            return await new PuzzleDB().GetAllByDifficulty(req);
+        }
+
         public static async Task<List<Puzzle>> GetAllByStatus(int status)
         {
             return await new PuzzleDB().GetAllByStatus(status);
@@ -122,8 +127,6 @@ namespace HeroServer
 
                 registerPuzzleRequest.Puzzle.PostId = await PostFunctions.Register(registerPuzzleRequest);
 
-                registerPuzzleRequest.Puzzle.Difficulty = -1;
-                registerPuzzleRequest.Puzzle.Points = 1;
                 registerPuzzleRequest.Puzzle.PlayCount = 0;
                 registerPuzzleRequest.Puzzle.Status = 1;
                 

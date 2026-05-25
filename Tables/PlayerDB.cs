@@ -15,12 +15,9 @@ namespace HeroServer
         {
             return new Player(Convert.ToInt64(reader["Id"]),
                               Convert.ToInt64(reader["AppUserId"]),
-                              Convert.ToInt32(reader["Rank"]),
-                              Convert.ToInt32(reader["PuzzleCount"]),
-                              Convert.ToInt32(reader["TotalPoints"]),
-                              Convert.ToDateTime(reader["LastPlayDateTime"]),
                               Convert.ToDateTime(reader["CreateDateTime"]),
-                              Convert.ToDateTime(reader["UpdateDateTime"]));
+                              Convert.ToDateTime(reader["UpdateDateTime"]),
+                              Convert.ToInt32(reader["Status"]));
         }
 
         // GET
@@ -72,20 +69,17 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(Player player)
         {
-            String strCmd = $"INSERT INTO {table}(Id, AppUserId, Rank, PuzzleCount, TotalPoints, LastPlayDateTime, CreateDateTime, UpdateDateTime)" + 
+            String strCmd = $"INSERT INTO {table}(Id, AppUserId, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @AppUserId, @Rank, @PuzzleCount, @TotalPoints, @LastPlayDateTime, @CreateDateTime, @UpdateDateTime)";
+                            " VALUES (@Id, @AppUserId, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('Y'));
             DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, player.AppUserId);
-            DBHelper.AddParam(command, "@Rank", SqlDbType.Int, player.Rank);
-            DBHelper.AddParam(command, "@PuzzleCount", SqlDbType.Int, player.PuzzleCount);
-            DBHelper.AddParam(command, "@TotalPoints", SqlDbType.Int, player.TotalPoints);
-            DBHelper.AddParam(command, "@LastPlayDateTime", SqlDbType.DateTime, player.LastPlayDateTime);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            DBHelper.AddParam(command, "@Status", SqlDbType.DateTime, player.Status);
 
             using (conn)
             {
@@ -97,17 +91,32 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(Player player)
         {
-            String strCmd = $"UPDATE {table} SET AppUserId = @AppUserId, Rank = @Rank, PuzzleCount = @PuzzleCount, TotalPoints = @TotalPoints, LastPlayDateTime = @LastPlayDateTime, UpdateDateTime = @UpdateDateTime WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET AppUserId = @AppUserId, UpdateDateTime = @UpdateDateTime WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, player.AppUserId);
-            DBHelper.AddParam(command, "@Rank", SqlDbType.Int, player.Rank);
-            DBHelper.AddParam(command, "@PuzzleCount", SqlDbType.Int, player.PuzzleCount);
-            DBHelper.AddParam(command, "@TotalPoints", SqlDbType.Int, player.TotalPoints);
-            DBHelper.AddParam(command, "@LastPlayDateTime", SqlDbType.DateTime, player.LastPlayDateTime);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, player.Id);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
+
+        public async Task<bool> UpdateStatus(long id, int status)
+        {
+            String strCmd = $"UPDATE {table}" +
+                            " SET UpdateDateTime = @UpdateDateTime, Status = @Status" +
+                            " WHERE Id = @Id";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {

@@ -25,12 +25,27 @@ namespace HeroServer.Controllers
             }
         }
 
+        // GET services/puzzle/FullByPostId?postId=1, likeAppUserId=1
         [HttpGet("FullByPostId")]
         public async Task<ActionResult<PuzzleFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] String likeAppUserId)
         {
             try
             {
                 return Ok(await PuzzleFunctions.GetFullByPostId(Convert.ToInt64(postId), Convert.ToInt64(likeAppUserId)));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // POST services/puzzle/AllByDifficulty/
+        [HttpPost("AllByDifficulty")]
+        public async Task<ActionResult<PuzzleAllRsp>> GetAllByDifficulty([FromBody] PuzzleAllByDifficultyReq req)
+        {
+            try
+            {
+                return Ok(await PuzzleFunctions.GetAllByDifficulty(req));
             }
             catch (Exception ex)
             {

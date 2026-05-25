@@ -11,6 +11,7 @@ namespace HeroServer
         public String Question { get; set; }
         public String Hint { get; set; }
         public int Difficulty { get; set; }
+        public int Delay { get; set; }
         public int Points { get; set; }
         public int PlayCount { get; set; }
         public int Status { get; set; }
@@ -31,7 +32,7 @@ namespace HeroServer
                           List<CommentFull> commentFulls,
                           long puzzleSubtypeId, long countryId,
                           String question, String hint,
-                          int difficulty, int points, int playCount,
+                          int difficulty, int delay, int points, int playCount,
                           int status,
                           List<PuzzleAnswerFull> puzzleAnswerFulls,
                           List<String> images)
@@ -46,6 +47,7 @@ namespace HeroServer
             Question = question;
             Hint = hint;
             Difficulty = difficulty;
+            Delay = delay;
             Points = points;
             PlayCount = playCount;
             Status = status;

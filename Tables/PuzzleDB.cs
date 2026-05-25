@@ -20,6 +20,7 @@ namespace HeroServer
                               reader["Question"].ToString(),
                               reader["Hint"].ToString(),
                               Convert.ToInt32(reader["Difficulty"]),
+                              Convert.ToInt32(reader["Delay"]),
                               Convert.ToInt32(reader["Points"]),
                               Convert.ToInt32(reader["PlayCount"]),
                               Convert.ToDateTime(reader["CreateDateTime"]),
@@ -56,6 +57,7 @@ namespace HeroServer
                                   reader["Question"].ToString(),
                                   reader["Hint"].ToString(),
                                   Convert.ToInt32(reader["Difficulty"]),
+                                  Convert.ToInt32(reader["Delay"]),
                                   Convert.ToInt32(reader["Points"]),
                                   Convert.ToInt32(reader["PlayCount"]),
                                   Convert.ToInt32(reader["Status"]),
@@ -65,6 +67,113 @@ namespace HeroServer
 
 
         // GET
+        public async Task<PuzzleAllRsp> GetAllByDifficulty(PuzzleAllByDifficultyReq req)
+        {
+            int offset = (req.Page - 1) * req.PageSize;
+
+            String strCmd = // Total count
+                            "SELECT COUNT(DISTINCT P.Id) AS TotalCount " +
+                            "FROM [D-Puzzle] AS P " +
+                            "WHERE (@Status = -1 OR P.Status = @Status) " +
+                            "AND (@PuzzleSubtypeId = -1 OR P.PuzzleSubtypeId = @PuzzleSubtypeId) " +
+                            "AND (@Difficulty = -1 OR P.Difficulty = @Difficulty); " +
+
+                            // Data
+                            "SELECT " +
+
+                            "P.Id, P.PostId, P.PuzzleSubtypeId, P.CountryId, " +
+                            "P.Question, P.Hint, P.Difficulty, P.Delay, " +
+                            "P.Points, P.PlayCount, P.CreateDateTime, " +
+                            "P.UpdateDateTime, P.Status, " +
+
+                            "PA.Id AS PuzzleAnswerId, " +
+                            "PA.PuzzleId, " +
+                            "PA.Description, " +
+                            "PA.IsCorrect, " +
+                            "PA.CreateDateTime AS PuzzleAnswerCreateDateTime, " +
+                            "PA.UpdateDateTime AS PuzzleAnswerUpdateDateTime, " +
+                            "PA.Status AS PuzzleAnswerStatus " +
+
+                            "FROM [D-Puzzle] AS P " +
+
+                            "LEFT JOIN [D-PuzzleAnswer] AS PA " +
+                            "ON PA.PuzzleId = P.Id " +
+
+                            "WHERE (@Status = -1 OR P.Status = @Status) " +
+                            "AND (@PuzzleSubtypeId = -1 OR P.PuzzleSubtypeId = @PuzzleSubtypeId) " +
+                            "AND (@Difficulty = -1 OR P.Difficulty = @Difficulty) " +
+
+                            "ORDER BY P.CreateDateTime DESC " +
+                            "OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, req.Status);
+            DBHelper.AddParam(command, "@PuzzleSubtypeId", SqlDbType.BigInt, req.PuzzleSubtypeId);
+            DBHelper.AddParam(command, "@Difficulty", SqlDbType.Int, req.Difficulty);
+            DBHelper.AddParam(command, "@Offset", SqlDbType.Int, offset);
+            DBHelper.AddParam(command, "@PageSize", SqlDbType.Int, req.PageSize);
+
+            PuzzleAllRsp response = null;
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    // 1. Total count
+                    int totalCount = 0;
+
+                    if (await reader.ReadAsync())
+                        totalCount = Convert.ToInt32(reader["TotalCount"]);
+
+                    int totalPages = (int)Math.Ceiling((double)totalCount / req.PageSize);
+
+                    // 2. Data
+                    await reader.NextResultAsync();
+
+                    List<PuzzleInfo> puzzleInfos = new List<PuzzleInfo>();
+
+                    while (await reader.ReadAsync())
+                    {
+                        Puzzle puzzle = new Puzzle(Convert.ToInt64(reader["Id"]),
+                                                   Convert.ToInt64(reader["PostId"]),
+                                                   Convert.ToInt64(reader["PuzzleSubtypeId"]),
+                                                   Convert.ToInt64(reader["CountryId"]),
+                                                   reader["Question"] == DBNull.Value ? "" : reader["Question"].ToString(),
+                                                   reader["Hint"] == DBNull.Value ? "" : reader["Hint"].ToString(),
+                                                   Convert.ToInt32(reader["Difficulty"]),
+                                                   Convert.ToInt32(reader["Delay"]),
+                                                   Convert.ToInt32(reader["Points"]),
+                                                   Convert.ToInt32(reader["PlayCount"]),
+                                                   Convert.ToDateTime(reader["CreateDateTime"]),
+                                                   Convert.ToDateTime(reader["UpdateDateTime"]),
+                                                   Convert.ToInt32(reader["Status"]));
+
+                        PuzzleAnswer puzzleAnswer = null;
+
+                        if (reader["PuzzleAnswerId"] != DBNull.Value)
+                        {
+                            puzzleAnswer = new PuzzleAnswer(Convert.ToInt64(reader["PuzzleAnswerId"]),
+                                                            Convert.ToInt64(reader["PuzzleId"]),
+                                                            reader["Description"] == DBNull.Value ? "" : reader["Description"].ToString(),
+                                                            Convert.ToInt32(reader["IsCorrect"]),
+                                                            Convert.ToDateTime(reader["PuzzleAnswerCreateDateTime"]),
+                                                            Convert.ToDateTime(reader["PuzzleAnswerUpdateDateTime"]),
+                                                            Convert.ToInt32(reader["PuzzleAnswerStatus"]));
+                        }
+
+                        puzzleInfos.Add(new PuzzleInfo(puzzle, puzzleAnswer));
+                    }
+
+                    response = new PuzzleAllRsp(req.Page, totalPages, puzzleInfos);
+                }
+            }
+
+            return response;
+        }
+
         public async Task<List<Puzzle>> GetAllByStatus(int status = -1)
         {
             String strCmd = $"SELECT * FROM {table}";
@@ -149,7 +258,7 @@ namespace HeroServer
                              " ISNULL(Lik.[Rank], -1) AS [Like]," +
                              " Post.LikeCount, Post.PublicationDateTime, Post.Status," +
                             $" {table}.PuzzleSubtypeId, {table}.CountryId, {table}.Question, {table}.Hint," +
-                            $" {table}.Difficulty, {table}.Points, {table}.PlayCount, {table}.Status" +
+                            $" {table}.Difficulty, {table}.Delay, {table}.Points, {table}.PlayCount, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
@@ -229,7 +338,7 @@ namespace HeroServer
                              " ISNULL(Lik.[Rank], -1) AS [Like]," +
                              " Post.LikeCount, Post.PublicationDateTime, Post.Status," +
                             $" {table}.PuzzleSubtypeId, {table}.CountryId, {table}.Question, {table}.Hint," +
-                            $" {table}.Difficulty, {table}.Points, {table}.PlayCount, {table}.Status" +
+                            $" {table}.Difficulty, {table}.Delay, {table}.Points, {table}.PlayCount, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
@@ -306,7 +415,7 @@ namespace HeroServer
                              " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount, 0 AS Favorite, -1 AS [Like], Post.LikeCount, Post.PublicationDateTime, Post.Status," +
                             $" {table}.PuzzleSubtypeId, {table}.CountryId, {table}.Question, {table}.Hint," +
-                            $" {table}.Difficulty, {table}.Points, {table}.PlayCount, {table}.Status" +
+                            $" {table}.Difficulty, {table}.Delay, {table}.Points, {table}.PlayCount, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)";
@@ -409,9 +518,9 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(Puzzle puzzle)
         {
-            String strCmd = $"INSERT INTO {table}(Id, PostId, PuzzleSubtypeId, CountryId, Question, Hint, Difficulty, Points, PlayCount, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(Id, PostId, PuzzleSubtypeId, CountryId, Question, Hint, Difficulty, Delay, Points, PlayCount, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @PostId, @PuzzleSubtypeId, @CountryId, @Question, @Hint, @Difficulty, @Points, @PlayCount, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@Id, @PostId, @PuzzleSubtypeId, @CountryId, @Question, @Hint, @Difficulty, @Delay, @Points, @PlayCount, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -422,6 +531,7 @@ namespace HeroServer
             DBHelper.AddParam(command, "@Question", SqlDbType.VarChar, puzzle.Question);
             DBHelper.AddParam(command, "@Hint", SqlDbType.VarChar, puzzle.Hint);
             DBHelper.AddParam(command, "@Difficulty", SqlDbType.Int, puzzle.Difficulty);
+            DBHelper.AddParam(command, "@Delay", SqlDbType.Int, puzzle.Delay);
             DBHelper.AddParam(command, "@Points", SqlDbType.Int, puzzle.Points);
             DBHelper.AddParam(command, "@PlayCount", SqlDbType.Int, puzzle.PlayCount);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
@@ -438,7 +548,7 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(Puzzle puzzle)
         {
-            String strCmd = $"UPDATE {table} SET PostId = @PostId, PuzzleSubtypeId = @PuzzleSubtypeId, CountryId = @CountryId, Question = @Question, Hint = @Hint, Difficulty = @Difficulty, Points = @Points, PlayCount = @PlayCount, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET PostId = @PostId, PuzzleSubtypeId = @PuzzleSubtypeId, CountryId = @CountryId, Question = @Question, Hint = @Hint, Difficulty = @Difficulty, Delay = @Delay, Points = @Points, PlayCount = @PlayCount, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -448,6 +558,7 @@ namespace HeroServer
             DBHelper.AddParam(command, "@Question", SqlDbType.VarChar, puzzle.Question);
             DBHelper.AddParam(command, "@Hint", SqlDbType.VarChar, puzzle.Hint);
             DBHelper.AddParam(command, "@Difficulty", SqlDbType.Int, puzzle.Difficulty);
+            DBHelper.AddParam(command, "@Delay", SqlDbType.Int, puzzle.Delay);
             DBHelper.AddParam(command, "@Points", SqlDbType.Int, puzzle.Points);
             DBHelper.AddParam(command, "@PlayCount", SqlDbType.Int, puzzle.PlayCount);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
