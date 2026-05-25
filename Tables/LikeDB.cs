@@ -171,5 +171,20 @@ namespace HeroServer
                 return await command.ExecuteNonQueryAsync() == 1;
             }
         }
+
+        public async Task<bool> Delete(Like like)
+        {
+            String strCmd = $"DELETE {table} WHERE PostId = @PostId AND AppUserId = @AppUserId";
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, like.PostId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, like.AppUserId);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
     }
 }

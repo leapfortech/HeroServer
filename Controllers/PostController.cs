@@ -95,6 +95,50 @@ namespace HeroServer.Controllers
             }
         }
 
+        // DELETE services/post/DeleteFavorite
+        [HttpDelete("DeleteFavorite")]
+        public async Task<ActionResult<bool>> DeleteFavorite([FromBody] Favorite favorite)
+        {
+            try
+            {
+                await PostFunctions.DeleteFavorite(favorite);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // POST services/post/RegisterLike
+        [HttpPost("RegisterLike")]
+        public async Task<ActionResult<long>> RegisterLike([FromBody] Like like)
+        {
+            try
+            {
+                return Ok(await PostFunctions.RegisterLike(like));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // DELETE services/post/DeleteLike
+        [HttpDelete("DeleteLike")]
+        public async Task<ActionResult<bool>> DeleteLike([FromBody] Like like)
+        {
+            try
+            {
+                await PostFunctions.DeleteLike(like);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // POST services/post/RegisterComment
         [HttpPost("RegisterComment")]
         public async Task<ActionResult<long>> RegisterComment([FromBody] Comment comment)
@@ -158,20 +202,6 @@ namespace HeroServer.Controllers
             try
             {
                 return Ok(await PostFunctions.RegisterReaction(reaction));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        // POST services/post/RegisterLike
-        [HttpPost("RegisterLike")]
-        public async Task<ActionResult<long>> RegisterLike([FromBody] Like like)
-        {
-            try
-            {
-                return Ok(await PostFunctions.RegisterLike(like));
             }
             catch (Exception ex)
             {

@@ -53,7 +53,7 @@ namespace HeroServer
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
 
-            List<Favorite> favorites = new List<Favorite>();
+            List<Favorite> favorites = [];
             using (conn)
             {
                 await conn.OpenAsync();
@@ -278,6 +278,21 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
+
+        public async Task<bool> Delete(Favorite favorite)
+        {
+            String strCmd = $"DELETE {table} WHERE PostId = @PostId AND AppUserId = @AppUserId";
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, favorite.PostId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, favorite.AppUserId);
 
             using (conn)
             {

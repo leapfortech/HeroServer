@@ -23,7 +23,7 @@ namespace HeroServer
         {
             PostFeedResponse response = await new PostDB().GetPostFeed(request);
 
-            List<Task<String>> tasks = new List<Task<String>>();
+            List<Task<String>> tasks = [];
             for (int i = 0; i < response.PostFulls.Count; i++)
                 tasks.Add(GetTitleImageById(response.PostFulls[i].PostId));
 
@@ -100,6 +100,31 @@ namespace HeroServer
             return await new FavoriteDB().Add(favorite);
         }
 
+        public static async Task<bool> DeleteFavorite(Favorite favorite)
+        {
+            return await new FavoriteDB().Delete(favorite);
+        }
+
+        public static async Task<long> RegisterLike(Like like)
+        {
+            long likeId = -1;
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                like.Status = 1;
+                likeId = await new LikeDB().Add(like);
+                await new PostDB().IncrementLikeCount(like.PostId);
+
+                scope.Complete();
+            }
+
+            return likeId;
+        }
+
+        public static async Task<bool> DeleteLike(Like like)
+        {
+            return await new LikeDB().Delete(like);
+        }
+
         public static async Task<long> RegisterComment(Comment comment)
         {
             comment.Status = 1;
@@ -127,21 +152,6 @@ namespace HeroServer
         {
             reaction.Status = 1;
             return await new ReactionDB().Add(reaction);
-        }
-
-        public static async Task<long> RegisterLike(Like like)
-        {
-            long likeId = -1;
-            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {
-                like.Status = 1;
-                likeId = await new LikeDB().Add(like);
-                await new PostDB().IncrementLikeCount(like.PostId);
-
-                scope.Complete();
-            }
-
-            return likeId;
         }
 
         // ADD
