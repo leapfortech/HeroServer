@@ -81,11 +81,27 @@ namespace HeroServer
                             // Data
                             "SELECT " +
 
+                            // Post
+                            "PO.Id AS PostIdData, " +
+                            "PO.AppUserId, PO.PostTypeId, " +
+                            "PO.CountryId AS PostCountryId, " +
+                            "PO.StateId, PO.Title, PO.Summary, " +
+                            "PO.Description AS PostDescription, " +
+                            "PO.ImageCount, PO.LikeCount, " +
+                            "PO.PublicationDateTime, " +
+                            "PO.ApprovalDateTime, " +
+                            "PO.ExpirationDateTime, " +
+                            "PO.CreateDateTime AS PostCreateDateTime, " +
+                            "PO.UpdateDateTime AS PostUpdateDateTime, " +
+                            "PO.Status AS PostStatus, " +
+
+                            // Puzzle
                             "P.Id, P.PostId, P.PuzzleSubtypeId, P.CountryId, " +
                             "P.Question, P.Hint, P.Difficulty, P.Delay, " +
                             "P.Points, P.PlayCount, P.CreateDateTime, " +
                             "P.UpdateDateTime, P.Status, " +
 
+                            // PuzzleAnswer
                             "PA.Id AS PuzzleAnswerId, " +
                             "PA.PuzzleId, " +
                             "PA.Description, " +
@@ -95,6 +111,9 @@ namespace HeroServer
                             "PA.Status AS PuzzleAnswerStatus " +
 
                             "FROM [D-Puzzle] AS P " +
+
+                            "LEFT JOIN [D-Post] AS PO " +
+                            "ON PO.Id = P.PostId " +
 
                             "LEFT JOIN [D-PuzzleAnswer] AS PA " +
                             "ON PA.PuzzleId = P.Id " +
@@ -137,34 +156,20 @@ namespace HeroServer
 
                     while (await reader.ReadAsync())
                     {
-                        Puzzle puzzle = new Puzzle(Convert.ToInt64(reader["Id"]),
-                                                   Convert.ToInt64(reader["PostId"]),
-                                                   Convert.ToInt64(reader["PuzzleSubtypeId"]),
-                                                   Convert.ToInt64(reader["CountryId"]),
-                                                   reader["Question"] == DBNull.Value ? "" : reader["Question"].ToString(),
-                                                   reader["Hint"] == DBNull.Value ? "" : reader["Hint"].ToString(),
-                                                   Convert.ToInt32(reader["Difficulty"]),
-                                                   Convert.ToInt32(reader["Delay"]),
-                                                   Convert.ToInt32(reader["Points"]),
-                                                   Convert.ToInt32(reader["PlayCount"]),
-                                                   Convert.ToDateTime(reader["CreateDateTime"]),
-                                                   Convert.ToDateTime(reader["UpdateDateTime"]),
-                                                   Convert.ToInt32(reader["Status"]));
+                        Post post = PostDB.GetPost(reader);
 
-                        PuzzleAnswer puzzleAnswer = null;
+                        Puzzle puzzle = PuzzleDB.GetPuzzle(reader);
+
+                        List<PuzzleAnswer> puzzleAnswers = new List<PuzzleAnswer>();
 
                         if (reader["PuzzleAnswerId"] != DBNull.Value)
                         {
-                            puzzleAnswer = new PuzzleAnswer(Convert.ToInt64(reader["PuzzleAnswerId"]),
-                                                            Convert.ToInt64(reader["PuzzleId"]),
-                                                            reader["Description"] == DBNull.Value ? "" : reader["Description"].ToString(),
-                                                            Convert.ToInt32(reader["IsCorrect"]),
-                                                            Convert.ToDateTime(reader["PuzzleAnswerCreateDateTime"]),
-                                                            Convert.ToDateTime(reader["PuzzleAnswerUpdateDateTime"]),
-                                                            Convert.ToInt32(reader["PuzzleAnswerStatus"]));
+                            PuzzleAnswer puzzleAnswer = PuzzleAnswerDB.GetPuzzleAnswer(reader);
+
+                            puzzleAnswers.Add(puzzleAnswer);
                         }
 
-                        puzzleInfos.Add(new PuzzleInfo(puzzle, puzzleAnswer));
+                        puzzleInfos.Add(new PuzzleInfo(post, puzzle, puzzleAnswers));
                     }
 
                     response = new PuzzleAllRsp(req.Page, totalPages, puzzleInfos);

@@ -11,7 +11,7 @@ namespace HeroServer
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
         readonly String table = "[D-PuzzleAnswer]";
 
-        private static PuzzleAnswer GetPuzzleAnswer(SqlDataReader reader)
+        public static PuzzleAnswer GetPuzzleAnswer(SqlDataReader reader)
         {
             return new PuzzleAnswer(Convert.ToInt64(reader["Id"]),
                                     Convert.ToInt64(reader["PuzzleId"]),

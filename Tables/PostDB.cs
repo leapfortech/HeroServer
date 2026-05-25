@@ -11,7 +11,7 @@ namespace HeroServer
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
         readonly String table = "[D-Post]";
 
-        private static Post GetPost(SqlDataReader reader)
+        public static Post GetPost(SqlDataReader reader)
         {
             return new Post(Convert.ToInt64(reader["Id"]),
                             Convert.ToInt64(reader["AppUserId"]),
