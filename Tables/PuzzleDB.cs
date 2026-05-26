@@ -122,7 +122,7 @@ namespace HeroServer
                             "AND (@PuzzleSubtypeId = -1 OR P.PuzzleSubtypeId = @PuzzleSubtypeId) " +
                             "AND (@Difficulty = -1 OR P.Difficulty = @Difficulty) " +
 
-                            "ORDER BY P.CreateDateTime DESC " +
+                            "ORDER BY P.CreateDateTime DESC, PA.IsCorrect DESC " +
                             "OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
