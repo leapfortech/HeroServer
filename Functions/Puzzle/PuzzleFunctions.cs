@@ -251,6 +251,22 @@ namespace HeroServer
             return await new PuzzleDB().UpdateStatus(id, status);
         }
 
+        public static async Task<bool> UpdateStatus(long postId, long puzzleId, int status)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                bool postOk = await PostFunctions.UpdateStatus(postId, status);
+                bool puzzleOk = await UpdateStatus(puzzleId, status);
+
+                if (!postOk || !puzzleOk)
+                    return false;
+
+                scope.Complete();
+            }
+
+            return true;
+        }
+
         // DELETE
 
         public static async Task DeleteById(long id)

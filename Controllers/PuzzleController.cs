@@ -122,5 +122,19 @@ namespace HeroServer.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        // PUT services/puzzle/UpdateStatus
+        [HttpPut("UpdateStatus")]
+        public async Task<ActionResult<bool>> UpdateStatus([FromQuery] String postId, [FromQuery] String puzzleId, [FromQuery] String status)
+        {
+            try
+            {
+                return Ok(await PuzzleFunctions.UpdateStatus(Convert.ToInt64(postId), Convert.ToInt64(puzzleId), Convert.ToInt32(status)));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
