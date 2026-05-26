@@ -110,7 +110,19 @@ namespace HeroServer
                             "PA.UpdateDateTime AS PuzzleAnswerUpdateDateTime, " +
                             "PA.Status AS PuzzleAnswerStatus " +
 
-                            "FROM [D-Puzzle] AS P " +
+                            "FROM " +
+                            "(" +
+                                "SELECT P.Id " +
+                                "FROM [D-Puzzle] AS P " +
+                                "WHERE (@Status = -1 OR P.Status = @Status) " +
+                                "AND (@PuzzleSubtypeId = -1 OR P.PuzzleSubtypeId = @PuzzleSubtypeId) " +
+                                "AND (@Difficulty = -1 OR P.Difficulty = @Difficulty) " +
+                                "ORDER BY P.CreateDateTime DESC " +
+                                "OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY " +
+                            ") AS PG " +
+
+                            "INNER JOIN [D-Puzzle] AS P " +
+                            "ON P.Id = PG.Id " +
 
                             "LEFT JOIN [D-Post] AS PO " +
                             "ON PO.Id = P.PostId " +
@@ -118,12 +130,7 @@ namespace HeroServer
                             "LEFT JOIN [D-PuzzleAnswer] AS PA " +
                             "ON PA.PuzzleId = P.Id " +
 
-                            "WHERE (@Status = -1 OR P.Status = @Status) " +
-                            "AND (@PuzzleSubtypeId = -1 OR P.PuzzleSubtypeId = @PuzzleSubtypeId) " +
-                            "AND (@Difficulty = -1 OR P.Difficulty = @Difficulty) " +
-
-                            "ORDER BY P.CreateDateTime DESC, PA.IsCorrect DESC " +
-                            "OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;";
+                            "ORDER BY P.CreateDateTime DESC, PA.IsCorrect DESC;";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -141,7 +148,7 @@ namespace HeroServer
 
                 using (SqlDataReader reader = await command.ExecuteReaderAsync())
                 {
-                    // 1. Total count
+                    // Total count
                     int totalCount = 0;
 
                     if (await reader.ReadAsync())
@@ -149,27 +156,39 @@ namespace HeroServer
 
                     int totalPages = (int)Math.Ceiling((double)totalCount / req.PageSize);
 
-                    // 2. Data
+                    // Data
                     await reader.NextResultAsync();
 
                     List<PuzzleInfo> puzzleInfos = new List<PuzzleInfo>();
 
+                    Dictionary<long, PuzzleInfo> dicPuzzle = new Dictionary<long, PuzzleInfo>();
+
                     while (await reader.ReadAsync())
                     {
-                        Post post = PostDB.GetPost(reader);
+                        long puzzleId = Convert.ToInt64(reader["Id"]);
 
-                        Puzzle puzzle = PuzzleDB.GetPuzzle(reader);
+                        if (!dicPuzzle.ContainsKey(puzzleId))
+                        {
+                            Post post = PostDB.GetPost(reader);
+                            post.Id = Convert.ToInt64(reader["PostIdData"]);
 
-                        List<PuzzleAnswer> puzzleAnswers = new List<PuzzleAnswer>();
+
+                            Puzzle puzzle = PuzzleDB.GetPuzzle(reader);
+
+                            PuzzleInfo puzzleInfo = new PuzzleInfo(post, puzzle, new List<PuzzleAnswer>());
+
+                            dicPuzzle.Add(puzzleId, puzzleInfo);
+
+                            puzzleInfos.Add(puzzleInfo);
+                        }
 
                         if (reader["PuzzleAnswerId"] != DBNull.Value)
                         {
                             PuzzleAnswer puzzleAnswer = PuzzleAnswerDB.GetPuzzleAnswer(reader);
+                            puzzleAnswer.Id = Convert.ToInt64(reader["PuzzleAnswerId"]);
 
-                            puzzleAnswers.Add(puzzleAnswer);
+                            dicPuzzle[puzzleId].PuzzleAnswers.Add(puzzleAnswer);
                         }
-
-                        puzzleInfos.Add(new PuzzleInfo(post, puzzle, puzzleAnswers));
                     }
 
                     response = new PuzzleAllRsp(req.Page, totalPages, puzzleInfos);
