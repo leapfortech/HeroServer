@@ -124,6 +124,7 @@ namespace HeroServer
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 registerPuzzleRequest.Post.PostTypeId = (long)PostType.Puzzle;
+                registerPuzzleRequest.Post.PublicationDateTime = DateTime.Now;
 
                 registerPuzzleRequest.Puzzle.PostId = await PostFunctions.Register(registerPuzzleRequest);
 
@@ -135,6 +136,7 @@ namespace HeroServer
                 for (int i = 0; i < registerPuzzleRequest.PuzzleAnswers.Count; i++)
                 {
                     registerPuzzleRequest.PuzzleAnswers[i].PuzzleId = id;
+                    registerPuzzleRequest.PuzzleAnswers[i].Status = 1;
                     await new PuzzleAnswerDB().Add(registerPuzzleRequest.PuzzleAnswers[i]);
                 }
 
@@ -159,7 +161,6 @@ namespace HeroServer
                 await PostFunctions.UpdatePost(registerPuzzleRequest);
 
                 // Update Puzzle
-                // Soft Delete
                 await new PuzzleDB().UpdateStatusByPostId(registerPuzzleRequest.Post.Id, 1, 0);
 
                 registerPuzzleRequest.Puzzle.PostId = registerPuzzleRequest.Post.Id;
@@ -175,24 +176,23 @@ namespace HeroServer
                 {
                     await Update(registerPuzzleRequest.Puzzle);
                     await UpdateStatus(registerPuzzleRequest.Puzzle.Id, 1);
+
                     puzzleId = registerPuzzleRequest.Puzzle.Id;
                 }
 
                 // Update PuzzleAnswers
-                // Soft delete all answers
-                await new PuzzleAnswerDB().UpdateStatusByPuzzleId(puzzleId, 1, 0);
-
                 if (registerPuzzleRequest.PuzzleAnswers != null &&
                     registerPuzzleRequest.PuzzleAnswers.Count > 0)
                 {
                     for (int i = 0; i < registerPuzzleRequest.PuzzleAnswers.Count; i++)
                     {
                         PuzzleAnswer puzzleAnswer = registerPuzzleRequest.PuzzleAnswers[i];
+
                         puzzleAnswer.PuzzleId = puzzleId;
+                        puzzleAnswer.Status = 1;
 
                         if (puzzleAnswer.Id == -1 || puzzleAnswer.Id == 0)
                         {
-                            puzzleAnswer.Status = 1;
                             await new PuzzleAnswerDB().Add(puzzleAnswer);
                         }
                         else
@@ -204,6 +204,7 @@ namespace HeroServer
                 }
 
                 scope.Complete();
+
                 return true;
             }
         }
