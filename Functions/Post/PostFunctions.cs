@@ -120,9 +120,30 @@ namespace HeroServer
             return likeId;
         }
 
+        public static async Task<bool> UpdateLike(Like like)
+        {
+            bool result = false;
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                result = await new LikeDB().Update(like);
+
+                scope.Complete();
+            }
+
+            return result;
+        }
+
         public static async Task<bool> DeleteLike(Like like)
         {
-            return await new LikeDB().Delete(like);
+            bool result = false;
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                result = await new LikeDB().Delete(like);
+
+                scope.Complete();
+            }
+
+            return result;
         }
 
         public static async Task<long> RegisterComment(Comment comment)

@@ -69,6 +69,33 @@ namespace HeroServer
             return favorites;
         }
 
+        public async Task<List<long>> GetAllIdsByPostId(long postId, int status = 1)
+        {
+            String strCmd = $"SELECT Id FROM {table} WHERE PostId = @PostId";
+            if (status != -1)
+                strCmd += " AND Status = @Status";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+            if (status != -1)
+                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+
+            List<long> favoriteIds = [];
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        favoriteIds.Add(Convert.ToInt64(reader["Id"]));
+                    }
+                }
+            }
+            return favoriteIds;
+        }
+
         public async Task<Favorite> GetById(long id, int status = 1)
         {
             String strCmd = $"SELECT * FROM {table} WHERE Id = @Id AND Status = @Status";
@@ -93,14 +120,14 @@ namespace HeroServer
             return favorite;
         }
 
-        public async Task<Favorite> GetByPostId(long postId, int status = 1)
+        public async Task<Favorite> Get(long postId, long appUserId)
         {
-            String strCmd = $"SELECT * FROM {table} WHERE PostId = @PostId AND Status = @Status";
+            String strCmd = $"SELECT * FROM {table} WHERE PostId = @Id AND AppUserId = @AppUserId";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, appUserId);
 
             Favorite favorite = null;
             using (conn)
@@ -115,33 +142,6 @@ namespace HeroServer
                 }
             }
             return favorite;
-        }
-
-        public async Task<long> GetIdByPostId(long postId, int status = 1)
-        {
-            String strCmd = $"SELECT Id FROM {table} WHERE PostId = @PostId";
-            if (status != -1)
-                strCmd += " AND Status = @Status";
-
-            SqlCommand command = new SqlCommand(strCmd, conn);
-
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
-            if (status != -1)
-                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-
-            long favoriteId = -1;
-            using (conn)
-            {
-                await conn.OpenAsync();
-                using (SqlDataReader reader = await command.ExecuteReaderAsync())
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        favoriteId = Convert.ToInt64(reader["Id"]);
-                    }
-                }
-            }
-            return favoriteId;
         }
 
         // INSERT
@@ -167,24 +167,24 @@ namespace HeroServer
         }
 
         // UPDATE
-        public async Task<bool> Update(Favorite favorite)
-        {
-            String strCmd = $"UPDATE {table} SET PostId = @PostId, AppUserId = @AppUserId, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+        //public async Task<bool> Update(Favorite favorite)
+        //{
+        //    String strCmd = $"UPDATE {table} SET PostId = @PostId, AppUserId = @AppUserId, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
-            SqlCommand command = new SqlCommand(strCmd, conn);
+        //    SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, favorite.PostId);
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, favorite.AppUserId);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, favorite.Status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, favorite.Id);
+        //    DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, favorite.PostId);
+        //    DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, favorite.AppUserId);
+        //    DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+        //    DBHelper.AddParam(command, "@Status", SqlDbType.Int, favorite.Status);
+        //    DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, favorite.Id);
 
-            using (conn)
-            {
-                await conn.OpenAsync();
-                return await command.ExecuteNonQueryAsync() == 1;
-            }
-        }
+        //    using (conn)
+        //    {
+        //        await conn.OpenAsync();
+        //        return await command.ExecuteNonQueryAsync() == 1;
+        //    }
+        //}
 
         public async Task<bool> UpdateStatus(long id, int status)
         {

@@ -286,7 +286,7 @@ namespace HeroServer
 
             int offset = (request.Page - 1) * request.PageSize;
 
-            List<PostFull> postFulls = new List<PostFull>();
+            List<PostFull> postFulls = [];
 
             String strCmd = // Count
                             @"SELECT COUNT(Post.Id) AS TotalCount
@@ -438,6 +438,23 @@ namespace HeroServer
         {
             String strCmd = $"UPDATE {table}" +
                             " SET LikeCount = LikeCount + 1" +
+                            " WHERE Id = @Id";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
+
+        public async Task<bool> DecrementLikeCount(long id)
+        {
+            String strCmd = $"UPDATE {table}" +
+                            " SET LikeCount = LikeCount - 1" +
                             " WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);

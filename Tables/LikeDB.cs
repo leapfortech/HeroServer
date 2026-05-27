@@ -68,6 +68,30 @@ namespace HeroServer
             return like;
         }
 
+        public async Task<Like> Get(long postId, long appUserId)
+        {
+            String strCmd = $"SELECT * FROM {table} WHERE PostId = @Id AND AppUserId = @AppUserId";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, appUserId);
+
+            Like like = null;
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        like = GetLike(reader);
+                    }
+                }
+            }
+            return like;
+        }
+
         // INSERT
         public async Task<long> Add(Like like)
         {

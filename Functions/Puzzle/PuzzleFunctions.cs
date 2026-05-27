@@ -138,6 +138,7 @@ namespace HeroServer
                     registerPuzzleRequest.PuzzleAnswers[i].PuzzleId = id;
                     registerPuzzleRequest.PuzzleAnswers[i].Status = 1;
                     await new PuzzleAnswerDB().Add(registerPuzzleRequest.PuzzleAnswers[i]);
+                    await Task.Delay(2);
                 }
 
                 scope.Complete();
