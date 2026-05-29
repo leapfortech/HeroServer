@@ -89,11 +89,7 @@ namespace HeroServer
             return postId;
         }
 
-        public static async Task<long> RegisterShare(Share share)
-        {
-            return await new ShareDB().Add(share);
-        }
-
+        // FAVORITE
         public static async Task<long> RegisterFavorite(Favorite favorite)
         {
             favorite.Status = 1;
@@ -105,6 +101,7 @@ namespace HeroServer
             return await new FavoriteDB().Delete(favorite);
         }
 
+        // LIKE
         public static async Task<long> RegisterLike(Like like)
         {
             long likeId = -1;
@@ -125,7 +122,24 @@ namespace HeroServer
             bool result = false;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                result = await new LikeDB().Update(like);
+                like.Status = 1;
+                
+                Like curLike = await new LikeDB().Get(like.PostId, like.AppUserId);
+                if (curLike == null)
+                {
+                    long likeId = await new LikeDB().Add(like);
+                    await new PostDB().IncrementLikeCount(like.PostId);
+                }
+                else if (like.Rank < curLike.Rank)
+                {
+                    result = await new LikeDB().UpdateRank(like);
+                    await new PostDB().DecrementLikeCount(like.PostId);
+                }
+                else if (like.Rank > curLike.Rank)
+                {
+                    result = await new LikeDB().UpdateRank(like);
+                    await new PostDB().IncrementLikeCount(like.PostId);
+                }
 
                 scope.Complete();
             }
@@ -146,6 +160,13 @@ namespace HeroServer
             return result;
         }
 
+        // SHARE
+        public static async Task<long> RegisterShare(Share share)
+        {
+            return await new ShareDB().Add(share);
+        }
+
+        // COMMENT
         public static async Task<long> RegisterComment(Comment comment)
         {
             comment.Status = 1;
@@ -158,6 +179,7 @@ namespace HeroServer
             return await new CommentPlaintDB().Add(commentPlaint);
         }
 
+        //
         public static async Task<long> RegisterPostPlaint(PostPlaint postPlaint)
         {
             postPlaint.Status = 1;
@@ -192,7 +214,7 @@ namespace HeroServer
                 registerPostRequest.Post.ExpirationDateTime = null;
                 await new PostDB().Update(registerPostRequest.Post);
                 
-                // Update Conctact
+                // Update Contact
                 // Soft Delete
                 if (registerPostRequest.Contact != null)
                 {

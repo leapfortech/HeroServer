@@ -124,14 +124,27 @@ namespace HeroServer.Controllers
             }
         }
 
+        // POST services/post/UpdateLike
+        [HttpPost("UpdateLike")]
+        public async Task<ActionResult<bool>> UpdateLike([FromBody] Like like)
+        {
+            try
+            {
+                return Ok(await PostFunctions.UpdateLike(like));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // DELETE services/post/DeleteLike
         [HttpDelete("DeleteLike")]
         public async Task<ActionResult<bool>> DeleteLike([FromBody] Like like)
         {
             try
             {
-                await PostFunctions.DeleteLike(like);
-                return Ok();
+                return Ok(await PostFunctions.DeleteLike(like));
             }
             catch (Exception ex)
             {

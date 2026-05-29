@@ -136,6 +136,24 @@ namespace HeroServer
             }
         }
 
+        public async Task<bool> UpdateRank(Like like)
+        {
+            String strCmd = $"UPDATE {table} SET Rank = @Rank, UpdateDateTime = @UpdateDateTime WHERE PostId = @PostId AND AppUserId = @AppUserId";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@Rank", SqlDbType.Int, like.Rank);
+            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, like.PostId);
+            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, like.AppUserId);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
+
         public async Task<bool> UpdateStatus(long id, int status)
         {
             String strCmd = $"UPDATE {table}" +
