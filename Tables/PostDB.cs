@@ -185,12 +185,14 @@ namespace HeroServer
             String whereFeed = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
 
             // QUERY FEED
-            String strCmd = "SELECT ";
+            String strCmd;
+
             if (request.Direction == 1)
-                strCmd += " * FROM (SELECT TOP(@Count2)" +
-                          " ROW_NUMBER() OVER (ORDER BY Post.PublicationDateTime DESC) AS RowNumber,";
+                strCmd = "WITH Posts AS" +
+                         " (SELECT ROW_NUMBER() OVER (ORDER BY Temp.PublicationDateTime DESC) AS RowNumber, * FROM" +
+                         " (SELECT TOP(@Count2)";
             else
-                strCmd += " TOP(@Count)";
+                strCmd = "SELECT TOP(@Count)";
             strCmd +=   " Post.Id AS PostId," +
                         " Post.AppUserId," +
                         " AppUser.Alias AS AppUserAlias," +
@@ -211,11 +213,13 @@ namespace HeroServer
                         " LEFT JOIN [J-Favorite] AS Fav ON Fav.PostId = Post.Id AND Fav.AppUserId = @LikeAppUserId " +
                         " LEFT JOIN [D-Like] AS Lik ON Lik.PostId = Post.Id AND Lik.AppUserId = @LikeAppUserId " +
                         whereFeed +
-                        " ORDER BY Post.PublicationDateTime DESC";
+                        " ORDER BY Post.PublicationDateTime";
             if (request.Direction == 1)
-                strCmd += ") Temp WHERE RowNumber > @Count;";
-            else
-                strCmd += ";";
+                strCmd += ") AS Temp), PostCount AS (SELECT COUNT(*) AS Total FROM Posts)" +
+                          " SELECT * FROM Posts, PostCount" +
+                          " WHERE RowNumber < Total - @Count - 1" +
+                          " ORDER BY PublicationDateTime";
+            strCmd += " DESC;";
 
                 // QUERY COUNT
             strCmd += "SELECT COUNT(1) AS Total FROM [D-Post] AS Post" + whereCount + ";";

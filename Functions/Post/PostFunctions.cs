@@ -153,6 +153,7 @@ namespace HeroServer
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 result = await new LikeDB().Delete(like);
+                await new PostDB().DecrementLikeCount(like.PostId);
 
                 scope.Complete();
             }
