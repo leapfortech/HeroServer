@@ -6,7 +6,7 @@ namespace HeroServer
     public class PuzzleFull : PostFull
     {
         public long Id { get; set; }
-        public long PuzzleSubtypeId { get; set; }
+        public long PuzzleGameId { get; set; }
         public long CountryId { get; set; }
         public String Question { get; set; }
         public String Hint { get; set; }
@@ -30,7 +30,7 @@ namespace HeroServer
                           ContactFull contactFull,
                           List<LinkFull> linkFulls,
                           List<CommentFull> commentFulls,
-                          long puzzleSubtypeId, long countryId,
+                          long puzzleGameId, long countryId,
                           String question, String hint,
                           int difficulty, int delay, int points, int playCount,
                           int status,
@@ -42,7 +42,7 @@ namespace HeroServer
                    contactFull, linkFulls, commentFulls)
         {
             Id = id;
-            PuzzleSubtypeId = puzzleSubtypeId;
+            PuzzleGameId = puzzleGameId;
             CountryId = countryId;
             Question = question;
             Hint = hint;
