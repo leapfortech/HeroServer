@@ -23,9 +23,9 @@ namespace HeroServer
             return await new PuzzleDB().GetById(id);
         }
 
-        public static async Task<PuzzleFull> GetFullById(long id, long likeAppUserId)
+        public static async Task<PuzzleFull> GetFullById(long id, long likeAppUserId, int includeCorrect = 1)
         {
-            PuzzleFull puzzleFull = await new PuzzleDB().GetFullById(id, likeAppUserId);
+            PuzzleFull puzzleFull = await new PuzzleDB().GetFullById(id, likeAppUserId, includeCorrect);
 
             if (puzzleFull == null)
                 return null;
@@ -115,6 +115,19 @@ namespace HeroServer
             }
 
             return puzzleFulls;
+        }
+
+        public static async Task<PuzzleFull> GetNextPuzzle(PuzzleNextRequest puzzleNextRequest)
+        {
+            long puzzleId = await new PuzzleDB().GetNextPuzzle(puzzleNextRequest);
+
+            if (puzzleId == -1)
+                return null;
+
+            PuzzleFull puzzleFull = await GetFullById(puzzleId, -1, 0);
+            //puzzleFull.Images = await PostFunctions.GetImagesById(puzzleFull.PostId, true);
+
+            return puzzleFull;
         }
 
         // REGISTER
@@ -208,6 +221,36 @@ namespace HeroServer
 
                 return true;
             }
+        }
+
+        public static async Task<PuzzleResultResponse> SaveResult(PuzzleResultRequest puzzleResultRequest)
+        {
+            if (puzzleResultRequest == null)
+                throw new ArgumentNullException(nameof(puzzleResultRequest));
+
+            Puzzle currentPuzzle = await GetById(puzzleResultRequest.PuzzleId);
+            if (currentPuzzle == null)
+                throw new Exception("Puzzle not found");
+
+            PuzzleAnswer puzzleAnswer = await new PuzzleAnswerDB().GetById(puzzleResultRequest.PuzzleAnswerId);
+            if (puzzleAnswer == null)
+                throw new Exception("Puzzle answer not found");
+
+            bool correct = puzzleAnswer.IsCorrect == 1;
+            int points = correct ? currentPuzzle.Points : 0;
+
+            DateTime now = DateTime.Now;
+            PuzzleResult puzzleResult = new PuzzleResult(-1, puzzleResultRequest.PlayerId, puzzleResultRequest.PuzzleId, points, points,
+                                                         now, now, now);
+
+            await new PuzzleResultDB().Add(puzzleResult);
+
+            PuzzleNextRequest nextRequest = new PuzzleNextRequest(puzzleResultRequest.PlayerId, currentPuzzle.PuzzleSubtypeId, currentPuzzle.CountryId,
+                                                                  currentPuzzle.Difficulty);
+
+            PuzzleFull puzzleFull = await GetNextPuzzle(nextRequest);
+
+            return new PuzzleResultResponse(correct ? 1 : 0, points, 0, 0, puzzleFull);
         }
 
         public static async Task<bool> Accept(long postId, long puzzleId)

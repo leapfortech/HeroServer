@@ -272,7 +272,7 @@ namespace HeroServer
         }
 
         // GET FULL
-        public async Task<PuzzleFull> GetFullById(long id, long likeAppUserId)
+        public async Task<PuzzleFull> GetFullById(long id, long likeAppUserId, int includeCorrect)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId," +
@@ -290,7 +290,9 @@ namespace HeroServer
                             " LEFT JOIN [D-Like] AS Lik ON Lik.PostId = Post.Id AND Lik.AppUserId = @LikeAppUserId " +
                             $" WHERE {table}.Id = @Id;";
 
-            strCmd += "SELECT Id, PuzzleId, Description, IsCorrect, Status" +
+            strCmd += "SELECT Id, PuzzleId, Description," +
+                      " CASE WHEN @IncludeCorrect = 1 THEN IsCorrect ELSE -1 END AS IsCorrect," +
+                      " Status" +
                       " FROM [D-PuzzleAnswer]" +
                       " WHERE PuzzleId IN" +
                      $" (SELECT Id FROM {table} WHERE Id = @Id)" +
@@ -314,6 +316,7 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
             DBHelper.AddParam(command, "@LikeAppUserId", SqlDbType.BigInt, likeAppUserId);
+            DBHelper.AddParam(command, "@IncludeCorrect", SqlDbType.Int, includeCorrect);
 
             PuzzleFull puzzleFull = null;
             using (conn)
@@ -537,6 +540,39 @@ namespace HeroServer
             }
 
             return puzzleDataFull;
+        }
+
+        public async Task<long> GetNextPuzzle(PuzzleNextRequest puzzleNextRequest)
+        {
+            String strCmd = @"SELECT TOP 1 P.Id
+                              FROM [D-Puzzle] P
+                              WHERE P.PuzzleSubtypeId = @PuzzleGameId
+                              AND P.CountryId = @CountryId
+                              AND P.Difficulty = @Difficulty
+                              AND P.Status = 1
+                              AND P.Id NOT IN
+                              (
+                                SELECT PR.PuzzleId
+                                FROM [J-PuzzleResult] PR
+                                WHERE PR.PlayerId = @PlayerId
+                              )
+                              ORDER BY P.CreateDateTime ASC";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@PlayerId", SqlDbType.BigInt, puzzleNextRequest.PlayerId);
+            DBHelper.AddParam(command, "@PuzzleGameId", SqlDbType.BigInt, puzzleNextRequest.PuzzleGameId);
+            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, puzzleNextRequest.CountryId);
+            DBHelper.AddParam(command, "@Difficulty", SqlDbType.Int, puzzleNextRequest.Difficulty);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+
+                long? result = (long?)await command.ExecuteScalarAsync();
+
+                return result ?? -1;
+            }
         }
 
         // INSERT

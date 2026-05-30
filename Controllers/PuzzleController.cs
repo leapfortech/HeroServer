@@ -39,6 +39,20 @@ namespace HeroServer.Controllers
             }
         }
 
+        // GET services/puzzle/GetNextPuzzle
+        [HttpGet("NextPuzzle")]
+        public async Task<ActionResult<PuzzleFull>> GetNextPuzzle([FromBody] PuzzleNextRequest puzzleNextRequest)
+        {
+            try
+            {
+                return Ok(await PuzzleFunctions.GetNextPuzzle(puzzleNextRequest));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // POST services/puzzle/AllByDifficulty/
         [HttpPost("AllByDifficulty")]
         public async Task<ActionResult<PuzzleAllRsp>> GetAllByDifficulty([FromBody] PuzzleAllByDifficultyReq req)
@@ -88,6 +102,20 @@ namespace HeroServer.Controllers
             try
             {
                 return Ok(await PuzzleFunctions.Update(registerPuzzleRequest));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // PUT services/puzzle
+        [HttpPut]
+        public async Task<ActionResult<PuzzleResultResponse>> SaveResult([FromBody] PuzzleResultRequest puzzleResultRequest)
+        {
+            try
+            {
+                return Ok(await PuzzleFunctions.SaveResult(puzzleResultRequest));
             }
             catch (Exception ex)
             {
