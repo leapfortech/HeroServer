@@ -9,6 +9,7 @@ namespace HeroServer
         public long PlayerId { get; set; }
         public long PuzzleId { get; set; }
         public int TotalPoints { get; set; }
+        public int Time { get; set; }
         public int TotalWinPoints { get; set; }
         public DateTime LastPlayDateTime { get; set; }
         public DateTime CreateDateTime { get; set; }
@@ -18,13 +19,14 @@ namespace HeroServer
         { 
         }
 
-        public PuzzleResult(long id, long playerId, long puzzleId, int totalPoints, int totalWinPoints,
+        public PuzzleResult(long id, long playerId, long puzzleId, int totalPoints, int time, int totalWinPoints,
                             DateTime lastPlayDateTime, DateTime createDateTime, DateTime updateDateTime)
         {
             Id = id;
             PlayerId = playerId;
             PuzzleId = puzzleId;
             TotalPoints = totalPoints;
+            Time = time;
             TotalWinPoints = totalWinPoints;
             LastPlayDateTime = lastPlayDateTime;
             CreateDateTime = createDateTime;

@@ -6,7 +6,7 @@ namespace HeroServer
     {
         public long Id { get; set; }
         public long PostId { get; set; }
-        public long PuzzleSubtypeId { get; set; }
+        public long PuzzleGameId { get; set; }
         public long CountryId { get; set; }
         public String Question { get; set; }
         public String Hint { get; set; }
@@ -20,12 +20,12 @@ namespace HeroServer
 
         public Puzzle() { }
 
-        public Puzzle(long id, long postId, long puzzleSubtypeId, long countryId, String question, String hint,
+        public Puzzle(long id, long postId, long puzzleGameId, long countryId, String question, String hint,
                       int difficulty, int delay, int points, int playCount, DateTime createDateTime, DateTime updateDateTime, int status)
         {
             Id = id;
             PostId = postId;
-            PuzzleSubtypeId = puzzleSubtypeId;
+            PuzzleGameId = puzzleGameId;
             CountryId = countryId;
             Question = question;
             Hint = hint;

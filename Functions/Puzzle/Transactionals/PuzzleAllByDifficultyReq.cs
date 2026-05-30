@@ -5,7 +5,7 @@ namespace HeroServer
     {
         public int Page { get; set; }
         public int PageSize { get; set; }
-        public long PuzzleSubtypeId { get; set; }
+        public long PuzzleGameId { get; set; }
         public int Difficulty { get; set; }
         public int Status { get; set; }
 
@@ -13,11 +13,11 @@ namespace HeroServer
         {
         }
 
-        public PuzzleAllByDifficultyReq(int page, int pageSize, long puzzleSubtypeId, int difficulty, int status)
+        public PuzzleAllByDifficultyReq(int page, int pageSize, long puzzleGameId, int difficulty, int status)
         {
             Page = page;
             PageSize = pageSize;
-            PuzzleSubtypeId = puzzleSubtypeId;
+            PuzzleGameId = puzzleGameId;
             Difficulty = difficulty;
             Status = status;
         }

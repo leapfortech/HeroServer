@@ -17,6 +17,7 @@ namespace HeroServer
                                     Convert.ToInt64(reader["PlayerId"]),
                                     Convert.ToInt64(reader["PuzzleId"]),
                                     Convert.ToInt32(reader["TotalPoints"]),
+                                    Convert.ToInt32(reader["Time"]),
                                     Convert.ToInt32(reader["TotalWinPoints"]),
                                     Convert.ToDateTime(reader["LastPlayDateTime"]),
                                     Convert.ToDateTime(reader["CreateDateTime"]),
@@ -72,15 +73,16 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(PuzzleResult puzzleResult)
         {
-            String strCmd = $"INSERT INTO {table}(PlayerId, PuzzleId, TotalPoints, TotalWinPoints, LastPlayDateTime, CreateDateTime, UpdateDateTime)" + 
+            String strCmd = $"INSERT INTO {table}(PlayerId, PuzzleId, TotalPoints, Time, TotalWinPoints, LastPlayDateTime, CreateDateTime, UpdateDateTime)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@PlayerId, @PuzzleId, @TotalPoints, @TotalWinPoints, @LastPlayDateTime, @CreateDateTime, @UpdateDateTime)";
+                            " VALUES (@PlayerId, @PuzzleId, @TotalPoints, @Time, @TotalWinPoints, @LastPlayDateTime, @CreateDateTime, @UpdateDateTime)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@PlayerId", SqlDbType.BigInt, puzzleResult.PlayerId);
             DBHelper.AddParam(command, "@PuzzleId", SqlDbType.BigInt, puzzleResult.PuzzleId);
             DBHelper.AddParam(command, "@TotalPoints", SqlDbType.Int, puzzleResult.TotalPoints);
+            DBHelper.AddParam(command, "@Time", SqlDbType.Int, puzzleResult.Time);
             DBHelper.AddParam(command, "@TotalWinPoints", SqlDbType.Int, puzzleResult.TotalWinPoints);
             DBHelper.AddParam(command, "@LastPlayDateTime", SqlDbType.DateTime, puzzleResult.LastPlayDateTime);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
@@ -96,13 +98,14 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(PuzzleResult puzzleResult)
         {
-            String strCmd = $"UPDATE {table} SET PlayerId = @PlayerId, PuzzleId = @PuzzleId, TotalPoints = @TotalPoints, TotalWinPoints = @TotalWinPoints, LastPlayDateTime = @LastPlayDateTime, UpdateDateTime = @UpdateDateTime WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET PlayerId = @PlayerId, PuzzleId = @PuzzleId, TotalPoints = @TotalPoints, Time = @Time, TotalWinPoints = @TotalWinPoints, LastPlayDateTime = @LastPlayDateTime, UpdateDateTime = @UpdateDateTime WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@PlayerId", SqlDbType.BigInt, puzzleResult.PlayerId);
             DBHelper.AddParam(command, "@PuzzleId", SqlDbType.BigInt, puzzleResult.PuzzleId);
             DBHelper.AddParam(command, "@TotalPoints", SqlDbType.Int, puzzleResult.TotalPoints);
+            DBHelper.AddParam(command, "@Time", SqlDbType.Int, puzzleResult.Time);
             DBHelper.AddParam(command, "@TotalWinPoints", SqlDbType.Int, puzzleResult.TotalWinPoints);
             DBHelper.AddParam(command, "@LastPlayDateTime", SqlDbType.DateTime, puzzleResult.LastPlayDateTime);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);

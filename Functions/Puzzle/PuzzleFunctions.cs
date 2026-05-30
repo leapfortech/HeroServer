@@ -240,12 +240,12 @@ namespace HeroServer
             int points = correct ? currentPuzzle.Points : 0;
 
             DateTime now = DateTime.Now;
-            PuzzleResult puzzleResult = new PuzzleResult(-1, puzzleResultRequest.PlayerId, puzzleResultRequest.PuzzleId, points, points,
-                                                         now, now, now);
+            PuzzleResult puzzleResult = new PuzzleResult(-1, puzzleResultRequest.PlayerId, puzzleResultRequest.PuzzleId, points,
+                                                         puzzleResultRequest.Time,points, now, now, now);
 
             await new PuzzleResultDB().Add(puzzleResult);
 
-            PuzzleNextRequest nextRequest = new PuzzleNextRequest(puzzleResultRequest.PlayerId, currentPuzzle.PuzzleSubtypeId, currentPuzzle.CountryId,
+            PuzzleNextRequest nextRequest = new PuzzleNextRequest(puzzleResultRequest.PlayerId, currentPuzzle.PuzzleGameId, currentPuzzle.CountryId,
                                                                   currentPuzzle.Difficulty);
 
             PuzzleFull puzzleFull = await GetNextPuzzle(nextRequest);

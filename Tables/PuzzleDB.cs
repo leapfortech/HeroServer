@@ -15,7 +15,7 @@ namespace HeroServer
         {
             return new Puzzle(Convert.ToInt64(reader["Id"]),
                               Convert.ToInt64(reader["PostId"]),
-                              Convert.ToInt64(reader["PuzzleSubtypeId"]),
+                              Convert.ToInt64(reader["PuzzleGameId"]),
                               Convert.ToInt64(reader["CountryId"]),
                               reader["Question"].ToString(),
                               reader["Hint"].ToString(),
@@ -52,7 +52,7 @@ namespace HeroServer
                                   null,   //LinkFulls
                                   null,   //CommentFulls
 
-                                  Convert.ToInt64(reader["PuzzleSubtypeId"]),
+                                  Convert.ToInt64(reader["PuzzleGameId"]),
                                   Convert.ToInt64(reader["CountryId"]),
                                   reader["Question"].ToString(),
                                   reader["Hint"].ToString(),
@@ -75,7 +75,7 @@ namespace HeroServer
                             "SELECT COUNT(DISTINCT P.Id) AS TotalCount " +
                             "FROM [D-Puzzle] AS P " +
                             "WHERE (@Status = -1 OR P.Status = @Status) " +
-                            "AND (@PuzzleSubtypeId = -1 OR P.PuzzleSubtypeId = @PuzzleSubtypeId) " +
+                            "AND (@PuzzleGameId = -1 OR P.PuzzleGameId = @PuzzleGameId) " +
                             "AND (@Difficulty = -1 OR P.Difficulty = @Difficulty); " +
 
                             // Data
@@ -96,7 +96,7 @@ namespace HeroServer
                             "PO.Status AS PostStatus, " +
 
                             // Puzzle
-                            "P.Id, P.PostId, P.PuzzleSubtypeId, P.CountryId, " +
+                            "P.Id, P.PostId, P.PuzzleGameId, P.CountryId, " +
                             "P.Question, P.Hint, P.Difficulty, P.Delay, " +
                             "P.Points, P.PlayCount, P.CreateDateTime, " +
                             "P.UpdateDateTime, P.Status, " +
@@ -115,7 +115,7 @@ namespace HeroServer
                                 "SELECT P.Id " +
                                 "FROM [D-Puzzle] AS P " +
                                 "WHERE (@Status = -1 OR P.Status = @Status) " +
-                                "AND (@PuzzleSubtypeId = -1 OR P.PuzzleSubtypeId = @PuzzleSubtypeId) " +
+                                "AND (@PuzzleGameId = -1 OR P.PuzzleGameId = @PuzzleGameId) " +
                                 "AND (@Difficulty = -1 OR P.Difficulty = @Difficulty) " +
                                 "ORDER BY P.CreateDateTime DESC " +
                                 "OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY " +
@@ -135,7 +135,7 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Status", SqlDbType.Int, req.Status);
-            DBHelper.AddParam(command, "@PuzzleSubtypeId", SqlDbType.BigInt, req.PuzzleSubtypeId);
+            DBHelper.AddParam(command, "@PuzzleGameId", SqlDbType.BigInt, req.PuzzleGameId);
             DBHelper.AddParam(command, "@Difficulty", SqlDbType.Int, req.Difficulty);
             DBHelper.AddParam(command, "@Offset", SqlDbType.Int, offset);
             DBHelper.AddParam(command, "@PageSize", SqlDbType.Int, req.PageSize);
@@ -281,7 +281,7 @@ namespace HeroServer
                              " CASE WHEN Fav.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
                              " ISNULL(Lik.[Rank], -1) AS [Like]," +
                              " Post.LikeCount, Post.PublicationDateTime, Post.Status," +
-                            $" {table}.PuzzleSubtypeId, {table}.CountryId, {table}.Question, {table}.Hint," +
+                            $" {table}.PuzzleGameId, {table}.CountryId, {table}.Question, {table}.Hint," +
                             $" {table}.Difficulty, {table}.Delay, {table}.Points, {table}.PlayCount, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
@@ -364,7 +364,7 @@ namespace HeroServer
                              " CASE WHEN Fav.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
                              " ISNULL(Lik.[Rank], -1) AS [Like]," +
                              " Post.LikeCount, Post.PublicationDateTime, Post.Status," +
-                            $" {table}.PuzzleSubtypeId, {table}.CountryId, {table}.Question, {table}.Hint," +
+                            $" {table}.PuzzleGameId, {table}.CountryId, {table}.Question, {table}.Hint," +
                             $" {table}.Difficulty, {table}.Delay, {table}.Points, {table}.PlayCount, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
@@ -441,7 +441,7 @@ namespace HeroServer
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId," +
                              " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount, 0 AS Favorite, -1 AS [Like], Post.LikeCount, Post.PublicationDateTime, Post.Status," +
-                            $" {table}.PuzzleSubtypeId, {table}.CountryId, {table}.Question, {table}.Hint," +
+                            $" {table}.PuzzleGameId, {table}.CountryId, {table}.Question, {table}.Hint," +
                             $" {table}.Difficulty, {table}.Delay, {table}.Points, {table}.PlayCount, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
@@ -546,7 +546,7 @@ namespace HeroServer
         {
             String strCmd = @"SELECT TOP 1 P.Id
                               FROM [D-Puzzle] P
-                              WHERE P.PuzzleSubtypeId = @PuzzleGameId
+                              WHERE P.PuzzleGameId = @PuzzleGameId
                               AND P.CountryId = @CountryId
                               AND P.Difficulty = @Difficulty
                               AND P.Status = 1
@@ -578,15 +578,15 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(Puzzle puzzle)
         {
-            String strCmd = $"INSERT INTO {table}(Id, PostId, PuzzleSubtypeId, CountryId, Question, Hint, Difficulty, Delay, Points, PlayCount, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(Id, PostId, PuzzleGameId, CountryId, Question, Hint, Difficulty, Delay, Points, PlayCount, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @PostId, @PuzzleSubtypeId, @CountryId, @Question, @Hint, @Difficulty, @Delay, @Points, @PlayCount, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@Id, @PostId, @PuzzleGameId, @CountryId, @Question, @Hint, @Difficulty, @Delay, @Points, @PlayCount, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('Z'));
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, puzzle.PostId);
-            DBHelper.AddParam(command, "@PuzzleSubtypeId", SqlDbType.BigInt, puzzle.PuzzleSubtypeId);
+            DBHelper.AddParam(command, "@PuzzleGameId", SqlDbType.BigInt, puzzle.PuzzleGameId);
             DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, puzzle.CountryId);
             DBHelper.AddParam(command, "@Question", SqlDbType.VarChar, puzzle.Question);
             DBHelper.AddParam(command, "@Hint", SqlDbType.VarChar, puzzle.Hint);
@@ -608,12 +608,12 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(Puzzle puzzle)
         {
-            String strCmd = $"UPDATE {table} SET PostId = @PostId, PuzzleSubtypeId = @PuzzleSubtypeId, CountryId = @CountryId, Question = @Question, Hint = @Hint, Difficulty = @Difficulty, Delay = @Delay, Points = @Points, PlayCount = @PlayCount, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET PostId = @PostId, PuzzleGameId = @PuzzleGameId, CountryId = @CountryId, Question = @Question, Hint = @Hint, Difficulty = @Difficulty, Delay = @Delay, Points = @Points, PlayCount = @PlayCount, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, puzzle.PostId);
-            DBHelper.AddParam(command, "@PuzzleSubtypeId", SqlDbType.BigInt, puzzle.PuzzleSubtypeId);
+            DBHelper.AddParam(command, "@PuzzleGameId", SqlDbType.BigInt, puzzle.PuzzleGameId);
             DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, puzzle.CountryId);
             DBHelper.AddParam(command, "@Question", SqlDbType.VarChar, puzzle.Question);
             DBHelper.AddParam(command, "@Hint", SqlDbType.VarChar, puzzle.Hint);
