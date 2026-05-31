@@ -11,6 +11,7 @@ namespace HeroServer
         public String Portrait { get; set; }
         public Locality InterestLocality { get; set; }
         public Locality CurrentLocality { get; set; }
+        public List<PuzzleResultSummary> PuzzleResultSummarys { get; set; }
         public Card Card { get; set; }
         public List<Notification> Notifications { get; set; }
 
@@ -20,13 +21,15 @@ namespace HeroServer
         }
 
         public LoginAppInfo(ReferredCount referredCount, Identity identity, Address address, String portrait,
-                            Locality interestLocality, Locality currentLocality, Card card, List<Notification> notifications)
+                            Locality interestLocality, Locality currentLocality, List<PuzzleResultSummary> puzzleResultSummarys,
+                            Card card, List<Notification> notifications)
         {
             ReferredCount = referredCount;
             Identity = identity;
             Address = address;
             Portrait = portrait;
             Card = card;
+            PuzzleResultSummarys = puzzleResultSummarys;
             InterestLocality = interestLocality;
             CurrentLocality = currentLocality;
             Notifications = notifications;

@@ -29,8 +29,16 @@ namespace HeroServer
                             // CurrentLocality
                             "SELECT * FROM [D-Locality] WHERE AppUserId = @AppUserId AND LocalityType = 2 AND Status = 1; " +
 
-                            // Card
-                            "SELECT * FROM [D-Card] WHERE AppUserId = @AppUserId AND Status = 1; " +
+                           // PuzzleResultSummarys
+                           "SELECT PZ.PuzzleGameId, " +
+                           "ISNULL(SUM(PR.TotalWinPoints), 0) AS TotalPoints, " +
+                           "0 AS TotalMedals, " +   //WIP
+                           "0 AS TotalCups " +      //WIP
+                           "FROM [J-PuzzleResult] PR " +
+                           "INNER JOIN [D-Player] PL ON (PL.Id = PR.PlayerId) " +
+                           "INNER JOIN [D-Puzzle] PZ ON (PZ.Id = PR.PuzzleId) " +
+                           "WHERE PL.AppUserId = @AppUserId " +
+                           "GROUP BY PZ.PuzzleGameId; " +
 
                             // Card
                             "SELECT * FROM [D-Card] WHERE AppUserId = @AppUserId AND Status = 1; " +
@@ -70,6 +78,20 @@ namespace HeroServer
                     reader.NextResult();
                     if (await reader.ReadAsync())
                         loginAppInfo.CurrentLocality = LocalityDB.GetLocality(reader);
+
+                    reader.NextResult();
+
+                    List<PuzzleResultSummary> puzzleResultSummarys = [];
+
+                    while (await reader.ReadAsync())
+                    {
+                        puzzleResultSummarys.Add(new PuzzleResultSummary(Convert.ToInt64(reader["PuzzleGameId"]),
+                                                                         Convert.ToInt32(reader["TotalPoints"]),
+                                                                         Convert.ToInt32(reader["TotalMedals"]),
+                                                                         Convert.ToInt32(reader["TotalCups"])));
+                    }
+
+                    loginAppInfo.PuzzleResultSummarys = puzzleResultSummarys;
 
                     reader.NextResult();
                     if (await reader.ReadAsync())

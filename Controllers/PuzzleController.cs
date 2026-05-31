@@ -109,7 +109,7 @@ namespace HeroServer.Controllers
             }
         }
 
-        // PUT services/puzzle
+        // PUT services/puzzle/SaveResult
         [HttpPut("SaveResult")]
         public async Task<ActionResult<PuzzleResultResponse>> SaveResult([FromBody] PuzzleResultRequest puzzleResultRequest)
         {
