@@ -11,7 +11,7 @@ namespace HeroServer
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
         readonly String table = "[D-Player]";
 
-        private static Player GetPlayer(SqlDataReader reader)
+        public static Player GetPlayer(SqlDataReader reader)
         {
             return new Player(Convert.ToInt64(reader["Id"]),
                               Convert.ToInt64(reader["AppUserId"]),
@@ -79,7 +79,7 @@ namespace HeroServer
             DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, player.AppUserId);
             DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.DateTime, player.Status);
+            DBHelper.AddParam(command, "@Status", SqlDbType.Int, player.Status);
 
             using (conn)
             {

@@ -116,6 +116,9 @@ namespace HeroServer
                 localityRequest.CurrentLocality.Status = 1;
                 localityResponse.CurrentLocalityId = await new LocalityDB().Add(localityRequest.CurrentLocality);
 
+                // Register Player
+                await PuzzleFunctions.RegisterPlayer(localityRequest.InterestLocality.AppUserId);
+
                 scope.Complete();
             }
 

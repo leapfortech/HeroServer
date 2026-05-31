@@ -159,7 +159,12 @@ namespace HeroServer
 
             return id;
         }
-        
+
+        public static async Task<long> RegisterPlayer(long appUserId)
+        {
+            return await new PlayerDB().Add(new Player(-1, appUserId, DateTime.Now, DateTime.Now, 1));
+        }
+
         // ADD
         public static async Task<long> Add(Puzzle puzzle)
         {
