@@ -39,8 +39,22 @@ namespace HeroServer.Controllers
             }
         }
 
-        // GET services/puzzle/GetNextPuzzle
-        [HttpGet("NextPuzzle")]
+        // GET services/puzzle/FullsByStatus/?status=1
+        [HttpGet("FullsByStatus")]
+        public async Task<ActionResult<List<PuzzleFull>>> GetFullsByStatus([FromQuery] String status)
+        {
+            try
+            {
+                return Ok(await PuzzleFunctions.GetFullsByStatus(Convert.ToInt32(status)));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // POST services/puzzle/GetNextPuzzle
+        [HttpPost("NextPuzzle")]
         public async Task<ActionResult<PuzzleFull>> GetNextPuzzle([FromBody] PuzzleNextRequest puzzleNextRequest)
         {
             try
@@ -60,20 +74,6 @@ namespace HeroServer.Controllers
             try
             {
                 return Ok(await PuzzleFunctions.GetAllByDifficulty(req));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        // GET services/puzzle/FullsByStatus/?status=1
-        [HttpGet("FullsByStatus")]
-        public async Task<ActionResult<List<PuzzleFull>>> GetFullsByStatus([FromQuery] String status)
-        {
-            try
-            {
-                return Ok(await PuzzleFunctions.GetFullsByStatus(Convert.ToInt32(status)));
             }
             catch (Exception ex)
             {
