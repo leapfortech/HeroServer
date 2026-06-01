@@ -23,14 +23,15 @@ namespace HeroServer
             return await new PuzzleDB().GetById(id);
         }
 
-        public static async Task<PuzzleFull> GetFullById(long id, long likeAppUserId, int includeCorrect = 1)
+        public static async Task<PuzzleFull> GetFullById(long id, long likeAppUserId, int includeImages, int includeCorrect)
         {
             PuzzleFull puzzleFull = await new PuzzleDB().GetFullById(id, likeAppUserId, includeCorrect);
 
             if (puzzleFull == null)
                 return null;
 
-            puzzleFull.Images = await PostFunctions.GetImagesById(puzzleFull.PostId, true);
+            if (includeImages == 1)
+                puzzleFull.Images = await PostFunctions.GetImagesById(puzzleFull.PostId, true);
 
             return puzzleFull;
         }
@@ -124,8 +125,7 @@ namespace HeroServer
             if (puzzleId == -1)
                 return null;
 
-            PuzzleFull puzzleFull = await GetFullById(puzzleId, -1, 0);
-            //puzzleFull.Images = await PostFunctions.GetImagesById(puzzleFull.PostId, true);
+            PuzzleFull puzzleFull = await GetFullById(puzzleId, -1, 0, 0);
 
             return puzzleFull;
         }

@@ -17,7 +17,7 @@ namespace HeroServer.Controllers
         {
             try
             {
-                return Ok(await PuzzleFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(likeAppUserId)));
+                return Ok(await PuzzleFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(likeAppUserId), 1, 1));
             }
             catch (Exception ex)
             {

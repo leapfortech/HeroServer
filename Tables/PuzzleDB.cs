@@ -285,7 +285,7 @@ namespace HeroServer
                             $" {table}.Difficulty, {table}.Delay, {table}.Points, {table}.PlayCount, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
-                            $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
+                            $" LEFT JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
                             " LEFT JOIN [J-Favorite] AS Fav ON Fav.PostId = Post.Id AND Fav.AppUserId = @LikeAppUserId " +
                             " LEFT JOIN [D-Like] AS Lik ON Lik.PostId = Post.Id AND Lik.AppUserId = @LikeAppUserId " +
                             $" WHERE {table}.Id = @Id;";
@@ -310,7 +310,7 @@ namespace HeroServer
             strCmd += "SELECT Comment.Id, Comment.PostId, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
                       " Comment.Message, Comment.UpdateDateTime, Comment.Status" +
                       " FROM [D-Comment] AS Comment" +
-                      " INNER JOIN [D-AppUser] AS AppUser ON (Comment.AppUserId = AppUser.Id)" +
+                      " LEFT JOIN [D-AppUser] AS AppUser ON (Comment.AppUserId = AppUser.Id)" +
                      $" WHERE Comment.Status = 1 AND Comment.PostId = (SELECT PostId FROM {table} WHERE Id = @Id);";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
@@ -368,7 +368,7 @@ namespace HeroServer
                             $" {table}.Difficulty, {table}.Delay, {table}.Points, {table}.PlayCount, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
-                            $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
+                            $" LEFT JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
                             " LEFT JOIN [J-Favorite] AS Fav ON Fav.PostId = Post.Id AND Fav.AppUserId = @LikeAppUserId " +
                             " LEFT JOIN [D-Like] AS Lik ON Lik.PostId = Post.Id AND Lik.AppUserId = @LikeAppUserId " +
                             $" WHERE {table}.PostId = @PostId;";
@@ -391,7 +391,7 @@ namespace HeroServer
             strCmd += "SELECT Comment.Id, Comment.PostId, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
                       " Comment.Message, Comment.UpdateDateTime, Comment.Status" +
                       " FROM [D-Comment] AS Comment" +
-                      " INNER JOIN [D-AppUser] AS AppUser ON(Comment.AppUserId = AppUser.Id)" +
+                      " LEFT JOIN [D-AppUser] AS AppUser ON(Comment.AppUserId = AppUser.Id)" +
                       " WHERE Comment.Status = 1 AND Comment.PostId = @PostId;";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
@@ -445,7 +445,7 @@ namespace HeroServer
                             $" {table}.Difficulty, {table}.Delay, {table}.Points, {table}.PlayCount, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
-                            $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)";
+                            $" LEFT JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)";
 
             if (status != -1)
                 strCmd += $" WHERE {table}.Status = @Status;";
@@ -487,7 +487,7 @@ namespace HeroServer
             strCmd += "SELECT Comment.Id, Comment.PostId, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
                        " Comment.Message, Comment.UpdateDateTime, Comment.Status" +
                        " FROM [D-Comment] AS Comment" +
-                       " INNER JOIN [D-AppUser] AS AppUser ON(Comment.AppUserId = AppUser.Id)" +
+                       " LEFT JOIN [D-AppUser] AS AppUser ON(Comment.AppUserId = AppUser.Id)" +
                       $" INNER JOIN {table}" +
                       $" ON (Comment.PostId = {table}.PostId)" +
                        " WHERE Comment.Status = 1";
