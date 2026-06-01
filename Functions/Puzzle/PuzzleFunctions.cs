@@ -237,16 +237,23 @@ namespace HeroServer
             if (currentPuzzle == null)
                 throw new Exception("Puzzle not found");
 
-            PuzzleAnswer puzzleAnswer = await new PuzzleAnswerDB().GetById(puzzleResultRequest.PuzzleAnswerId);
-            if (puzzleAnswer == null)
-                throw new Exception("Puzzle answer not found");
+            bool correct = false;
 
-            bool correct = puzzleAnswer.IsCorrect == 1;
+            if (puzzleResultRequest.PuzzleAnswerId != -1)
+            {
+                PuzzleAnswer puzzleAnswer = await new PuzzleAnswerDB().GetById(puzzleResultRequest.PuzzleAnswerId);
+
+                if (puzzleAnswer == null)
+                    throw new Exception("Puzzle answer not found");
+
+                correct = puzzleAnswer.IsCorrect == 1;
+            }
+
             int points = correct ? currentPuzzle.Points : 0;
 
             DateTime now = DateTime.Now;
             PuzzleResult puzzleResult = new PuzzleResult(-1, puzzleResultRequest.PlayerId, puzzleResultRequest.PuzzleId, points,
-                                                         puzzleResultRequest.Time,points, now, now, now);
+                                                         puzzleResultRequest.Time, points, now, now, now);
 
             await new PuzzleResultDB().Add(puzzleResult);
 
