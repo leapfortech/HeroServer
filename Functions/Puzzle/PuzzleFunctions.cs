@@ -238,6 +238,7 @@ namespace HeroServer
                 throw new Exception("Puzzle not found");
 
             bool correct = false;
+            String correctAnswer = "";
 
             if (puzzleResultRequest.PuzzleAnswerId != -1)
             {
@@ -251,6 +252,14 @@ namespace HeroServer
 
             int points = correct ? currentPuzzle.Points : 0;
 
+            if (!correct)
+            {
+                PuzzleAnswer correctPuzzleAnswer = await new PuzzleAnswerDB().GetCorrectByPuzzleId(currentPuzzle.Id);
+
+                if (correctPuzzleAnswer != null)
+                    correctAnswer = correctPuzzleAnswer.Description;
+            }
+
             DateTime now = DateTime.Now;
             PuzzleResult puzzleResult = new PuzzleResult(-1, puzzleResultRequest.PlayerId, puzzleResultRequest.PuzzleId, points,
                                                          puzzleResultRequest.Time, points, now, now, now);
@@ -262,7 +271,7 @@ namespace HeroServer
 
             PuzzleFull puzzleFull = await GetNextPuzzle(nextRequest);
 
-            return new PuzzleResultResponse(correct ? 1 : 0, points, 0, 0, puzzleFull);
+            return new PuzzleResultResponse(correct ? 1 : 0, points, 0, 0, correctAnswer, puzzleFull);
         }
 
         public static async Task<bool> Accept(long postId, long puzzleId)

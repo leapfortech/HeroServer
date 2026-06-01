@@ -76,6 +76,35 @@ namespace HeroServer
             return puzzleAnswer;
         }
 
+        public async Task<PuzzleAnswer> GetCorrectByPuzzleId(long puzzleId)
+        {
+            String strCmd = $"SELECT TOP 1 * " +
+                            $"FROM {table} " +
+                            $"WHERE PuzzleId = @PuzzleId " +
+                            $"AND IsCorrect = 1 " +
+                            $"AND Status = 1";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@PuzzleId", SqlDbType.BigInt, puzzleId);
+
+            PuzzleAnswer puzzleAnswer = null;
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        puzzleAnswer = GetPuzzleAnswer(reader);
+                    }
+                }
+            }
+            return puzzleAnswer;
+        }
+
+
+
         // INSERT
         public async Task<long> Add(PuzzleAnswer puzzleAnswer)
         {
