@@ -113,8 +113,23 @@ namespace HeroServer
 
                 // Locality Default
                 Locality locality = await new LocalityDB().GetByAppUserIdAndLocalityType(onboardingRequest.AppUserId, 1);
-                bool hasBirthLocation = onboardingRequest.Identity.BirthCountryId != -1 && onboardingRequest.Identity.BirthStateId != -1 && onboardingRequest.Identity.BirthCityId != -1;
-                bool hasAddressLocation = onboardingRequest.Address.CountryId != -1 && onboardingRequest.Address.StateId != -1 && onboardingRequest.Address.CityId != -1;
+
+                String CountriesWithState = await AppParamFunctions.GetValue("CountriesWithState");
+                String CountriesWithCity = await AppParamFunctions.GetValue("CountriesWithCity");
+
+                bool birthRequireState = ContainsCountry(CountriesWithState, onboardingRequest.Identity.BirthCountryId);
+                bool birthRequireCity = ContainsCountry(CountriesWithCity, onboardingRequest.Identity.BirthCountryId);
+
+                bool addressRequireState = ContainsCountry(CountriesWithState, onboardingRequest.Address.CountryId);
+                bool addressRequireCity = ContainsCountry(CountriesWithCity, onboardingRequest.Address.CountryId);
+
+                bool hasBirthLocation = onboardingRequest.Identity.BirthCountryId != -1 &&
+                                        (!birthRequireState || onboardingRequest.Identity.BirthStateId != -1) &&
+                                        (!birthRequireCity || onboardingRequest.Identity.BirthCityId != -1);
+
+                bool hasAddressLocation = onboardingRequest.Address.CountryId != -1 &&
+                                          (!addressRequireState || onboardingRequest.Address.StateId != -1) &&
+                                          (!addressRequireCity || onboardingRequest.Address.CityId != -1);
 
                 if (locality == null && hasBirthLocation && hasAddressLocation)
                 {
@@ -366,6 +381,19 @@ namespace HeroServer
             {
                 await WebSysUserFunctions.UpdateMail(updateAccountRequest.WebSysUserId, updateAccountRequest.Email);
             }
+        }
+
+        private static bool ContainsCountry(String countries, long countryId)
+        {
+            String[] values = countries.Split('|');
+
+            for (int i = 0; i < values.Length; i++)
+            {
+                if (values[i] == countryId.ToString())
+                    return true;
+            }
+
+            return false;
         }
     }
 }
