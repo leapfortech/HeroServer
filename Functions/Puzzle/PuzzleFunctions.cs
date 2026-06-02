@@ -125,7 +125,7 @@ namespace HeroServer
             if (puzzleId == -1)
                 return null;
 
-            PuzzleFull puzzleFull = await GetFullById(puzzleId, -1, 0, 0);
+            PuzzleFull puzzleFull = await GetFullById(puzzleId, -1, 0, puzzleNextRequest.PuzzleGameId == 2 ? 1 : 0);
 
             return puzzleFull;
         }
