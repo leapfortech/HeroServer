@@ -101,16 +101,33 @@ namespace HeroServer
             
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-
                 onboardingResponse.IdentityId = await IdentityFunctions.RegisterByAppUser(onboardingRequest.AppUserId, onboardingRequest.Identity);
                 onboardingResponse.AddressId = await AddressFunctions.RegisterByAppUser(onboardingRequest.AppUserId, onboardingRequest.Address);
+                onboardingResponse.LocalityResponse = null;
 
                 if (onboardingRequest.Portrait != null && onboardingRequest.Portrait.Length > 0)
                     await AppUserFunctions.RegisterPortrait(onboardingRequest.AppUserId, onboardingRequest.Portrait);
 
                 // Onboarding = 2
                 await AppUserFunctions.UpdateOption(onboardingRequest.AppUserId, 0, 2);
-                
+
+                // Locality Default
+                Locality locality = await new LocalityDB().GetByAppUserIdAndLocalityType(onboardingRequest.AppUserId, 1);
+                bool hasBirthLocation = onboardingRequest.Identity.BirthCountryId != -1 && onboardingRequest.Identity.BirthStateId != -1 && onboardingRequest.Identity.BirthCityId != -1;
+                bool hasAddressLocation = onboardingRequest.Address.CountryId != -1 && onboardingRequest.Address.StateId != -1 && onboardingRequest.Address.CityId != -1;
+
+                if (locality == null && hasBirthLocation && hasAddressLocation)
+                {
+                    DateTime now = DateTime.Now;
+                    Locality interestLocality = new Locality(-1, onboardingRequest.AppUserId, 1, onboardingRequest.Identity.BirthCountryId,
+                                                             onboardingRequest.Identity.BirthStateId, onboardingRequest.Identity.BirthCityId, now, now, 1);
+
+                    Locality currentLocality = new Locality(-1, onboardingRequest.AppUserId, 2, onboardingRequest.Address.CountryId,
+                                                            onboardingRequest.Address.StateId, onboardingRequest.Address.CityId, now, now, 1);
+
+                    onboardingResponse.LocalityResponse = await AppUserFunctions.RegisterLocality(new LocalityRequest(interestLocality, currentLocality));
+                }
+
                 scope.Complete();
             }
 
