@@ -101,8 +101,7 @@ namespace HeroServer.Controllers
         {
             try
             {
-                await PostFunctions.DeleteFavorite(favorite);
-                return Ok();
+                return Ok(await PostFunctions.DeleteFavorite(favorite));
             }
             catch (Exception ex)
             {
@@ -126,7 +125,7 @@ namespace HeroServer.Controllers
 
         // POST services/post/UpdateLike
         [HttpPost("UpdateLike")]
-        public async Task<ActionResult<bool>> UpdateLike([FromBody] Like like)
+        public async Task<ActionResult<long>> UpdateLike([FromBody] Like like)
         {
             try
             {
@@ -140,7 +139,7 @@ namespace HeroServer.Controllers
 
         // DELETE services/post/DeleteLike
         [HttpDelete("DeleteLike")]
-        public async Task<ActionResult<bool>> DeleteLike([FromBody] Like like)
+        public async Task<ActionResult<long>> DeleteLike([FromBody] Like like)
         {
             try
             {

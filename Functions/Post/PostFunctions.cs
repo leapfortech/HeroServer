@@ -109,7 +109,8 @@ namespace HeroServer
             {
                 like.Status = 1;
                 likeId = await new LikeDB().Add(like);
-                await new PostDB().IncrementLikeCount(like.PostId);
+                if (like.Rank == 5)
+                    await new PostDB().IncrementLikeCount(like.PostId);
 
                 scope.Complete();
             }
@@ -117,9 +118,9 @@ namespace HeroServer
             return likeId;
         }
 
-        public static async Task<bool> UpdateLike(Like like)
+        public static async Task<long> UpdateLike(Like like)
         {
-            bool result = false;
+            long likeId = -1L;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 like.Status = 1;
@@ -127,38 +128,47 @@ namespace HeroServer
                 Like curLike = await new LikeDB().Get(like.PostId, like.AppUserId);
                 if (curLike == null)
                 {
-                    long likeId = await new LikeDB().Add(like);
-                    await new PostDB().IncrementLikeCount(like.PostId);
+                    likeId = await new LikeDB().Add(like);
+                    if (like.Rank == 5)
+                        await new PostDB().IncrementLikeCount(like.PostId);
                 }
                 else if (like.Rank < curLike.Rank)
                 {
-                    result = await new LikeDB().UpdateRank(like);
+                    likeId = curLike.Id;
+                    await new LikeDB().UpdateRank(like);
                     await new PostDB().DecrementLikeCount(like.PostId);
                 }
                 else if (like.Rank > curLike.Rank)
                 {
-                    result = await new LikeDB().UpdateRank(like);
+                    likeId = curLike.Id;
+                    await new LikeDB().UpdateRank(like);
                     await new PostDB().IncrementLikeCount(like.PostId);
                 }
 
                 scope.Complete();
             }
 
-            return result;
+            return likeId;
         }
 
-        public static async Task<bool> DeleteLike(Like like)
+        public static async Task<long> DeleteLike(Like like)
         {
-            bool result = false;
+            long likeId = -1L;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                result = await new LikeDB().Delete(like);
-                await new PostDB().DecrementLikeCount(like.PostId);
+                Like curLike = await new LikeDB().Get(like.PostId, like.AppUserId);
+                if (curLike != null)
+                {
+                    likeId = curLike.Id;
+                    await new LikeDB().Delete(like);
+                    if (like.Rank != -1)
+                        await new PostDB().DecrementLikeCount(like.PostId);
+                }
 
                 scope.Complete();
             }
 
-            return result;
+            return likeId;
         }
 
         // SHARE

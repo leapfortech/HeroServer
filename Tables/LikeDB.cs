@@ -70,7 +70,7 @@ namespace HeroServer
 
         public async Task<Like> Get(long postId, long appUserId)
         {
-            String strCmd = $"SELECT * FROM {table} WHERE PostId = @Id AND AppUserId = @AppUserId";
+            String strCmd = $"SELECT * FROM {table} WHERE PostId = @PostId AND AppUserId = @AppUserId";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 

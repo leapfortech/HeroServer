@@ -195,7 +195,7 @@ namespace HeroServer
                 strCmd = "SELECT TOP(@Count)";
             strCmd +=   " Post.Id AS PostId," +
                         " Post.AppUserId," +
-                        " AppUser.Alias AS AppUserAlias," +
+                        " DAppUser.Alias AS AppUserAlias," +
                         " Post.PostTypeId," +
                         " Post.CountryId AS PostCountryId," +
                         " Post.StateId AS PostStateId," +
@@ -203,15 +203,15 @@ namespace HeroServer
                         " Post.Summary," +
                         " Post.Description," +
                         " Post.ImageCount," +
-                        " CASE WHEN Fav.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
-                        " ISNULL(Lik.[Rank], -1) AS [Like]," +
+                        " CASE WHEN JFavorite.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
+                        " ISNULL(DLike.[Rank], -1) AS [Like]," +
                         " Post.LikeCount," +
                         " Post.PublicationDateTime," +
                         " Post.Status AS PostStatus" +
                         " FROM [D-Post] AS Post" +
-                        " INNER JOIN [D-AppUser] AS AppUser ON Post.AppUserId = AppUser.Id" +
-                        " LEFT JOIN [J-Favorite] AS Fav ON Fav.PostId = Post.Id AND Fav.AppUserId = @LikeAppUserId " +
-                        " LEFT JOIN [D-Like] AS Lik ON Lik.PostId = Post.Id AND Lik.AppUserId = @LikeAppUserId " +
+                        " INNER JOIN [D-AppUser] AS DAppUser ON Post.AppUserId = DAppUser.Id" +
+                        " LEFT JOIN [J-Favorite] AS JFavorite ON JFavorite.PostId = Post.Id AND JFavorite.AppUserId = @LikeAppUserId " +
+                        " LEFT JOIN [D-Like] AS DLike ON DLike.PostId = Post.Id AND DLike.AppUserId = @LikeAppUserId " +
                         whereFeed +
                         " ORDER BY Post.PublicationDateTime";
             if (request.Direction == 1)
