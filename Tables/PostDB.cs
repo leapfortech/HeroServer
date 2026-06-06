@@ -215,9 +215,10 @@ namespace HeroServer
                         whereFeed +
                         " ORDER BY Post.PublicationDateTime";
             if (request.Direction == 1)
-                strCmd += ") AS Temp), PostCount AS (SELECT COUNT(*) AS Total FROM Posts)" +
+                strCmd += ") AS Temp)," +
+                          " PostCount AS (SELECT COUNT(1) AS Total FROM Posts)" +
                           " SELECT * FROM Posts, PostCount" +
-                          " WHERE RowNumber < Total - @Count - 1" +
+                          " WHERE RowNumber <= Total - @Count" +
                           " ORDER BY PublicationDateTime";
             strCmd += " DESC;";
 
