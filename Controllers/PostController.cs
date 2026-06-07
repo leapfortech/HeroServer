@@ -53,6 +53,20 @@ namespace HeroServer.Controllers
             }
         }
 
+        // POST services/post/Comment
+        [HttpPost("CommentFeed")]
+        public async Task<ActionResult<CommentFeedResponse>> GetCommentFeed([FromBody] CommentFeedRequest request)
+        {
+            try
+            {
+                return Ok(await PostFunctions.GetCommentFeed(request));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // POST services/post/Feed
         [HttpPost("FullsPagedByType")]
         public async Task<ActionResult<PostFullsPagedResponse>> GetFullsPagedByType([FromBody] PostTypePagedRequest request)

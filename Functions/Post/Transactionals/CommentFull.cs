@@ -9,6 +9,7 @@ namespace HeroServer
         public long AppUserId { get; set; }
         public String AppUserAlias { get; set; }
         public String Message { get; set; }
+        public DateTime CreateDateTime { get; set; }
         public DateTime UpdateDateTime { get; set; }
         public int Status { get; set; }
 
@@ -17,13 +18,14 @@ namespace HeroServer
         }
 
         public CommentFull(long id, long postId, long appUserId, String appUserAlias,
-                                 String message, DateTime updateDateTime, int status)
+                                 String message, DateTime createDateTime, DateTime updateDateTime, int status)
         {
             Id = id;
             PostId = postId;
             AppUserId = appUserId;
             AppUserAlias = appUserAlias;
             Message = message;
+            CreateDateTime = createDateTime;
             UpdateDateTime = updateDateTime;
             Status = status;
         }

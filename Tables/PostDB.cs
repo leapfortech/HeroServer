@@ -284,6 +284,118 @@ namespace HeroServer
             return response;
         }
 
+        public async Task<CommentFeedResponse> GetCommentFeed(CommentFeedRequest request)
+        {
+            CommentFeedResponse response = new CommentFeedResponse(request.Chunk, request.Direction, request.Count);
+
+            // FILTERS
+            List<String> where = [];
+
+            // PostId
+            where.Add("Comment.PostId = @PostId");
+
+            if (request.AppUserId != -1)
+                where.Add("Comment.AppUserId = @AppUserId");
+
+            if (request.Status != -1)
+                where.Add("Comment.Status = @Status");
+
+            String whereCount = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
+
+            // DATE
+            if (request.Direction == 1)
+                where.Add("Comment.CreateDateTime > @StartDate");
+            else
+                where.Add("Comment.CreateDateTime < @StartDate");
+
+            String whereFeed = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
+
+            // QUERY FEED
+            String strCmd;
+
+            if (request.Direction == 1)
+                strCmd = "WITH Comments AS" +
+                         " (SELECT ROW_NUMBER() OVER (ORDER BY Temp.CreateDateTime DESC) AS RowNumber, * FROM" +
+                         " (SELECT TOP(@Count2)";
+            else
+                strCmd = "SELECT TOP(@Count)";
+
+            strCmd += " Comment.Id," +
+                      " Comment.PostId," +
+                      " Comment.AppUserId," +
+                      " DAppUser.Alias AS AppUserAlias," +
+                      " Comment.Message," +
+                      " Comment.CreateDateTime," +
+                      " Comment.UpdateDateTime," +
+                      " Comment.Status" +
+                      " FROM [D-Comment] AS Comment" +
+                      " INNER JOIN [D-AppUser] AS DAppUser ON Comment.AppUserId = DAppUser.Id" +
+                      whereFeed +
+                      " ORDER BY Comment.CreateDateTime";
+
+            if (request.Direction == 1)
+                strCmd += ") AS Temp)," +
+                          " CommentCount AS (SELECT COUNT(1) AS Total FROM Comments)" +
+                          " SELECT * FROM Comments, CommentCount" +
+                          " WHERE RowNumber <= Total - @Count" +
+                          " ORDER BY CreateDateTime";
+
+            strCmd += " DESC;";
+
+            // QUERY COUNT
+            strCmd += "SELECT COUNT(1) AS Total FROM [D-Comment] AS Comment" + whereCount + ";";
+            strCmd += "SELECT TOP(1) Comment.Id AS FirstCommentId, Comment.CreateDateTime AS FirstDateTime FROM [D-Comment] AS Comment" + whereCount + " ORDER BY Comment.CreateDateTime;";
+            strCmd += "SELECT TOP(1) Comment.Id AS LastCommentId, Comment.CreateDateTime AS LastDateTime FROM [D-Comment] AS Comment" + whereCount + " ORDER BY Comment.CreateDateTime DESC;";
+
+            using (SqlCommand command = new SqlCommand(strCmd, conn))
+            {
+                if (request.Direction == 1)
+                    DBHelper.AddParam(command, "@Count2", SqlDbType.Int, request.Count * 2);
+
+                DBHelper.AddParam(command, "@Count", SqlDbType.Int, request.Count);
+                DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, request.PostId);
+
+                if (request.AppUserId != -1)
+                    DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, request.AppUserId);
+
+                if (request.Status != -1)
+                    DBHelper.AddParam(command, "@Status", SqlDbType.Int, request.Status);
+
+                DBHelper.AddParam(command, "@StartDate", SqlDbType.DateTime2, request.StartDateTime);
+
+                using (conn)
+                {
+                    await conn.OpenAsync();
+
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                            response.CommentFulls.Add(CommentDB.GetCommentFull(reader));
+
+                        await reader.NextResultAsync();
+                        if (await reader.ReadAsync())
+                            response.Total = Convert.ToInt32(reader["Total"]);
+
+                        await reader.NextResultAsync();
+                        if (await reader.ReadAsync())
+                        {
+                            response.FirstCommentId = Convert.ToInt64(reader["FirstCommentId"]);
+                            response.FirstDateTime = Convert.ToDateTime(reader["FirstDateTime"]);
+                        }
+
+                        await reader.NextResultAsync();
+                        if (await reader.ReadAsync())
+                        {
+                            response.LastCommentId = Convert.ToInt64(reader["LastCommentId"]);
+                            response.LastDateTime = Convert.ToDateTime(reader["LastDateTime"]);
+                        }
+                    }
+                }
+            }
+
+            return response;
+        }
+
         public async Task<PostFullsPagedResponse> GetFullsPagedByType(PostTypePagedRequest request)
         {
             request.Page = Math.Max(1, request.Page);

@@ -35,6 +35,11 @@ namespace HeroServer
             return response;
         }
 
+        public static async Task<CommentFeedResponse> GetCommentFeed(CommentFeedRequest request)
+        {
+            return await new PostDB().GetCommentFeed(request);
+        }
+
         // PAGED
         public static async Task<PostFullsPagedResponse> GetFullsPagedByType(PostTypePagedRequest request)
         {

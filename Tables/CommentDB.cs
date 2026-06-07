@@ -29,6 +29,7 @@ namespace HeroServer
                                    Convert.ToInt64(reader["AppUserId"]),
                                    reader["AppUserAlias"].ToString(),
                                    reader["Message"].ToString(),
+                                   Convert.ToDateTime(reader["CreateDateTime"]),
                                    Convert.ToDateTime(reader["UpdateDateTime"]),
                                    Convert.ToInt32(reader["Status"]));
         }
