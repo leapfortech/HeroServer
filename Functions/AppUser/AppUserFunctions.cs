@@ -223,7 +223,7 @@ namespace HeroServer
                 if (!existContainer)
                     await RegisterPortrait(appUserId, portrait);
                 else
-                    await StorageFunctions.UpdateFile(containerName, "prt" + appUserId, "jpg", Convert.FromBase64String(portrait));
+                    await StorageFunctions.UpdateFile(containerName, "prt" + appUserId, "jpg", Convert.FromBase64String(portrait), false);
 
                 scope.Complete();
             }
