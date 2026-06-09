@@ -284,7 +284,7 @@ namespace HeroServer
             {
                 String containerName = "user" + appUserId;
 
-                await StorageFunctions.DeleteFile(containerName, "prt" + appUserId + "jpg");
+                await StorageFunctions.DeleteFile(containerName, "prt" + appUserId + ".jpg");
 
                 scope.Complete();
             }

@@ -88,10 +88,10 @@ namespace HeroServer
         {
             BlobContainerClient container = blobServiceClient.GetBlobContainerClient(containerName);
 
-            List<Task<byte[]>> tasks = new List<Task<byte[]>>();
+            List<Task<byte[]>> tasks = [];
 
-            foreach ((String fileName, String fileExt) file in files)
-                tasks.Add(ReadFile(container, file.fileName, file.fileExt));
+            foreach ((String fileName, String fileExt) in files)
+                tasks.Add(ReadFile(container, fileName, fileExt));
 
             return await Task.WhenAll(tasks);
         }
@@ -170,7 +170,7 @@ namespace HeroServer
                 return false;
 
             BlobDownloadInfo downloadInfo = await blob.DownloadAsync();
-            byte[] content = null;
+            byte[] content;
 
             using (MemoryStream memoryStream = new MemoryStream())
             {
