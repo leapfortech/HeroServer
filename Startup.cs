@@ -48,6 +48,7 @@ namespace HeroServer
             CardFunctions.Initialize();
             PrecheckFunctions.Initialize();
 
+            PostFunctions.Initialize();
 
 
             services.AddControllers()

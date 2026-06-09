@@ -11,6 +11,19 @@ namespace HeroServer
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
         readonly String table = "[D-Post]";
 
+        static int taleExpirationTime, recipeExpirationTime, treatmentExpirationTime, radioExpirationTime, productExpirationTime, happeningExpirationTime, newsExpirationTime;
+
+        public static void InitParams(int taleExpTime, int recipeExpTime, int treatmentExpTime, int radioExpTime, int productExpTime, int happeningExpTime, int newsExpTime)
+        {
+            taleExpirationTime = taleExpTime;
+            recipeExpirationTime = recipeExpTime;
+            treatmentExpirationTime = treatmentExpTime;
+            radioExpirationTime = radioExpTime;
+            productExpirationTime = productExpTime;
+            happeningExpirationTime = happeningExpTime;
+            newsExpirationTime = newsExpTime;
+        }
+
         public static Post GetPost(SqlDataReader reader)
         {
             return new Post(Convert.ToInt64(reader["Id"]),
@@ -157,6 +170,30 @@ namespace HeroServer
             PostFeedResponse response = new PostFeedResponse(request.Chunk, request.Direction, request.Count);
 
             // FILTERS
+            List<String> expirationFilters = [];
+
+            if (taleExpirationTime > 0)
+                expirationFilters.Add($"(Post.PostTypeId <> {(long)PostType.Tale} OR Post.PublicationDateTime >= DATEADD(DAY, -{taleExpirationTime}, GETDATE()))");
+
+            if (recipeExpirationTime > 0)
+                expirationFilters.Add($"(Post.PostTypeId <> {(long)PostType.Recipe} OR Post.PublicationDateTime >= DATEADD(DAY, -{recipeExpirationTime}, GETDATE()))");
+
+            if (treatmentExpirationTime > 0)
+                expirationFilters.Add($"(Post.PostTypeId <> {(long)PostType.Treatment} OR Post.PublicationDateTime >= DATEADD(DAY, -{treatmentExpirationTime}, GETDATE()))");
+
+            if (radioExpirationTime > 0)
+                expirationFilters.Add($"(Post.PostTypeId <> {(long)PostType.Radio} OR Post.PublicationDateTime >= DATEADD(DAY, -{radioExpirationTime}, GETDATE()))");
+
+            if (productExpirationTime > 0)
+                expirationFilters.Add($"(Post.PostTypeId <> {(long)PostType.Product} OR Post.PublicationDateTime >= DATEADD(DAY, -{productExpirationTime}, GETDATE()))");
+
+            if (happeningExpirationTime > 0)
+                expirationFilters.Add($"(Post.PostTypeId <> {(long)PostType.Happening} OR Post.PublicationDateTime >= DATEADD(DAY, -{happeningExpirationTime}, GETDATE()))");
+
+            if (newsExpirationTime > 0)
+                expirationFilters.Add($"(Post.PostTypeId <> {(long)PostType.News} OR Post.PublicationDateTime >= DATEADD(DAY, -{newsExpirationTime}, GETDATE()))");
+
+
             List<String> where = [];
 
             if (request.PostTypeId != -1)
@@ -173,6 +210,9 @@ namespace HeroServer
 
             if (request.Status != -1)
                 where.Add("Post.Status = @Status");
+
+            if (expirationFilters.Count > 0)
+                where.Add("(" + String.Join(" AND ", expirationFilters) + ")");
 
             String whereCount = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
 
