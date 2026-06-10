@@ -170,30 +170,6 @@ namespace HeroServer
             PostFeedResponse response = new PostFeedResponse(request.Chunk, request.Direction, request.Count);
 
             // FILTERS
-            List<String> expirationFilters = [];
-
-            if (taleExpirationTime > 0)
-                expirationFilters.Add($"(Post.PostTypeId <> {(long)PostType.Tale} OR Post.PublicationDateTime >= DATEADD(DAY, -{taleExpirationTime}, GETDATE()))");
-
-            if (recipeExpirationTime > 0)
-                expirationFilters.Add($"(Post.PostTypeId <> {(long)PostType.Recipe} OR Post.PublicationDateTime >= DATEADD(DAY, -{recipeExpirationTime}, GETDATE()))");
-
-            if (treatmentExpirationTime > 0)
-                expirationFilters.Add($"(Post.PostTypeId <> {(long)PostType.Treatment} OR Post.PublicationDateTime >= DATEADD(DAY, -{treatmentExpirationTime}, GETDATE()))");
-
-            if (radioExpirationTime > 0)
-                expirationFilters.Add($"(Post.PostTypeId <> {(long)PostType.Radio} OR Post.PublicationDateTime >= DATEADD(DAY, -{radioExpirationTime}, GETDATE()))");
-
-            if (productExpirationTime > 0)
-                expirationFilters.Add($"(Post.PostTypeId <> {(long)PostType.Product} OR Post.PublicationDateTime >= DATEADD(DAY, -{productExpirationTime}, GETDATE()))");
-
-            if (happeningExpirationTime > 0)
-                expirationFilters.Add($"(Post.PostTypeId <> {(long)PostType.Happening} OR Post.PublicationDateTime >= DATEADD(DAY, -{happeningExpirationTime}, GETDATE()))");
-
-            if (newsExpirationTime > 0)
-                expirationFilters.Add($"(Post.PostTypeId <> {(long)PostType.News} OR Post.PublicationDateTime >= DATEADD(DAY, -{newsExpirationTime}, GETDATE()))");
-
-
             List<String> where = [];
 
             if (request.PostTypeId != -1)
@@ -211,8 +187,27 @@ namespace HeroServer
             if (request.Status != -1)
                 where.Add("Post.Status = @Status");
 
-            if (expirationFilters.Count > 0)
-                where.Add("(" + String.Join(" AND ", expirationFilters) + ")");
+            // EXPIRATION
+            if (taleExpirationTime > 0)
+                where.Add($"(Post.PostTypeId != {(long)PostType.Tale} OR Post.PublicationDateTime >= DATEADD(DAY, -{taleExpirationTime}, GETDATE()))");
+
+            if (recipeExpirationTime > 0)
+                where.Add($"(Post.PostTypeId != {(long)PostType.Recipe} OR Post.PublicationDateTime >= DATEADD(DAY, -{recipeExpirationTime}, GETDATE()))");
+
+            if (treatmentExpirationTime > 0)
+                where.Add($"(Post.PostTypeId != {(long)PostType.Treatment} OR Post.PublicationDateTime >= DATEADD(DAY, -{treatmentExpirationTime}, GETDATE()))");
+
+            if (radioExpirationTime > 0)
+                where.Add($"(Post.PostTypeId != {(long)PostType.Radio} OR Post.PublicationDateTime >= DATEADD(DAY, -{radioExpirationTime}, GETDATE()))");
+
+            if (productExpirationTime > 0)
+                where.Add($"(Post.PostTypeId != {(long)PostType.Product} OR Post.PublicationDateTime >= DATEADD(DAY, -{productExpirationTime}, GETDATE()))");
+
+            if (happeningExpirationTime > 0)
+                where.Add($"(Post.PostTypeId != {(long)PostType.Happening} OR Post.PublicationDateTime >= DATEADD(DAY, -{happeningExpirationTime}, GETDATE()))");
+
+            if (newsExpirationTime > 0)
+                where.Add($"(Post.PostTypeId != {(long)PostType.News} OR Post.PublicationDateTime >= DATEADD(DAY, -{newsExpirationTime}, GETDATE()))");
 
             String whereCount = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
 
@@ -262,7 +257,7 @@ namespace HeroServer
                           " ORDER BY PublicationDateTime";
             strCmd += " DESC;";
 
-                // QUERY COUNT
+            // QUERY COUNT
             strCmd += "SELECT COUNT(1) AS Total FROM [D-Post] AS Post" + whereCount + ";";
             strCmd += "SELECT TOP(1) Post.Id AS FirstPostId, Post.PublicationDateTime AS FirstDateTime FROM [D-Post] AS Post" + whereCount + ";";
             strCmd += "SELECT TOP(1) Post.Id AS LastPostId, Post.PublicationDateTime AS LastDateTime FROM [D-Post] AS Post" + whereCount + " ORDER BY Post.PublicationDateTime DESC;";
