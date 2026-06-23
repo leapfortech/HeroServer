@@ -59,7 +59,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             PrecheckPhone precheckPhone = null;
             using (conn)
@@ -82,9 +82,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, phoneCountryId);
-            DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, phoneNumber);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+            command.AddParam("@CountryId", SqlDbType.BigInt, phoneCountryId);
+            command.AddParam("@Number", SqlDbType.VarChar, phoneNumber);
+            command.AddParam("@Status", SqlDbType.Int, status);
 
             PrecheckPhone precheckPhone = null;
             using (conn)
@@ -107,7 +107,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WACode", SqlDbType.VarChar, waCode);
+            command.AddParam("@WACode", SqlDbType.VarChar, waCode);
 
             PrecheckPhone precheckPhone = null;
             using (conn)
@@ -133,21 +133,21 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('H'));
-            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, precheckPhone.CountryId);
-            DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, precheckPhone.Number);
-            DBHelper.AddParam(command, "@Code", SqlDbType.VarChar, precheckPhone.Code);
-            DBHelper.AddParam(command, "@WACode", SqlDbType.VarChar, precheckPhone.WACode);
-            DBHelper.AddParam(command, "@WAStatus", SqlDbType.VarChar, precheckPhone.WAStatus);
-            DBHelper.AddParam(command, "@CountryCode", SqlDbType.VarChar, precheckPhone.CountryCode);
-            DBHelper.AddParam(command, "@CallerName", SqlDbType.VarChar, precheckPhone.CallerName);
-            DBHelper.AddParam(command, "@CarrierCountryCode", SqlDbType.VarChar, precheckPhone.CarrierCountryCode);
-            DBHelper.AddParam(command, "@CarrierNetworkCode", SqlDbType.VarChar, precheckPhone.CarrierNetworkCode);
-            DBHelper.AddParam(command, "@CarrierName", SqlDbType.VarChar, precheckPhone.CarrierName);
-            DBHelper.AddParam(command, "@CarrierType", SqlDbType.VarChar, precheckPhone.CarrierType);
-            DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, precheckPhone.Status);
+            command.AddParam("@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('H'));
+            command.AddParam("@CountryId", SqlDbType.BigInt, precheckPhone.CountryId);
+            command.AddParam("@Number", SqlDbType.VarChar, precheckPhone.Number);
+            command.AddParam("@Code", SqlDbType.VarChar, precheckPhone.Code);
+            command.AddParam("@WACode", SqlDbType.VarChar, precheckPhone.WACode);
+            command.AddParam("@WAStatus", SqlDbType.VarChar, precheckPhone.WAStatus);
+            command.AddParam("@CountryCode", SqlDbType.VarChar, precheckPhone.CountryCode);
+            command.AddParam("@CallerName", SqlDbType.VarChar, precheckPhone.CallerName);
+            command.AddParam("@CarrierCountryCode", SqlDbType.VarChar, precheckPhone.CarrierCountryCode);
+            command.AddParam("@CarrierNetworkCode", SqlDbType.VarChar, precheckPhone.CarrierNetworkCode);
+            command.AddParam("@CarrierName", SqlDbType.VarChar, precheckPhone.CarrierName);
+            command.AddParam("@CarrierType", SqlDbType.VarChar, precheckPhone.CarrierType);
+            command.AddParam("@CreateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, precheckPhone.Status);
 
             using (conn)
             {
@@ -165,19 +165,19 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, precheckPhone.CountryId);
-            DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, precheckPhone.Number);
-            DBHelper.AddParam(command, "@Code", SqlDbType.VarChar, precheckPhone.Code);
-            DBHelper.AddParam(command, "@WACode", SqlDbType.VarChar, precheckPhone.WACode);
-            DBHelper.AddParam(command, "@WAStatus", SqlDbType.VarChar, precheckPhone.WAStatus);
-            DBHelper.AddParam(command, "@CountryCode", SqlDbType.VarChar, precheckPhone.CountryCode);
-            DBHelper.AddParam(command, "@CallerName", SqlDbType.VarChar, precheckPhone.CallerName);
-            DBHelper.AddParam(command, "@CarrierCountryCode", SqlDbType.VarChar, precheckPhone.CarrierCountryCode);
-            DBHelper.AddParam(command, "@CarrierNetworkCode", SqlDbType.VarChar, precheckPhone.CarrierNetworkCode);
-            DBHelper.AddParam(command, "@CarrierName", SqlDbType.VarChar, precheckPhone.CarrierName);
-            DBHelper.AddParam(command, "@CarrierType", SqlDbType.VarChar, precheckPhone.CarrierType);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, precheckPhone.Id);
+            command.AddParam("@CountryId", SqlDbType.BigInt, precheckPhone.CountryId);
+            command.AddParam("@Number", SqlDbType.VarChar, precheckPhone.Number);
+            command.AddParam("@Code", SqlDbType.VarChar, precheckPhone.Code);
+            command.AddParam("@WACode", SqlDbType.VarChar, precheckPhone.WACode);
+            command.AddParam("@WAStatus", SqlDbType.VarChar, precheckPhone.WAStatus);
+            command.AddParam("@CountryCode", SqlDbType.VarChar, precheckPhone.CountryCode);
+            command.AddParam("@CallerName", SqlDbType.VarChar, precheckPhone.CallerName);
+            command.AddParam("@CarrierCountryCode", SqlDbType.VarChar, precheckPhone.CarrierCountryCode);
+            command.AddParam("@CarrierNetworkCode", SqlDbType.VarChar, precheckPhone.CarrierNetworkCode);
+            command.AddParam("@CarrierName", SqlDbType.VarChar, precheckPhone.CarrierName);
+            command.AddParam("@CarrierType", SqlDbType.VarChar, precheckPhone.CarrierType);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@Id", SqlDbType.BigInt, precheckPhone.Id);
 
             using (conn)
             {
@@ -194,9 +194,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -213,9 +213,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@WACode", SqlDbType.VarChar, waCode);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@WACode", SqlDbType.VarChar, waCode);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -232,9 +232,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@WAStatus", SqlDbType.VarChar, waStatus);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@WAStatus", SqlDbType.VarChar, waStatus);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -251,10 +251,10 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, countryId);
-            DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, number);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@CountryId", SqlDbType.BigInt, countryId);
+            command.AddParam("@Number", SqlDbType.VarChar, number);
+            command.AddParam("@Status", SqlDbType.Int, status);
 
             using (conn)
             {
@@ -271,11 +271,11 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, countryId);
-            DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, number);
-            DBHelper.AddParam(command, "@CurStatus", SqlDbType.Int, curStatus);
-            DBHelper.AddParam(command, "@NewStatus", SqlDbType.Int, newStatus);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@CountryId", SqlDbType.BigInt, countryId);
+            command.AddParam("@Number", SqlDbType.VarChar, number);
+            command.AddParam("@CurStatus", SqlDbType.Int, curStatus);
+            command.AddParam("@NewStatus", SqlDbType.Int, newStatus);
 
             using (conn)
             {
@@ -302,7 +302,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE Id = @Id";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {

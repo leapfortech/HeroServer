@@ -51,7 +51,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             Reward reward = null;
             using (conn)
@@ -77,13 +77,13 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('W'));
-            DBHelper.AddParam(command, "@PlayerId", SqlDbType.BigInt, reward.PlayerId);
-            DBHelper.AddParam(command, "@RewardTypeId", SqlDbType.BigInt, reward.RewardTypeId);
-            DBHelper.AddParam(command, "@EarnedDateTime", SqlDbType.DateTime, reward.EarnedDateTime);
-            DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, reward.Status);
+            command.AddParam("@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('W'));
+            command.AddParam("@PlayerId", SqlDbType.BigInt, reward.PlayerId);
+            command.AddParam("@RewardTypeId", SqlDbType.BigInt, reward.RewardTypeId);
+            command.AddParam("@EarnedDateTime", SqlDbType.DateTime, reward.EarnedDateTime);
+            command.AddParam("@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, reward.Status);
 
             using (conn)
             {
@@ -99,12 +99,12 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PlayerId", SqlDbType.BigInt, reward.PlayerId);
-            DBHelper.AddParam(command, "@RewardTypeId", SqlDbType.BigInt, reward.RewardTypeId);
-            DBHelper.AddParam(command, "@EarnedDateTime", SqlDbType.DateTime, reward.EarnedDateTime);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, reward.Status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, reward.Id);
+            command.AddParam("@PlayerId", SqlDbType.BigInt, reward.PlayerId);
+            command.AddParam("@RewardTypeId", SqlDbType.BigInt, reward.RewardTypeId);
+            command.AddParam("@EarnedDateTime", SqlDbType.DateTime, reward.EarnedDateTime);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, reward.Status);
+            command.AddParam("@Id", SqlDbType.BigInt, reward.Id);
 
             using (conn)
             {
@@ -121,9 +121,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -150,7 +150,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE Id = @Id";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {

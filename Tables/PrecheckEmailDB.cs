@@ -50,7 +50,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             PrecheckEmail precheckEmail = null;
             using (conn)
@@ -73,8 +73,8 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Email", SqlDbType.VarChar, email);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+            command.AddParam("@Email", SqlDbType.VarChar, email);
+            command.AddParam("@Status", SqlDbType.Int, status);
 
             PrecheckEmail precheckEmail = null;
             using (conn)
@@ -100,12 +100,12 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('e'));
-            DBHelper.AddParam(command, "@Email", SqlDbType.VarChar, precheckEmail.Email);
-            DBHelper.AddParam(command, "@Code", SqlDbType.VarChar, precheckEmail.Code);
-            DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, precheckEmail.Status);
+            command.AddParam("@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('e'));
+            command.AddParam("@Email", SqlDbType.VarChar, precheckEmail.Email);
+            command.AddParam("@Code", SqlDbType.VarChar, precheckEmail.Code);
+            command.AddParam("@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, precheckEmail.Status);
 
             using (conn)
             {
@@ -121,11 +121,11 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Email", SqlDbType.VarChar, precheckEmail.Email);
-            DBHelper.AddParam(command, "@Code", SqlDbType.VarChar, precheckEmail.Code);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, precheckEmail.Status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, precheckEmail.Id);
+            command.AddParam("@Email", SqlDbType.VarChar, precheckEmail.Email);
+            command.AddParam("@Code", SqlDbType.VarChar, precheckEmail.Code);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, precheckEmail.Status);
+            command.AddParam("@Id", SqlDbType.BigInt, precheckEmail.Id);
 
             using (conn)
             {
@@ -142,9 +142,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -161,9 +161,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Email", SqlDbType.VarChar, email);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@Email", SqlDbType.VarChar, email);
+            command.AddParam("@Status", SqlDbType.Int, status);
 
             using (conn)
             {
@@ -180,10 +180,10 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Email", SqlDbType.VarChar, email);
-            DBHelper.AddParam(command, "@CurStatus", SqlDbType.Int, curStatus);
-            DBHelper.AddParam(command, "@NewStatus", SqlDbType.Int, newStatus);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@Email", SqlDbType.VarChar, email);
+            command.AddParam("@CurStatus", SqlDbType.Int, curStatus);
+            command.AddParam("@NewStatus", SqlDbType.Int, newStatus);
 
             using (conn)
             {
@@ -210,7 +210,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE Id = @Id";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {

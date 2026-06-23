@@ -24,14 +24,14 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@DateTime", SqlDbType.DateTime2, securityLog.DateTime);
-            DBHelper.AddParam(command, "@Type", SqlDbType.VarChar, securityLog.Type);
-            DBHelper.AddParam(command, "@Context", SqlDbType.VarChar, securityLog.Context);
-            DBHelper.AddParam(command, "@AuthEmail", SqlDbType.VarChar, securityLog.AuthEmail);
-            DBHelper.AddParam(command, "@AuthUserId", SqlDbType.VarChar, securityLog.AuthUserId);
-            DBHelper.AddParam(command, "@AuthAppUserId", SqlDbType.BigInt, securityLog.AuthAppUserId);
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, securityLog.AppUserId);
-            DBHelper.AddParam(command, "@AppUserEmail", SqlDbType.VarChar, securityLog.AppUserEmail);
+            command.AddParam("@DateTime", SqlDbType.DateTime2, securityLog.DateTime);
+            command.AddParam("@Type", SqlDbType.VarChar, securityLog.Type);
+            command.AddParam("@Context", SqlDbType.VarChar, securityLog.Context);
+            command.AddParam("@AuthEmail", SqlDbType.VarChar, securityLog.AuthEmail);
+            command.AddParam("@AuthUserId", SqlDbType.VarChar, securityLog.AuthUserId);
+            command.AddParam("@AuthAppUserId", SqlDbType.BigInt, securityLog.AuthAppUserId);
+            command.AddParam("@AppUserId", SqlDbType.BigInt, securityLog.AppUserId);
+            command.AddParam("@AppUserEmail", SqlDbType.VarChar, securityLog.AppUserEmail);
 
             using (conn)
             {

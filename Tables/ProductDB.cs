@@ -77,7 +77,7 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             if (status != -1)
-                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+                command.AddParam("@Status", SqlDbType.Int, status);
 
             List<Product> products = [];
             using (conn)
@@ -101,7 +101,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             Product product = null;
             using (conn)
@@ -124,7 +124,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+            command.AddParam("@PostId", SqlDbType.BigInt, postId);
 
             long id = -1;
             using (conn)
@@ -182,8 +182,8 @@ namespace HeroServer
                      $" WHERE Comment.Status = 1 AND Comment.PostId = (SELECT PostId FROM {table} WHERE Id = @Id);";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
-            DBHelper.AddParam(command, "@LikeAppUserId", SqlDbType.BigInt, likeAppUserId);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
+            command.AddParam("@LikeAppUserId", SqlDbType.BigInt, likeAppUserId);
 
             ProductFull productFull = null;
             using (conn)
@@ -267,8 +267,8 @@ namespace HeroServer
                       " WHERE Comment.Status = 1 AND Comment.PostId = @PostId;";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
-            DBHelper.AddParam(command, "@LikeAppUserId", SqlDbType.BigInt, likeAppUserId);
+            command.AddParam("@PostId", SqlDbType.BigInt, postId);
+            command.AddParam("@LikeAppUserId", SqlDbType.BigInt, likeAppUserId);
 
             ProductFull productFull = null;
             using (conn)
@@ -378,7 +378,7 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             if (status != -1)
-                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+                command.AddParam("@Status", SqlDbType.Int, status);
 
             ProductDataFull productDataFull = new ProductDataFull();
             using (conn)
@@ -430,19 +430,19 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('U'));
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, product.PostId);
-            DBHelper.AddParam(command, "@ProductSubtypeId", SqlDbType.BigInt, product.ProductSubtypeId);
-            DBHelper.AddParam(command, "@SaleCountryId", SqlDbType.BigInt, product.SaleCountryId);
-            DBHelper.AddParam(command, "@SaleStateId", SqlDbType.BigInt, product.SaleStateId);
-            DBHelper.AddParam(command, "@CurrencyId", SqlDbType.BigInt, product.CurrencyId);
-            DBHelper.AddParam(command, "@Price", SqlDbType.Decimal, product.Price);
-            DBHelper.AddParam(command, "@DiscountPrice", SqlDbType.Decimal, product.DiscountPrice);
-            DBHelper.AddParam(command, "@DeliveryTypeId", SqlDbType.BigInt, product.DeliveryTypeId);
-            DBHelper.AddParam(command, "@Annotation", SqlDbType.VarChar, product.Annotation);
-            DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, product.Status);
+            command.AddParam("@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('U'));
+            command.AddParam("@PostId", SqlDbType.BigInt, product.PostId);
+            command.AddParam("@ProductSubtypeId", SqlDbType.BigInt, product.ProductSubtypeId);
+            command.AddParam("@SaleCountryId", SqlDbType.BigInt, product.SaleCountryId);
+            command.AddParam("@SaleStateId", SqlDbType.BigInt, product.SaleStateId);
+            command.AddParam("@CurrencyId", SqlDbType.BigInt, product.CurrencyId);
+            command.AddParam("@Price", SqlDbType.Decimal, product.Price);
+            command.AddParam("@DiscountPrice", SqlDbType.Decimal, product.DiscountPrice);
+            command.AddParam("@DeliveryTypeId", SqlDbType.BigInt, product.DeliveryTypeId);
+            command.AddParam("@Annotation", SqlDbType.VarChar, product.Annotation);
+            command.AddParam("@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, product.Status);
 
             using (conn)
             {
@@ -458,18 +458,18 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, product.PostId);
-            DBHelper.AddParam(command, "@ProductSubtypeId", SqlDbType.BigInt, product.ProductSubtypeId);
-            DBHelper.AddParam(command, "@SaleCountryId", SqlDbType.BigInt, product.SaleCountryId);
-            DBHelper.AddParam(command, "@SaleStateId", SqlDbType.BigInt, product.SaleStateId);
-            DBHelper.AddParam(command, "@CurrencyId", SqlDbType.BigInt, product.CurrencyId);
-            DBHelper.AddParam(command, "@Price", SqlDbType.Decimal, product.Price);
-            DBHelper.AddParam(command, "@DiscountPrice", SqlDbType.Decimal, product.DiscountPrice);
-            DBHelper.AddParam(command, "@DeliveryTypeId", SqlDbType.BigInt, product.DeliveryTypeId);
-            DBHelper.AddParam(command, "@Annotation", SqlDbType.VarChar, product.Annotation);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, product.Status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, product.Id);
+            command.AddParam("@PostId", SqlDbType.BigInt, product.PostId);
+            command.AddParam("@ProductSubtypeId", SqlDbType.BigInt, product.ProductSubtypeId);
+            command.AddParam("@SaleCountryId", SqlDbType.BigInt, product.SaleCountryId);
+            command.AddParam("@SaleStateId", SqlDbType.BigInt, product.SaleStateId);
+            command.AddParam("@CurrencyId", SqlDbType.BigInt, product.CurrencyId);
+            command.AddParam("@Price", SqlDbType.Decimal, product.Price);
+            command.AddParam("@DiscountPrice", SqlDbType.Decimal, product.DiscountPrice);
+            command.AddParam("@DeliveryTypeId", SqlDbType.BigInt, product.DeliveryTypeId);
+            command.AddParam("@Annotation", SqlDbType.VarChar, product.Annotation);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, product.Status);
+            command.AddParam("@Id", SqlDbType.BigInt, product.Id);
 
             using (conn)
             {
@@ -486,9 +486,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -505,10 +505,10 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@CurStatus", SqlDbType.Int, curStatus);
-            DBHelper.AddParam(command, "@NewStatus", SqlDbType.Int, newStatus);
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@CurStatus", SqlDbType.Int, curStatus);
+            command.AddParam("@NewStatus", SqlDbType.Int, newStatus);
+            command.AddParam("@PostId", SqlDbType.BigInt, postId);
 
             using (conn)
             {
@@ -535,7 +535,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE Id = @Id";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -549,7 +549,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE PostId = @PostId";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+            command.AddParam("@PostId", SqlDbType.BigInt, postId);
 
             using (conn)
             {

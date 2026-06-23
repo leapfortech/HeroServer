@@ -108,10 +108,10 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, req.Status);
-            DBHelper.AddParam(command, "@Name", SqlDbType.VarChar, String.IsNullOrWhiteSpace(req.Name) ? DBNull.Value : req.Name);
-            DBHelper.AddParam(command, "@Offset", SqlDbType.Int, offset);
-            DBHelper.AddParam(command, "@PageSize", SqlDbType.Int, req.PageSize);
+            command.AddParam("@Status", SqlDbType.Int, req.Status);
+            command.AddParam("@Name", SqlDbType.VarChar, String.IsNullOrWhiteSpace(req.Name) ? DBNull.Value : req.Name);
+            command.AddParam("@Offset", SqlDbType.Int, offset);
+            command.AddParam("@PageSize", SqlDbType.Int, req.PageSize);
 
             int totalCount = 0;
 
@@ -169,7 +169,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             BoardUser boardUser = null;
             using (conn)
@@ -192,8 +192,8 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
-            DBHelper.AddParam(command, "@BoardUserStatusId", SqlDbType.Int, boardUserStatusId);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
+            command.AddParam("@BoardUserStatusId", SqlDbType.Int, boardUserStatusId);
 
             BoardUser boardUser = null;
             using (conn)
@@ -216,7 +216,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, webSysUserId);
+            command.AddParam("@WebSysUserId", SqlDbType.BigInt, webSysUserId);
 
             BoardUser boardUser = null;
             using (conn)
@@ -239,7 +239,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             long webSysUserId = -1;
             using (conn)
@@ -263,7 +263,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, webSysUserId);
+            command.AddParam("@WebSysUserId", SqlDbType.BigInt, webSysUserId);
 
             long id = -1;
             using (conn)
@@ -289,7 +289,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Email", SqlDbType.VarChar, eMail);
+            command.AddParam("@Email", SqlDbType.VarChar, eMail);
 
             long id = -1;
             using (conn)
@@ -364,12 +364,12 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('B'));
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, boardUser.WebSysUserId);
-            DBHelper.AddParam(command, "@Alias", SqlDbType.VarChar, boardUser.Alias);
-            DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@BoardUserStatusId", SqlDbType.Int, boardUser.BoardUserStatusId);
+            command.AddParam("@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('B'));
+            command.AddParam("@WebSysUserId", SqlDbType.BigInt, boardUser.WebSysUserId);
+            command.AddParam("@Alias", SqlDbType.VarChar, boardUser.Alias);
+            command.AddParam("@CreateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@BoardUserStatusId", SqlDbType.Int, boardUser.BoardUserStatusId);
 
             using (conn)
             {
@@ -386,10 +386,10 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, boardUser.WebSysUserId);
-            DBHelper.AddParam(command, "@Alias", SqlDbType.VarChar, boardUser.Alias);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, boardUser.Id);
+            command.AddParam("@WebSysUserId", SqlDbType.BigInt, boardUser.WebSysUserId);
+            command.AddParam("@Alias", SqlDbType.VarChar, boardUser.Alias);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@Id", SqlDbType.BigInt, boardUser.Id);
 
             using (conn)
             {
@@ -406,9 +406,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@BoardUserStatusId", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@BoardUserStatusId", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -425,9 +425,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@BoardUserStatusId", SqlDbType.Int, boardUserStatusId);
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, webSysUserId);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@BoardUserStatusId", SqlDbType.Int, boardUserStatusId);
+            command.AddParam("@WebSysUserId", SqlDbType.BigInt, webSysUserId);
 
             using (conn)
             {
@@ -454,7 +454,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE Id = @Id";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -468,7 +468,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE WebSysUserid = @WebSysUserid";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WebSysUserid", SqlDbType.BigInt, webSysUserid);
+            command.AddParam("@WebSysUserid", SqlDbType.BigInt, webSysUserid);
 
             using (conn)
             {

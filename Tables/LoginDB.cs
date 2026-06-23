@@ -51,8 +51,8 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, appUserId);
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, webSysUserId);
+            command.AddParam("@AppUserId", SqlDbType.BigInt, appUserId);
+            command.AddParam("@WebSysUserId", SqlDbType.BigInt, webSysUserId);
             
             LoginAppInfo loginAppInfo = new LoginAppInfo();
 

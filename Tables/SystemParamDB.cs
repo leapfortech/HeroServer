@@ -43,7 +43,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            command.AddParam("@Id", SqlDbType.Int, id);
 
             SystemParam systemParam = null;
             using (conn)
@@ -69,7 +69,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            command.AddParam("@Id", SqlDbType.Int, id);
 
             String value = null;
             using (conn)
@@ -93,7 +93,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Name", SqlDbType.VarChar, key);
+            command.AddParam("@Name", SqlDbType.VarChar, key);
 
             String value = null;
             using (conn)
@@ -122,9 +122,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Name", SqlDbType.VarChar, systemParam.Name);
-            DBHelper.AddParam(command, "@Value", SqlDbType.VarChar, systemParam.Value);
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, systemParam.Id);
+            command.AddParam("@Name", SqlDbType.VarChar, systemParam.Name);
+            command.AddParam("@Value", SqlDbType.VarChar, systemParam.Value);
+            command.AddParam("@Id", SqlDbType.Int, systemParam.Id);
 
             using (conn)
             {
@@ -141,8 +141,8 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Value", SqlDbType.VarChar, value);
-            DBHelper.AddParam(command, "@Name", SqlDbType.VarChar, key);
+            command.AddParam("@Value", SqlDbType.VarChar, value);
+            command.AddParam("@Name", SqlDbType.VarChar, key);
 
             using (conn)
             {
@@ -172,7 +172,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.Int, id);
+            command.AddParam("@Id", SqlDbType.Int, id);
 
             using (conn)
             {

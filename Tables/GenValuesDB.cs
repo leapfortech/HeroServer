@@ -161,7 +161,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             String code = null;
             using (conn)
@@ -187,7 +187,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             String name = null;
             using (conn)
@@ -237,7 +237,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             String field = null;
             using (conn)
@@ -262,7 +262,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             int field = -1;
             using (conn)
@@ -287,7 +287,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             long field = -1;
             using (conn)
@@ -315,8 +315,8 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
             for (int i = 0; i < keyNames.Length; i++)
             {
-                DBHelper.AddParam(command, $"@KeyName{i}", SqlDbType.Int, keyNames[i]);
-                DBHelper.AddParam(command, $"@KeyValue{i}", SqlDbType.Int, keyValues[i]);
+                command.AddParam($"@KeyName{i}", SqlDbType.Int, keyNames[i]);
+                command.AddParam($"@KeyValue{i}", SqlDbType.Int, keyValues[i]);
             }
 
             String field = null;
@@ -345,8 +345,8 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
             for (int i = 0; i < keyNames.Length; i++)
             {
-                DBHelper.AddParam(command, $"@KeyName{i}", SqlDbType.Int, keyNames[i]);
-                DBHelper.AddParam(command, $"@KeyValue{i}", SqlDbType.Int, keyValues[i]);
+                command.AddParam($"@KeyName{i}", SqlDbType.Int, keyNames[i]);
+                command.AddParam($"@KeyValue{i}", SqlDbType.Int, keyValues[i]);
             }
 
             int field = -1;
@@ -375,8 +375,8 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
             for (int i = 0; i < keyNames.Length; i++)
             {
-                DBHelper.AddParam(command, $"@KeyName{i}", SqlDbType.Int, keyNames[i]);
-                DBHelper.AddParam(command, $"@KeyValue{i}", SqlDbType.Int, keyValues[i]);
+                command.AddParam($"@KeyName{i}", SqlDbType.Int, keyNames[i]);
+                command.AddParam($"@KeyValue{i}", SqlDbType.Int, keyValues[i]);
             }
 
             long field = -1;
@@ -403,7 +403,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Code", SqlDbType.VarChar, code);
+            command.AddParam("@Code", SqlDbType.VarChar, code);
 
             long id = -1;
             using (conn)
@@ -429,7 +429,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Field", SqlDbType.VarChar, fieldValue);
+            command.AddParam("@Field", SqlDbType.VarChar, fieldValue);
 
             long id = -1;
             using (conn)
@@ -455,7 +455,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Code", SqlDbType.VarChar, code);
+            command.AddParam("@Code", SqlDbType.VarChar, code);
 
             String name = null;
             using (conn)
@@ -506,12 +506,12 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@FilterStatus", SqlDbType.Int, valuesParams.FilterStatus);
-            DBHelper.AddParam(command, "@NegFilterStatus", SqlDbType.Int, -valuesParams.FilterStatus);
+            command.AddParam("@FilterStatus", SqlDbType.Int, valuesParams.FilterStatus);
+            command.AddParam("@NegFilterStatus", SqlDbType.Int, -valuesParams.FilterStatus);
             if (valuesParams.FilterColumns != null && valuesParams.FilterColumns.Length > 0)
             {
                 for (int i = 0; i < valuesParams.FilterColumns.Length; i++)
-                    DBHelper.AddParam(command, "@FilterValue" + i, SqlDbType.VarChar, valuesParams.FilterValues[i]);
+                    command.AddParam("@FilterValue" + i, SqlDbType.VarChar, valuesParams.FilterValues[i]);
             }
 
             List<String> results = [];
@@ -565,20 +565,20 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@TableName", SqlDbType.VarChar, valuesParams.TableName);
-            DBHelper.AddParam(command, "@Status", SqlDbType.VarChar, valuesParams.Status);
-            DBHelper.AddParam(command, "@FilterStatus", SqlDbType.Int, valuesParams.FilterStatus);
-            DBHelper.AddParam(command, "@NegFilterStatus", SqlDbType.Int, -valuesParams.FilterStatus);
+            command.AddParam("@TableName", SqlDbType.VarChar, valuesParams.TableName);
+            command.AddParam("@Status", SqlDbType.VarChar, valuesParams.Status);
+            command.AddParam("@FilterStatus", SqlDbType.Int, valuesParams.FilterStatus);
+            command.AddParam("@NegFilterStatus", SqlDbType.Int, -valuesParams.FilterStatus);
 
             for (int i = 0; i < valuesParams.Columns.Length; i++)
-                DBHelper.AddParam(command, "@Column" + i, SqlDbType.VarChar, valuesParams.Columns[i]);
+                command.AddParam("@Column" + i, SqlDbType.VarChar, valuesParams.Columns[i]);
 
             if (valuesParams.FilterColumns != null && valuesParams.FilterColumns.Length > 0)
             {
                 for (int i = 0; i < valuesParams.FilterColumns.Length; i++)
                 {
-                    DBHelper.AddParam(command, "@FilterColumn" + i, SqlDbType.VarChar, valuesParams.FilterColumns[i]);
-                    DBHelper.AddParam(command, "@FilterValue" + i, SqlDbType.VarChar, valuesParams.FilterValues[i]);
+                    command.AddParam("@FilterColumn" + i, SqlDbType.VarChar, valuesParams.FilterColumns[i]);
+                    command.AddParam("@FilterValue" + i, SqlDbType.VarChar, valuesParams.FilterValues[i]);
                 }
             }
 

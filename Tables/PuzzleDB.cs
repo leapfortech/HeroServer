@@ -134,11 +134,11 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, req.Status);
-            DBHelper.AddParam(command, "@PuzzleGameId", SqlDbType.BigInt, req.PuzzleGameId);
-            DBHelper.AddParam(command, "@Difficulty", SqlDbType.Int, req.Difficulty);
-            DBHelper.AddParam(command, "@Offset", SqlDbType.Int, offset);
-            DBHelper.AddParam(command, "@PageSize", SqlDbType.Int, req.PageSize);
+            command.AddParam("@Status", SqlDbType.Int, req.Status);
+            command.AddParam("@PuzzleGameId", SqlDbType.BigInt, req.PuzzleGameId);
+            command.AddParam("@Difficulty", SqlDbType.Int, req.Difficulty);
+            command.AddParam("@Offset", SqlDbType.Int, offset);
+            command.AddParam("@PageSize", SqlDbType.Int, req.PageSize);
 
             PuzzleAllRsp response = null;
 
@@ -207,7 +207,7 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             if (status != -1)
-                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+                command.AddParam("@Status", SqlDbType.Int, status);
 
             List<Puzzle> puzzles = [];
             using (conn)
@@ -231,7 +231,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             Puzzle puzzle = null;
             using (conn)
@@ -254,7 +254,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+            command.AddParam("@PostId", SqlDbType.BigInt, postId);
 
             long id = -1;
             using (conn)
@@ -314,9 +314,9 @@ namespace HeroServer
                      $" WHERE Comment.Status = 1 AND Comment.PostId = (SELECT PostId FROM {table} WHERE Id = @Id);";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
-            DBHelper.AddParam(command, "@LikeAppUserId", SqlDbType.BigInt, likeAppUserId);
-            DBHelper.AddParam(command, "@IncludeCorrect", SqlDbType.Int, includeCorrect);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
+            command.AddParam("@LikeAppUserId", SqlDbType.BigInt, likeAppUserId);
+            command.AddParam("@IncludeCorrect", SqlDbType.Int, includeCorrect);
 
             PuzzleFull puzzleFull = null;
             using (conn)
@@ -395,8 +395,8 @@ namespace HeroServer
                       " WHERE Comment.Status = 1 AND Comment.PostId = @PostId;";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
-            DBHelper.AddParam(command, "@LikeAppUserId", SqlDbType.BigInt, likeAppUserId);
+            command.AddParam("@PostId", SqlDbType.BigInt, postId);
+            command.AddParam("@LikeAppUserId", SqlDbType.BigInt, likeAppUserId);
 
             PuzzleFull puzzleFull = null;
             using (conn)
@@ -500,7 +500,7 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             if (status != -1)
-                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+                command.AddParam("@Status", SqlDbType.Int, status);
 
             PuzzleDataFull puzzleDataFull = new PuzzleDataFull();
             using (conn)
@@ -560,10 +560,10 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PlayerId", SqlDbType.BigInt, puzzleNextRequest.PlayerId);
-            DBHelper.AddParam(command, "@PuzzleGameId", SqlDbType.BigInt, puzzleNextRequest.PuzzleGameId);
-            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, puzzleNextRequest.CountryId);
-            DBHelper.AddParam(command, "@Difficulty", SqlDbType.Int, puzzleNextRequest.Difficulty);
+            command.AddParam("@PlayerId", SqlDbType.BigInt, puzzleNextRequest.PlayerId);
+            command.AddParam("@PuzzleGameId", SqlDbType.BigInt, puzzleNextRequest.PuzzleGameId);
+            command.AddParam("@CountryId", SqlDbType.BigInt, puzzleNextRequest.CountryId);
+            command.AddParam("@Difficulty", SqlDbType.Int, puzzleNextRequest.Difficulty);
 
             using (conn)
             {
@@ -584,19 +584,19 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('Z'));
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, puzzle.PostId);
-            DBHelper.AddParam(command, "@PuzzleGameId", SqlDbType.BigInt, puzzle.PuzzleGameId);
-            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, puzzle.CountryId);
-            DBHelper.AddParam(command, "@Question", SqlDbType.VarChar, puzzle.Question);
-            DBHelper.AddParam(command, "@Hint", SqlDbType.VarChar, puzzle.Hint);
-            DBHelper.AddParam(command, "@Difficulty", SqlDbType.Int, puzzle.Difficulty);
-            DBHelper.AddParam(command, "@Delay", SqlDbType.Int, puzzle.Delay);
-            DBHelper.AddParam(command, "@Points", SqlDbType.Int, puzzle.Points);
-            DBHelper.AddParam(command, "@PlayCount", SqlDbType.Int, puzzle.PlayCount);
-            DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, puzzle.Status);
+            command.AddParam("@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('Z'));
+            command.AddParam("@PostId", SqlDbType.BigInt, puzzle.PostId);
+            command.AddParam("@PuzzleGameId", SqlDbType.BigInt, puzzle.PuzzleGameId);
+            command.AddParam("@CountryId", SqlDbType.BigInt, puzzle.CountryId);
+            command.AddParam("@Question", SqlDbType.VarChar, puzzle.Question);
+            command.AddParam("@Hint", SqlDbType.VarChar, puzzle.Hint);
+            command.AddParam("@Difficulty", SqlDbType.Int, puzzle.Difficulty);
+            command.AddParam("@Delay", SqlDbType.Int, puzzle.Delay);
+            command.AddParam("@Points", SqlDbType.Int, puzzle.Points);
+            command.AddParam("@PlayCount", SqlDbType.Int, puzzle.PlayCount);
+            command.AddParam("@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, puzzle.Status);
 
             using (conn)
             {
@@ -612,18 +612,18 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, puzzle.PostId);
-            DBHelper.AddParam(command, "@PuzzleGameId", SqlDbType.BigInt, puzzle.PuzzleGameId);
-            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, puzzle.CountryId);
-            DBHelper.AddParam(command, "@Question", SqlDbType.VarChar, puzzle.Question);
-            DBHelper.AddParam(command, "@Hint", SqlDbType.VarChar, puzzle.Hint);
-            DBHelper.AddParam(command, "@Difficulty", SqlDbType.Int, puzzle.Difficulty);
-            DBHelper.AddParam(command, "@Delay", SqlDbType.Int, puzzle.Delay);
-            DBHelper.AddParam(command, "@Points", SqlDbType.Int, puzzle.Points);
-            DBHelper.AddParam(command, "@PlayCount", SqlDbType.Int, puzzle.PlayCount);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, puzzle.Status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, puzzle.Id);
+            command.AddParam("@PostId", SqlDbType.BigInt, puzzle.PostId);
+            command.AddParam("@PuzzleGameId", SqlDbType.BigInt, puzzle.PuzzleGameId);
+            command.AddParam("@CountryId", SqlDbType.BigInt, puzzle.CountryId);
+            command.AddParam("@Question", SqlDbType.VarChar, puzzle.Question);
+            command.AddParam("@Hint", SqlDbType.VarChar, puzzle.Hint);
+            command.AddParam("@Difficulty", SqlDbType.Int, puzzle.Difficulty);
+            command.AddParam("@Delay", SqlDbType.Int, puzzle.Delay);
+            command.AddParam("@Points", SqlDbType.Int, puzzle.Points);
+            command.AddParam("@PlayCount", SqlDbType.Int, puzzle.PlayCount);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, puzzle.Status);
+            command.AddParam("@Id", SqlDbType.BigInt, puzzle.Id);
 
             using (conn)
             {
@@ -640,9 +640,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -659,10 +659,10 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@CurStatus", SqlDbType.Int, curStatus);
-            DBHelper.AddParam(command, "@NewStatus", SqlDbType.Int, newStatus);
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@CurStatus", SqlDbType.Int, curStatus);
+            command.AddParam("@NewStatus", SqlDbType.Int, newStatus);
+            command.AddParam("@PostId", SqlDbType.BigInt, postId);
 
             using (conn)
             {
@@ -689,7 +689,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE Id = @Id";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -703,7 +703,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE PostId = @PostId";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+            command.AddParam("@PostId", SqlDbType.BigInt, postId);
 
             using (conn)
             {

@@ -52,8 +52,8 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@FaqTypeId", SqlDbType.BigInt, faqTypeId);
-            DBHelper.AddParam(command, "@Status", SqlDbType.BigInt, status);
+            command.AddParam("@FaqTypeId", SqlDbType.BigInt, faqTypeId);
+            command.AddParam("@Status", SqlDbType.BigInt, status);
 
             List<Faq> faqs = [];
             using (conn)
@@ -77,7 +77,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             Faq faq = null;
             using (conn)
@@ -103,13 +103,13 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@BoardUserId", SqlDbType.BigInt, faq.BoardUserId);
-            DBHelper.AddParam(command, "@FaqTypeId", SqlDbType.BigInt, faq.FaqTypeId);
-            DBHelper.AddParam(command, "@Question", SqlDbType.VarChar, faq.Question);
-            DBHelper.AddParam(command, "@Answer", SqlDbType.VarChar, faq.Answer);
-            DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, faq.Status);
+            command.AddParam("@BoardUserId", SqlDbType.BigInt, faq.BoardUserId);
+            command.AddParam("@FaqTypeId", SqlDbType.BigInt, faq.FaqTypeId);
+            command.AddParam("@Question", SqlDbType.VarChar, faq.Question);
+            command.AddParam("@Answer", SqlDbType.VarChar, faq.Answer);
+            command.AddParam("@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, faq.Status);
 
             using (conn)
             {
@@ -125,12 +125,12 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@BoardUserId", SqlDbType.BigInt, faq.BoardUserId);
-            DBHelper.AddParam(command, "@FaqTypeId", SqlDbType.BigInt, faq.FaqTypeId);
-            DBHelper.AddParam(command, "@Question", SqlDbType.VarChar, faq.Question);
-            DBHelper.AddParam(command, "@Answer", SqlDbType.VarChar, faq.Answer);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, faq.Id);
+            command.AddParam("@BoardUserId", SqlDbType.BigInt, faq.BoardUserId);
+            command.AddParam("@FaqTypeId", SqlDbType.BigInt, faq.FaqTypeId);
+            command.AddParam("@Question", SqlDbType.VarChar, faq.Question);
+            command.AddParam("@Answer", SqlDbType.VarChar, faq.Answer);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Id", SqlDbType.BigInt, faq.Id);
 
             using (conn)
             {
@@ -147,9 +147,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -176,7 +176,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE Id = @Id";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {

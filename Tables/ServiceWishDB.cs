@@ -51,7 +51,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Status", SqlDbType.BigInt, status);
+            command.AddParam("@Status", SqlDbType.BigInt, status);
 
             List<ServiceWish> serviceWishs = [];
             using (conn)
@@ -114,10 +114,10 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, req.Status);
-            DBHelper.AddParam(command, "@ServiceWishTypeId", SqlDbType.BigInt, req.ServiceWishTypeId);
-            DBHelper.AddParam(command, "@Offset", SqlDbType.Int, offset);
-            DBHelper.AddParam(command, "@PageSize", SqlDbType.Int, req.PageSize);
+            command.AddParam("@Status", SqlDbType.Int, req.Status);
+            command.AddParam("@ServiceWishTypeId", SqlDbType.BigInt, req.ServiceWishTypeId);
+            command.AddParam("@Offset", SqlDbType.Int, offset);
+            command.AddParam("@PageSize", SqlDbType.Int, req.PageSize);
 
             ServiceWishAllRsp response = null;
 
@@ -177,7 +177,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             ServiceWish serviceWish = null;
             using (conn)
@@ -203,12 +203,12 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, serviceWish.AppUserId);
-            DBHelper.AddParam(command, "@ServiceTypeId", SqlDbType.BigInt, serviceWish.ServiceTypeId);
-            DBHelper.AddParam(command, "@Comment", SqlDbType.VarChar, serviceWish.Comment);
-            DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, serviceWish.Status);
+            command.AddParam("@AppUserId", SqlDbType.BigInt, serviceWish.AppUserId);
+            command.AddParam("@ServiceTypeId", SqlDbType.BigInt, serviceWish.ServiceTypeId);
+            command.AddParam("@Comment", SqlDbType.VarChar, serviceWish.Comment);
+            command.AddParam("@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, serviceWish.Status);
 
             using (conn)
             {
@@ -224,11 +224,11 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, serviceWish.AppUserId);
-            DBHelper.AddParam(command, "@ServiceTypeId", SqlDbType.BigInt, serviceWish.ServiceTypeId);
-            DBHelper.AddParam(command, "@Comment", SqlDbType.VarChar, serviceWish.Comment);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, serviceWish.Id);
+            command.AddParam("@AppUserId", SqlDbType.BigInt, serviceWish.AppUserId);
+            command.AddParam("@ServiceTypeId", SqlDbType.BigInt, serviceWish.ServiceTypeId);
+            command.AddParam("@Comment", SqlDbType.VarChar, serviceWish.Comment);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Id", SqlDbType.BigInt, serviceWish.Id);
 
             using (conn)
             {
@@ -245,9 +245,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -274,7 +274,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE Id = @Id";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {

@@ -48,6 +48,22 @@ namespace HeroServer
             return new BigInteger(Base16ToBytes(str16), true, true);
         }
 
+        // Base 36
+
+        public static string Base36(long value)
+        {
+            const String alpha36 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            if (value == 0) return "0";
+
+            StringBuilder res36 = new StringBuilder();
+            while (value > 0)
+            {
+                res36.Insert(0, alpha36[(int)(value % 36)]);
+                value /= 36;
+            }
+            return res36.ToString();
+        }
+
         // Base 62
 
         static readonly String alpha62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";

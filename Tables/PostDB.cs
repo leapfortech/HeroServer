@@ -78,7 +78,7 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             if (status != -1)
-                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+                command.AddParam("@Status", SqlDbType.Int, status);
 
             List<Post> posts = [];
             using (conn)
@@ -102,7 +102,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             Post post = null;
             using (conn)
@@ -125,7 +125,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             long postTypeId = 0;
             using (conn)
@@ -148,7 +148,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             int imageCount = 0;
             using (conn)
@@ -265,27 +265,27 @@ namespace HeroServer
             using (SqlCommand command = new SqlCommand(strCmd, conn))
             {
                 if (request.Direction == 1)
-                    DBHelper.AddParam(command, "@Count2", SqlDbType.Int, request.Count * 2);
-                DBHelper.AddParam(command, "@Count", SqlDbType.Int, request.Count);
-                DBHelper.AddParam(command, "@LikeAppUserId", SqlDbType.BigInt, request.LikeAppUserId);
+                    command.AddParam("@Count2", SqlDbType.Int, request.Count * 2);
+                command.AddParam("@Count", SqlDbType.Int, request.Count);
+                command.AddParam("@LikeAppUserId", SqlDbType.BigInt, request.LikeAppUserId);
 
                 if (request.PostTypeId != -1)
-                    DBHelper.AddParam(command, "@PostTypeId", SqlDbType.BigInt, request.PostTypeId);
+                    command.AddParam("@PostTypeId", SqlDbType.BigInt, request.PostTypeId);
 
                 if (request.AppUserId != -1)
-                    DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, request.AppUserId);
+                    command.AddParam("@AppUserId", SqlDbType.BigInt, request.AppUserId);
 
                 if (request.CountryId != -1)
-                    DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, request.CountryId);
+                    command.AddParam("@CountryId", SqlDbType.BigInt, request.CountryId);
 
                 if (request.StateId != -1)
-                    DBHelper.AddParam(command, "@StateId", SqlDbType.BigInt, request.StateId);
+                    command.AddParam("@StateId", SqlDbType.BigInt, request.StateId);
 
                 if (request.Status != -1)
-                    DBHelper.AddParam(command, "@Status", SqlDbType.Int, request.Status);
+                    command.AddParam("@Status", SqlDbType.Int, request.Status);
 
 
-                DBHelper.AddParam(command, "@StartDate", SqlDbType.DateTime2, request.StartDateTime);
+                command.AddParam("@StartDate", SqlDbType.DateTime2, request.StartDateTime);
 
                 using (conn)
                 {
@@ -385,18 +385,18 @@ namespace HeroServer
             using (SqlCommand command = new SqlCommand(strCmd, conn))
             {
                 if (request.Direction == 1)
-                    DBHelper.AddParam(command, "@Count2", SqlDbType.Int, request.Count * 2);
+                    command.AddParam("@Count2", SqlDbType.Int, request.Count * 2);
 
-                DBHelper.AddParam(command, "@Count", SqlDbType.Int, request.Count);
-                DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, request.PostId);
+                command.AddParam("@Count", SqlDbType.Int, request.Count);
+                command.AddParam("@PostId", SqlDbType.BigInt, request.PostId);
 
                 if (request.AppUserId != -1)
-                    DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, request.AppUserId);
+                    command.AddParam("@AppUserId", SqlDbType.BigInt, request.AppUserId);
 
                 if (request.Status != -1)
-                    DBHelper.AddParam(command, "@Status", SqlDbType.Int, request.Status);
+                    command.AddParam("@Status", SqlDbType.Int, request.Status);
 
-                DBHelper.AddParam(command, "@StartDate", SqlDbType.DateTime2, request.StartDateTime);
+                command.AddParam("@StartDate", SqlDbType.DateTime2, request.StartDateTime);
 
                 using (conn)
                 {
@@ -473,10 +473,10 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PostTypeId", SqlDbType.BigInt, request.PostTypeId);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, request.Status);
-            DBHelper.AddParam(command, "@Offset", SqlDbType.Int, offset);
-            DBHelper.AddParam(command, "@PageSize", SqlDbType.Int, request.PageSize);
+            command.AddParam("@PostTypeId", SqlDbType.BigInt, request.PostTypeId);
+            command.AddParam("@Status", SqlDbType.Int, request.Status);
+            command.AddParam("@Offset", SqlDbType.Int, offset);
+            command.AddParam("@PageSize", SqlDbType.Int, request.PageSize);
 
             int totalCount = 0;
 
@@ -514,22 +514,22 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('P'));
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, post.AppUserId);
-            DBHelper.AddParam(command, "@PostTypeId", SqlDbType.BigInt, post.PostTypeId);
-            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, post.CountryId);
-            DBHelper.AddParam(command, "@StateId", SqlDbType.BigInt, post.StateId);
-            DBHelper.AddParam(command, "@Title", SqlDbType.VarChar, post.Title);
-            DBHelper.AddParam(command, "@Summary", SqlDbType.VarChar, post.Summary);
-            DBHelper.AddParam(command, "@Description", SqlDbType.VarChar, post.Description);
-            DBHelper.AddParam(command, "@ImageCount", SqlDbType.Int, post.ImageCount);
-            DBHelper.AddParam(command, "@LikeCount", SqlDbType.Int, post.LikeCount);
-            DBHelper.AddParam(command, "@PublicationDateTime", SqlDbType.DateTime, post.PublicationDateTime);
-            DBHelper.AddParam(command, "@ApprovalDateTime", SqlDbType.DateTime, post.ApprovalDateTime);
-            DBHelper.AddParam(command, "@ExpirationDateTime", SqlDbType.DateTime, post.ExpirationDateTime);
-            DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, post.Status);
+            command.AddParam("@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('P'));
+            command.AddParam("@AppUserId", SqlDbType.BigInt, post.AppUserId);
+            command.AddParam("@PostTypeId", SqlDbType.BigInt, post.PostTypeId);
+            command.AddParam("@CountryId", SqlDbType.BigInt, post.CountryId);
+            command.AddParam("@StateId", SqlDbType.BigInt, post.StateId);
+            command.AddParam("@Title", SqlDbType.VarChar, post.Title);
+            command.AddParam("@Summary", SqlDbType.VarChar, post.Summary);
+            command.AddParam("@Description", SqlDbType.VarChar, post.Description);
+            command.AddParam("@ImageCount", SqlDbType.Int, post.ImageCount);
+            command.AddParam("@LikeCount", SqlDbType.Int, post.LikeCount);
+            command.AddParam("@PublicationDateTime", SqlDbType.DateTime, post.PublicationDateTime);
+            command.AddParam("@ApprovalDateTime", SqlDbType.DateTime, post.ApprovalDateTime);
+            command.AddParam("@ExpirationDateTime", SqlDbType.DateTime, post.ExpirationDateTime);
+            command.AddParam("@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, post.Status);
 
             using (conn)
             {
@@ -545,21 +545,21 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, post.AppUserId);
-            DBHelper.AddParam(command, "@PostTypeId", SqlDbType.BigInt, post.PostTypeId);
-            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, post.CountryId);
-            DBHelper.AddParam(command, "@StateId", SqlDbType.BigInt, post.StateId);
-            DBHelper.AddParam(command, "@Title", SqlDbType.VarChar, post.Title);
-            DBHelper.AddParam(command, "@Summary", SqlDbType.VarChar, post.Summary);
-            DBHelper.AddParam(command, "@Description", SqlDbType.VarChar, post.Description);
-            DBHelper.AddParam(command, "@ImageCount", SqlDbType.Int, post.ImageCount);
-            DBHelper.AddParam(command, "@LikeCount", SqlDbType.Int, post.LikeCount);
-            DBHelper.AddParam(command, "@PublicationDateTime", SqlDbType.DateTime, post.PublicationDateTime);
-            DBHelper.AddParam(command, "@ApprovalDateTime", SqlDbType.DateTime, post.ApprovalDateTime);
-            DBHelper.AddParam(command, "@ExpirationDateTime", SqlDbType.DateTime, post.ExpirationDateTime);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, post.Status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, post.Id);
+            command.AddParam("@AppUserId", SqlDbType.BigInt, post.AppUserId);
+            command.AddParam("@PostTypeId", SqlDbType.BigInt, post.PostTypeId);
+            command.AddParam("@CountryId", SqlDbType.BigInt, post.CountryId);
+            command.AddParam("@StateId", SqlDbType.BigInt, post.StateId);
+            command.AddParam("@Title", SqlDbType.VarChar, post.Title);
+            command.AddParam("@Summary", SqlDbType.VarChar, post.Summary);
+            command.AddParam("@Description", SqlDbType.VarChar, post.Description);
+            command.AddParam("@ImageCount", SqlDbType.Int, post.ImageCount);
+            command.AddParam("@LikeCount", SqlDbType.Int, post.LikeCount);
+            command.AddParam("@PublicationDateTime", SqlDbType.DateTime, post.PublicationDateTime);
+            command.AddParam("@ApprovalDateTime", SqlDbType.DateTime, post.ApprovalDateTime);
+            command.AddParam("@ExpirationDateTime", SqlDbType.DateTime, post.ExpirationDateTime);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, post.Status);
+            command.AddParam("@Id", SqlDbType.BigInt, post.Id);
 
             using (conn)
             {
@@ -576,8 +576,8 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@ImageCount", SqlDbType.Int, imageCount);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@ImageCount", SqlDbType.Int, imageCount);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -594,7 +594,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -611,7 +611,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -628,9 +628,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -657,7 +657,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE Id = @Id";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {

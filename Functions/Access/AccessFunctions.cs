@@ -10,6 +10,10 @@ namespace HeroServer
 {
     public static class AccessFunctions
     {
+        // APP
+
+        static readonly int[] appVersion = [0, 8, 4];
+
         // Register
         public static async Task<String> RegisterApp(RegisterAppRequest registerAppRequest)
         {
@@ -45,7 +49,7 @@ namespace HeroServer
 
                     long referredAppUserId = await ReferredFunctions.GetAppUserIdByCode(registerAppRequest.ReferredCode);
 
-                    AppUser appUser = new AppUser(-1, webSysUser.Id, registerAppRequest.Alias, "-1", referredAppUserId, 1);
+                    AppUser appUser = new AppUser(-1, webSysUser.Id, registerAppRequest.Alias, "", referredAppUserId, 1);
                     appUserId = await new AppUserDB().Add(appUser);
 
                     String referringCode = ReferredFunctions.GenerateCode(appUserId);
@@ -68,7 +72,7 @@ namespace HeroServer
                     {
                         await FirebaseAuth.DefaultInstance.DeleteUserAsync(createdAuthUserId);
                     }
-                    catch 
+                    catch
                     {
 
                     }
@@ -101,7 +105,7 @@ namespace HeroServer
         public static async Task<OnboardingResponse> Onboarding(OnboardingRequest onboardingRequest)
         {
             OnboardingResponse onboardingResponse = new OnboardingResponse();
-            
+
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 onboardingResponse.IdentityId = await IdentityFunctions.RegisterByAppUser(onboardingRequest.AppUserId, onboardingRequest.Identity);
@@ -191,6 +195,18 @@ namespace HeroServer
 
             //return new LoginResponse(0, "0|Login|Este es un aviso de bloqueo.");
 
+            String[] version = loginRequest.Version.Split('.');
+
+            for (int i = 0; i < version.Length; i++)
+            {
+                int intVersion = int.Parse(version[i]);
+                if (intVersion > appVersion[i])
+                    break;
+                if (intVersion < appVersion[i])
+                    return new LoginAppResponse(appUser, webSysUser, 0, "0|Héroes Migrantes|Tu App está desactualizada.\r\nPor favor actualízala e intenta de nuevo.", "https://drive.google.com/drive/folders/1spprn2h8VVwZQBEvGhoOeR4hK4dYCaLQ|https://drive.google.com/drive/folders/1spprn2h8VVwZQBEvGhoOeR4hK4dYCaLQ");
+                //return new LoginResponse(appUser, webSysUser, 0, "0|Login|¡Tienes que actualizar tu App!", "https://play.google.com/store/apps/details?id=com.Heroes.Heroes|https://apps.apple.com/gt/app/heroes/id1541057844");
+            }
+
             return new LoginAppResponse(appUser, webSysUser, 1);
         }
 
@@ -203,6 +219,8 @@ namespace HeroServer
         }
 
         // BOARD
+
+        static readonly int[] boardVersion = [0, 8, 4];
 
         // Register Board
         public static async Task<long> RegisterBoard(RegisterBoardRequest registerBoardRequest)

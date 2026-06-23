@@ -50,8 +50,8 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Status", SqlDbType.Int, status);
 
             PuzzlePlayer puzzlePlayer = null;
             using (conn)
@@ -74,8 +74,8 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PlayerId", SqlDbType.BigInt, playerId);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+            command.AddParam("@PlayerId", SqlDbType.BigInt, playerId);
+            command.AddParam("@Status", SqlDbType.Int, status);
 
             PuzzlePlayer puzzlePlayer = null;
             using (conn)
@@ -100,9 +100,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PlayerId", SqlDbType.BigInt, playerId);
+            command.AddParam("@PlayerId", SqlDbType.BigInt, playerId);
             if (status != -1)
-                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+                command.AddParam("@Status", SqlDbType.Int, status);
 
             long puzzlePlayerId = -1;
             using (conn)
@@ -128,11 +128,11 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PlayerId", SqlDbType.BigInt, puzzlePlayer.PlayerId);
-            DBHelper.AddParam(command, "@PuzzleId", SqlDbType.BigInt, puzzlePlayer.PuzzleId);
-            DBHelper.AddParam(command, "@IsGuessed", SqlDbType.Int, puzzlePlayer.IsGuessed);
-            DBHelper.AddParam(command, "@AttemptDateTime", SqlDbType.DateTime, puzzlePlayer.AttemptDateTime);
-            DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@PlayerId", SqlDbType.BigInt, puzzlePlayer.PlayerId);
+            command.AddParam("@PuzzleId", SqlDbType.BigInt, puzzlePlayer.PuzzleId);
+            command.AddParam("@IsGuessed", SqlDbType.Int, puzzlePlayer.IsGuessed);
+            command.AddParam("@AttemptDateTime", SqlDbType.DateTime, puzzlePlayer.AttemptDateTime);
+            command.AddParam("@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
 
             using (conn)
             {
@@ -148,11 +148,11 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PlayerId", SqlDbType.BigInt, puzzlePlayer.PlayerId);
-            DBHelper.AddParam(command, "@PuzzleId", SqlDbType.BigInt, puzzlePlayer.PuzzleId);
-            DBHelper.AddParam(command, "@IsGuessed", SqlDbType.Int, puzzlePlayer.IsGuessed);
-            DBHelper.AddParam(command, "@AttemptDateTime", SqlDbType.DateTime, puzzlePlayer.AttemptDateTime);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, puzzlePlayer.Id);
+            command.AddParam("@PlayerId", SqlDbType.BigInt, puzzlePlayer.PlayerId);
+            command.AddParam("@PuzzleId", SqlDbType.BigInt, puzzlePlayer.PuzzleId);
+            command.AddParam("@IsGuessed", SqlDbType.Int, puzzlePlayer.IsGuessed);
+            command.AddParam("@AttemptDateTime", SqlDbType.DateTime, puzzlePlayer.AttemptDateTime);
+            command.AddParam("@Id", SqlDbType.BigInt, puzzlePlayer.Id);
 
             using (conn)
             {
@@ -179,7 +179,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE Id = @Id";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {

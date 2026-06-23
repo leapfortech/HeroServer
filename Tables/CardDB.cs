@@ -51,7 +51,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             Card card = null;
             using (conn)
@@ -76,9 +76,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, appUserId);
+            command.AddParam("@AppUserId", SqlDbType.BigInt, appUserId);
             if (status != -1)
-                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+                command.AddParam("@Status", SqlDbType.Int, status);
 
             Card card = null;
             using (conn)
@@ -104,9 +104,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, appUserId);
+            command.AddParam("@AppUserId", SqlDbType.BigInt, appUserId);
             if (status != -1)
-                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+                command.AddParam("@Status", SqlDbType.Int, status);
 
             long id = -1;
             using (conn)
@@ -130,7 +130,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@CSToken", SqlDbType.VarChar, csToken);
+            command.AddParam("@CSToken", SqlDbType.VarChar, csToken);
 
             Card card = null;
             using (conn)
@@ -155,9 +155,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, appUserId);
-            DBHelper.AddParam(command, "@UtcOffset", SqlDbType.Float, utcOffset);
-            DBHelper.AddParam(command, "@TodayDateTime", SqlDbType.DateTime2, DateTime.Now.AddHours(utcOffset));
+            command.AddParam("@AppUserId", SqlDbType.BigInt, appUserId);
+            command.AddParam("@UtcOffset", SqlDbType.Float, utcOffset);
+            command.AddParam("@TodayDateTime", SqlDbType.DateTime2, DateTime.Now.AddHours(utcOffset));
 
             int count = 0;
             using (conn)
@@ -182,17 +182,17 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('C'));
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, card.AppUserId);
-            DBHelper.AddParam(command, "@CSToken", SqlDbType.VarChar, card.CSToken);
-            DBHelper.AddParam(command, "@TypeId", SqlDbType.Int, card.TypeId);
-            DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, card.Number);
-            DBHelper.AddParam(command, "@Digits", SqlDbType.Int, card.Digits);
-            DBHelper.AddParam(command, "@ExpirationDate", SqlDbType.DateTime2, card.ExpirationDate);
-            DBHelper.AddParam(command, "@Holder", SqlDbType.VarChar, card.Holder);
-            DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, card.Status);
+            command.AddParam("@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('C'));
+            command.AddParam("@AppUserId", SqlDbType.BigInt, card.AppUserId);
+            command.AddParam("@CSToken", SqlDbType.VarChar, card.CSToken);
+            command.AddParam("@TypeId", SqlDbType.Int, card.TypeId);
+            command.AddParam("@Number", SqlDbType.VarChar, card.Number);
+            command.AddParam("@Digits", SqlDbType.Int, card.Digits);
+            command.AddParam("@ExpirationDate", SqlDbType.DateTime2, card.ExpirationDate);
+            command.AddParam("@Holder", SqlDbType.VarChar, card.Holder);
+            command.AddParam("@CreateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, card.Status);
 
             using (conn)
             {
@@ -211,15 +211,15 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, card.AppUserId);
-            DBHelper.AddParam(command, "@CSToken", SqlDbType.VarChar, card.CSToken);
-            DBHelper.AddParam(command, "@TypeId", SqlDbType.Int, card.TypeId);
-            DBHelper.AddParam(command, "@Number", SqlDbType.VarChar, card.Number);
-            DBHelper.AddParam(command, "@Digits", SqlDbType.Int, card.Digits);
-            DBHelper.AddParam(command, "@ExpirationDate", SqlDbType.DateTime2, card.ExpirationDate);
-            DBHelper.AddParam(command, "@Holder", SqlDbType.VarChar, card.Holder);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, card.Id);
+            command.AddParam("@AppUserId", SqlDbType.BigInt, card.AppUserId);
+            command.AddParam("@CSToken", SqlDbType.VarChar, card.CSToken);
+            command.AddParam("@TypeId", SqlDbType.Int, card.TypeId);
+            command.AddParam("@Number", SqlDbType.VarChar, card.Number);
+            command.AddParam("@Digits", SqlDbType.Int, card.Digits);
+            command.AddParam("@ExpirationDate", SqlDbType.DateTime2, card.ExpirationDate);
+            command.AddParam("@Holder", SqlDbType.VarChar, card.Holder);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@Id", SqlDbType.BigInt, card.Id);
 
             using (conn)
             {
@@ -236,9 +236,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -255,9 +255,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@CSToken", SqlDbType.VarChar, csToken);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+            command.AddParam("@CSToken", SqlDbType.VarChar, csToken);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, status);
 
             using (conn)
             {
@@ -274,10 +274,10 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Holder", SqlDbType.VarChar, holder);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Holder", SqlDbType.VarChar, holder);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -306,7 +306,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -321,7 +321,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, appUserId);
+            command.AddParam("@AppUserId", SqlDbType.BigInt, appUserId);
 
             using (conn)
             {

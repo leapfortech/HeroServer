@@ -51,7 +51,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             Reaction reaction = null;
             using (conn)
@@ -77,12 +77,12 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@ReactionPhraseId", SqlDbType.BigInt, reaction.ReactionPhraseId);
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, reaction.PostId);
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, reaction.AppUserId);
-            DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, reaction.Status);
+            command.AddParam("@ReactionPhraseId", SqlDbType.BigInt, reaction.ReactionPhraseId);
+            command.AddParam("@PostId", SqlDbType.BigInt, reaction.PostId);
+            command.AddParam("@AppUserId", SqlDbType.BigInt, reaction.AppUserId);
+            command.AddParam("@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, reaction.Status);
 
             using (conn)
             {
@@ -98,12 +98,12 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@ReactionPhraseId", SqlDbType.BigInt, reaction.ReactionPhraseId);
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, reaction.PostId);
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, reaction.AppUserId);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, reaction.Status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, reaction.Id);
+            command.AddParam("@ReactionPhraseId", SqlDbType.BigInt, reaction.ReactionPhraseId);
+            command.AddParam("@PostId", SqlDbType.BigInt, reaction.PostId);
+            command.AddParam("@AppUserId", SqlDbType.BigInt, reaction.AppUserId);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, reaction.Status);
+            command.AddParam("@Id", SqlDbType.BigInt, reaction.Id);
 
             using (conn)
             {
@@ -120,9 +120,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -149,7 +149,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE Id = @Id";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -163,7 +163,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE PostId = @PostId";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+            command.AddParam("@PostId", SqlDbType.BigInt, postId);
 
             using (conn)
             {

@@ -113,28 +113,14 @@ namespace HeroServer
             await new ReferredDB().DeleteByAppUserId(appUserId);
         }
 
-        private static string Base36(long value)
-        {
-            const String chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            if (value == 0) return "0";
-
-            string result = "";
-            while (value > 0)
-            {
-                result = chars[(int)(value % 36)] + result;
-                value /= 36;
-            }
-            return result;
-        }
-
         public static String GenerateCode(long appUserId)
         {
             long mixed = appUserId ^ DateTime.UtcNow.Ticks;
 
-            string code = Base36(Math.Abs(mixed));
+            String code = BaseHelper.Base36(Math.Abs(mixed));
 
             if (code.Length > 8)
-                code = code.Substring(0, 8);
+                code = code[..8];
             else
                 code = code.PadLeft(8, '0');
 

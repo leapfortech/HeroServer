@@ -60,10 +60,10 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioId);
+            command.AddParam("@RadioId", SqlDbType.BigInt, radioId);
 
             if (status != -1)
-                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+                command.AddParam("@Status", SqlDbType.Int, status);
 
             List<long> list = new List<long>();
 
@@ -89,8 +89,8 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioId);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+            command.AddParam("@RadioId", SqlDbType.BigInt, radioId);
+            command.AddParam("@Status", SqlDbType.Int, status);
 
             List<RadioType> radioTypes = new List<RadioType>();
             using (conn)
@@ -114,8 +114,8 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Status", SqlDbType.Int, status);
 
             RadioType radioType = null;
             using (conn)
@@ -138,8 +138,8 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioId);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+            command.AddParam("@RadioId", SqlDbType.BigInt, radioId);
+            command.AddParam("@Status", SqlDbType.Int, status);
 
             RadioType radioType = null;
             using (conn)
@@ -164,9 +164,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioId);
+            command.AddParam("@RadioId", SqlDbType.BigInt, radioId);
             if (status != -1)
-                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+                command.AddParam("@Status", SqlDbType.Int, status);
 
             long radioTypeId = -1;
             using (conn)
@@ -192,11 +192,11 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioType.RadioId);
-            DBHelper.AddParam(command, "@RadioTypeId", SqlDbType.BigInt, radioType.RadioTypeId);
-            DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, radioType.Status);
+            command.AddParam("@RadioId", SqlDbType.BigInt, radioType.RadioId);
+            command.AddParam("@RadioTypeId", SqlDbType.BigInt, radioType.RadioTypeId);
+            command.AddParam("@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, radioType.Status);
 
             using (conn)
             {
@@ -212,11 +212,11 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioType.RadioId);
-            DBHelper.AddParam(command, "@RadioTypeId", SqlDbType.BigInt, radioType.RadioTypeId);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, radioType.Status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, radioType.Id);
+            command.AddParam("@RadioId", SqlDbType.BigInt, radioType.RadioId);
+            command.AddParam("@RadioTypeId", SqlDbType.BigInt, radioType.RadioTypeId);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, radioType.Status);
+            command.AddParam("@Id", SqlDbType.BigInt, radioType.Id);
 
             using (conn)
             {
@@ -233,9 +233,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -252,10 +252,10 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@CurStatus", SqlDbType.Int, curStatus);
-            DBHelper.AddParam(command, "@NewStatus", SqlDbType.Int, newStatus);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@CurStatus", SqlDbType.Int, curStatus);
+            command.AddParam("@NewStatus", SqlDbType.Int, newStatus);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -272,10 +272,10 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioId);
-            DBHelper.AddParam(command, "@CurStatus", SqlDbType.Int, curStatus);
-            DBHelper.AddParam(command, "@NewStatus", SqlDbType.Int, newStatus);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@RadioId", SqlDbType.BigInt, radioId);
+            command.AddParam("@CurStatus", SqlDbType.Int, curStatus);
+            command.AddParam("@NewStatus", SqlDbType.Int, newStatus);
 
             using (conn)
             {
@@ -302,7 +302,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE Id = @Id";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -316,7 +316,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE RadioId = @RadioId";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@RadioId", SqlDbType.BigInt, radioId);
+            command.AddParam("@RadioId", SqlDbType.BigInt, radioId);
 
             using (conn)
             {

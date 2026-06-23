@@ -51,7 +51,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             CommentPlaint commentPlaint = null;
             using (conn)
@@ -77,12 +77,12 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PlaintTypeId", SqlDbType.BigInt, commentPlaint.PlaintTypeId);
-            DBHelper.AddParam(command, "@CommentId", SqlDbType.BigInt, commentPlaint.CommentId);
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, commentPlaint.AppUserId);
-            DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, commentPlaint.Status);
+            command.AddParam("@PlaintTypeId", SqlDbType.BigInt, commentPlaint.PlaintTypeId);
+            command.AddParam("@CommentId", SqlDbType.BigInt, commentPlaint.CommentId);
+            command.AddParam("@AppUserId", SqlDbType.BigInt, commentPlaint.AppUserId);
+            command.AddParam("@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, commentPlaint.Status);
 
             using (conn)
             {
@@ -98,12 +98,12 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PlaintTypeId", SqlDbType.BigInt, commentPlaint.PlaintTypeId);
-            DBHelper.AddParam(command, "@CommentId", SqlDbType.BigInt, commentPlaint.CommentId);
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, commentPlaint.AppUserId);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, commentPlaint.Status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, commentPlaint.Id);
+            command.AddParam("@PlaintTypeId", SqlDbType.BigInt, commentPlaint.PlaintTypeId);
+            command.AddParam("@CommentId", SqlDbType.BigInt, commentPlaint.CommentId);
+            command.AddParam("@AppUserId", SqlDbType.BigInt, commentPlaint.AppUserId);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, commentPlaint.Status);
+            command.AddParam("@Id", SqlDbType.BigInt, commentPlaint.Id);
 
             using (conn)
             {
@@ -120,9 +120,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -149,7 +149,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE Id = @Id";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -163,7 +163,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE CommentId = @CommentId";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@CommentId", SqlDbType.BigInt, commentId);
+            command.AddParam("@CommentId", SqlDbType.BigInt, commentId);
 
             using (conn)
             {

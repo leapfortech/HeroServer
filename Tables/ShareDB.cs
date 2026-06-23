@@ -48,7 +48,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+            command.AddParam("@PostId", SqlDbType.BigInt, postId);
 
             List<Share> shares = new List<Share>();
             using (conn)
@@ -72,8 +72,8 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Status", SqlDbType.Int, status);
 
             Share share = null;
             using (conn)
@@ -96,8 +96,8 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+            command.AddParam("@PostId", SqlDbType.BigInt, postId);
+            command.AddParam("@Status", SqlDbType.Int, status);
 
             Share share = null;
             using (conn)
@@ -122,9 +122,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+            command.AddParam("@PostId", SqlDbType.BigInt, postId);
             if (status != -1)
-                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+                command.AddParam("@Status", SqlDbType.Int, status);
 
             long shareId = -1;
             using (conn)
@@ -151,9 +151,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, share.PostId);
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, share.AppUserId);
-            DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@PostId", SqlDbType.BigInt, share.PostId);
+            command.AddParam("@AppUserId", SqlDbType.BigInt, share.AppUserId);
+            command.AddParam("@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
 
             using (conn)
             {
@@ -169,9 +169,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, share.PostId);
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, share.AppUserId);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, share.Id);
+            command.AddParam("@PostId", SqlDbType.BigInt, share.PostId);
+            command.AddParam("@AppUserId", SqlDbType.BigInt, share.AppUserId);
+            command.AddParam("@Id", SqlDbType.BigInt, share.Id);
 
             using (conn)
             {
@@ -198,7 +198,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE Id = @Id";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -212,7 +212,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE PostId = @PostId";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+            command.AddParam("@PostId", SqlDbType.BigInt, postId);
 
             using (conn)
             {

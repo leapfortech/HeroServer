@@ -48,7 +48,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             WebSysToken webSysToken = null;
             using (conn)
@@ -74,9 +74,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, webSysUserId);
+            command.AddParam("@WebSysUserId", SqlDbType.BigInt, webSysUserId);
             if (status != -1)
-                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+                command.AddParam("@Status", SqlDbType.Int, status);
 
             List<WebSysToken> webSysTokens = [];
             using (conn)
@@ -101,9 +101,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, webSysToken.WebSysUserId);
-            DBHelper.AddParam(command, "@Token", SqlDbType.VarChar, webSysToken.Token);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, webSysToken.Status);
+            command.AddParam("@WebSysUserId", SqlDbType.BigInt, webSysToken.WebSysUserId);
+            command.AddParam("@Token", SqlDbType.VarChar, webSysToken.Token);
+            command.AddParam("@Status", SqlDbType.Int, webSysToken.Status);
 
             int id = -1;
             using (conn)
@@ -130,12 +130,12 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('K'));
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, webSysToken.WebSysUserId);
-            DBHelper.AddParam(command, "@Token", SqlDbType.VarChar, webSysToken.Token);
-            DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, webSysToken.Status);
+            command.AddParam("@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('K'));
+            command.AddParam("@WebSysUserId", SqlDbType.BigInt, webSysToken.WebSysUserId);
+            command.AddParam("@Token", SqlDbType.VarChar, webSysToken.Token);
+            command.AddParam("@CreateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, webSysToken.Status);
 
             using (conn)
             {
@@ -153,10 +153,10 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, webSysToken.WebSysUserId);
-            DBHelper.AddParam(command, "@Token", SqlDbType.VarChar, webSysToken.Token);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, webSysToken.Status);
+            command.AddParam("@WebSysUserId", SqlDbType.BigInt, webSysToken.WebSysUserId);
+            command.AddParam("@Token", SqlDbType.VarChar, webSysToken.Token);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, webSysToken.Status);
 
             using (conn)
             {
@@ -173,9 +173,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -204,7 +204,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -219,7 +219,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, webSysUserId);
+            command.AddParam("@WebSysUserId", SqlDbType.BigInt, webSysUserId);
 
             using (conn)
             {

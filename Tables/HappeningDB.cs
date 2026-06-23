@@ -85,7 +85,7 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             if (status != -1)
-                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+                command.AddParam("@Status", SqlDbType.Int, status);
 
             List<Happening> happenings = [];
             using (conn)
@@ -109,7 +109,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             Happening happening = null;
             using (conn)
@@ -161,8 +161,8 @@ namespace HeroServer
                      $" WHERE Comment.Status = 1 AND Comment.PostId = (SELECT PostId FROM {table} WHERE Id = @Id);";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
-            DBHelper.AddParam(command, "@LikeAppUserId", SqlDbType.BigInt, likeAppUserId);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
+            command.AddParam("@LikeAppUserId", SqlDbType.BigInt, likeAppUserId);
 
             HappeningFull happeningFull = null;
             using (conn)
@@ -231,8 +231,8 @@ namespace HeroServer
                       " WHERE Comment.Status = 1 AND Comment.PostId = @PostId;";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
-            DBHelper.AddParam(command, "@LikeAppUserId", SqlDbType.BigInt, likeAppUserId);
+            command.AddParam("@PostId", SqlDbType.BigInt, postId);
+            command.AddParam("@LikeAppUserId", SqlDbType.BigInt, likeAppUserId);
 
             HappeningFull happeningFull = null;
             using (conn)
@@ -321,7 +321,7 @@ namespace HeroServer
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             if (status != -1)
-                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+                command.AddParam("@Status", SqlDbType.Int, status);
 
 
             HappeningDataFull happeningDataFull = new HappeningDataFull();
@@ -367,23 +367,23 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('H'));
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, happening.PostId);
-            DBHelper.AddParam(command, "@HappeningTypeId", SqlDbType.BigInt, happening.HappeningTypeId);
-            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, happening.CountryId);
-            DBHelper.AddParam(command, "@StateId", SqlDbType.BigInt, happening.StateId);
-            DBHelper.AddParam(command, "@IsPublic", SqlDbType.Int, happening.IsPublic);
-            DBHelper.AddParam(command, "@HasSignup", SqlDbType.Int, happening.HasSignup);
-            DBHelper.AddParam(command, "@HasPayment", SqlDbType.Int, happening.HasPayment);
-            DBHelper.AddParam(command, "@PaymentDetails", SqlDbType.VarChar, happening.PaymentDetails);
-            DBHelper.AddParam(command, "@StartDateTime", SqlDbType.DateTime, happening.StartDateTime);
-            DBHelper.AddParam(command, "@EndDateTime", SqlDbType.DateTime, happening.EndDateTime);
-            DBHelper.AddParam(command, "@Location", SqlDbType.VarChar, happening.Location);
-            DBHelper.AddParam(command, "@Latitude", SqlDbType.Decimal, happening.Latitude);
-            DBHelper.AddParam(command, "@Longitude", SqlDbType.Decimal, happening.Longitude);
-            DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, happening.Status);
+            command.AddParam("@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('H'));
+            command.AddParam("@PostId", SqlDbType.BigInt, happening.PostId);
+            command.AddParam("@HappeningTypeId", SqlDbType.BigInt, happening.HappeningTypeId);
+            command.AddParam("@CountryId", SqlDbType.BigInt, happening.CountryId);
+            command.AddParam("@StateId", SqlDbType.BigInt, happening.StateId);
+            command.AddParam("@IsPublic", SqlDbType.Int, happening.IsPublic);
+            command.AddParam("@HasSignup", SqlDbType.Int, happening.HasSignup);
+            command.AddParam("@HasPayment", SqlDbType.Int, happening.HasPayment);
+            command.AddParam("@PaymentDetails", SqlDbType.VarChar, happening.PaymentDetails);
+            command.AddParam("@StartDateTime", SqlDbType.DateTime, happening.StartDateTime);
+            command.AddParam("@EndDateTime", SqlDbType.DateTime, happening.EndDateTime);
+            command.AddParam("@Location", SqlDbType.VarChar, happening.Location);
+            command.AddParam("@Latitude", SqlDbType.Decimal, happening.Latitude);
+            command.AddParam("@Longitude", SqlDbType.Decimal, happening.Longitude);
+            command.AddParam("@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, happening.Status);
 
             using (conn)
             {
@@ -399,22 +399,22 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, happening.PostId);
-            DBHelper.AddParam(command, "@HappeningTypeId", SqlDbType.BigInt, happening.HappeningTypeId);
-            DBHelper.AddParam(command, "@CountryId", SqlDbType.BigInt, happening.CountryId);
-            DBHelper.AddParam(command, "@StateId", SqlDbType.BigInt, happening.StateId);
-            DBHelper.AddParam(command, "@IsPublic", SqlDbType.Int, happening.IsPublic);
-            DBHelper.AddParam(command, "@HasSignup", SqlDbType.Int, happening.HasSignup);
-            DBHelper.AddParam(command, "@HasPayment", SqlDbType.Int, happening.HasPayment);
-            DBHelper.AddParam(command, "@PaymentDetails", SqlDbType.VarChar, happening.PaymentDetails);
-            DBHelper.AddParam(command, "@StartDateTime", SqlDbType.DateTime, happening.StartDateTime);
-            DBHelper.AddParam(command, "@EndDateTime", SqlDbType.DateTime, happening.EndDateTime);
-            DBHelper.AddParam(command, "@Location", SqlDbType.VarChar, happening.Location);
-            DBHelper.AddParam(command, "@Latitude", SqlDbType.Decimal, happening.Latitude);
-            DBHelper.AddParam(command, "@Longitude", SqlDbType.Decimal, happening.Longitude);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, happening.Status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, happening.Id);
+            command.AddParam("@PostId", SqlDbType.BigInt, happening.PostId);
+            command.AddParam("@HappeningTypeId", SqlDbType.BigInt, happening.HappeningTypeId);
+            command.AddParam("@CountryId", SqlDbType.BigInt, happening.CountryId);
+            command.AddParam("@StateId", SqlDbType.BigInt, happening.StateId);
+            command.AddParam("@IsPublic", SqlDbType.Int, happening.IsPublic);
+            command.AddParam("@HasSignup", SqlDbType.Int, happening.HasSignup);
+            command.AddParam("@HasPayment", SqlDbType.Int, happening.HasPayment);
+            command.AddParam("@PaymentDetails", SqlDbType.VarChar, happening.PaymentDetails);
+            command.AddParam("@StartDateTime", SqlDbType.DateTime, happening.StartDateTime);
+            command.AddParam("@EndDateTime", SqlDbType.DateTime, happening.EndDateTime);
+            command.AddParam("@Location", SqlDbType.VarChar, happening.Location);
+            command.AddParam("@Latitude", SqlDbType.Decimal, happening.Latitude);
+            command.AddParam("@Longitude", SqlDbType.Decimal, happening.Longitude);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, happening.Status);
+            command.AddParam("@Id", SqlDbType.BigInt, happening.Id);
 
             using (conn)
             {
@@ -431,9 +431,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -450,10 +450,10 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
-            DBHelper.AddParam(command, "@CurStatus", SqlDbType.Int, curStatus);
-            DBHelper.AddParam(command, "@NewStatus", SqlDbType.Int, newStatus);
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            command.AddParam("@CurStatus", SqlDbType.Int, curStatus);
+            command.AddParam("@NewStatus", SqlDbType.Int, newStatus);
+            command.AddParam("@PostId", SqlDbType.BigInt, postId);
 
             using (conn)
             {
@@ -480,7 +480,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE Id = @Id";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -494,7 +494,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE PostId = @PostId";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@PostId", SqlDbType.BigInt, postId);
+            command.AddParam("@PostId", SqlDbType.BigInt, postId);
 
             using (conn)
             {

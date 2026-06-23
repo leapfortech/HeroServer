@@ -28,7 +28,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             Notification notification = null;
             using (conn)
@@ -60,10 +60,10 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, webSysUserId);
+            command.AddParam("@WebSysUserId", SqlDbType.BigInt, webSysUserId);
 
             if (rowsCount > 0)
-                DBHelper.AddParam(command, "@RowsCount", SqlDbType.Int, rowsCount);
+                command.AddParam("@RowsCount", SqlDbType.Int, rowsCount);
 
             List<Notification> notifications = [];
             using (conn)
@@ -92,8 +92,8 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, webSysUserId);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
+            command.AddParam("@WebSysUserId", SqlDbType.BigInt, webSysUserId);
 
             List<Notification> notifications = [];
             using (conn)
@@ -121,8 +121,8 @@ namespace HeroServer
                             " ORDER BY DateTime DESC";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, webSysUserId);
-            DBHelper.AddParam(command, "@Action", SqlDbType.VarChar, action);
+            command.AddParam("@WebSysUserId", SqlDbType.BigInt, webSysUserId);
+            command.AddParam("@Action", SqlDbType.VarChar, action);
 
             String information = "";
             using (conn)
@@ -150,16 +150,16 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, notification.WebSysUserId);
-            DBHelper.AddParam(command, "@MessageId", SqlDbType.VarChar, notification.MessageId);
-            DBHelper.AddParam(command, "@Title", SqlDbType.VarChar, notification.Title);
-            DBHelper.AddParam(command, "@Body", SqlDbType.VarChar, notification.Body);
-            DBHelper.AddParam(command, "@Action", SqlDbType.VarChar, notification.Action);
-            DBHelper.AddParam(command, "@Information", SqlDbType.VarChar, notification.Information);
-            DBHelper.AddParam(command, "@Parameter", SqlDbType.VarChar, notification.Parameter);
-            DBHelper.AddParam(command, "@DisplayMode", SqlDbType.Int, notification.DisplayMode);
-            DBHelper.AddParam(command, "@DateTime", SqlDbType.DateTime2, notification.DateTime);
-            DBHelper.AddParam(command, "@NotificationStatusId", SqlDbType.Int, notification.NotificationStatusId);
+            command.AddParam("@WebSysUserId", SqlDbType.BigInt, notification.WebSysUserId);
+            command.AddParam("@MessageId", SqlDbType.VarChar, notification.MessageId);
+            command.AddParam("@Title", SqlDbType.VarChar, notification.Title);
+            command.AddParam("@Body", SqlDbType.VarChar, notification.Body);
+            command.AddParam("@Action", SqlDbType.VarChar, notification.Action);
+            command.AddParam("@Information", SqlDbType.VarChar, notification.Information);
+            command.AddParam("@Parameter", SqlDbType.VarChar, notification.Parameter);
+            command.AddParam("@DisplayMode", SqlDbType.Int, notification.DisplayMode);
+            command.AddParam("@DateTime", SqlDbType.DateTime2, notification.DateTime);
+            command.AddParam("@NotificationStatusId", SqlDbType.Int, notification.NotificationStatusId);
 
             using (conn)
             {
@@ -175,15 +175,15 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, notification.WebSysUserId);
-            DBHelper.AddParam(command, "@MessageId", SqlDbType.VarChar, notification.MessageId);
-            DBHelper.AddParam(command, "@Title", SqlDbType.VarChar, notification.Title);
-            DBHelper.AddParam(command, "@Body", SqlDbType.VarChar, notification.Body);
-            DBHelper.AddParam(command, "@Action", SqlDbType.VarChar, notification.Action);
-            DBHelper.AddParam(command, "@Information", SqlDbType.VarChar, notification.Information);
-            DBHelper.AddParam(command, "@Parameter", SqlDbType.VarChar, notification.Parameter);
-            DBHelper.AddParam(command, "@DisplayMode", SqlDbType.Int, notification.DisplayMode);
-            DBHelper.AddParam(command, "@DateTime", SqlDbType.DateTime2, notification.DateTime);
+            command.AddParam("@WebSysUserId", SqlDbType.BigInt, notification.WebSysUserId);
+            command.AddParam("@MessageId", SqlDbType.VarChar, notification.MessageId);
+            command.AddParam("@Title", SqlDbType.VarChar, notification.Title);
+            command.AddParam("@Body", SqlDbType.VarChar, notification.Body);
+            command.AddParam("@Action", SqlDbType.VarChar, notification.Action);
+            command.AddParam("@Information", SqlDbType.VarChar, notification.Information);
+            command.AddParam("@Parameter", SqlDbType.VarChar, notification.Parameter);
+            command.AddParam("@DisplayMode", SqlDbType.Int, notification.DisplayMode);
+            command.AddParam("@DateTime", SqlDbType.DateTime2, notification.DateTime);
 
             using (conn)
             {
@@ -200,9 +200,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@MessageId", SqlDbType.VarChar, messageId);
-            DBHelper.AddParam(command, "@NotificationStatusId", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@MessageId", SqlDbType.VarChar, messageId);
+            command.AddParam("@NotificationStatusId", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
 
             using (conn)
@@ -220,8 +220,8 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@NotificationStatusId", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@NotificationStatusId", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -251,7 +251,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -266,7 +266,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, webSysUserId);
+            command.AddParam("@WebSysUserId", SqlDbType.BigInt, webSysUserId);
 
             using (conn)
             {
@@ -283,7 +283,7 @@ namespace HeroServer
 
         //    SqlCommand command = new SqlCommand(strCmd, conn);
 
-        //    DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, appUserId);
+        //    command.AddParam("@AppUserId", SqlDbType.BigInt, appUserId);
 
         //    using (conn)
         //    {

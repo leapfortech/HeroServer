@@ -65,10 +65,10 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@ProductId", SqlDbType.BigInt, productId);
+            command.AddParam("@ProductId", SqlDbType.BigInt, productId);
 
             if (status != -1)
-                DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
+                command.AddParam("@Status", SqlDbType.Int, status);
 
             List<long> list = new List<long>();
 
@@ -94,7 +94,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             ProductReview productReview = null;
             using (conn)
@@ -120,14 +120,14 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('u'));
-            DBHelper.AddParam(command, "@ProductId", SqlDbType.BigInt, productReview.ProductId);
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, productReview.AppUserId);
-            DBHelper.AddParam(command, "@Rating", SqlDbType.Int, productReview.Rating);
-            DBHelper.AddParam(command, "@Description", SqlDbType.VarChar, productReview.Description);
-            DBHelper.AddParam(command, "@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, productReview.Status);
+            command.AddParam("@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('u'));
+            command.AddParam("@ProductId", SqlDbType.BigInt, productReview.ProductId);
+            command.AddParam("@AppUserId", SqlDbType.BigInt, productReview.AppUserId);
+            command.AddParam("@Rating", SqlDbType.Int, productReview.Rating);
+            command.AddParam("@Description", SqlDbType.VarChar, productReview.Description);
+            command.AddParam("@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, productReview.Status);
 
             using (conn)
             {
@@ -143,13 +143,13 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@ProductId", SqlDbType.BigInt, productReview.ProductId);
-            DBHelper.AddParam(command, "@AppUserId", SqlDbType.BigInt, productReview.AppUserId);
-            DBHelper.AddParam(command, "@Rating", SqlDbType.Int, productReview.Rating);
-            DBHelper.AddParam(command, "@Description", SqlDbType.VarChar, productReview.Description);
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, productReview.Status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, productReview.Id);
+            command.AddParam("@ProductId", SqlDbType.BigInt, productReview.ProductId);
+            command.AddParam("@AppUserId", SqlDbType.BigInt, productReview.AppUserId);
+            command.AddParam("@Rating", SqlDbType.Int, productReview.Rating);
+            command.AddParam("@Description", SqlDbType.VarChar, productReview.Description);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, productReview.Status);
+            command.AddParam("@Id", SqlDbType.BigInt, productReview.Id);
 
             using (conn)
             {
@@ -166,9 +166,9 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
-            DBHelper.AddParam(command, "@Status", SqlDbType.Int, status);
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
+            command.AddParam("@Status", SqlDbType.Int, status);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -195,7 +195,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE Id = @Id";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
+            command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {
@@ -209,7 +209,7 @@ namespace HeroServer
             String strCmd = $"DELETE {table} WHERE ProductId = @ProductId";
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            DBHelper.AddParam(command, "@ProductId", SqlDbType.BigInt, productId);
+            command.AddParam("@ProductId", SqlDbType.BigInt, productId);
 
             using (conn)
             {
