@@ -17,9 +17,9 @@ namespace HeroServer
                                Convert.ToInt64(reader["WebSysUserId"]),
                                reader["Alias"].ToString(),
                                reader["ReferringCode"].ToString(),
+                               Convert.ToInt64(reader["ReferrerAppUserId"]),
                                reader["CSToken"].ToString(),
                                Convert.ToInt64(reader["Options"]),
-                               Convert.ToInt64(reader["ReferrerAppUserId"]),
                                Convert.ToDateTime(reader["CreateDateTime"]),
                                Convert.ToDateTime(reader["UpdateDateTime"]),
                                Convert.ToInt32(reader["AppUserStatusId"]));
@@ -716,9 +716,9 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(AppUser appUser)
         {
-            String strCmd = $"INSERT INTO {table}(Id, WebSysUserId, Alias, ReferringCode, CSToken, Options, ReferrerAppUserId, CreateDateTime, UpdateDateTime, AppUserStatusId)" +
+            String strCmd = $"INSERT INTO {table}(Id, WebSysUserId, Alias, ReferringCode, ReferrerAppUserId, CSToken, Options, CreateDateTime, UpdateDateTime, AppUserStatusId)" +
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @WebSysUserId, @Alias, @ReferringCode, @CSToken, @Options, @ReferrerAppUserId, @CreateDateTime, @UpdateDateTime, @AppUserStatusId)";
+                            " VALUES (@Id, @WebSysUserId, @Alias, @ReferringCode, @ReferrerAppUserId, @CSToken, @Options, @CreateDateTime, @UpdateDateTime, @AppUserStatusId)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -726,9 +726,9 @@ namespace HeroServer
             command.AddParam("@WebSysUserId", SqlDbType.BigInt, appUser.WebSysUserId);
             command.AddParam("@Alias", SqlDbType.VarChar, appUser.Alias);
             command.AddParam("@ReferringCode", SqlDbType.VarChar, appUser.ReferringCode);
+            command.AddParam("@ReferrerAppUserId", SqlDbType.BigInt, appUser.ReferrerAppUserId);
             command.AddParam("@CSToken", SqlDbType.VarChar, appUser.CSToken);
             command.AddParam("@Options", SqlDbType.BigInt, appUser.Options);
-            command.AddParam("@ReferrerAppUserId", SqlDbType.BigInt, appUser.ReferrerAppUserId);
             command.AddParam("@CreateDateTime", SqlDbType.DateTime2, DateTime.Now);
             command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             command.AddParam("@AppUserStatusId", SqlDbType.Int, appUser.AppUserStatusId);
@@ -743,7 +743,7 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(AppUser appUser)
         {
-            String strCmd = $"UPDATE {table} SET WebSysUserId = @WebSysUserId, Alias = @Alias, ReferringCode = @ReferringCode, CSToken = @CSToken, Options = @Options, ReferrerAppUserId = @ReferrerAppUserId," +
+            String strCmd = $"UPDATE {table} SET WebSysUserId = @WebSysUserId, Alias = @Alias, ReferringCode = @ReferringCode, ReferrerAppUserId = @ReferrerAppUserId, CSToken = @CSToken, Options = @Options," +
                             " UpdateDateTime = @UpdateDateTime, AppUserStatusId = @AppUserStatusId" +
                             " WHERE Id = @Id";
 
@@ -752,9 +752,9 @@ namespace HeroServer
             command.AddParam("@WebSysUserId", SqlDbType.BigInt, appUser.WebSysUserId);
             command.AddParam("@Alias", SqlDbType.VarChar, appUser.Alias);
             command.AddParam("@ReferringCode", SqlDbType.VarChar, appUser.ReferringCode);
+            command.AddParam("@ReferrerAppUserId", SqlDbType.BigInt, appUser.ReferrerAppUserId);
             command.AddParam("@CSToken", SqlDbType.VarChar, appUser.CSToken);
             command.AddParam("@Options", SqlDbType.BigInt, appUser.Options);
-            command.AddParam("@ReferrerAppUserId", SqlDbType.BigInt, appUser.ReferrerAppUserId);
             command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             command.AddParam("@AppUserStatusId", SqlDbType.Int, appUser.AppUserStatusId);
             command.AddParam("@Id", SqlDbType.BigInt, appUser.Id);
@@ -864,13 +864,13 @@ namespace HeroServer
         public async Task<bool> UpdateReferredAppUserId(long id, long referrerAppUserId)
         {
             String strCmd = $"UPDATE {table}" +
-                            " SET UpdateDateTime = @UpdateDateTime, ReferrerAppUserId = @ReferrerAppUserId" +
+                            " SET ReferrerAppUserId = @ReferrerAppUserId, UpdateDateTime = @UpdateDateTime" +
                             " WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
-            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             command.AddParam("@ReferrerAppUserId", SqlDbType.BigInt, referrerAppUserId);
+            command.AddParam("@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             command.AddParam("@Id", SqlDbType.BigInt, id);
 
             using (conn)
