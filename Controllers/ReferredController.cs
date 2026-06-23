@@ -42,6 +42,13 @@ namespace HeroServer.Controllers
             return Ok(await ReferredFunctions.GetIdByCode(code));
         }
 
+        // GET services/referred/GetCode?appUserId=
+        [HttpGet("Code")]
+        public ActionResult<String> GetCode([FromQuery] String appUserId)
+        {
+            return Ok(ReferredFunctions.GenerateCode(Convert.ToInt64(appUserId)));
+        }
+
         // GET services/referred/Validate?code=
         [HttpGet("Validate")]     // JAD : Remove
         public async Task<ActionResult<long>> Validate([FromQuery] String code)

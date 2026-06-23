@@ -7,6 +7,7 @@ namespace HeroServer
         public long Id { get; set; }
         public String AuthUserId { get; set; }
         public String Alias { get; set; }
+        public String ReferringCode { get; set; }
         public String Email { get; set; }
         public String PhonePrefix { get; set; }
         public String Phone { get; set; }
@@ -19,12 +20,13 @@ namespace HeroServer
 
         }
 
-        public AppUserFull(long id, String authUserId, String alias, String email, String phonePrefix, String phone,
+        public AppUserFull(long id, String authUserId, String alias, String referringCode, String email, String phonePrefix, String phone,
                             DateTime createDateTime, DateTime updateDateTime, int appUserStatusId)
         {
             Id = id;
             AuthUserId = authUserId;
             Alias = alias;
+            ReferringCode = referringCode;
             Email = email;
             PhonePrefix = phonePrefix;
             Phone = phone;

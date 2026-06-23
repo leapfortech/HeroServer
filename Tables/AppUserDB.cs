@@ -16,6 +16,7 @@ namespace HeroServer
             return new AppUser(Convert.ToInt64(reader["Id"]),
                                Convert.ToInt64(reader["WebSysUserId"]),
                                reader["Alias"].ToString(),
+                               reader["ReferringCode"].ToString(),
                                reader["CSToken"].ToString(),
                                Convert.ToInt64(reader["Options"]),
                                Convert.ToInt64(reader["ReferrerAppUserId"]),
@@ -29,6 +30,7 @@ namespace HeroServer
             return new AppUserNamed(Convert.ToInt64(reader["Id"]),
                                     Convert.ToInt64(reader["WebSysUserId"]),
                                     reader["Alias"].ToString(),
+                                    reader["ReferringCode"].ToString(),
                                     reader["FirstName1"].ToString(),
                                     reader["FirstName2"].ToString(),
                                     reader["LastName1"].ToString(),
@@ -49,6 +51,7 @@ namespace HeroServer
             return new AppUserFull(Convert.ToInt64(reader["Id"]),
                                    reader["AuthUserId"].ToString(),
                                    reader["Alias"].ToString(),
+                                   reader["ReferringCode"].ToString(),
                                    reader["Email"].ToString(),
                                    reader["PhonePrefix"].ToString(),
                                    reader["Phone"].ToString(),
@@ -165,7 +168,7 @@ namespace HeroServer
 
         public async Task<List<AppUserFull>> GetFullByStatus(int status)
         {
-            String strCmd = "SELECT AppUser.Id, WebSysUser.AuthUserId, AppUser.Alias, WebSysUser.Email, KPhoneCountry.PhonePrefix, WebSysUser.Phone," +
+            String strCmd = "SELECT AppUser.Id, WebSysUser.AuthUserId, AppUser.Alias, AppUser.ReferringCode, WebSysUser.Email, KPhoneCountry.PhonePrefix, WebSysUser.Phone," +
                             " AppUser.CreateDateTime, AppUser.UpdateDateTime, AppUser.AppUserStatusId" +
                             $" FROM {table} AS AppUser" +
                             " INNER JOIN [D-WebSysUser] AS WebSysUser ON (WebSysUser.Id = AppUser.WebSysUserId)" +
@@ -218,6 +221,7 @@ namespace HeroServer
                                 AppUser.Id,
                                 WebSysUser.AuthUserId,
                                 AppUser.Alias,
+                                AppUser.ReferringCode, 
                                 WebSysUser.Email,
                                 KPhoneCountry.PhonePrefix,
                                 WebSysUser.Phone,
@@ -712,15 +716,16 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(AppUser appUser)
         {
-            String strCmd = $"INSERT INTO {table}(Id, WebSysUserId, Alias, CSToken, Options, ReferrerAppUserId, CreateDateTime, UpdateDateTime, AppUserStatusId)" +
+            String strCmd = $"INSERT INTO {table}(Id, WebSysUserId, Alias, ReferringCode, CSToken, Options, ReferrerAppUserId, CreateDateTime, UpdateDateTime, AppUserStatusId)" +
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @WebSysUserId, @Alias, @CSToken, @Options, @ReferrerAppUserId, @CreateDateTime, @UpdateDateTime, @AppUserStatusId)";
+                            " VALUES (@Id, @WebSysUserId, @Alias, @ReferringCode, @CSToken, @Options, @ReferrerAppUserId, @CreateDateTime, @UpdateDateTime, @AppUserStatusId)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('A'));
             DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, appUser.WebSysUserId);
             DBHelper.AddParam(command, "@Alias", SqlDbType.VarChar, appUser.Alias);
+            DBHelper.AddParam(command, "@ReferringCode", SqlDbType.VarChar, appUser.ReferringCode);
             DBHelper.AddParam(command, "@CSToken", SqlDbType.VarChar, appUser.CSToken);
             DBHelper.AddParam(command, "@Options", SqlDbType.BigInt, appUser.Options);
             DBHelper.AddParam(command, "@ReferrerAppUserId", SqlDbType.BigInt, appUser.ReferrerAppUserId);
@@ -738,7 +743,7 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(AppUser appUser)
         {
-            String strCmd = $"UPDATE {table} SET WebSysUserId = @WebSysUserId, Alias = @Alias, CSToken = @CSToken, Options = @Options, ReferrerAppUserId = @ReferrerAppUserId," +
+            String strCmd = $"UPDATE {table} SET WebSysUserId = @WebSysUserId, Alias = @Alias, ReferringCode = @ReferringCode, CSToken = @CSToken, Options = @Options, ReferrerAppUserId = @ReferrerAppUserId," +
                             " UpdateDateTime = @UpdateDateTime, AppUserStatusId = @AppUserStatusId" +
                             " WHERE Id = @Id";
 
@@ -746,12 +751,32 @@ namespace HeroServer
 
             DBHelper.AddParam(command, "@WebSysUserId", SqlDbType.BigInt, appUser.WebSysUserId);
             DBHelper.AddParam(command, "@Alias", SqlDbType.VarChar, appUser.Alias);
+            DBHelper.AddParam(command, "@ReferringCode", SqlDbType.VarChar, appUser.ReferringCode);
             DBHelper.AddParam(command, "@CSToken", SqlDbType.VarChar, appUser.CSToken);
             DBHelper.AddParam(command, "@Options", SqlDbType.BigInt, appUser.Options);
             DBHelper.AddParam(command, "@ReferrerAppUserId", SqlDbType.BigInt, appUser.ReferrerAppUserId);
             DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
             DBHelper.AddParam(command, "@AppUserStatusId", SqlDbType.Int, appUser.AppUserStatusId);
             DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, appUser.Id);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
+
+        public async Task<bool> UpdateReferringCode(long id, String referringCode)
+        {
+            String strCmd = $"UPDATE {table}" +
+                            " SET ReferringCode = @ReferringCode, UpdateDateTime = @UpdateDateTime" +
+                            " WHERE Id = @Id";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            DBHelper.AddParam(command, "@ReferringCode", SqlDbType.VarChar, referringCode);
+            DBHelper.AddParam(command, "@UpdateDateTime", SqlDbType.DateTime2, DateTime.Now);
+            DBHelper.AddParam(command, "@Id", SqlDbType.BigInt, id);
 
             using (conn)
             {

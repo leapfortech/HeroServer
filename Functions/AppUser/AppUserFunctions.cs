@@ -148,6 +148,11 @@ namespace HeroServer
                 scope.Complete();
             }
         }
+        public static async Task<bool> UpdateReferringCode(long id, String referringCode)
+        {
+            return await new AppUserDB().UpdateReferringCode(id, referringCode);
+        }
+
 
         public static async Task<bool> UpdateOptions(long id, long options)
         {

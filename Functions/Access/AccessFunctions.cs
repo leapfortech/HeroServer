@@ -45,8 +45,11 @@ namespace HeroServer
 
                     long referredAppUserId = await ReferredFunctions.GetAppUserIdByCode(registerAppRequest.ReferredCode);
 
-                    AppUser appUser = new AppUser(-1, webSysUser.Id, registerAppRequest.Alias, referredAppUserId, 1);
+                    AppUser appUser = new AppUser(-1, webSysUser.Id, registerAppRequest.Alias, "-1", referredAppUserId, 1);
                     appUserId = await new AppUserDB().Add(appUser);
+
+                    String referringCode = ReferredFunctions.GenerateCode(appUserId);
+                    await AppUserFunctions.UpdateReferringCode(appUserId, referringCode);
 
                     // RM REVIEW ERROR CYBERSOURCE
                     // await UpdateCSToken(appUserId, webSysUser.Email);
