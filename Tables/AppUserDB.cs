@@ -204,10 +204,10 @@ namespace HeroServer
 
             int offset = (req.Page - 1) * req.PageSize;
 
-            List<UserInfo> userInfos = new List<UserInfo>();
-            List<AppUserFull> appUserFulls = new List<AppUserFull>();
-            Dictionary<long, IdentityFull> identityByAppUserId = new Dictionary<long, IdentityFull>();
-            Dictionary<long, AddressFull> addressByAppUserId = new Dictionary<long, AddressFull>();
+            List<UserInfo> userInfos = [];
+            List<AppUserFull> appUserFulls = [];
+            Dictionary<long, IdentityFull> identityByAppUserId = [];
+            Dictionary<long, AddressFull> addressByAppUserId = [];
 
             String strCmd = // Count
                             @"SELECT COUNT(AppUser.Id) AS TotalCount
@@ -337,8 +337,7 @@ namespace HeroServer
                         IdentityFull identity = IdentityDB.GetIdentityFull(reader);
                         long appUserId = Convert.ToInt64(reader["AppUserId"]);
 
-                        if (!identityByAppUserId.ContainsKey(appUserId))
-                            identityByAppUserId.Add(appUserId, identity);
+                        identityByAppUserId.TryAdd(appUserId, identity);
                     }
 
                     // 4. Address
@@ -348,8 +347,7 @@ namespace HeroServer
                         AddressFull address = AddressDB.GetAddressFull(reader);
                         long appUserId = Convert.ToInt64(reader["AppUserId"]);
 
-                        if (!addressByAppUserId.ContainsKey(appUserId))
-                            addressByAppUserId.Add(appUserId, address);
+                        addressByAppUserId.TryAdd(appUserId, address);
                     }
 
                     // Result
@@ -357,14 +355,8 @@ namespace HeroServer
                     {
                         AppUserFull appUser = appUserFulls[i];
 
-                        IdentityFull identity = null;
-                        AddressFull address = null;
-
-                        if (identityByAppUserId.ContainsKey(appUser.Id))
-                            identity = identityByAppUserId[appUser.Id];
-
-                        if (addressByAppUserId.ContainsKey(appUser.Id))
-                            address = addressByAppUserId[appUser.Id];
+                        identityByAppUserId.TryGetValue(appUser.Id, out IdentityFull identity);
+                        addressByAppUserId.TryGetValue(appUser.Id, out AddressFull address);
 
                         userInfos.Add(new UserInfo(appUser, identity, address));
                     }

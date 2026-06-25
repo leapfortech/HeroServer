@@ -203,7 +203,7 @@ namespace HeroServer
                 if (intVersion > appVersion[i])
                     break;
                 if (intVersion < appVersion[i])
-                    return new LoginAppResponse(appUser, webSysUser, 0, "0|Héroes Migrantes|Tu App está desactualizada.\r\nPor favor actualízala e intenta de nuevo.", "https://drive.google.com/drive/folders/1spprn2h8VVwZQBEvGhoOeR4hK4dYCaLQ|https://drive.google.com/drive/folders/1spprn2h8VVwZQBEvGhoOeR4hK4dYCaLQ");
+                    return new LoginAppResponse(appUser, webSysUser, 0, "0|Héroes Migrantes|Tu App está desactualizada.\r\nPor favor actualízala e intenta de nuevo.", "https://drive.google.com/drive/u/0/folders/1e-PlqhvTgbv3KKsdacAQeqppYCWPMGnH|https://drive.google.com/drive/u/0/folders/1e-PlqhvTgbv3KKsdacAQeqppYCWPMGnH");
                 //return new LoginResponse(appUser, webSysUser, 0, "0|Login|¡Tienes que actualizar tu App!", "https://play.google.com/store/apps/details?id=com.Heroes.Heroes|https://apps.apple.com/gt/app/heroes/id1541057844");
             }
 

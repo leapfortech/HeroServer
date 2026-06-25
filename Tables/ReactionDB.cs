@@ -171,5 +171,20 @@ namespace HeroServer
                 return await command.ExecuteNonQueryAsync() == 1;
             }
         }
+
+        public async Task<bool> Delete(Reaction reaction)
+        {
+            String strCmd = $"DELETE {table} WHERE PostId = @PostId AND AppUserId = @AppUserId";
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            command.AddParam("@PostId", SqlDbType.BigInt, reaction.PostId);
+            command.AddParam("@AppUserId", SqlDbType.BigInt, reaction.AppUserId);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return await command.ExecuteNonQueryAsync() == 1;
+            }
+        }
     }
 }

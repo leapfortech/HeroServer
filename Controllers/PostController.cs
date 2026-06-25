@@ -165,6 +165,34 @@ namespace HeroServer.Controllers
             }
         }
 
+        // POST services/post/RegisterReaction
+        [HttpPost("RegisterReaction")]
+        public async Task<ActionResult<long>> RegisterReaction([FromBody] Reaction reaction)
+        {
+            try
+            {
+                return Ok(await PostFunctions.RegisterReaction(reaction));
+            }
+            catch (Exception ex)
+            { 
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // DELETE services/post/DeleteReaction
+        [HttpDelete("DeleteReaction")]
+        public async Task<ActionResult<bool>> DeleteReaction([FromBody] Reaction reaction)
+        {
+            try
+            {
+                return Ok(await PostFunctions.DeleteReaction(reaction));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // POST services/post/RegisterComment
         [HttpPost("RegisterComment")]
         public async Task<ActionResult<long>> RegisterComment([FromBody] Comment comment)
@@ -214,20 +242,6 @@ namespace HeroServer.Controllers
             try
             {
                 return Ok(await PostFunctions.RegisterPostRead(postRead));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        // POST services/post/RegisterReaction
-        [HttpPost("RegisterReaction")]
-        public async Task<ActionResult<long>> RegisterReaction([FromBody] Reaction reaction)
-        {
-            try
-            {
-                return Ok(await PostFunctions.RegisterReaction(reaction));
             }
             catch (Exception ex)
             {

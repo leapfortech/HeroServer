@@ -60,6 +60,7 @@ namespace HeroServer
                                 Convert.ToInt32(reader["Favorite"]),
                                 Convert.ToInt32(reader["Like"]),
                                 Convert.ToInt32(reader["LikeCount"]),
+                                Convert.ToInt64(reader["ReactionPhraseId"]),
                                 Convert.ToDateTime(reader["PublicationDateTime"]),
                                 Convert.ToInt32(reader["PostStatus"]),
                                 null,   //ContactFull
@@ -240,13 +241,15 @@ namespace HeroServer
                         " Post.ImageCount," +
                         " CASE WHEN JFavorite.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
                         " ISNULL(DLike.[Rank], -1) AS [Like]," +
+                        " ISNULL(DReaction.[ReactionPhraseId], -1) AS [ReactionPhraseId]," +
                         " Post.LikeCount," +
                         " Post.PublicationDateTime," +
                         " Post.Status AS PostStatus" +
                         " FROM [D-Post] AS Post" +
                         " INNER JOIN [D-AppUser] AS DAppUser ON Post.AppUserId = DAppUser.Id" +
-                        " LEFT JOIN [J-Favorite] AS JFavorite ON JFavorite.PostId = Post.Id AND JFavorite.AppUserId = @LikeAppUserId " +
-                        " LEFT JOIN [D-Like] AS DLike ON DLike.PostId = Post.Id AND DLike.AppUserId = @LikeAppUserId " +
+                        " LEFT JOIN [J-Favorite] AS JFavorite ON JFavorite.PostId = Post.Id AND JFavorite.AppUserId = @LikeAppUserId" +
+                        " LEFT JOIN [D-Like] AS DLike ON DLike.PostId = Post.Id AND DLike.AppUserId = @LikeAppUserId" +
+                        " LEFT JOIN [D-Reaction] AS DReaction ON DReaction.PostId = Post.Id AND DReaction.AppUserId = @LikeAppUserId" +
                         whereFeed +
                         " ORDER BY Post.PublicationDateTime";
             if (request.Direction == 1)

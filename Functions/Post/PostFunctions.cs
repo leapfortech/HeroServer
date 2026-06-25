@@ -187,6 +187,17 @@ namespace HeroServer
             return likeId;
         }
 
+        public static async Task<long> RegisterReaction(Reaction reaction)
+        {
+            reaction.Status = 1;
+            return await new ReactionDB().Add(reaction);
+        }
+
+        public static async Task<bool> DeleteReaction(Reaction reaction)
+        {
+            return await new ReactionDB().Delete(reaction);
+        }
+
         // SHARE
         public static async Task<long> RegisterShare(Share share)
         {
@@ -216,12 +227,6 @@ namespace HeroServer
         public static async Task<long> RegisterPostRead(PostRead postRead)
         {
             return await new PostReadDB().Add(postRead);
-        }
-
-        public static async Task<long> RegisterReaction(Reaction reaction)
-        {
-            reaction.Status = 1;
-            return await new ReactionDB().Add(reaction);
         }
 
         // ADD
@@ -385,14 +390,14 @@ namespace HeroServer
             await new PostReadDB().DeleteByPostId(postId);
         }
 
-        public static async Task DeleteReactionByPostId(long postId)
-        {
-            await new ReactionDB().DeleteByPostId(postId);
-        }
-
         public static async Task DeleteLikeByPostId(long postId)
         {
             await new LikeDB().DeleteByPostId(postId);
+        }
+
+        public static async Task<bool> DeleteReactionByPostId(long postId)
+        {
+            return await new ReactionDB().DeleteByPostId(postId);
         }
 
         // IMAGES

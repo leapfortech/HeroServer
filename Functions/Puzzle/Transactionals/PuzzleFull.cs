@@ -25,11 +25,9 @@ namespace HeroServer
                           long postTypeId,
                           long postCountryId, long postStateId,
                           String title, String titleImage, String summary, String description,
-                          int imageCount, int favorite, int like, int likeCount,
+                          int imageCount, int favorite, int like, int likeCount, long reactionPhraseId,
                           DateTime publicationDateTime, int postStatus,
-                          ContactFull contactFull,
-                          List<LinkFull> linkFulls,
-                          List<CommentFull> commentFulls,
+                          ContactFull contactFull, List<LinkFull> linkFulls, List<CommentFull> commentFulls,
                           long puzzleGameId, long countryId,
                           String question, String hint,
                           int difficulty, int delay, int points, int playCount,
@@ -38,7 +36,7 @@ namespace HeroServer
                           List<String> images)
             : base(postId, appUserId, appUserAlias, postTypeId,
                    postCountryId, postStateId, title, titleImage, summary, description,
-                   imageCount, favorite, like, likeCount, publicationDateTime, postStatus,
+                   imageCount, favorite, like, likeCount, reactionPhraseId, publicationDateTime, postStatus,
                    contactFull, linkFulls, commentFulls)
         {
             Id = id;

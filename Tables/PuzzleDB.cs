@@ -46,6 +46,7 @@ namespace HeroServer
                                   Convert.ToInt32(reader["Favorite"]),
                                   Convert.ToInt32(reader["Like"]),
                                   Convert.ToInt32(reader["LikeCount"]),
+                                  Convert.ToInt64(reader["ReactionPhraseId"]),
                                   Convert.ToDateTime(reader["PublicationDateTime"]),
                                   Convert.ToInt32(reader["Status"]),
                                   null,   //ContactFull
@@ -279,15 +280,17 @@ namespace HeroServer
                              " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount," +
                              " CASE WHEN Fav.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
-                             " ISNULL(Lik.[Rank], -1) AS [Like]," +
+                             " ISNULL(DLike.[Rank], -1) AS [Like]," +
+                             " ISNULL(DReaction.[ReactionPhraseId], -1) AS [ReactionPhraseId]," +
                              " Post.LikeCount, Post.PublicationDateTime, Post.Status," +
                             $" {table}.PuzzleGameId, {table}.CountryId, {table}.Question, {table}.Hint," +
                             $" {table}.Difficulty, {table}.Delay, {table}.Points, {table}.PlayCount, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
-                            $" LEFT JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
-                            " LEFT JOIN [J-Favorite] AS Fav ON Fav.PostId = Post.Id AND Fav.AppUserId = @LikeAppUserId " +
-                            " LEFT JOIN [D-Like] AS Lik ON Lik.PostId = Post.Id AND Lik.AppUserId = @LikeAppUserId " +
+                             " LEFT JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
+                             " LEFT JOIN [J-Favorite] AS Fav ON Fav.PostId = Post.Id AND Fav.AppUserId = @LikeAppUserId" +
+                             " LEFT JOIN [D-Like] AS DLike ON DLike.PostId = Post.Id AND DLike.AppUserId = @LikeAppUserId" +
+                             " LEFT JOIN [D-Reaction] AS DReaction ON DReaction.PostId = Post.Id AND DReaction.AppUserId = @LikeAppUserId" +
                             $" WHERE {table}.Id = @Id;";
 
             strCmd += "SELECT Id, PuzzleId, Description," +
@@ -362,15 +365,17 @@ namespace HeroServer
                              " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount," +
                              " CASE WHEN Fav.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
-                             " ISNULL(Lik.[Rank], -1) AS [Like]," +
+                             " ISNULL(DLike.[Rank], -1) AS [Like]," +
+                             " ISNULL(DReaction.[ReactionPhraseId], -1) AS [ReactionPhraseId]," +
                              " Post.LikeCount, Post.PublicationDateTime, Post.Status," +
                             $" {table}.PuzzleGameId, {table}.CountryId, {table}.Question, {table}.Hint," +
                             $" {table}.Difficulty, {table}.Delay, {table}.Points, {table}.PlayCount, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
-                            $" LEFT JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
-                            " LEFT JOIN [J-Favorite] AS Fav ON Fav.PostId = Post.Id AND Fav.AppUserId = @LikeAppUserId " +
-                            " LEFT JOIN [D-Like] AS Lik ON Lik.PostId = Post.Id AND Lik.AppUserId = @LikeAppUserId " +
+                             " LEFT JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
+                             " LEFT JOIN [J-Favorite] AS Fav ON Fav.PostId = Post.Id AND Fav.AppUserId = @LikeAppUserId " +
+                             " LEFT JOIN [D-Like] AS DLike ON DLike.PostId = Post.Id AND DLike.AppUserId = @LikeAppUserId " +
+                             " LEFT JOIN [D-Reaction] AS DReaction ON DReaction.PostId = Post.Id AND DReaction.AppUserId = @LikeAppUserId" +
                             $" WHERE {table}.PostId = @PostId;";
 
             strCmd += "SELECT Id, PuzzleId, Description, IsCorrect, Status" +

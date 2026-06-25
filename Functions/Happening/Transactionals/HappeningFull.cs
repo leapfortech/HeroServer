@@ -30,11 +30,9 @@ namespace HeroServer
                              long postTypeId,
                              long postCountryId, long postStateId,
                              String title, String titleImage, String summary, String description,
-                             int imageCount, int favorite, int like, int likeCount,
+                             int imageCount, int favorite, int like, int likeCount, long reactionPhraseId,
                              DateTime publicationDateTime, int postStatus,
-                             ContactFull contactFull,
-                             List<LinkFull> linkFulls,
-                             List<CommentFull> commentFulls,
+                             ContactFull contactFull, List<LinkFull> linkFulls, List<CommentFull> commentFulls,
                              long happeningTypeId, long countryId, long stateId,
                              int isPublic, int hasSignup, int hasPayment, String paymentDetails,
                              DateTime? startDateTime, DateTime? endDateTime,
@@ -43,7 +41,7 @@ namespace HeroServer
                              List<String> images)
             : base(postId, appUserId, appUserAlias, postTypeId,
                    countryId, stateId, title, titleImage, summary, description,
-                   imageCount, favorite, like, likeCount, publicationDateTime, postStatus,
+                   imageCount, favorite, like, likeCount, reactionPhraseId, publicationDateTime, postStatus,
                    contactFull, linkFulls, commentFulls)
         {
             Id = id;
