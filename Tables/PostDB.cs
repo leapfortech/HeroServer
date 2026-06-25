@@ -463,6 +463,7 @@ namespace HeroServer
                                 Post.ImageCount,
                                 0 AS Favorite,
                                 -1 AS [Like],
+                                -1 AS [ReactionPhraseId],
                                 Post.LikeCount,
                                 Post.PublicationDateTime,
                                 Post.Status AS PostStatus
