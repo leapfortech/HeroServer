@@ -68,6 +68,37 @@ namespace HeroServer
             return postPlaint;
         }
 
+        public async Task<bool> ExistsPlaintByAppUserId(long postId, long appUserId)
+        {
+            String strCmd = $@"SELECT COUNT(*) FROM {table} WHERE PostId = @PostId AND AppUserId = @AppUserId AND Status = 1";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            command.AddParam("@PostId", SqlDbType.BigInt, postId);
+            command.AddParam("@AppUserId", SqlDbType.BigInt, appUserId);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return (int)await command.ExecuteScalarAsync() > 0;
+            }
+        }
+
+        public async Task<int> GetPlaintCountByPostId(long postId)
+        {
+            String strCmd = $@"SELECT COUNT(*) FROM {table} WHERE PostId = @PostId AND Status = 1";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            command.AddParam("@PostId", SqlDbType.BigInt, postId);
+
+            using (conn)
+            {
+                await conn.OpenAsync();
+                return (int)await command.ExecuteScalarAsync();
+            }
+        }
+
         // INSERT
         public async Task<long> Add(PostPlaint postPlaint)
         {

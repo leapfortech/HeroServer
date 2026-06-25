@@ -217,11 +217,26 @@ namespace HeroServer
             return await new CommentPlaintDB().Add(commentPlaint);
         }
 
-        //
+        // PLAINT
         public static async Task<long> RegisterPostPlaint(PostPlaint postPlaint)
         {
-            postPlaint.Status = 1;
-            return await new PostPlaintDB().Add(postPlaint);
+            if (await new PostPlaintDB().ExistsPlaintByAppUserId(postPlaint.PostId, postPlaint.AppUserId))
+                throw new Exception("El post ya fue reportado previamente.");
+
+            long id = -1L;
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                postPlaint.Status = 1;
+                id = await new PostPlaintDB().Add(postPlaint);
+
+                int plaintCount = await new PostPlaintDB().GetPlaintCountByPostId(postPlaint.PostId);
+
+                if (plaintCount >= 3)
+                    await new PostDB().UpdateStatus(postPlaint.PostId, 3);
+
+                scope.Complete();
+            }
+            return id;
         }
 
         public static async Task<long> RegisterPostRead(PostRead postRead)
