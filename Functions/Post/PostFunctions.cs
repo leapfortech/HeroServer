@@ -232,7 +232,26 @@ namespace HeroServer
                 int plaintCount = await new PostPlaintDB().GetPlaintCountByPostId(postPlaint.PostId);
 
                 if (plaintCount >= 3)
-                    await new PostDB().UpdateStatus(postPlaint.PostId, 3);
+                {
+                    bool updated = await new PostDB().UpdateStatus(postPlaint.PostId, 1, 3);
+
+                    if (updated)
+                    {
+                        long postTypeId = await new PostDB().GetPostTypeId(postPlaint.PostId);
+
+                        switch (postTypeId)
+                        {
+                            case 1: await TaleFunctions.UpdateStatusByPostId(postPlaint.PostId, 1, 3); break;
+                            case 2: await RecipeFunctions.UpdateStatusByPostId(postPlaint.PostId, 1, 3); break;
+                            case 3: await TreatmentFunctions.UpdateStatusByPostId(postPlaint.PostId, 1, 3); break;
+                            case 4: await RadioFunctions.UpdateStatusByPostId(postPlaint.PostId, 1, 3); break;
+                            case 5: await ProductFunctions.UpdateStatusByPostId(postPlaint.PostId, 1, 3); break;
+                            case 6: await HappeningFunctions.UpdateStatusByPostId(postPlaint.PostId, 1, 3); break;
+                            case 7: await NewsFunctions.UpdateStatusByPostId(postPlaint.PostId, 1, 3); break;
+                            case 8: await PuzzleFunctions.UpdateStatusByPostId(postPlaint.PostId, 1, 3); break;
+                        }
+                    }
+                }
 
                 scope.Complete();
             }

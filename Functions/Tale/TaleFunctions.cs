@@ -227,6 +227,11 @@ namespace HeroServer
             return await new TaleDB().UpdateStatus(id, status);
         }
 
+        public static async Task<bool> UpdateStatusByPostId(long postId, int curStatus, int newStatus)
+        {
+            return await new TaleDB().UpdateStatusByPostId(postId, curStatus, newStatus);
+        }
+
         // DELETE
 
         public static async Task DeleteById(long id)

@@ -332,6 +332,11 @@ namespace HeroServer
             return true;
         }
 
+        public static async Task<bool> UpdateStatusByPostId(long postId, int curStatus, int newStatus)
+        {
+            return await new NewsDB().UpdateStatusByPostId(postId, curStatus, newStatus);
+        }
+
         // DELETE
 
         public static async Task DeleteById(long id)

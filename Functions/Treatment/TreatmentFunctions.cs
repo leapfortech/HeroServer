@@ -243,6 +243,11 @@ namespace HeroServer
             return await new TreatmentDB().UpdateStatus(id, status);
         }
 
+        public static async Task<bool> UpdateStatusByPostId(long postId, int curStatus, int newStatus)
+        {
+            return await new TreatmentDB().UpdateStatusByPostId(postId, curStatus, newStatus);
+        }
+
         // DELETE
 
         public static async Task DeleteById(long id)

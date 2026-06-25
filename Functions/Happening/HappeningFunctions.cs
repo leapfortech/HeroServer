@@ -208,6 +208,11 @@ namespace HeroServer
             return await new HappeningDB().UpdateStatus(id, status);
         }
 
+        public static async Task<bool> UpdateStatusByPostId(long postId, int curStatus, int newStatus)
+        {
+            return await new HappeningDB().UpdateStatusByPostId(postId, curStatus, newStatus);
+        }
+
         // DELETE
 
         public static async Task DeleteById(long id)
