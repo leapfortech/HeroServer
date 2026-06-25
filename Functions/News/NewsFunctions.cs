@@ -170,8 +170,8 @@ namespace HeroServer
         {
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                bool postOk = await PostFunctions.UpdateStatus(postId, 3);
-                bool newsOk = await UpdateStatus(newsId, 3);
+                bool postOk = await PostFunctions.UpdateStatus(postId, 1);
+                bool newsOk = await UpdateStatus(newsId, 1);
 
                 if (!postOk || !newsOk)
                     return false;
@@ -186,8 +186,8 @@ namespace HeroServer
         {
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                bool postOk = await PostFunctions.UpdateStatus(postId, 0);
-                bool newsOk = await UpdateStatus(newsId, 0);
+                bool postOk = await PostFunctions.UpdateStatus(postId, 4);
+                bool newsOk = await UpdateStatus(newsId, 4);
 
                 if (!postOk || !newsOk)
                     return false;

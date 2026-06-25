@@ -251,8 +251,8 @@ namespace HeroServer
         {
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                bool postOk = await PostFunctions.UpdateStatus(postId, 3);
-                bool radioOk = await UpdateStatus(radioId, 3);
+                bool postOk = await PostFunctions.UpdateStatus(postId, 1);
+                bool radioOk = await UpdateStatus(radioId, 1);
 
                 if (!postOk || !radioOk)
                     return false;
@@ -267,8 +267,8 @@ namespace HeroServer
         {
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                bool postOk = await PostFunctions.UpdateStatus(postId, 0);
-                bool radioOk = await UpdateStatus(radioId, 0);
+                bool postOk = await PostFunctions.UpdateStatus(postId, 4);
+                bool radioOk = await UpdateStatus(radioId, 4);
 
                 if (!postOk || !radioOk)
                     return false;
