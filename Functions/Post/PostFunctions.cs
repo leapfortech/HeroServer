@@ -221,7 +221,7 @@ namespace HeroServer
         public static async Task<long> RegisterPostPlaint(PostPlaint postPlaint)
         {
             if (await new PostPlaintDB().ExistsPlaintByAppUserId(postPlaint.PostId, postPlaint.AppUserId))
-                throw new Exception("El post ya fue reportado previamente.");
+                throw new Exception("La publicación ya fue reportada previamente.");
 
             long id = -1L;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
