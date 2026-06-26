@@ -38,10 +38,19 @@ namespace HeroServer
             for (int i = 0; i < response.PostFulls.Count; i++)
                 tasks.Add(GetTitleImageById(response.PostFulls[i].PostId));
 
-            String[] titleImages = await Task.WhenAll(tasks);
+            String[] images = await Task.WhenAll(tasks);
 
             for (int i = 0; i < response.PostFulls.Count; i++)
-                response.PostFulls[i].TitleImage = titleImages[i];
+                response.PostFulls[i].TitleImage = images[i];
+
+            tasks = [];
+            for (int i = 0; i < response.PostFulls.Count; i++)
+                tasks.Add(AppUserFunctions.GetThumbnail(response.PostFulls[i].AppUserId));
+
+            images = await Task.WhenAll(tasks);
+
+            for (int i = 0; i<response.PostFulls.Count; i++)
+                response.PostFulls[i].Thumbnail = images[i];
 
             return response;
         }
@@ -337,8 +346,6 @@ namespace HeroServer
 
         public static async Task DeleteById(long id)
         {
-            bool committed = false;
-
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 await DeleteShareByPostId(id);
@@ -368,15 +375,11 @@ namespace HeroServer
                 await new PostDB().DeleteById(id);
 
                 scope.Complete();
-                committed = true;
             }
 
-            if (committed)
-            {
-                String containerName = "posts";
-                String filename = $"post{id:D08}";
-                await DeleteImages(containerName, filename);
-            }
+            String containerName = "posts";
+            String filename = $"post{id:D08}";
+            await DeleteImages(containerName, filename);
         }
 
         public static async Task DeleteShareByPostId(long postId)
@@ -512,12 +515,12 @@ namespace HeroServer
             await new PostDB().UpdateImageCount(postId, count);
         }
 
-        public static async Task DeleteSoftImages(String containerName, String filename)
-        {
-            for (int idx = 0; ; idx++)
-                if (!await StorageFunctions.DeleteSoftFile(containerName, $"{filename}|{idx:D02}", "jpg"))
-                    break;
-        }
+        //public static async Task DeleteSoftImages(String containerName, String filename)
+        //{
+        //    for (int idx = 0; ; idx++)
+        //        if (!await StorageFunctions.DeleteSoftFile(containerName, $"{filename}|{idx:D02}", "jpg"))
+        //            break;
+        //}
 
         public static async Task DeleteImages(String containerName, String filename)
         {

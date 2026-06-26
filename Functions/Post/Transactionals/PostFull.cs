@@ -8,6 +8,7 @@ namespace HeroServer
         public long PostId { get; set; }
         public long AppUserId { get; set; }
         public String AppUserAlias { get; set; }
+        public String Thumbnail { get; set; }
         public long PostTypeId { get; set; }
         public long PostCountryId { get; set; }
         public long PostStateId { get; set; }

@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Transactions;
 
+using ImageMagick;
+
 namespace HeroServer
 {
     public class AppUserFunctions
     {
+        static uint thbSize = 120;
+
         // GET
         public static async Task<List<AppUserNamed>> GetNamed(int count, int page)
         {
@@ -95,6 +99,18 @@ namespace HeroServer
             return portrait;
         }
 
+        public static async Task<String> GetThumbnail(long appUserId)
+        {
+            String portrait = null;
+
+            byte[] portraitImg = await StorageFunctions.ReadFile($"user{appUserId:D08}", $"thb{appUserId:D08}", "jpg");
+
+            if (portraitImg != null)
+                portrait = Convert.ToBase64String(portraitImg);
+
+            return portrait;
+        }
+
         // ADD
         public static async Task<long> Add(AppUser appUser)
         {
@@ -125,13 +141,21 @@ namespace HeroServer
             return localityResponse;
         }
 
-        public static async Task RegisterPortrait(long appUserId, String portrait)
+        public static async Task RegisterPortrait(long appUserId, String strPortrait)
         {
+            if (strPortrait == null || strPortrait.Length == 0)
+                return;
+
             String containerName = "user" + appUserId;
             await StorageFunctions.CreateContainer(containerName);
 
-            if (portrait != null && portrait.Length > 0)
-                await StorageFunctions.UpdateFile(containerName, "prt" + appUserId, "jpg", Convert.FromBase64String(portrait));
+            byte[] portrait = Convert.FromBase64String(strPortrait);
+            await StorageFunctions.UpdateFile(containerName, "prt" + appUserId, "jpg", portrait, false);
+            using (MagickImage thumbnail = new MagickImage(portrait))
+            {
+                thumbnail.Resize(new MagickGeometry(thbSize, thbSize));
+                await StorageFunctions.UpdateFile(containerName, "thb" + appUserId, "jpg", thumbnail.ToByteArray(), false);
+            }
         }
 
         // UPDATE
@@ -219,18 +243,19 @@ namespace HeroServer
             if (String.IsNullOrEmpty(portrait))
                 throw new ArgumentException("No Data to Update.");
 
-            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            String containerName = "user" + appUserId;
+
+            bool existContainer = await StorageFunctions.ExistContainer(containerName);
+            if (!existContainer)
+                await RegisterPortrait(appUserId, portrait);
+            else
             {
-                String containerName = "user" + appUserId;
-
-                //RM REVIEW
-                bool existContainer = await StorageFunctions.ExistContainer(containerName);
-                if (!existContainer)
-                    await RegisterPortrait(appUserId, portrait);
-                else
-                    await StorageFunctions.UpdateFile(containerName, "prt" + appUserId, "jpg", Convert.FromBase64String(portrait), false);
-
-                scope.Complete();
+                await StorageFunctions.UpdateFile(containerName, "prt" + appUserId, "jpg", Convert.FromBase64String(portrait), false);
+                using (MagickImage thumbnail = new MagickImage(portrait))
+                {
+                    thumbnail.Resize(new MagickGeometry(thbSize, thbSize));
+                    await StorageFunctions.UpdateFile(containerName, "thb" + appUserId, "jpg", thumbnail.ToByteArray(), false);
+                }
             }
         }
 
@@ -285,14 +310,10 @@ namespace HeroServer
 
         public static async Task DeletePortrait(long appUserId)
         {
-            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {
-                String containerName = "user" + appUserId;
+            String containerName = "user" + appUserId;
 
-                await StorageFunctions.DeleteFile(containerName, "prt" + appUserId + ".jpg");
-
-                scope.Complete();
-            }
+            await StorageFunctions.DeleteFile(containerName, "prt" + appUserId + ".jpg");
+            await StorageFunctions.DeleteFile(containerName, "thb" + appUserId + ".jpg");
         }
     }
 }

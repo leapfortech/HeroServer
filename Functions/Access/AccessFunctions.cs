@@ -112,8 +112,7 @@ namespace HeroServer
                 onboardingResponse.AddressId = await AddressFunctions.RegisterByAppUser(onboardingRequest.AppUserId, onboardingRequest.Address);
                 onboardingResponse.LocalityResponse = null;
 
-                if (onboardingRequest.Portrait != null && onboardingRequest.Portrait.Length > 0)
-                    await AppUserFunctions.RegisterPortrait(onboardingRequest.AppUserId, onboardingRequest.Portrait);
+                await AppUserFunctions.RegisterPortrait(onboardingRequest.AppUserId, onboardingRequest.Portrait);
 
                 // Onboarding = 2
                 await AppUserFunctions.UpdateOption(onboardingRequest.AppUserId, 0, 2);

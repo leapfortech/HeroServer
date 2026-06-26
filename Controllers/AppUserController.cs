@@ -102,6 +102,13 @@ namespace HeroServer.Controllers
             return Ok(await AppUserFunctions.GetPortrait(Convert.ToInt64(appUserId)));
         }
 
+        // GET services/appUser/Thumbnail?appUserId=1
+        [HttpGet("Thumbnail")]
+        public async Task<ActionResult<String>> GetThumbnail([FromQuery] String appUserId)
+        {
+            return Ok(await AppUserFunctions.GetThumbnail(Convert.ToInt64(appUserId)));
+        }
+
         // POST services/appUser/UserInfoAllByAlias
         [HttpPost("UserInfoAllByAlias")]
         public async Task<ActionResult<UserInfoAllRsp>> GetUserInfoAllByAlias([FromBody] UserInfoAllByAlias req)
