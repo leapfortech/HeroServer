@@ -179,7 +179,7 @@ namespace HeroServer
                       $" WHERE Link.Status = 1 AND Link.PostId = (SELECT PostId FROM {table} WHERE Id = @Id);";
 
             strCmd += "SELECT Comment.Id, Comment.PostId, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
-                      " Comment.Message, Comment.UpdateDateTime, Comment.Status" +
+                      " Comment.Message, Comment.CreateDateTime, Comment.UpdateDateTime, Comment.Status" +
                       " FROM [D-Comment] AS Comment" +
                       " INNER JOIN [D-AppUser] AS AppUser ON (Comment.AppUserId = AppUser.Id)" +
                      $" WHERE Comment.Status = 1 AND Comment.PostId = (SELECT PostId FROM {table} WHERE Id = @Id);";
@@ -266,7 +266,7 @@ namespace HeroServer
               " WHERE Link.Status = 1 AND Link.PostId = @PostId;";
 
             strCmd += "SELECT Comment.Id, Comment.PostId, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
-                      " Comment.Message, Comment.UpdateDateTime, Comment.Status" +
+                      " Comment.Message, Comment.CreateDateTime, Comment.UpdateDateTime, Comment.Status" +
                       " FROM [D-Comment] AS Comment" +
                       " INNER JOIN [D-AppUser] AS AppUser ON(Comment.AppUserId = AppUser.Id)" +
                       " WHERE Comment.Status = 1 AND Comment.PostId = @PostId;";
@@ -367,7 +367,7 @@ namespace HeroServer
                 strCmd += ";";
 
             strCmd += "SELECT Comment.Id, Comment.PostId, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
-                       " Comment.Message, Comment.UpdateDateTime, Comment.Status" +
+                       " Comment.Message, Comment.CreateDateTime, Comment.UpdateDateTime, Comment.Status" +
                        " FROM [D-Comment] AS Comment" +
                        " INNER JOIN [D-AppUser] AS AppUser ON(Comment.AppUserId = AppUser.Id)" +
                       $" INNER JOIN {table}" +

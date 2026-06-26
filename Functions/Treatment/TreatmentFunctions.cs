@@ -26,6 +26,7 @@ namespace HeroServer
                 return null;
 
             treatmentFull.Images = await PostFunctions.GetImagesById(treatmentFull.PostId, true);
+            treatmentFull.Thumbnail = await AppUserFunctions.GetThumbnail(treatmentFull.AppUserId);
 
             return treatmentFull;
         }
@@ -38,6 +39,7 @@ namespace HeroServer
                 return null;
 
             treatmentFull.Images = await PostFunctions.GetImagesById(treatmentFull.PostId, true);
+            treatmentFull.Thumbnail = await AppUserFunctions.GetThumbnail(treatmentFull.AppUserId);
 
             return treatmentFull;
         }
@@ -105,6 +107,7 @@ namespace HeroServer
 
                 // Images
                 treatmentFull.Images = await PostFunctions.GetImagesById(treatmentFull.PostId, true);
+                treatmentFull.Thumbnail = await AppUserFunctions.GetThumbnail(treatmentFull.AppUserId);
 
                 treatmentFulls.Add(treatmentFull);
             }

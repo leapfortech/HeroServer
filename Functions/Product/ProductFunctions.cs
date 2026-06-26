@@ -26,6 +26,7 @@ namespace HeroServer
                 return null;
 
             productFull.Images = await PostFunctions.GetImagesById(productFull.PostId, true);
+            productFull.Thumbnail = await AppUserFunctions.GetThumbnail(productFull.AppUserId);
 
             return productFull;
         }
@@ -38,6 +39,7 @@ namespace HeroServer
                 return null;
 
             productFull.Images = await PostFunctions.GetImagesById(productFull.PostId, true);
+            productFull.Thumbnail = await AppUserFunctions.GetThumbnail(productFull.AppUserId);
 
             return productFull;
         }
@@ -105,6 +107,7 @@ namespace HeroServer
 
                 // Images
                 productFull.Images = await PostFunctions.GetImagesById(productFull.PostId, true);
+                productFull.Thumbnail = await AppUserFunctions.GetThumbnail(productFull.AppUserId);
 
                 productFulls.Add(productFull);
             }

@@ -222,11 +222,11 @@ namespace HeroServer.Controllers
 
         // PUT services/appUser/Portrait?appUserId=3
         [HttpPut("Portrait")]
-        public async Task<ActionResult> UpdatePortrait([FromQuery] String appUserId, [FromBody] String portrait)
+        public async Task<ActionResult> UpdatePortrait([FromQuery] String appUserId, [FromBody] String strPortrait)
         {
             try
             {
-                await AppUserFunctions.UpdatePortrait(Convert.ToInt64(appUserId), portrait);
+                await AppUserFunctions.UpdatePortrait(Convert.ToInt64(appUserId), strPortrait);
                 return Ok();
             }
             catch (Exception ex)

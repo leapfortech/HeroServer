@@ -34,22 +34,24 @@ namespace HeroServer
         {
             PostFeedResponse response = await new PostDB().GetPostFeed(request);
 
+            // TitleImages
             List<Task<String>> tasks = [];
             for (int i = 0; i < response.PostFulls.Count; i++)
-                tasks.Add(GetTitleImageById(response.PostFulls[i].PostId));
+                tasks.Add(GetTitleImageByPostId(response.PostFulls[i].PostId));
 
             String[] images = await Task.WhenAll(tasks);
 
             for (int i = 0; i < response.PostFulls.Count; i++)
                 response.PostFulls[i].TitleImage = images[i];
 
+            // Thumbnails
             tasks = [];
             for (int i = 0; i < response.PostFulls.Count; i++)
                 tasks.Add(AppUserFunctions.GetThumbnail(response.PostFulls[i].AppUserId));
 
             images = await Task.WhenAll(tasks);
 
-            for (int i = 0; i<response.PostFulls.Count; i++)
+            for (int i = 0; i < response.PostFulls.Count; i++)
                 response.PostFulls[i].Thumbnail = images[i];
 
             return response;
@@ -66,7 +68,7 @@ namespace HeroServer
             PostFullsPagedResponse response = await new PostDB().GetFullsPagedByType(request);
 
             for (int i = 0; i < response.PostFulls.Count; i++)
-                response.PostFulls[i].TitleImage = await GetTitleImageById(response.PostFulls[i].PostId);
+                response.PostFulls[i].TitleImage = await GetTitleImageByPostId(response.PostFulls[i].PostId);
 
             return response;
         }
@@ -438,7 +440,7 @@ namespace HeroServer
         }
 
         // IMAGES
-        public static async Task<String> GetTitleImageById(long id)
+        public static async Task<String> GetTitleImageByPostId(long id)
         {
             byte[] image = await StorageFunctions.ReadFile("posts", $"post{id:D08}|00", "jpg");
             return image == null ? null : Convert.ToBase64String(image);

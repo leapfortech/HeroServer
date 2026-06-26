@@ -11,6 +11,7 @@ namespace HeroServer
     public static class StorageFunctions
     {
         private static BlobServiceClient blobServiceClient;
+        private static Dictionary<String, BlobContainerClient> containers = [];
 
         public static void Initialize()
         {
@@ -21,29 +22,34 @@ namespace HeroServer
         }
 
         // CONTAINER
+        public static BlobContainerClient GetContainer(String containerName)
+        {
+            if (containers.TryGetValue(containerName, out BlobContainerClient container))
+                return container;
+            container = blobServiceClient.GetBlobContainerClient(containerName);
+            containers.Add(containerName, container);
+            return container;
+        }
+
         public static async Task CreateContainer(String containerName)
         {
-            BlobContainerClient container = blobServiceClient.GetBlobContainerClient(containerName);
-            await container.CreateIfNotExistsAsync();
+            await GetContainer(containerName).CreateIfNotExistsAsync();
         }
 
         public static async Task<bool> ExistContainer(String containerName)
         {
-            BlobContainerClient container = blobServiceClient.GetBlobContainerClient(containerName);
-            return await container.ExistsAsync();
+            return await GetContainer(containerName).ExistsAsync();
         }
 
         public static async Task<bool> DeleteContainer(String containerName)
         {
-            BlobContainerClient container = blobServiceClient.GetBlobContainerClient(containerName);
-            return await container.DeleteIfExistsAsync();
+            return await GetContainer(containerName).DeleteIfExistsAsync();
         }
 
         // READ
         public static async Task<byte[]> ReadFile(String containerName, String fileName, String fileExt)
         {
-            BlobContainerClient container = blobServiceClient.GetBlobContainerClient(containerName);
-            BlobClient blob = container.GetBlobClient(fileName + "." + fileExt);
+            BlobClient blob = GetContainer(containerName).GetBlobClient(fileName + "." + fileExt);
 
             try
             {
@@ -86,7 +92,7 @@ namespace HeroServer
 
         public static async Task<byte[][]> ReadFiles(String containerName, List<(String fileName, String fileExt)> files)
         {
-            BlobContainerClient container = blobServiceClient.GetBlobContainerClient(containerName);
+            BlobContainerClient container = GetContainer(containerName);
 
             List<Task<byte[]>> tasks = [];
 
@@ -99,8 +105,7 @@ namespace HeroServer
         // CREATE
         public static async Task CreateFile(String containerName, String fileName, String fileExt, byte[] content)
         {
-            BlobContainerClient container = blobServiceClient.GetBlobContainerClient(containerName);
-            BlobClient blob = container.GetBlobClient($"{fileName}.{fileExt}");
+            BlobClient blob = GetContainer(containerName).GetBlobClient($"{fileName}.{fileExt}");
 
             using (MemoryStream stream = new MemoryStream(content))
             {
@@ -112,7 +117,7 @@ namespace HeroServer
         // UPDATE
         public static async Task UpdateFile(String containerName, String fileName, String fileExt, byte[] content, bool backup = true)
         {
-            BlobContainerClient container = blobServiceClient.GetBlobContainerClient(containerName);
+            BlobContainerClient container = GetContainer(containerName);
             BlobClient blob = container.GetBlobClient(fileName + "." + fileExt);
 
             if (backup && await blob.ExistsAsync())
@@ -140,7 +145,7 @@ namespace HeroServer
         // COPY
         public static async Task CopyFile(String containerName, String sourceName, String targetName)
         {
-            BlobContainerClient container = blobServiceClient.GetBlobContainerClient(containerName);
+            BlobContainerClient container = GetContainer(containerName);
             BlobClient source = container.GetBlobClient(sourceName);
 
             await CopyFile(container, source, targetName);
@@ -163,7 +168,7 @@ namespace HeroServer
         // DELETE
         public static async Task<bool> DeleteSoftFile(String containerName, String fileName, String fileExt)
         {
-            BlobContainerClient container = blobServiceClient.GetBlobContainerClient(containerName);
+            BlobContainerClient container = GetContainer(containerName);
             BlobClient blob = container.GetBlobClient(fileName + "." + fileExt);
 
             if (!blob.Exists())
@@ -192,8 +197,7 @@ namespace HeroServer
 
         public static async Task<bool> DeleteFile(String containerName, String fileName)
         {
-            BlobContainerClient container = blobServiceClient.GetBlobContainerClient(containerName);
-            BlobClient blob = container.GetBlobClient(fileName);
+            BlobClient blob = GetContainer(containerName).GetBlobClient(fileName);
 
             return await blob.DeleteIfExistsAsync();
         }

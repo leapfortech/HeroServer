@@ -33,6 +33,8 @@ namespace HeroServer
             if (includeImages == 1)
                 puzzleFull.Images = await PostFunctions.GetImagesById(puzzleFull.PostId, true);
 
+            puzzleFull.Thumbnail = await AppUserFunctions.GetThumbnail(puzzleFull.AppUserId);
+
             return puzzleFull;
         }
 
@@ -44,6 +46,7 @@ namespace HeroServer
                 return null;
 
             puzzleFull.Images = await PostFunctions.GetImagesById(puzzleFull.PostId, true);
+            puzzleFull.Thumbnail = await AppUserFunctions.GetThumbnail(puzzleFull.AppUserId);
 
             return puzzleFull;
         }
@@ -111,6 +114,7 @@ namespace HeroServer
 
                 // Images
                 puzzleFull.Images = await PostFunctions.GetImagesById(puzzleFull.PostId, true);
+                puzzleFull.Thumbnail = await AppUserFunctions.GetThumbnail(puzzleFull.AppUserId);
 
                 puzzleFulls.Add(puzzleFull);
             }

@@ -101,14 +101,14 @@ namespace HeroServer
 
         public static async Task<String> GetThumbnail(long appUserId)
         {
-            String portrait = null;
+            String strThumbnail = null;
 
-            byte[] portraitImg = await StorageFunctions.ReadFile($"user{appUserId:D08}", $"thb{appUserId:D08}", "jpg");
+            byte[] thumbnail = await StorageFunctions.ReadFile($"user{appUserId:D08}", $"thb{appUserId:D08}", "jpg");
 
-            if (portraitImg != null)
-                portrait = Convert.ToBase64String(portraitImg);
+            if (thumbnail != null)
+                strThumbnail = Convert.ToBase64String(thumbnail);
 
-            return portrait;
+            return strThumbnail;
         }
 
         // ADD
@@ -238,19 +238,20 @@ namespace HeroServer
             return id;
         }
 
-        public static async Task UpdatePortrait(long appUserId, String portrait)
+        public static async Task UpdatePortrait(long appUserId, String strPortrait)
         {
-            if (String.IsNullOrEmpty(portrait))
+            if (String.IsNullOrEmpty(strPortrait))
                 throw new ArgumentException("No Data to Update.");
 
             String containerName = "user" + appUserId;
 
             bool existContainer = await StorageFunctions.ExistContainer(containerName);
             if (!existContainer)
-                await RegisterPortrait(appUserId, portrait);
+                await RegisterPortrait(appUserId, strPortrait);
             else
             {
-                await StorageFunctions.UpdateFile(containerName, "prt" + appUserId, "jpg", Convert.FromBase64String(portrait), false);
+                byte[] portrait = Convert.FromBase64String(strPortrait);
+                await StorageFunctions.UpdateFile(containerName, "prt" + appUserId, "jpg", portrait, false);
                 using (MagickImage thumbnail = new MagickImage(portrait))
                 {
                     thumbnail.Resize(new MagickGeometry(thbSize, thbSize));
