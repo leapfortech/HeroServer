@@ -219,6 +219,7 @@ namespace HeroServer
         public static async Task<long> RegisterComment(Comment comment)
         {
             comment.Status = 1;
+            comment.PublicationDateTime = DateTime.Now;
             return await new CommentDB().Add(comment);
         }
 

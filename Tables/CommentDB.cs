@@ -17,6 +17,7 @@ namespace HeroServer
                                Convert.ToInt64(reader["PostId"]),
                                Convert.ToInt64(reader["AppUserId"]),
                                reader["Message"].ToString(),
+                               Convert.ToDateTime(reader["PublicationDateTime"]),
                                Convert.ToDateTime(reader["CreateDateTime"]),
                                Convert.ToDateTime(reader["UpdateDateTime"]),
                                Convert.ToInt32(reader["Status"]));
@@ -29,6 +30,7 @@ namespace HeroServer
                                    Convert.ToInt64(reader["AppUserId"]),
                                    reader["AppUserAlias"].ToString(),
                                    reader["Message"].ToString(),
+                                   Convert.ToDateTime(reader["PublicationDateTime"]),
                                    Convert.ToDateTime(reader["CreateDateTime"]),
                                    Convert.ToDateTime(reader["UpdateDateTime"]),
                                    Convert.ToInt32(reader["Status"]));
@@ -115,15 +117,16 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(Comment comment)
         {
-            String strCmd = $"INSERT INTO {table}(PostId, AppUserId, Message, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(PostId, AppUserId, Message, PublicationDateTime, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@PostId, @AppUserId, @Message, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@PostId, @AppUserId, @Message, @PublicationDateTime, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             command.AddParam("@PostId", SqlDbType.BigInt, comment.PostId);
             command.AddParam("@AppUserId", SqlDbType.BigInt, comment.AppUserId);
             command.AddParam("@Message", SqlDbType.VarChar, comment.Message);
+            command.AddParam("@PublicationDateTime", SqlDbType.DateTime, comment.PublicationDateTime);
             command.AddParam("@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
             command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
             command.AddParam("@Status", SqlDbType.Int, comment.Status);
@@ -138,13 +141,14 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(Comment comment)
         {
-            String strCmd = $"UPDATE {table} SET PostId = @PostId, AppUserId = @AppUserId, Message = @Message, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET PostId = @PostId, AppUserId = @AppUserId, Message = @Message, PublicationDateTime = @PublicationDateTime, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             command.AddParam("@PostId", SqlDbType.BigInt, comment.PostId);
             command.AddParam("@AppUserId", SqlDbType.BigInt, comment.AppUserId);
             command.AddParam("@Message", SqlDbType.VarChar, comment.Message);
+            command.AddParam("@PublicationDateTime", SqlDbType.DateTime, comment.PublicationDateTime);
             command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
             command.AddParam("@Status", SqlDbType.Int, comment.Status);
             command.AddParam("@Id", SqlDbType.BigInt, comment.Id);

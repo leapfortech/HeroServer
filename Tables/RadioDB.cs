@@ -165,11 +165,11 @@ namespace HeroServer
                        " FROM [D-Link] AS Link" +
                       $" WHERE Link.Status = 1 AND Link.PostId = (SELECT PostId FROM {table} WHERE Id = @Id);";
 
-            strCmd += "SELECT Comment.Id, Comment.PostId, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
-                      " Comment.Message, Comment.CreateDateTime, Comment.UpdateDateTime, Comment.Status" +
-                      " FROM [D-Comment] AS Comment" +
-                      " INNER JOIN [D-AppUser] AS AppUser ON (Comment.AppUserId = AppUser.Id)" +
-                     $" WHERE Comment.Status = 1 AND Comment.PostId = (SELECT PostId FROM {table} WHERE Id = @Id);";
+            //strCmd += "SELECT Comment.Id, Comment.PostId, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
+            //          " Comment.Message, Comment.CreateDateTime, Comment.UpdateDateTime, Comment.Status" +
+            //          " FROM [D-Comment] AS Comment" +
+            //          " INNER JOIN [D-AppUser] AS AppUser ON (Comment.AppUserId = AppUser.Id)" +
+            //         $" WHERE Comment.Status = 1 AND Comment.PostId = (SELECT PostId FROM {table} WHERE Id = @Id);";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
             command.AddParam("@Id", SqlDbType.BigInt, id);
@@ -207,11 +207,11 @@ namespace HeroServer
                         linkFulls.Add(LinkDB.GetLinkFull(reader));
                     radioFull.LinkFulls = linkFulls;
 
-                    await reader.NextResultAsync();
-                    List<CommentFull> commentFulls = [];
-                    while (await reader.ReadAsync())
-                        commentFulls.Add(CommentDB.GetCommentFull(reader));
-                    radioFull.CommentFulls = commentFulls;
+                    //await reader.NextResultAsync();
+                    //List<CommentFull> commentFulls = [];
+                    //while (await reader.ReadAsync())
+                    //    commentFulls.Add(CommentDB.GetCommentFull(reader));
+                    //radioFull.CommentFulls = commentFulls;
                 }
             }
 
@@ -257,11 +257,11 @@ namespace HeroServer
               " FROM [D-Link] AS Link" +
               " WHERE Link.Status = 1 AND Link.PostId = @PostId;";
 
-            strCmd += "SELECT Comment.Id, Comment.PostId, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
-                      " Comment.Message, Comment.CreateDateTime, Comment.UpdateDateTime, Comment.Status" +
-                      " FROM [D-Comment] AS Comment" +
-                      " INNER JOIN [D-AppUser] AS AppUser ON(Comment.AppUserId = AppUser.Id)" +
-                      " WHERE Comment.Status = 1 AND Comment.PostId = @PostId;";
+            //strCmd += "SELECT Comment.Id, Comment.PostId, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
+            //          " Comment.Message, Comment.CreateDateTime, Comment.UpdateDateTime, Comment.Status" +
+            //          " FROM [D-Comment] AS Comment" +
+            //          " INNER JOIN [D-AppUser] AS AppUser ON(Comment.AppUserId = AppUser.Id)" +
+            //          " WHERE Comment.Status = 1 AND Comment.PostId = @PostId;";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
             command.AddParam("@PostId", SqlDbType.BigInt, postId);
@@ -299,11 +299,11 @@ namespace HeroServer
                         linkFulls.Add(LinkDB.GetLinkFull(reader));
                     radioFull.LinkFulls = linkFulls;
 
-                    await reader.NextResultAsync();
-                    List<CommentFull> commentFulls = [];
-                    while (await reader.ReadAsync())
-                        commentFulls.Add(CommentDB.GetCommentFull(reader));
-                    radioFull.CommentFulls = commentFulls;
+                    //await reader.NextResultAsync();
+                    //List<CommentFull> commentFulls = [];
+                    //while (await reader.ReadAsync())
+                    //    commentFulls.Add(CommentDB.GetCommentFull(reader));
+                    //radioFull.CommentFulls = commentFulls;
                 }
             }
 
@@ -366,18 +366,18 @@ namespace HeroServer
             else
                 strCmd += ";";
 
-            strCmd += "SELECT Comment.Id, Comment.PostId, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
-                       " Comment.Message, Comment.CreateDateTime, Comment.UpdateDateTime, Comment.Status" +
-                       " FROM [D-Comment] AS Comment" +
-                       " INNER JOIN [D-AppUser] AS AppUser ON(Comment.AppUserId = AppUser.Id)" +
-                      $" INNER JOIN {table}" +
-                      $" ON (Comment.PostId = {table}.PostId)" +
-                       " WHERE Comment.Status = 1";
+            //strCmd += "SELECT Comment.Id, Comment.PostId, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
+            //           " Comment.Message, Comment.CreateDateTime, Comment.UpdateDateTime, Comment.Status" +
+            //           " FROM [D-Comment] AS Comment" +
+            //           " INNER JOIN [D-AppUser] AS AppUser ON(Comment.AppUserId = AppUser.Id)" +
+            //          $" INNER JOIN {table}" +
+            //          $" ON (Comment.PostId = {table}.PostId)" +
+            //           " WHERE Comment.Status = 1";
 
-            if (status != -1)
-                strCmd += $" AND {table}.Status = @Status;";
-            else
-                strCmd += ";";
+            //if (status != -1)
+            //    strCmd += $" AND {table}.Status = @Status;";
+            //else
+            //    strCmd += ";";
 
 
             SqlCommand command = new SqlCommand(strCmd, conn);
@@ -420,11 +420,11 @@ namespace HeroServer
                         linkFulls.Add(LinkDB.GetLinkFull(reader));
                     radioDataFull.LinkFulls = linkFulls;
 
-                    await reader.NextResultAsync();
-                    List<CommentFull> commentFulls = [];
-                    while (await reader.ReadAsync())
-                        commentFulls.Add(CommentDB.GetCommentFull(reader));
-                    radioDataFull.CommentFulls = commentFulls;
+                    //await reader.NextResultAsync();
+                    //List<CommentFull> commentFulls = [];
+                    //while (await reader.ReadAsync())
+                    //    commentFulls.Add(CommentDB.GetCommentFull(reader));
+                    //radioDataFull.CommentFulls = commentFulls;
                 }
             }
 

@@ -342,9 +342,9 @@ namespace HeroServer
 
             // DATE
             if (request.Direction == 1)
-                where.Add("Comment.CreateDateTime > @StartDate");
+                where.Add("Comment.PublicationDateTime > @StartDate");
             else
-                where.Add("Comment.CreateDateTime < @StartDate");
+                where.Add("Comment.PublicationDateTime < @StartDate");
 
             String whereFeed = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
 
@@ -353,7 +353,7 @@ namespace HeroServer
 
             if (request.Direction == 1)
                 strCmd = "WITH Comments AS" +
-                         " (SELECT ROW_NUMBER() OVER (ORDER BY Temp.CreateDateTime DESC) AS RowNumber, * FROM" +
+                         " (SELECT ROW_NUMBER() OVER (ORDER BY Temp.PublicationDateTime DESC) AS RowNumber, * FROM" +
                          " (SELECT TOP(@Count2)";
             else
                 strCmd = "SELECT TOP(@Count)";
@@ -363,27 +363,28 @@ namespace HeroServer
                       " Comment.AppUserId," +
                       " DAppUser.Alias AS AppUserAlias," +
                       " Comment.Message," +
+                      " Comment.PublicationDateTime," +
                       " Comment.CreateDateTime," +
                       " Comment.UpdateDateTime," +
                       " Comment.Status" +
                       " FROM [D-Comment] AS Comment" +
                       " INNER JOIN [D-AppUser] AS DAppUser ON Comment.AppUserId = DAppUser.Id" +
                       whereFeed +
-                      " ORDER BY Comment.CreateDateTime";
+                      " ORDER BY Comment.PublicationDateTime";
 
             if (request.Direction == 1)
                 strCmd += ") AS Temp)," +
                           " CommentCount AS (SELECT COUNT(1) AS Total FROM Comments)" +
                           " SELECT * FROM Comments, CommentCount" +
                           " WHERE RowNumber <= Total - @Count" +
-                          " ORDER BY CreateDateTime";
+                          " ORDER BY PublicationDateTime";
 
             strCmd += " DESC;";
 
             // QUERY COUNT
             strCmd += "SELECT COUNT(1) AS Total FROM [D-Comment] AS Comment" + whereCount + ";";
-            strCmd += "SELECT TOP(1) Comment.Id AS FirstCommentId, Comment.CreateDateTime AS FirstDateTime FROM [D-Comment] AS Comment" + whereCount + " ORDER BY Comment.CreateDateTime;";
-            strCmd += "SELECT TOP(1) Comment.Id AS LastCommentId, Comment.CreateDateTime AS LastDateTime FROM [D-Comment] AS Comment" + whereCount + " ORDER BY Comment.CreateDateTime DESC;";
+            strCmd += "SELECT TOP(1) Comment.Id AS FirstCommentId, Comment.PublicationDateTime AS FirstDateTime FROM [D-Comment] AS Comment" + whereCount + " ORDER BY Comment.PublicationDateTime;";
+            strCmd += "SELECT TOP(1) Comment.Id AS LastCommentId, Comment.PublicationDateTime AS LastDateTime FROM [D-Comment] AS Comment" + whereCount + " ORDER BY Comment.PublicationDateTime DESC;";
 
             using (SqlCommand command = new SqlCommand(strCmd, conn))
             {
