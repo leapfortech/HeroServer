@@ -287,7 +287,7 @@ namespace HeroServer
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 // Update Post
-                registerPostRequest.Post.PublicationDateTime = DateTime.Now;
+                //registerPostRequest.Post.PublicationDateTime = DateTime.Now;
                 registerPostRequest.Post.ApprovalDateTime = null;
                 registerPostRequest.Post.ExpirationDateTime = null;
                 await new PostDB().Update(registerPostRequest.Post);

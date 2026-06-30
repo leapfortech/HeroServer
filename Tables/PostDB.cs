@@ -213,10 +213,10 @@ namespace HeroServer
             String whereCount = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
 
             // DATE
-            if (request.Direction == 1)
-                where.Add("Post.PublicationDateTime > @StartDate");
-            else
+            if (request.Direction == 2)
                 where.Add("Post.PublicationDateTime < @StartDate");
+            else
+                where.Add("Post.PublicationDateTime > @StartDate");
 
             String whereFeed = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
 
