@@ -19,19 +19,19 @@ namespace HeroServer.Controllers
         //}
 
         // GET services/GetUid?type=A
-        [HttpGet("GetUid")]
-        [AllowAnonymous]
-        public ActionResult<long> GetUid([FromQuery]String type)
-        {
-            try
-            {
-                return Ok(SecurityFunctions.GetUid(type[0]));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        //[HttpGet("GetUid")]
+        //[AllowAnonymous]
+        //public ActionResult<long> GetUid([FromQuery]String type)
+        //{
+        //    try
+        //    {
+        //        return Ok(SecurityFunctions.GetUid(type[0]));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
 
         // POST services/StartApp
         [HttpPost("StartApp")]

@@ -12,9 +12,7 @@ namespace HeroServer
     {
         // APP
 
-        static readonly int[] appVersion = [0, 8, 4];
-
-        // Register
+        // Register App
         public static async Task<String> RegisterApp(RegisterAppRequest registerAppRequest)
         {
             WebSysUser webSysUser = await WebSysUserFunctions.GetByEmail(registerAppRequest.Email);
@@ -101,7 +99,7 @@ namespace HeroServer
             return appUserMails.Count;
         }
 
-        // Onboarding
+        // Onboarding App
         public static async Task<OnboardingResponse> Onboarding(OnboardingRequest onboardingRequest)
         {
             OnboardingResponse onboardingResponse = new OnboardingResponse();
@@ -155,7 +153,7 @@ namespace HeroServer
             return onboardingResponse;
         }
 
-        // Login
+        // Login App
         public static async Task<LoginAppResponse> LoginApp(HttpContext httpContext, LoginRequest loginRequest)
         {
             FirebaseToken token = await FirebaseFunctions.GetAuthToken(httpContext);
@@ -180,32 +178,6 @@ namespace HeroServer
             if (statusId == 0)
                 throw new Exception("App User not found.");
 
-
-            //if (appUser.AppUserStatusId == 3)  // En validación
-            //{
-            //    Onboarding onboarding = await OnboardingFunctions.GetByAppUserId(appUser.Id);
-            //    if (onboarding.Status == 3)
-            //        onboardingStage = OnboardingFunctions.GetStage(onboarding);
-            //}
-            //else if (appUser.AppUserStatusId == 5)  // Acceptado
-            //    await AppUserFunctions.UpdateStatus(appUser.Id, 1);  // Activo
-            //else if (appUser.AppUserStatusId == 4)  // Rechazado
-            //    await AppUserFunctions.UpdateStatus(appUser.Id, 6);  // Inactivo
-
-            //return new LoginResponse(0, "0|Login|Este es un aviso de bloqueo.");
-
-            String[] version = loginRequest.Version.Split('.');
-
-            for (int i = 0; i < version.Length; i++)
-            {
-                int intVersion = int.Parse(version[i]);
-                if (intVersion > appVersion[i])
-                    break;
-                if (intVersion < appVersion[i])
-                    return new LoginAppResponse(appUser, webSysUser, 0, "0|Héroes Migrantes|Tu App está desactualizada.\r\nPor favor actualízala e intenta de nuevo.", "https://drive.google.com/drive/u/0/folders/1e-PlqhvTgbv3KKsdacAQeqppYCWPMGnH|https://drive.google.com/drive/u/0/folders/1e-PlqhvTgbv3KKsdacAQeqppYCWPMGnH");
-                //return new LoginResponse(appUser, webSysUser, 0, "0|Login|¡Tienes que actualizar tu App!", "https://play.google.com/store/apps/details?id=com.Heroes.Heroes|https://apps.apple.com/gt/app/heroes/id1541057844");
-            }
-
             return new LoginAppResponse(appUser, webSysUser, 1);
         }
 
@@ -218,8 +190,6 @@ namespace HeroServer
         }
 
         // BOARD
-
-        static readonly int[] boardVersion = [0, 8, 4];
 
         // Register Board
         public static async Task<long> RegisterBoard(RegisterBoardRequest registerBoardRequest)

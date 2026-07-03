@@ -16,7 +16,7 @@ namespace HeroServer
             return new ServiceWish(Convert.ToInt64(reader["Id"]),
                                    Convert.ToInt64(reader["AppUserId"]),
                                    Convert.ToInt64(reader["ServiceTypeId"]),
-                                   reader["Comment"].ToString(),
+                                   reader["Wish"].ToString(),
                                    Convert.ToDateTime(reader["CreateDateTime"]),
                                    Convert.ToDateTime(reader["UpdateDateTime"]),
                                    Convert.ToInt32(reader["Status"]));
@@ -81,7 +81,7 @@ namespace HeroServer
 
                             // Data
                             "SELECT " +
-                            "SW.Id, SW.AppUserId, SW.ServiceTypeId, SW.Comment, " +
+                            "SW.Id, SW.AppUserId, SW.ServiceTypeId, SW.Wish, " +
                             "SW.CreateDateTime, SW.UpdateDateTime, SW.Status, " +
 
                             // WebSysUser
@@ -197,15 +197,15 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(ServiceWish serviceWish)
         {
-            String strCmd = $"INSERT INTO {table}(AppUserId, ServiceTypeId, Comment, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(AppUserId, ServiceTypeId, Wish, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@AppUserId, @ServiceTypeId, @Comment, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@AppUserId, @ServiceTypeId, @Wish, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             command.AddParam("@AppUserId", SqlDbType.BigInt, serviceWish.AppUserId);
             command.AddParam("@ServiceTypeId", SqlDbType.BigInt, serviceWish.ServiceTypeId);
-            command.AddParam("@Comment", SqlDbType.VarChar, serviceWish.Comment);
+            command.AddParam("@Wish", SqlDbType.VarChar, serviceWish.Wish);
             command.AddParam("@CreateDateTime", SqlDbType.DateTime, DateTime.Now);
             command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
             command.AddParam("@Status", SqlDbType.Int, serviceWish.Status);
@@ -220,13 +220,13 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(ServiceWish serviceWish)
         {
-            String strCmd = $"UPDATE {table} SET AppUserId = @AppUserId, ServiceTypeId = @ServiceTypeId, Comment = @Comment, UpdateDateTime = @UpdateDateTime WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET AppUserId = @AppUserId, ServiceTypeId = @ServiceTypeId, Wish = @Wish, UpdateDateTime = @UpdateDateTime WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             command.AddParam("@AppUserId", SqlDbType.BigInt, serviceWish.AppUserId);
             command.AddParam("@ServiceTypeId", SqlDbType.BigInt, serviceWish.ServiceTypeId);
-            command.AddParam("@Comment", SqlDbType.VarChar, serviceWish.Comment);
+            command.AddParam("@Wish", SqlDbType.VarChar, serviceWish.Wish);
             command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
             command.AddParam("@Id", SqlDbType.BigInt, serviceWish.Id);
 

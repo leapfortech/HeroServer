@@ -5,7 +5,18 @@ namespace HeroServer
 {
     public static class StartFunctions
     {
-        static readonly int[] appVersion = [ 0, 4, 3 ];
+        static readonly int[] appVersion = [ 0, 0, 0 ];
+
+        public static async void Initialize()
+        {
+            String[] version = (await new SystemParamDB().GetValue("AppVersion")).Split('.');
+            for (int i = 0; i < version.Length; i++)
+                appVersion[i] = int.Parse(version[i]);
+
+            version = (await new SystemParamDB().GetValue("BoardVersion")).Split('.');
+            for (int i = 0; i < version.Length; i++)
+                boardVersion[i] = int.Parse(version[i]);
+        }
 
         // Start
         public static async Task<StartResponse> StartApp(StartRequest request)
@@ -21,23 +32,23 @@ namespace HeroServer
                 {
                     if (WebEnvConfig.Env == EnvironmentType.DEV)
                         return new StartResponse(0, "0|Heroes Migrantes|Tu App está desactualizada.\r\nPor favor actualízala e intenta de nuevo.",
-                                                    "https://drive.google.com/drive/u/0/folders/1TOjpOilO2U4XvCRaNc1KPaBwKyet96P0|<None>");
+                                                    "https://drive.google.com/drive/u/0/folders/1e-PlqhvTgbv3KKsdacAQeqppYCWPMGnH|<None>");
                     if (WebEnvConfig.Env == EnvironmentType.PROD)
                         return new StartResponse(0, "0|Heroes Migrantes|Tu App está desactualizada.\\r\\nPor favor actualízala e intenta de nuevo.",
-                                                    "https://drive.google.com/drive/u/0/folders/1oTH1HSUGFgjwgq3CujaBu6kha5eV77so|<None>");
-                                                    //"https://play.google.com/store/apps/details?id=com.Hpb.Expande|https://apps.apple.com/gt/app/expande/id6745855017");
+                                                    "https://drive.google.com/drive/u/0/folders/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|<None>");
+                                                    //"https://play.google.com/store/apps/details?id=com.Hero.Migrant|https://apps.apple.com/gt/app/heromigrant/idxxxxxxxxxx");
                     return new StartResponse(0, "0|Heroes Migrantes|¡Tienes que actualizar tu App!");
                 }
             }
 
-            String certificates = await CertificateFunctions.GetSecret(request.PublicKey);
+            String certificates = request.PublicKey == null ? null : await CertificateFunctions.GetSecret(request.PublicKey);
 
             return new StartResponse(certificates, 1);
         }
 
         // BOARD
 
-        static readonly int[] boardVersion = [0, 1, 0];
+        static readonly int[] boardVersion = [0, 0, 0];
 
         // Start Board
         public static async Task<StartResponse> StartBoard(StartRequest request)

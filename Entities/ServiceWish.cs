@@ -7,7 +7,7 @@ namespace HeroServer
         public long Id { get; set; }
         public long AppUserId { get; set; }
         public long ServiceTypeId { get; set; }
-        public String Comment { get; set; }
+        public String Wish { get; set; }
         public DateTime CreateDateTime { get; set; }
         public DateTime UpdateDateTime { get; set; }
         public int Status { get; set; }
@@ -16,13 +16,13 @@ namespace HeroServer
         { 
         }
 
-        public ServiceWish(long id, long appUserId, long serviceTypeId, String comment, DateTime createDateTime,
+        public ServiceWish(long id, long appUserId, long serviceTypeId, String wish, DateTime createDateTime,
                            DateTime updateDateTime, int status)
         {
             Id = id;
             AppUserId = appUserId;
             ServiceTypeId = serviceTypeId;
-            Comment = comment;
+            Wish = wish;
             CreateDateTime = createDateTime;
             UpdateDateTime = updateDateTime;
             Status = status;

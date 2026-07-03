@@ -234,23 +234,16 @@ namespace HeroServer
 
         public static async Task<PuzzleResultResponse> SaveResult(PuzzleResultRequest puzzleResultRequest)
         {
-            if (puzzleResultRequest == null)
-                throw new ArgumentNullException(nameof(puzzleResultRequest));
+            ArgumentNullException.ThrowIfNull(puzzleResultRequest);
 
-            Puzzle currentPuzzle = await GetById(puzzleResultRequest.PuzzleId);
-            if (currentPuzzle == null)
-                throw new Exception("Puzzle not found");
+            Puzzle currentPuzzle = await GetById(puzzleResultRequest.PuzzleId) ?? throw new Exception("Puzzle not found");
 
             bool correct = false;
             String correctAnswer = "";
 
             if (puzzleResultRequest.PuzzleAnswerId != -1)
             {
-                PuzzleAnswer puzzleAnswer = await new PuzzleAnswerDB().GetById(puzzleResultRequest.PuzzleAnswerId);
-
-                if (puzzleAnswer == null)
-                    throw new Exception("Puzzle answer not found");
-
+                PuzzleAnswer puzzleAnswer = await new PuzzleAnswerDB().GetById(puzzleResultRequest.PuzzleAnswerId) ?? throw new Exception("Puzzle answer not found");
                 correct = puzzleAnswer.IsCorrect == 1;
             }
 
@@ -265,13 +258,11 @@ namespace HeroServer
             }
 
             DateTime now = DateTime.Now;
-            PuzzleResult puzzleResult = new PuzzleResult(-1, puzzleResultRequest.PlayerId, puzzleResultRequest.PuzzleId, points,
-                                                         puzzleResultRequest.Time, points, now, now, now);
+            PuzzleResult puzzleResult = new PuzzleResult(-1, puzzleResultRequest.PlayerId, puzzleResultRequest.PuzzleId, points, puzzleResultRequest.Time, points, now, now, now);
 
             await new PuzzleResultDB().Add(puzzleResult);
 
-            PuzzleNextRequest nextRequest = new PuzzleNextRequest(puzzleResultRequest.PlayerId, currentPuzzle.PuzzleGameId, currentPuzzle.CountryId,
-                                                                  currentPuzzle.Difficulty);
+            PuzzleNextRequest nextRequest = new PuzzleNextRequest(puzzleResultRequest.PlayerId, currentPuzzle.PuzzleGameId, currentPuzzle.CountryId, currentPuzzle.Difficulty);
 
             PuzzleFull puzzleFull = await GetNextPuzzle(nextRequest);
 

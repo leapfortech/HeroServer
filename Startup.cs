@@ -36,6 +36,7 @@ namespace HeroServer
 
             KeyVaultHelper keyVaultHelper = WebEnvConfig.Initialize(Configuration).Result;
 
+            StartFunctions.Initialize();
             CertificateFunctions.Initialize();
             CybersourceFunctions.Initialize();
 
