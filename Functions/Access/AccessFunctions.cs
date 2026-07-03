@@ -178,6 +178,9 @@ namespace HeroServer
             if (statusId == 0)
                 throw new Exception("App User not found.");
 
+            //return new LoginAppResponse(appUser, webSysUser, 0, "0|Login|¡Tienes que actualizar tu App!", "https://play.google.com/store/apps/details?id=com.RedChapina.RedChapina|https://apps.apple.com/gt/app/red-chapina/id1541057844");
+            //return new LoginAppResponse(appUser, webSysUser, 1, "1|Información|¡Descubre nuestro Sitio Web!", "https://redchapina.com");
+
             return new LoginAppResponse(appUser, webSysUser, 1);
         }
 
