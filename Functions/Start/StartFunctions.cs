@@ -34,9 +34,9 @@ namespace HeroServer
                         return new StartResponse(0, "0|Heroes Migrantes|Tu App está desactualizada.\r\nPor favor actualízala e intenta de nuevo.",
                                                     "https://drive.google.com/drive/u/0/folders/1e-PlqhvTgbv3KKsdacAQeqppYCWPMGnH|<None>");
                     if (WebEnvConfig.Env == EnvironmentType.PROD)
-                        return new StartResponse(0, "0|Heroes Migrantes|Tu App está desactualizada.\\r\\nPor favor actualízala e intenta de nuevo.",
+                        return new StartResponse(0, "0|Heroes Migrantes|Tu App está desactualizada.\r\nPor favor actualízala e intenta de nuevo.",
                                                     "https://drive.google.com/drive/u/0/folders/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|<None>");
-                                                    //"https://play.google.com/store/apps/details?id=com.Hero.Migrant|https://apps.apple.com/gt/app/heromigrant/idxxxxxxxxxx");
+                                                    //"https://play.google.com/store/apps/details?id=com.Hero.Migrant|https://apps.apple.com/gt/app/hero-migrant/idxxxxxxxxxx");
                     return new StartResponse(0, "0|Heroes Migrantes|¡Tienes que actualizar tu App!");
                 }
             }
@@ -61,10 +61,10 @@ namespace HeroServer
                 if (intVersion > boardVersion[i])
                     break;
                 if (intVersion < boardVersion[i])
-                    return new StartResponse(0, "0|Heroes Migrantes|Tu Board está desactualizado.\r\nPor favor actualízalo e intenta de nuevo.");
+                    return new StartResponse(0, "0|Heroes Migrantes|Tu Board está desactualizado.\r\nPor favor refresca esta página Web e intenta de nuevo.");
             }
 
-            String certificates = await CertificateFunctions.GetSecret(request.PublicKey);
+            String certificates = request.PublicKey == null ? null : await CertificateFunctions.GetSecret(request.PublicKey);
 
             return new StartResponse(certificates, 1);
         }

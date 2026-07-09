@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "811503112920",
-    "project_id": "hpbdev-7ab40",
-    "storage_bucket": "hpbdev-7ab40.appspot.com"
+    "project_number": "871851152675",
+    "project_id": "herodev-2bcd1",
+    "storage_bucket": "herodev-2bcd1.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:811503112920:android:323700c0fc70b156627dad",
+        "mobilesdk_app_id": "1:871851152675:android:454994ea0eb8e8bd77a896",
         "android_client_info": {
-          "package_name": "com.Hpb.Hpb"
+          "package_name": "com.hero.migrant"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD80Je_FPCyAz2_EGUg4K8P1cbAM_w4gCY"
+          "current_key": "AIzaSyDfBLV_MB5Iakwbuo-pbsfUEIquSbegT7I"
         }
       ],
       "services": {
