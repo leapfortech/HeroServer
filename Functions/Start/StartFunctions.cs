@@ -32,10 +32,10 @@ namespace HeroServer
                 {
                     if (WebEnvConfig.Env == EnvironmentType.DEV)
                         return new StartResponse(0, "0|Heroes Migrantes|Tu App está desactualizada.\r\nPor favor actualízala e intenta de nuevo.",
-                                                    "https://drive.google.com/drive/u/0/folders/1e-PlqhvTgbv3KKsdacAQeqppYCWPMGnH|<None>");
+                                                    "https://drive.google.com/drive/u/0/folders/1DWYN4kU6SwK9fO1YmihQrqDA_frWsBbl|<None>");
                     if (WebEnvConfig.Env == EnvironmentType.PROD)
                         return new StartResponse(0, "0|Heroes Migrantes|Tu App está desactualizada.\r\nPor favor actualízala e intenta de nuevo.",
-                                                    "https://drive.google.com/drive/u/0/folders/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|<None>");
+                                                    "https://drive.google.com/drive/u/0/folders/1gzP8z6hc70tq0aZqM9q4UNDnygokw6OK|<None>");
                                                     //"https://play.google.com/store/apps/details?id=com.Hero.Migrant|https://apps.apple.com/gt/app/hero-migrant/idxxxxxxxxxx");
                     return new StartResponse(0, "0|Heroes Migrantes|¡Tienes que actualizar tu App!");
                 }
