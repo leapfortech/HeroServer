@@ -526,7 +526,7 @@ namespace HeroServer
             command.AddParam("@StateId", SqlDbType.BigInt, post.StateId);
             command.AddParam("@Title", SqlDbType.VarChar, post.Title);
             command.AddParam("@Summary", SqlDbType.VarChar, post.Summary);
-            command.AddParam("@Description", SqlDbType.VarChar, post.Description);
+            command.AddParam("@Description", SqlDbType.NVarChar, post.Description);
             command.AddParam("@ImageCount", SqlDbType.Int, post.ImageCount);
             command.AddParam("@LikeCount", SqlDbType.Int, post.LikeCount);
             command.AddParam("@PublicationDateTime", SqlDbType.DateTime, post.PublicationDateTime);
@@ -556,7 +556,7 @@ namespace HeroServer
             command.AddParam("@StateId", SqlDbType.BigInt, post.StateId);
             command.AddParam("@Title", SqlDbType.VarChar, post.Title);
             command.AddParam("@Summary", SqlDbType.VarChar, post.Summary);
-            command.AddParam("@Description", SqlDbType.VarChar, post.Description);
+            command.AddParam("@Description", SqlDbType.NVarChar, post.Description);
             command.AddParam("@ImageCount", SqlDbType.Int, post.ImageCount);
             command.AddParam("@LikeCount", SqlDbType.Int, post.LikeCount);
             command.AddParam("@PublicationDateTime", SqlDbType.DateTime, post.PublicationDateTime);
