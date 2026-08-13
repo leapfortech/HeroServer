@@ -41,7 +41,7 @@ namespace HeroServer
             CybersourceFunctions.Initialize();
 
             AesHelper.Initialize();  // GenerateKey(connString);
-            WebSysUserFunctions.Initialize();
+            WebSysUserFunctions.Initialize(); // Branch test 1
             FirebaseFunctions.Initialize();
             StorageFunctions.Initialize();
             MailHelper.Initialize();
