@@ -262,7 +262,7 @@ namespace HeroServer
 
             await new PuzzleResultDB().Add(puzzleResult);
 
-            PuzzleNextRequest nextRequest = new PuzzleNextRequest(puzzleResultRequest.PlayerId, currentPuzzle.PuzzleGameId, currentPuzzle.CountryId, currentPuzzle.Difficulty);
+            PuzzleNextRequest nextRequest = new PuzzleNextRequest(puzzleResultRequest.PlayerId, currentPuzzle.PuzzleGameId, currentPuzzle.Difficulty);
 
             PuzzleFull puzzleFull = await GetNextPuzzle(nextRequest);
 

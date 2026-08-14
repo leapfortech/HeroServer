@@ -552,7 +552,6 @@ namespace HeroServer
             String strCmd = @"SELECT TOP 1 P.Id
                               FROM [D-Puzzle] P
                               WHERE P.PuzzleGameId = @PuzzleGameId
-                              AND P.CountryId = @CountryId
                               AND P.Difficulty = @Difficulty
                               AND P.Status = 1
                               AND P.Id NOT IN
@@ -567,7 +566,6 @@ namespace HeroServer
 
             command.AddParam("@PlayerId", SqlDbType.BigInt, puzzleNextRequest.PlayerId);
             command.AddParam("@PuzzleGameId", SqlDbType.BigInt, puzzleNextRequest.PuzzleGameId);
-            command.AddParam("@CountryId", SqlDbType.BigInt, puzzleNextRequest.CountryId);
             command.AddParam("@Difficulty", SqlDbType.Int, puzzleNextRequest.Difficulty);
 
             using (conn)
