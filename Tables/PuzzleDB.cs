@@ -547,12 +547,11 @@ namespace HeroServer
             return puzzleDataFull;
         }
 
-        public async Task<long> GetNextPuzzle(PuzzleNextRequest puzzleNextRequest)
+        public async Task<long> GetNextPuzzleId(PuzzleNextRequest puzzleNextRequest)
         {
             String strCmd = @"SELECT TOP 1 P.Id
                               FROM [D-Puzzle] P
                               WHERE P.PuzzleGameId = @PuzzleGameId
-                              AND P.Difficulty = @Difficulty
                               AND P.Status = 1
                               AND P.Id NOT IN
                               (
@@ -560,7 +559,13 @@ namespace HeroServer
                                 FROM [J-PuzzleResult] PR
                                 WHERE PR.PlayerId = @PlayerId
                               )
-                              ORDER BY P.CreateDateTime ASC";
+                              ORDER BY 
+                              ABS(P.Difficulty - @Difficulty) ASC,
+                              CASE 
+                                  WHEN P.Difficulty > @Difficulty THEN 0
+                                  ELSE 1
+                              END ASC,
+                              P.CreateDateTime ASC";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -568,14 +573,19 @@ namespace HeroServer
             command.AddParam("@PuzzleGameId", SqlDbType.BigInt, puzzleNextRequest.PuzzleGameId);
             command.AddParam("@Difficulty", SqlDbType.Int, puzzleNextRequest.Difficulty);
 
+            long puzzleId = -1;
             using (conn)
             {
                 await conn.OpenAsync();
-
-                long? result = (long?)await command.ExecuteScalarAsync();
-
-                return result ?? -1;
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        puzzleId = Convert.ToInt64(reader["Id"]);
+                    }
+                }
             }
+            return puzzleId;
         }
 
         // INSERT
