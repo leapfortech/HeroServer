@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "217697704681",
+    "project_id": "hero-ea67c",
+    "storage_bucket": "hero-ea67c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:217697704681:android:3f55b6ff8b3d02bf9fee78",
+        "android_client_info": {
+          "package_name": "com.hero.migrant"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHzG6jK5h2vK9UqEc5JmSJUJbtTbeIvKI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
