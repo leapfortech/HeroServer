@@ -124,7 +124,7 @@ namespace HeroServer
 
         public static async Task<PuzzleFull> GetNextPuzzle(PuzzleNextRequest puzzleNextRequest)
         {
-            long puzzleId = await new PuzzleDB().GetNextPuzzle(puzzleNextRequest);
+            long puzzleId = await new PuzzleDB().GetNextPuzzleId(puzzleNextRequest);
 
             if (puzzleId == -1)
                 return null;
@@ -262,7 +262,7 @@ namespace HeroServer
 
             await new PuzzleResultDB().Add(puzzleResult);
 
-            PuzzleNextRequest nextRequest = new PuzzleNextRequest(puzzleResultRequest.PlayerId, currentPuzzle.PuzzleGameId, currentPuzzle.CountryId, currentPuzzle.Difficulty);
+            PuzzleNextRequest nextRequest = new PuzzleNextRequest(puzzleResultRequest.PlayerId, currentPuzzle.PuzzleGameId, currentPuzzle.Difficulty);
 
             PuzzleFull puzzleFull = await GetNextPuzzle(nextRequest);
 
