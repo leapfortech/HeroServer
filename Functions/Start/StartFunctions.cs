@@ -36,7 +36,7 @@ namespace HeroServer
                     if (WebEnvConfig.Env == EnvironmentType.PROD)
                         return new StartResponse(0, "0|Heroes Migrantes|Tu App está desactualizada.\r\nPor favor actualízala e intenta de nuevo.",
                                                     "https://play.google.com/store/apps/details?id=com.hero.migrant|<None>");
-                                                    //"https://play.google.com/apps/internaltest/4700485194528386850|<None>");
+                                                    //"https://play.google.com/apps/internaltest/4700485194528386850|<None>");   // Google Play Internal Test
                                                     //"https://play.google.com/store/apps/details?id=com.hero.migrant|https://apps.apple.com/gt/app/hero-migrant/idxxxxxxxxxx");
                     return new StartResponse(0, "0|Heroes Migrantes|¡Tienes que actualizar tu App!");
                 }
