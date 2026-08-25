@@ -295,8 +295,8 @@ namespace HeroServer
         // EMAIL
         public static async Task<int> SendOTPEmail(String email, String code)
         {
-            String subject = "Código de verificación Heroes Migrantes App";
-            String body = $"Intresa el siguiente código en la App: <strong>{code}</strong>";
+            String subject = "Código de verificación\nHéroes Migrantes";
+            String body = $"Ingresa el siguiente código en la App\n<strong>{code}</strong>";
 
             String message = HtmlHelper.GetConfirmResultHtml(subject, body, "#666666");
 
@@ -305,7 +305,7 @@ namespace HeroServer
 
             try
             {
-                await MailHelper.SendMail(email, "Heroes Migrantes", subject, message, true);
+                await MailHelper.SendMail(email, "Héroes Migrantes", subject, message, true);
             }
             catch
             {
