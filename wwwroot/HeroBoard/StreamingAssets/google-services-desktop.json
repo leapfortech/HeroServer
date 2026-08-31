@@ -7,20 +7,22 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:217697704681:android:3f55b6ff8b3d02bf9fee78",
+        "mobilesdk_app_id": "1:217697704681:ios:121f8dad8d38910b9fee78",
         "android_client_info": {
           "package_name": "com.hero.migrant"
         }
       },
-      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDHzG6jK5h2vK9UqEc5JmSJUJbtTbeIvKI"
+          "current_key": "AIzaSyBKIyE_54_JTQY95duPTqa0WqE1zGdEPWc"
         }
       ],
       "services": {
+        "analytics_service": {
+          "status": 0
+        },
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "status": 1
         }
       }
     }
