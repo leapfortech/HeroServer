@@ -126,12 +126,12 @@ namespace HeroServer
 
                 if (registerRadioRequest.Radio == null)
                 {
-                    registerRadioRequest.Radio = new Radio(-1, registerRadioRequest.Post.Id, DateTime.Now, DateTime.Now, 1);
+                    registerRadioRequest.Radio = new Radio(-1, registerRadioRequest.Post.Id, DateTime.Now, DateTime.Now, 0);
                 }
                 else
                 {
                     registerRadioRequest.Radio.PostId = registerRadioRequest.Post.Id;
-                    registerRadioRequest.Radio.Status = 1;
+                    registerRadioRequest.Radio.Status = 0;
                 }
 
                 id = await Add(registerRadioRequest.Radio);

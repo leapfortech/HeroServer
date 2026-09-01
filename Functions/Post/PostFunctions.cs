@@ -83,7 +83,11 @@ namespace HeroServer
                 registerPostRequest.Post.PublicationDateTime = DateTime.Now;
                 registerPostRequest.Post.ApprovalDateTime = null;
                 registerPostRequest.Post.ExpirationDateTime = null;
-                registerPostRequest.Post.Status = 1;
+
+                if (registerPostRequest.Post.PostTypeId == (long)PostType.Radio)
+                    registerPostRequest.Post.Status = 0;
+                else
+                    registerPostRequest.Post.Status = 1;
 
                 postId = await new PostDB().Add(registerPostRequest.Post);
 
