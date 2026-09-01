@@ -59,6 +59,9 @@ namespace HeroServer
                     // Onboarding = 1
                     await AppUserFunctions.UpdateOption(appUserId, 0, 1);
 
+                    // Register Player
+                    await PuzzleFunctions.RegisterPlayer(appUserId);
+
                     scope.Complete();
                 }
             }
