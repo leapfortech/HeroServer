@@ -17,6 +17,8 @@ namespace HeroServer
         public String Summary { get; set; }
         public String Description { get; set; }
         public int ImageCount { get; set; }
+        public int[] ReactionCounts { get; set; }
+        public int CommentCount { get; set; }
         public int Favorite { get; set; }
         public int Like { get; set; }
         public int LikeCount { get; set; }
@@ -24,6 +26,7 @@ namespace HeroServer
         public DateTime PublicationDateTime { get; set; }
         public int PostStatus { get; set; }
 
+        public AppUserInfo AppUserInfo { get; set; }
         public ContactFull ContactFull { get; set; }
         public List<LinkFull> LinkFulls { get; set; }
         public List<CommentFull> CommentFulls { get; set; }
@@ -34,8 +37,8 @@ namespace HeroServer
         }
 
         public PostFull(long postId, long appUserId, String appUserAlias, long postTypeId, long postCountryId, long postStateId, String title, String titleImage,
-                        String summary, String description, int imageCount, int favorite, int like, int likeCount, long reactionPhraseId, DateTime publicationDateTime,
-                        int postStatus, ContactFull contactFull, List<LinkFull> linkFulls, List<CommentFull> commentFulls)
+                        String summary, String description, int imageCount, int[] reactionCounts, int commentCount, int favorite, int like, int likeCount, long reactionPhraseId, DateTime publicationDateTime,
+                        int postStatus, AppUserInfo appUserInfo, ContactFull contactFull, List<LinkFull> linkFulls, List<CommentFull> commentFulls)
         {
             PostId = postId;
             AppUserId = appUserId;
@@ -48,6 +51,8 @@ namespace HeroServer
             Summary = summary;
             Description = description;
             ImageCount = imageCount;
+            ReactionCounts = reactionCounts;
+            CommentCount = commentCount;
             Favorite = favorite;
             Like = like;
             LikeCount = likeCount;
@@ -55,6 +60,7 @@ namespace HeroServer
             PublicationDateTime = publicationDateTime;
             PostStatus = postStatus;
 
+            AppUserInfo = appUserInfo;
             ContactFull = contactFull;
             LinkFulls = linkFulls;
             CommentFulls = commentFulls;

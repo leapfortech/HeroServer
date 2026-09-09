@@ -57,12 +57,20 @@ namespace HeroServer
                                 reader["Summary"].ToString(),
                                 reader["Description"].ToString(),
                                 Convert.ToInt32(reader["ImageCount"]),
+
+                                new int[] {Convert.ToInt32(reader["ReactionCount1"]),
+                                           Convert.ToInt32(reader["ReactionCount2"]),
+                                           Convert.ToInt32(reader["ReactionCount3"]),
+                                           Convert.ToInt32(reader["ReactionCount4"])},
+                                Convert.ToInt32(reader["CommentCount"]),
+
                                 Convert.ToInt32(reader["Favorite"]),
                                 Convert.ToInt32(reader["Like"]),
                                 Convert.ToInt32(reader["LikeCount"]),
                                 Convert.ToInt64(reader["ReactionPhraseId"]),
                                 Convert.ToDateTime(reader["PublicationDateTime"]),
                                 Convert.ToInt32(reader["PostStatus"]),
+                                null, // AppUserInfo
                                 null,   //ContactFull
                                 null,   //LinkFulls
                                 null);  //CommentFulls
@@ -239,6 +247,34 @@ namespace HeroServer
                         " Post.Summary," +
                         " Post.Description," +
                         " Post.ImageCount," +
+
+                        // ReactionCounts
+                        " ISNULL((SELECT COUNT(*)" +
+                        "        FROM [D-Reaction] AS Reaction" +
+                        "        WHERE Reaction.PostId = Post.Id" +
+                        "        AND Reaction.ReactionPhraseId = 1), 0) AS ReactionCount1," +
+
+                        " ISNULL((SELECT COUNT(*)" +
+                        "        FROM [D-Reaction] AS Reaction" +
+                        "        WHERE Reaction.PostId = Post.Id" +
+                        "        AND Reaction.ReactionPhraseId = 2), 0) AS ReactionCount2," +
+
+                        " ISNULL((SELECT COUNT(*)" +
+                        "        FROM [D-Reaction] AS Reaction" +
+                        "        WHERE Reaction.PostId = Post.Id" +
+                        "        AND Reaction.ReactionPhraseId = 3), 0) AS ReactionCount3," +
+
+                        " ISNULL((SELECT COUNT(*)" +
+                        "        FROM [D-Reaction] AS Reaction" +
+                        "        WHERE Reaction.PostId = Post.Id" +
+                        "        AND Reaction.ReactionPhraseId = 4), 0) AS ReactionCount4," +
+
+                        // CommentCount
+                        " ISNULL((SELECT COUNT(*)" +
+                        "        FROM [D-Comment] AS Comment" +
+                        "        WHERE Comment.PostId = Post.Id" +
+                        "        AND Comment.Status = 1), 0) AS CommentCount," +
+
                         " CASE WHEN JFavorite.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
                         " ISNULL(DLike.[Rank], -1) AS [Like]," +
                         " ISNULL(DReaction.[ReactionPhraseId], -1) AS [ReactionPhraseId]," +

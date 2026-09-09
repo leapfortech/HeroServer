@@ -39,12 +39,34 @@ namespace HeroServer
                                 reader["Summary"].ToString(),
                                 reader["Description"].ToString(),
                                 Convert.ToInt32(reader["ImageCount"]),
+
+                                new int[]{Convert.ToInt32(reader["ReactionCount1"]),
+                                          Convert.ToInt32(reader["ReactionCount2"]),
+                                          Convert.ToInt32(reader["ReactionCount3"]),
+                                          Convert.ToInt32(reader["ReactionCount4"])},
+                                Convert.ToInt32(reader["CommentCount"]),
+                                
                                 Convert.ToInt32(reader["Favorite"]),
                                 Convert.ToInt32(reader["Like"]),
                                 Convert.ToInt32(reader["LikeCount"]),
                                 Convert.ToInt64(reader["ReactionPhraseId"]),
                                 Convert.ToDateTime(reader["PublicationDateTime"]),
-                                Convert.ToInt32(reader["Status"]),
+                                Convert.ToInt32(reader["PostStatus"]),
+
+                                new AppUserInfo(Convert.ToInt64(reader["AppUserId"]),
+                                                reader["AppUserAlias"].ToString(),
+                                                null,
+
+                                                new LocalityFull(Convert.ToInt64(reader["InterestLocalityTypeId"]),
+                                                                 Convert.ToInt64(reader["InterestLocalityCountryId"]),
+                                                                 Convert.ToInt64(reader["InterestLocalityStateId"]),
+                                                                 Convert.ToInt64(reader["InterestLocalityCityId"])),
+
+                                                new LocalityFull(Convert.ToInt64(reader["CurrentLocalityTypeId"]),
+                                                                 Convert.ToInt64(reader["CurrentLocalityCountryId"]),
+                                                                 Convert.ToInt64(reader["CurrentLocalityStateId"]),
+                                                                 Convert.ToInt64(reader["CurrentLocalityCityId"]))),
+
                                 null,   //ContactFull
                                 null,   //LinkFulls
                                 null,   //CommentFulls
@@ -116,10 +138,51 @@ namespace HeroServer
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId," +
                              " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount," +
+
+                             // ReactionCounts
+                             " ISNULL((SELECT COUNT(*)" +
+                             "        FROM [D-Reaction] AS Reaction" +
+                             "        WHERE Reaction.PostId = Post.Id" +
+                             "        AND Reaction.ReactionPhraseId = 1), 0) AS ReactionCount1," +
+
+                             " ISNULL((SELECT COUNT(*)" +
+                             "        FROM [D-Reaction] AS Reaction" +
+                             "        WHERE Reaction.PostId = Post.Id" +
+                             "        AND Reaction.ReactionPhraseId = 2), 0) AS ReactionCount2," +
+
+                             " ISNULL((SELECT COUNT(*)" +
+                             "        FROM [D-Reaction] AS Reaction" +
+                             "        WHERE Reaction.PostId = Post.Id" +
+                             "        AND Reaction.ReactionPhraseId = 3), 0) AS ReactionCount3," +
+
+                             " ISNULL((SELECT COUNT(*)" +
+                             "        FROM [D-Reaction] AS Reaction" +
+                             "        WHERE Reaction.PostId = Post.Id" +
+                             "        AND Reaction.ReactionPhraseId = 4), 0) AS ReactionCount4," +
+
+                             // CommentCount
+                             " ISNULL((SELECT COUNT(*)" +
+                             "        FROM [D-Comment] AS Comment" +
+                             "        WHERE Comment.PostId = Post.Id" +
+                             "        AND Comment.Status = 1), 0) AS CommentCount," +
+
                              " CASE WHEN Fav.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
                              " ISNULL(DLike.[Rank], -1) AS [Like]," +
                              " ISNULL(DReaction.[ReactionPhraseId], -1) AS [ReactionPhraseId]," +
-                             " Post.LikeCount, Post.PublicationDateTime, Post.Status," +
+                             " Post.LikeCount, Post.PublicationDateTime, Post.Status AS PostStatus," +
+
+                             // Interest Locality
+                             " ISNULL(InterestLocality.LocalityType, -1) AS InterestLocalityTypeId," +
+                             " ISNULL(InterestLocality.CountryId, -1) AS InterestLocalityCountryId," +
+                             " ISNULL(InterestLocality.StateId, -1) AS InterestLocalityStateId," +
+                             " ISNULL(InterestLocality.CityId, -1) AS InterestLocalityCityId," +
+
+                             // Current Locality
+                             " ISNULL(CurrentLocality.LocalityType, -1) AS CurrentLocalityTypeId," +
+                             " ISNULL(CurrentLocality.CountryId, -1) AS CurrentLocalityCountryId," +
+                             " ISNULL(CurrentLocality.StateId, -1) AS CurrentLocalityStateId," +
+                             " ISNULL(CurrentLocality.CityId, -1) AS CurrentLocalityCityId," +
+
                             $" {table}.NewsTypeId, {table}.Place," +
                             $" {table}.Source, {table}.DateTime, {table}.Status" +
                             $" FROM {table}" +
@@ -128,6 +191,25 @@ namespace HeroServer
                              " LEFT JOIN [J-Favorite] AS Fav ON Fav.PostId = Post.Id AND Fav.AppUserId = @LikeAppUserId" +
                              " LEFT JOIN [D-Like] AS DLike ON DLike.PostId = Post.Id AND DLike.AppUserId = @LikeAppUserId" +
                              " LEFT JOIN [D-Reaction] AS DReaction ON DReaction.PostId = Post.Id AND DReaction.AppUserId = @LikeAppUserId" +
+
+                             // Interest locality
+                             " OUTER APPLY (" +
+                             "     SELECT TOP 1 LocalityType, CountryId, StateId, CityId" +
+                             "     FROM [D-Locality]" +
+                             "     WHERE AppUserId = Post.AppUserId" +
+                             "     AND LocalityType = 1" +
+                             "     AND Status = 1" +
+                             " ) AS InterestLocality" +
+
+                             // Current locality
+                             " OUTER APPLY (" +
+                             "     SELECT TOP 1 LocalityType, CountryId, StateId, CityId" +
+                             "     FROM [D-Locality]" +
+                             "     WHERE AppUserId = Post.AppUserId" +
+                             "     AND LocalityType = 2" +
+                             "     AND Status = 1" +
+                             " ) AS CurrentLocality" +
+
                             $" WHERE {table}.Id = @Id;";
 
             strCmd += "SELECT Id, PostId, Name, Status" +
@@ -138,11 +220,12 @@ namespace HeroServer
                        " FROM [D-Link] AS Link" +
                       $" WHERE Link.Status = 1 AND Link.PostId = (SELECT PostId FROM {table} WHERE Id = @Id);";
 
-            //strCmd += "SELECT Comment.Id, Comment.PostId, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
-            //          " Comment.Message, Comment.CreateDateTime, Comment.UpdateDateTime, Comment.Status" +
-            //          " FROM [D-Comment] AS Comment" +
-            //          " INNER JOIN [D-AppUser] AS AppUser ON (Comment.AppUserId = AppUser.Id)" +
-            //         $" WHERE Comment.Status = 1 AND Comment.PostId = (SELECT PostId FROM {table} WHERE Id = @Id);";
+            strCmd += "SELECT TOP 3 Comment.Id, Comment.PostId, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
+                      " Comment.Message, Comment.PublicationDateTime, Comment.CreateDateTime, Comment.UpdateDateTime, Comment.Status" +
+                      " FROM [D-Comment] AS Comment" +
+                      " INNER JOIN [D-AppUser] AS AppUser ON (Comment.AppUserId = AppUser.Id)" +
+                     $" WHERE Comment.Status = 1 AND Comment.PostId = (SELECT PostId FROM {table} WHERE Id = @Id)" +
+                      " ORDER BY Comment.PublicationDateTime DESC;";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
             command.AddParam("@Id", SqlDbType.BigInt, id);
@@ -169,11 +252,11 @@ namespace HeroServer
                         linkFulls.Add(LinkDB.GetLinkFull(reader));
                     newsFull.LinkFulls = linkFulls;
 
-                    //await reader.NextResultAsync();
-                    //List<CommentFull> commentFulls = [];
-                    //while (await reader.ReadAsync())
-                    //    commentFulls.Add(CommentDB.GetCommentFull(reader));
-                    //newsFull.CommentFulls = commentFulls;
+                    await reader.NextResultAsync();
+                    List<CommentFull> commentFulls = [];
+                    while (await reader.ReadAsync())
+                        commentFulls.Add(CommentDB.GetCommentFull(reader));
+                    newsFull.CommentFulls = commentFulls;
                 }
             }
 
@@ -186,10 +269,51 @@ namespace HeroServer
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId," +
                              " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
                              " Post.ImageCount," +
+
+                             // ReactionCounts
+                             " ISNULL((SELECT COUNT(*)" +
+                             "        FROM [D-Reaction] AS Reaction" +
+                             "        WHERE Reaction.PostId = Post.Id" +
+                             "        AND Reaction.ReactionPhraseId = 1), 0) AS ReactionCount1," +
+
+                             " ISNULL((SELECT COUNT(*)" +
+                             "        FROM [D-Reaction] AS Reaction" +
+                             "        WHERE Reaction.PostId = Post.Id" +
+                             "        AND Reaction.ReactionPhraseId = 2), 0) AS ReactionCount2," +
+
+                             " ISNULL((SELECT COUNT(*)" +
+                             "        FROM [D-Reaction] AS Reaction" +
+                             "        WHERE Reaction.PostId = Post.Id" +
+                             "        AND Reaction.ReactionPhraseId = 3), 0) AS ReactionCount3," +
+
+                             " ISNULL((SELECT COUNT(*)" +
+                             "        FROM [D-Reaction] AS Reaction" +
+                             "        WHERE Reaction.PostId = Post.Id" +
+                             "        AND Reaction.ReactionPhraseId = 4), 0) AS ReactionCount4," +
+
+                             // CommentCount
+                             " ISNULL((SELECT COUNT(*)" +
+                             "        FROM [D-Comment] AS Comment" +
+                             "        WHERE Comment.PostId = Post.Id" +
+                             "        AND Comment.Status = 1), 0) AS CommentCount," +
+
                              " CASE WHEN Fav.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
                              " ISNULL(DLike.[Rank], -1) AS [Like]," +
                              " ISNULL(DReaction.[ReactionPhraseId], -1) AS [ReactionPhraseId]," +
-                             " Post.LikeCount, Post.PublicationDateTime, Post.Status," +
+                             " Post.LikeCount, Post.PublicationDateTime, Post.Status AS PostStatus," +
+
+                             // Interest Locality
+                             " ISNULL(InterestLocality.LocalityType, -1) AS InterestLocalityTypeId," +
+                             " ISNULL(InterestLocality.CountryId, -1) AS InterestLocalityCountryId," +
+                             " ISNULL(InterestLocality.StateId, -1) AS InterestLocalityStateId," +
+                             " ISNULL(InterestLocality.CityId, -1) AS InterestLocalityCityId," +
+
+                             // Current Locality
+                             " ISNULL(CurrentLocality.LocalityType, -1) AS CurrentLocalityTypeId," +
+                             " ISNULL(CurrentLocality.CountryId, -1) AS CurrentLocalityCountryId," +
+                             " ISNULL(CurrentLocality.StateId, -1) AS CurrentLocalityStateId," +
+                             " ISNULL(CurrentLocality.CityId, -1) AS CurrentLocalityCityId," +
+
                             $" {table}.NewsTypeId, {table}.Place," +
                             $" {table}.Source, {table}.DateTime, {table}.Status" +
                             $" FROM {table}" +
@@ -198,6 +322,25 @@ namespace HeroServer
                              " LEFT JOIN [J-Favorite] AS Fav ON Fav.PostId = Post.Id AND Fav.AppUserId = @LikeAppUserId" +
                              " LEFT JOIN [D-Like] AS DLike ON DLike.PostId = Post.Id AND DLike.AppUserId = @LikeAppUserId" +
                              " LEFT JOIN [D-Reaction] AS DReaction ON DReaction.PostId = Post.Id AND DReaction.AppUserId = @LikeAppUserId" +
+
+                             // Interest locality
+                             " OUTER APPLY (" +
+                             "     SELECT TOP 1 LocalityType, CountryId, StateId, CityId" +
+                             "     FROM [D-Locality]" +
+                             "     WHERE AppUserId = Post.AppUserId" +
+                             "     AND LocalityType = 1" +
+                             "     AND Status = 1" +
+                             " ) AS InterestLocality" +
+
+                             // Current locality
+                             " OUTER APPLY (" +
+                             "     SELECT TOP 1 LocalityType, CountryId, StateId, CityId" +
+                             "     FROM [D-Locality]" +
+                             "     WHERE AppUserId = Post.AppUserId" +
+                             "     AND LocalityType = 2" +
+                             "     AND Status = 1" +
+                             " ) AS CurrentLocality" +
+
                             $" WHERE {table}.PostId = @PostId;";
 
             strCmd += "SELECT Id, PostId, Name, Status" +
@@ -208,11 +351,12 @@ namespace HeroServer
               " FROM [D-Link] AS Link" +
               " WHERE Link.Status = 1 AND Link.PostId = @PostId;";
 
-            //strCmd += "SELECT Comment.Id, Comment.PostId, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
-            //          " Comment.Message, Comment.CreateDateTime, Comment.UpdateDateTime, Comment.Status" +
-            //          " FROM [D-Comment] AS Comment" +
-            //          " INNER JOIN [D-AppUser] AS AppUser ON(Comment.AppUserId = AppUser.Id)" +
-            //          " WHERE Comment.Status = 1 AND Comment.PostId = @PostId;";
+            strCmd += "SELECT TOP 3 Comment.Id, Comment.PostId, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
+                      " Comment.Message, Comment.PublicationDateTime, Comment.CreateDateTime, Comment.UpdateDateTime, Comment.Status" +
+                      " FROM [D-Comment] AS Comment" +
+                      " INNER JOIN [D-AppUser] AS AppUser ON(Comment.AppUserId = AppUser.Id)" +
+                      " WHERE Comment.Status = 1 AND Comment.PostId = @PostId" +
+                      " ORDER BY Comment.PublicationDateTime DESC;";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
             command.AddParam("@PostId", SqlDbType.BigInt, postId);
@@ -240,11 +384,11 @@ namespace HeroServer
                         linkFulls.Add(LinkDB.GetLinkFull(reader));
                     newsFull.LinkFulls = linkFulls;
 
-                    //await reader.NextResultAsync();
-                    //List<CommentFull> commentFulls = [];
-                    //while (await reader.ReadAsync())
-                    //    commentFulls.Add(CommentDB.GetCommentFull(reader));
-                    //newsFull.CommentFulls = commentFulls;
+                    await reader.NextResultAsync();
+                    List<CommentFull> commentFulls = [];
+                    while (await reader.ReadAsync())
+                        commentFulls.Add(CommentDB.GetCommentFull(reader));
+                    newsFull.CommentFulls = commentFulls;
                 }
             }
 
@@ -256,12 +400,72 @@ namespace HeroServer
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId," +
                              " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
-                             " Post.ImageCount, 0 AS Favorite, -1 AS [Like], Post.LikeCount, Post.PublicationDateTime, Post.Status," +
+                             " Post.ImageCount," +
+
+                             // ReactionCounts
+                             " ISNULL((SELECT COUNT(*)" +
+                             "        FROM [D-Reaction] AS Reaction" +
+                             "        WHERE Reaction.PostId = Post.Id" +
+                             "        AND Reaction.ReactionPhraseId = 1), 0) AS ReactionCount1," +
+
+                             " ISNULL((SELECT COUNT(*)" +
+                             "        FROM [D-Reaction] AS Reaction" +
+                             "        WHERE Reaction.PostId = Post.Id" +
+                             "        AND Reaction.ReactionPhraseId = 2), 0) AS ReactionCount2," +
+
+                             " ISNULL((SELECT COUNT(*)" +
+                             "        FROM [D-Reaction] AS Reaction" +
+                             "        WHERE Reaction.PostId = Post.Id" +
+                             "        AND Reaction.ReactionPhraseId = 3), 0) AS ReactionCount3," +
+
+                             " ISNULL((SELECT COUNT(*)" +
+                             "        FROM [D-Reaction] AS Reaction" +
+                             "        WHERE Reaction.PostId = Post.Id" +
+                             "        AND Reaction.ReactionPhraseId = 4), 0) AS ReactionCount4," +
+
+                             // CommentCount
+                             " ISNULL((SELECT COUNT(*)" +
+                             "        FROM [D-Comment] AS Comment" +
+                             "        WHERE Comment.PostId = Post.Id" +
+                             "        AND Comment.Status = 1), 0) AS CommentCount," +
+
+                             " 0 AS Favorite, -1 AS [Like], Post.LikeCount, Post.PublicationDateTime, Post.Status AS PostStatus," +
+
+                             // Interest Locality
+                             " ISNULL(InterestLocality.LocalityType, -1) AS InterestLocalityTypeId," +
+                             " ISNULL(InterestLocality.CountryId, -1) AS InterestLocalityCountryId," +
+                             " ISNULL(InterestLocality.StateId, -1) AS InterestLocalityStateId," +
+                             " ISNULL(InterestLocality.CityId, -1) AS InterestLocalityCityId," +
+
+                             // Current Locality
+                             " ISNULL(CurrentLocality.LocalityType, -1) AS CurrentLocalityTypeId," +
+                             " ISNULL(CurrentLocality.CountryId, -1) AS CurrentLocalityCountryId," +
+                             " ISNULL(CurrentLocality.StateId, -1) AS CurrentLocalityStateId," +
+                             " ISNULL(CurrentLocality.CityId, -1) AS CurrentLocalityCityId," +
+
                             $" {table}.NewsTypeId, {table}.Place," +
                             $" {table}.Source, {table}.DateTime, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
-                            $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)";
+                            $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
+
+                             // Interest locality
+                             " OUTER APPLY (" +
+                             "     SELECT TOP 1 LocalityType, CountryId, StateId, CityId" +
+                             "     FROM [D-Locality]" +
+                             "     WHERE AppUserId = Post.AppUserId" +
+                             "     AND LocalityType = 1" +
+                             "     AND Status = 1" +
+                             " ) AS InterestLocality" +
+
+                             // Current locality
+                             " OUTER APPLY (" +
+                             "     SELECT TOP 1 LocalityType, CountryId, StateId, CityId" +
+                             "     FROM [D-Locality]" +
+                             "     WHERE AppUserId = Post.AppUserId" +
+                             "     AND LocalityType = 2" +
+                             "     AND Status = 1" +
+                             " ) AS CurrentLocality";
 
             if (status != -1)
                 strCmd += $" WHERE {table}.Status = @Status;";
@@ -288,18 +492,28 @@ namespace HeroServer
             else
                 strCmd += ";";
 
-            //strCmd += "SELECT Comment.Id, Comment.PostId, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
-            //           " Comment.Message, Comment.CreateDateTime, Comment.UpdateDateTime, Comment.Status" +
-            //           " FROM [D-Comment] AS Comment" +
-            //           " INNER JOIN [D-AppUser] AS AppUser ON(Comment.AppUserId = AppUser.Id)" +
-            //          $" INNER JOIN {table}" +
-            //          $" ON (Comment.PostId = {table}.PostId)" +
-            //           " WHERE Comment.Status = 1";
+            strCmd += "SELECT Id, PostId, AppUserId, AppUserAlias," +
+                      " Message, PublicationDateTime, CreateDateTime, UpdateDateTime, Status" +
+                      " FROM (" +
+                      " SELECT Comment.Id, Comment.PostId, Comment.AppUserId," +
+                      "        AppUser.Alias AS AppUserAlias," +
+                      "        Comment.Message, Comment.PublicationDateTime, Comment.CreateDateTime," +
+                      "        Comment.UpdateDateTime, Comment.Status," +
+                      "        ROW_NUMBER() OVER (" +
+                      "            PARTITION BY Comment.PostId" +
+                      "            ORDER BY Comment.PublicationDateTime DESC" +
+                      "        ) AS RowNumber" +
+                      " FROM [D-Comment] AS Comment" +
+                      " INNER JOIN [D-AppUser] AS AppUser ON(Comment.AppUserId = AppUser.Id)" +
+                     $" INNER JOIN {table} ON (Comment.PostId = {table}.PostId)" +
+                      " WHERE Comment.Status = 1";
 
-            //if (status != -1)
-            //    strCmd += $" AND {table}.Status = @Status;";
-            //else
-            //    strCmd += ";";
+            if (status != -1)
+                strCmd += $" AND {table}.Status = @Status";
+
+            strCmd += ") AS Comments" +
+                      " WHERE RowNumber <= 3" +
+                      " ORDER BY PostId, PublicationDateTime DESC;";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -329,11 +543,11 @@ namespace HeroServer
                         linkFulls.Add(LinkDB.GetLinkFull(reader));
                     newsDataFull.LinkFulls = linkFulls;
 
-                    //await reader.NextResultAsync();
-                    //List<CommentFull> commentFulls = [];
-                    //while (await reader.ReadAsync())
-                    //    commentFulls.Add(CommentDB.GetCommentFull(reader));
-                    //newsDataFull.CommentFulls = commentFulls;
+                    await reader.NextResultAsync();
+                    List<CommentFull> commentFulls = [];
+                    while (await reader.ReadAsync())
+                        commentFulls.Add(CommentDB.GetCommentFull(reader));
+                    newsDataFull.CommentFulls = commentFulls;
                 }
             }
 
