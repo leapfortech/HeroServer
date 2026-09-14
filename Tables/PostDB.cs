@@ -219,7 +219,7 @@ namespace HeroServer
             if (newsExpirationTime > 0)
                 where.Add($"(Post.PostTypeId != {(long)PostType.News} OR Post.PublicationDateTime >= DATEADD(DAY, -{newsExpirationTime}, GETDATE()))");
 
-            if (happeningExpirationTime > 0)
+            if (memoryExpirationTime > 0)
                 where.Add($"(Post.PostTypeId != {(long)PostType.Memory} OR Post.PublicationDateTime >= DATEADD(DAY, -{memoryExpirationTime}, GETDATE()))");
 
             String whereCount = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";

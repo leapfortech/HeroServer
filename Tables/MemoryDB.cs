@@ -187,9 +187,9 @@ namespace HeroServer
                              " ISNULL(CurrentLocality.StateId, -1) AS CurrentLocalityStateId," +
                              " ISNULL(CurrentLocality.CityId, -1) AS CurrentLocalityCityId," +
 
-                            $" {table}.MemoryTypeId, {table}.CountryId, {table}.StateId, {table}.IsPublic, {table}.HasSignup," + 
-                            $" {table}.HasPayment, {table}.PaymentDetails, {table}.StartDateTime, {table}.EndDateTime," +
-                            $" {table}.Location, {table}.Latitude, {table}.Longitude, {table}.Status" +
+                            $" {table}.MemoryTypeId, {table}.CountryId, {table}.StateId," + 
+                            $" {table}.DateTime," +
+                            $" {table}.Location, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
                              " INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
@@ -320,9 +320,9 @@ namespace HeroServer
                              " ISNULL(CurrentLocality.StateId, -1) AS CurrentLocalityStateId," +
                              " ISNULL(CurrentLocality.CityId, -1) AS CurrentLocalityCityId," +
 
-                            $" {table}.MemoryTypeId, {table}.CountryId, {table}.StateId, {table}.IsPublic, {table}.HasSignup," +
-                            $" {table}.HasPayment, {table}.PaymentDetails, {table}.StartDateTime, {table}.EndDateTime," +
-                            $" {table}.Location, {table}.Latitude, {table}.Longitude, {table}.Status" +
+                            $" {table}.MemoryTypeId, {table}.CountryId, {table}.StateId, " +
+                            $" {table}.DateTime," +
+                            $" {table}.Location, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
                              " INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
@@ -450,9 +450,9 @@ namespace HeroServer
                              " ISNULL(CurrentLocality.StateId, -1) AS CurrentLocalityStateId," +
                              " ISNULL(CurrentLocality.CityId, -1) AS CurrentLocalityCityId," +
 
-                            $" {table}.MemoryTypeId, {table}.CountryId, {table}.StateId, {table}.IsPublic, {table}.HasSignup," + 
-                            $" {table}.HasPayment, {table}.PaymentDetails, {table}.StartDateTime, {table}.EndDateTime," +
-                            $" {table}.Location, {table}.Latitude, {table}.Longitude, {table}.Status" +
+                            $" {table}.MemoryTypeId, {table}.CountryId, {table}.StateId," + 
+                            $" {table}.DateTime," +
+                            $" {table}.Location, {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
                             $" INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
@@ -602,6 +602,7 @@ namespace HeroServer
             command.AddParam("@CountryId", SqlDbType.BigInt, memory.CountryId);
             command.AddParam("@StateId", SqlDbType.BigInt, memory.StateId);
             command.AddParam("@DateTime", SqlDbType.DateTime, memory.DateTime);
+            command.AddParam("@Location", SqlDbType.VarChar, memory.Location);
             command.AddParam("@UpdateDateTime", SqlDbType.DateTime, DateTime.Now);
             command.AddParam("@Status", SqlDbType.Int, memory.Status);
             command.AddParam("@Id", SqlDbType.BigInt, memory.Id);
