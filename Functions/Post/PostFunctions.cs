@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Transactions;
+using Microsoft.Extensions.Logging;
 
 namespace HeroServer
 {
@@ -222,9 +223,21 @@ namespace HeroServer
         // COMMENT
         public static async Task<long> RegisterComment(Comment comment)
         {
-            comment.Status = 1;
-            comment.PublicationDateTime = DateTime.Now;
-            return await new CommentDB().Add(comment);
+            long commentId = -1;
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                comment.Status = 1;
+                comment.PublicationDateTime = DateTime.Now;
+                commentId = await new CommentDB().Add(comment);
+
+                Post post = await PostFunctions.GetById(comment.PostId);
+                if (post != null && post.AppUserId != comment.AppUserId)
+                    if (await AppUserFunctions.GetOption(post.AppUserId, 1) == 1)
+                        await SendCommentMessage(post.AppUserId, comment.PostId, post.PostTypeId);
+
+                scope.Complete();
+            }
+            return commentId;
         }
 
         public static async Task<long> RegisterCommentPlaint(CommentPlaint commentPlaint)
@@ -534,6 +547,18 @@ namespace HeroServer
             for (int idx = 0; ; idx++)
                 if (!await StorageFunctions.DeleteFile(containerName, $"{filename}|{idx:D02}.jpg"))
                     break;
+        }
+
+        // Messages
+        public static async Task<int> SendCommentMessage(long appUserId, long postId, long postTypeId, ILogger logger = null)
+        {
+            String postType = await GenValuesFunctions.GetNameById("K-PostType", postTypeId);
+
+            String body = $", tu publicación de {postType} acaba de recibir un comentario.";
+
+            String parameter = $"{postId}";
+
+            return await FirebaseHelper.SendMessage(appUserId, "Comment", postId, postType, body, "Comment", "Request", parameter, 1, logger);
         }
     }
 }

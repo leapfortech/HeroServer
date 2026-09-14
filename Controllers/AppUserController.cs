@@ -186,6 +186,23 @@ namespace HeroServer.Controllers
             }
         }
 
+        // PUT services/appUser/UpdateOption?id=1&index=1&newStatus=1
+        [HttpPut("UpdateOption")]
+        public async Task<ActionResult<long>> UpdateOption([FromQuery] long id, [FromQuery] int index, [FromQuery] int newStatus)
+        {
+            try
+            {
+                //if (!await FirebaseFunctions.AuthorizeAppUser(blcConnString, HttpContext, Convert.ToInt32(id), "AppUser.UpdateOptions"))
+                //    return Unauthorized();
+
+                return await AppUserFunctions.UpdateOption(Convert.ToInt64(id), Convert.ToInt32(index), Convert.ToInt32(newStatus));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // PUT services/appUser/UpdateStatus?id=1&appUserStatusId=1
         [HttpPut("UpdateStatus")]
         public async Task<ActionResult> UpdateStatus([FromQuery]String id, [FromQuery]String appUserStatusId)

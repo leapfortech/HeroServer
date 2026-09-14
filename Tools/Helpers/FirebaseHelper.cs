@@ -10,7 +10,7 @@ namespace HeroServer
 {
     public static class FirebaseHelper
     {
-        public static async Task<int> SendMessage(int appUserId, String dataName, int dataId, String title, String body,
+        public static async Task<int> SendMessage(long appUserId, String dataName, long dataId, String title, String body,
                                                   String action, String information, String parameter, int displayMode, ILogger logger)
         {
             long webSysUserId = await new AppUserDB().GetWebSysUserId(appUserId);

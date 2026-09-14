@@ -72,6 +72,18 @@ namespace HeroServer
             return await new AppUserDB().GetOptions(appUserId);
         }
 
+        public static async Task<int> GetOption(long id, int index)
+        {
+            AppUser appUser = await new AppUserDB().GetById(id);
+
+            long options = appUser.Options;
+
+            long power = (long)Math.Pow(10, index);
+            long currentStatus = (options / power) % 10;
+
+            return (int)currentStatus;
+        }
+
         public static async Task<int> GetCountAll()
         {
             return await new AppUserDB().GetCountAll();

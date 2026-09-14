@@ -179,7 +179,7 @@ namespace HeroServer
 
             // Login
             if (statusId == 0)
-                throw new Exception("App User not found.");
+                throw new Exception("Usuario no encontrado.");
 
             //return new LoginAppResponse(appUser, webSysUser, 1, "1|Información|¡Descubre nuestro Sitio Web!", "https://www.heroesmigrantes.com");
             //return new LoginAppResponse(appUser, webSysUser, 0, "0|Login|Acceso denegado.\nComunícate con el servicio al cliente.", "https://www.heroesmigrantes.com/Contact");
