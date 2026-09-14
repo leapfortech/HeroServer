@@ -9,6 +9,7 @@
         Product = 5,
         Happening = 6,
         News = 7,
-        Puzzle = 8
+        Puzzle = 8,
+        Memory = 9
     }
 }

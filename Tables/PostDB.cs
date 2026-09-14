@@ -11,9 +11,9 @@ namespace HeroServer
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
         readonly String table = "[D-Post]";
 
-        static int taleExpirationTime, recipeExpirationTime, treatmentExpirationTime, radioExpirationTime, productExpirationTime, happeningExpirationTime, newsExpirationTime;
+        static int taleExpirationTime, recipeExpirationTime, treatmentExpirationTime, radioExpirationTime, productExpirationTime, happeningExpirationTime, newsExpirationTime, memoryExpirationTime;
 
-        public static void InitParams(int taleExpTime, int recipeExpTime, int treatmentExpTime, int radioExpTime, int productExpTime, int happeningExpTime, int newsExpTime)
+        public static void InitParams(int taleExpTime, int recipeExpTime, int treatmentExpTime, int radioExpTime, int productExpTime, int happeningExpTime, int newsExpTime, int memoryExpTime)
         {
             taleExpirationTime = taleExpTime;
             recipeExpirationTime = recipeExpTime;
@@ -22,6 +22,7 @@ namespace HeroServer
             productExpirationTime = productExpTime;
             happeningExpirationTime = happeningExpTime;
             newsExpirationTime = newsExpTime;
+            memoryExpirationTime = memoryExpTime;
         }
 
         public static Post GetPost(SqlDataReader reader)
@@ -217,6 +218,9 @@ namespace HeroServer
 
             if (newsExpirationTime > 0)
                 where.Add($"(Post.PostTypeId != {(long)PostType.News} OR Post.PublicationDateTime >= DATEADD(DAY, -{newsExpirationTime}, GETDATE()))");
+
+            if (happeningExpirationTime > 0)
+                where.Add($"(Post.PostTypeId != {(long)PostType.Memory} OR Post.PublicationDateTime >= DATEADD(DAY, -{memoryExpirationTime}, GETDATE()))");
 
             String whereCount = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
 

@@ -16,7 +16,8 @@ namespace HeroServer
                               Convert.ToInt32(await new SystemParamDB().GetValue("RadioExpirationTime")),
                               Convert.ToInt32(await new SystemParamDB().GetValue("ProductExpirationTime")),
                               Convert.ToInt32(await new SystemParamDB().GetValue("HappeningExpirationTime")),
-                              Convert.ToInt32(await new SystemParamDB().GetValue("NewsExpirationTime")));
+                              Convert.ToInt32(await new SystemParamDB().GetValue("NewsExpirationTime")),
+                              Convert.ToInt32(await new SystemParamDB().GetValue("MemoryExpirationTime")));
         }
 
         // GET
