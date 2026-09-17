@@ -1,0 +1,36 @@
+﻿using System;
+
+namespace HeroServer
+{
+    public class HappeningFeed
+    {
+        public String TitleImage { get; set; }
+        public String Title { get; set; }
+        public DateTime? StartDateTime { get; set; }
+        public DateTime? EndDateTime { get; set; }
+        public String HappeningType { get; set; }
+        public String Country { get; set; }
+        public String State { get; set; }
+        public String Location { get; set; }
+        public int LikeCount { get; set; }
+
+        public HappeningFeed()
+        {
+
+        }
+
+        public HappeningFeed(String titleImage, String title, DateTime? startDateTime, DateTime? endDateTime, String happeningType, String country, String state, String location, int likeCount)
+        {
+            TitleImage = titleImage;
+            Title = title;
+            StartDateTime = startDateTime;
+            EndDateTime = endDateTime;
+            HappeningType = happeningType;
+            Country = country;
+            State = state;
+            Location = location;
+            LikeCount = likeCount;
+        }
+    }
+}
+
