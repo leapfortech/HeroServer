@@ -134,6 +134,18 @@ namespace HeroServer
             return await new FavoriteDB().Delete(favorite);
         }
 
+        // SELECTED
+        public static async Task<long> RegisterSelected(Selected selected)
+        {
+            selected.Status = 1;
+            return await new SelectedDB().Add(selected);
+        }
+
+        public static async Task<bool> DeleteSelected(Selected selected)
+        {
+            return await new SelectedDB().Delete(selected);
+        }
+
         // LIKE
         public static async Task<long> RegisterLike(Like like)
         {

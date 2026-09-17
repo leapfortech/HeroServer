@@ -123,6 +123,34 @@ namespace HeroServer.Controllers
             }
         }
 
+        // POST services/post/RegisterSelected
+        [HttpPost("RegisterSelected")]
+        public async Task<ActionResult<long>> RegisterSelected([FromBody] Selected selected)
+        {
+            try
+            {
+                return Ok(await PostFunctions.RegisterSelected(selected));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // DELETE services/post/DeleteSelected
+        [HttpDelete("DeleteSelected")]
+        public async Task<ActionResult<bool>> DeleteSelected([FromBody] Selected selected)
+        {
+            try
+            {
+                return Ok(await PostFunctions.DeleteSelected(selected));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // POST services/post/RegisterLike
         [HttpPost("RegisterLike")]
         public async Task<ActionResult<long>> RegisterLike([FromBody] Like like)
