@@ -21,7 +21,7 @@ namespace HeroServer
         public long StateId { get; set; } = -1L;
         public int Status { get; set; } = -1;
 
-        public int FavoriteAppUserId { get; set; } = -1;
-        public int SelectedAppUserId { get; set; } = -1;
+        public long FavoriteAppUserId { get; set; } = -1L;
+        public long SelectedAppUserId { get; set; } = -1L;
     }
 }
