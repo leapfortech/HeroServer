@@ -24,54 +24,66 @@ namespace HeroServer
         {
             return new RadioFull(Convert.ToInt64(reader["Id"]),
 
-                                Convert.ToInt64(reader["PostId"]),
-                                Convert.ToInt64(reader["AppUserId"]),
-                                reader["AppUserAlias"].ToString(),
-                                Convert.ToInt64(reader["PostTypeId"]),
-                                Convert.ToInt64(reader["PostCountryId"]),
-                                Convert.ToInt64(reader["PostStateId"]),
-                                reader["Title"].ToString(),
-                                null,   //TitleImage
-                                reader["Summary"].ToString(),
-                                reader["Description"].ToString(),
-                                Convert.ToInt32(reader["ImageCount"]),
+                                 Convert.ToInt64(reader["PostId"]),
+                                 Convert.ToInt64(reader["AppUserId"]),
+                                 reader["AppUserAlias"].ToString(),
+                                 Convert.ToInt64(reader["PostTypeId"]),
+                                 Convert.ToInt64(reader["PostCountryId"]),
+                                 Convert.ToInt64(reader["PostStateId"]),
+                                 reader["Title"].ToString(),
+                                 null,   //TitleImage
+                                 reader["Summary"].ToString(),
+                                 reader["Description"].ToString(),
+                                 Convert.ToInt32(reader["ImageCount"]),
 
-                                new int[]{Convert.ToInt32(reader["ReactionCount1"]),
-                                          Convert.ToInt32(reader["ReactionCount2"]),
-                                          Convert.ToInt32(reader["ReactionCount3"]),
-                                          Convert.ToInt32(reader["ReactionCount4"])},
-                                Convert.ToInt32(reader["CommentCount"]),
+                                 [Convert.ToInt32(reader["ReactionCount1"]),
+                                  Convert.ToInt32(reader["ReactionCount2"]),
+                                  Convert.ToInt32(reader["ReactionCount3"]),
+                                  Convert.ToInt32(reader["ReactionCount4"])],
+                                  Convert.ToInt32(reader["CommentCount"]),
                                 
-                                Convert.ToInt32(reader["Favorite"]),
-                                Convert.ToInt32(reader["Like"]),
-                                Convert.ToInt32(reader["LikeCount"]),
-                                Convert.ToInt64(reader["ReactionPhraseId"]),
-                                Convert.ToDateTime(reader["PublicationDateTime"]),
-                                Convert.ToInt32(reader["PostStatus"]),
+                                 Convert.ToInt32(reader["Favorite"]),
+                                 Convert.ToInt32(reader["Like"]),
+                                 Convert.ToInt32(reader["LikeCount"]),
+                                 Convert.ToInt64(reader["ReactionPhraseId"]),
+                                 Convert.ToDateTime(reader["PublicationDateTime"]),
+                                 Convert.ToInt32(reader["PostStatus"]),
 
-                                new AppUserInfo(Convert.ToInt64(reader["AppUserId"]),
-                                                reader["AppUserAlias"].ToString(),
-                                                null,
+                                 new AppUserInfo(Convert.ToInt64(reader["AppUserId"]),
+                                                 reader["AppUserAlias"].ToString(),
+                                                 null,
 
-                                                new LocalityFull(Convert.ToInt64(reader["InterestLocalityTypeId"]),
-                                                                 Convert.ToInt64(reader["InterestLocalityCountryId"]),
-                                                                 Convert.ToInt64(reader["InterestLocalityStateId"]),
-                                                                 Convert.ToInt64(reader["InterestLocalityCityId"])),
+                                                 new LocalityFull(Convert.ToInt64(reader["InterestLocalityTypeId"]),
+                                                                  Convert.ToInt64(reader["InterestLocalityCountryId"]),
+                                                                  Convert.ToInt64(reader["InterestLocalityStateId"]),
+                                                                  Convert.ToInt64(reader["InterestLocalityCityId"])),
 
-                                                new LocalityFull(Convert.ToInt64(reader["CurrentLocalityTypeId"]),
-                                                                 Convert.ToInt64(reader["CurrentLocalityCountryId"]),
-                                                                 Convert.ToInt64(reader["CurrentLocalityStateId"]),
-                                                                 Convert.ToInt64(reader["CurrentLocalityCityId"]))),
+                                                 new LocalityFull(Convert.ToInt64(reader["CurrentLocalityTypeId"]),
+                                                                  Convert.ToInt64(reader["CurrentLocalityCountryId"]),
+                                                                  Convert.ToInt64(reader["CurrentLocalityStateId"]),
+                                                                  Convert.ToInt64(reader["CurrentLocalityCityId"]))),
 
-                                null,   //ContactFull
-                                null,   //LinkFulls
-                                null,   //CommentFulls
+                                 null,   //ContactFull
+                                 null,   //LinkFulls
+                                 null,   //CommentFulls
 
-                                Convert.ToInt32(reader["Status"]),
-                                null,   //RadioTypeFulls 
-                                null,   //RadioLanguageFulls
+                                 Convert.ToInt32(reader["Status"]),
+                                 null,   //RadioTypeFulls 
+                                 null,   //RadioLanguageFulls
 
-                                null);   //Images);
+                                 null);   //Images);
+        }
+
+        public static RadioFeed GetRadioFeed(SqlDataReader reader)
+        {
+            return new RadioFeed(Convert.ToInt64(reader["RadioId"]),
+                                 Convert.ToInt64(reader["PostId"]),
+                                 null,   //TitleImage
+                                 reader["Title"].ToString(),
+                                 reader["RadioType"].ToString(),
+                                 reader["PostCountry"].ToString(),
+                                 reader["PostState"].ToString(),
+                                 reader["Url"].ToString());
         }
 
 
@@ -147,6 +159,76 @@ namespace HeroServer
                 }
             }
             return id;
+        }
+
+        public async Task<RadioFeedResponse> GetFeed(RadioFeedRequest request)
+        {
+            RadioFeedResponse response = new RadioFeedResponse(request.Chunk, request.Direction, request.Count);
+
+            (String whereFeed, String whereCount) = PostDB.GetFeedWheres(PostType.Radio, request.Direction, request.AppUserId, request.Status);
+
+            // QUERY FEED
+            String strCmd = PostDB.InitFeedCmd(request.Direction, "PublicationDateTime");
+
+            strCmd += "SELECT Post.Id AS PostId," +
+                      " Radio.Id AS RadioId," +
+                      " Post.Title," +
+                      " RadioType.Name AS RadioType," +
+                      " Country.Name AS PostCountry," +
+                      " State.Name AS PostState," +
+                      " Link.Url" +
+                      " FROM [D-Post] AS Post" +
+                      " INNER JOIN[D-Radio] AS Radio ON Radio.PostId = Post.Id" +
+                      " INNER JOIN[K-Country] AS Country ON Country.Id = Post.CountryId" +
+                      " LEFT JOIN[K-State] AS State ON State.Id = Post.StateId AND Post.StateId <> -1" +
+                      " LEFT JOIN[D-Link] AS Link ON Link.PostId = Post.Id AND Link.Status = 1" +
+                      " OUTER APPLY" +
+                      " (" +
+                      "   SELECT TOP 1 KRadioType.Name" +
+                      "   FROM[J-RadioType] AS RadioType" +
+                      "   INNER JOIN[K-RadioType] AS KRadioType ON KRadioType.Id = RadioType.RadioTypeId" +
+                      "   WHERE RadioType.RadioId = Radio.Id AND RadioType.Status = 1 AND KRadioType.Status = 1" +
+                      "   ORDER BY RadioType.CreateDateTime ASC" +
+                      " ) AS RadioType " +
+                        whereFeed;
+
+            strCmd += PostDB.OrderFeedCmd(request.Direction, "PublicationDateTime");
+
+            // POST COUNT
+            strCmd += "SELECT COUNT(*) AS Total FROM [D-Post] AS Post" + whereCount + ";";
+
+            using (SqlCommand command = new SqlCommand(strCmd, conn))
+            {
+                if (request.Direction == 1)
+                    command.AddParam("@Count2", SqlDbType.Int, request.Count * 2);
+                command.AddParam("@Count", SqlDbType.Int, request.Count);
+
+                command.AddParam("@PostTypeId", SqlDbType.BigInt, PostType.Radio);
+
+                if (request.AppUserId != -1)
+                    command.AddParam("@AppUserId", SqlDbType.BigInt, request.AppUserId);
+
+                if (request.Status != -1)
+                    command.AddParam("@Status", SqlDbType.Int, request.Status);
+
+                command.AddParam("@StartDate", SqlDbType.DateTime2, request.StartDateTime);
+
+                using (conn)
+                {
+                    await conn.OpenAsync();
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                            response.RadioFeeds.Add(GetRadioFeed(reader));
+
+                        await reader.NextResultAsync();
+                        if (await reader.ReadAsync())
+                            response.Total = Convert.ToInt32(reader["Total"]);
+                    }
+                }
+            }
+
+            return response;
         }
 
         // GET FULL

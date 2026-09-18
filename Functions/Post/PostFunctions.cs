@@ -86,7 +86,7 @@ namespace HeroServer
                 registerPostRequest.Post.ApprovalDateTime = null;
                 registerPostRequest.Post.ExpirationDateTime = null;
 
-                if (registerPostRequest.Post.PostTypeId == (long)PostType.Radio)
+                if (registerPostRequest.Post.PostTypeId == PostType.Radio)
                     registerPostRequest.Post.Status = 0;
                 else
                     registerPostRequest.Post.Status = 1;

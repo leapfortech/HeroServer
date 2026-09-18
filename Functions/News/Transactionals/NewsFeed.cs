@@ -4,6 +4,9 @@ namespace HeroServer
 {
     public class NewsFeed
     {
+        public long Id { get; set; }
+        public long PostId { get; set; }
+        public String TitleImage { get; set; }
         public String Title { get; set; }
         public String Description { get; set; }
         public DateTime? DateTime { get; set; }
@@ -18,8 +21,10 @@ namespace HeroServer
 
         }
 
-        public NewsFeed(String title, String description, DateTime? dateTime, String source, int[] reactionCounts, long reactionPhraseId, int commentCount, String alias)
+        public NewsFeed(long id, long postId, String title, String description, DateTime? dateTime, String source, int[] reactionCounts, long reactionPhraseId, int commentCount, String alias)
         {
+            Id = id;
+            PostId = postId;
             Title = title;
             Description = description;
             DateTime = dateTime;

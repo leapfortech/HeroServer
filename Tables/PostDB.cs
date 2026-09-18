@@ -11,18 +11,11 @@ namespace HeroServer
         readonly SqlConnection conn = new SqlConnection(WebEnvConfig.ConnString);
         readonly String table = "[D-Post]";
 
-        static int taleExpirationTime, recipeExpirationTime, treatmentExpirationTime, radioExpirationTime, productExpirationTime, happeningExpirationTime, newsExpirationTime, memoryExpirationTime;
+        static int[] expirationTimes;
 
         public static void InitParams(int taleExpTime, int recipeExpTime, int treatmentExpTime, int radioExpTime, int productExpTime, int happeningExpTime, int newsExpTime, int memoryExpTime)
         {
-            taleExpirationTime = taleExpTime;
-            recipeExpirationTime = recipeExpTime;
-            treatmentExpirationTime = treatmentExpTime;
-            radioExpirationTime = radioExpTime;
-            productExpirationTime = productExpTime;
-            happeningExpirationTime = happeningExpTime;
-            newsExpirationTime = newsExpTime;
-            memoryExpirationTime = memoryExpTime;
+            expirationTimes = [ 0, taleExpTime, recipeExpTime, treatmentExpTime, radioExpTime, productExpTime, happeningExpTime, newsExpTime, 0, memoryExpTime];
         }
 
         public static Post GetPost(SqlDataReader reader)
@@ -179,69 +172,12 @@ namespace HeroServer
         {
             PostFeedResponse response = new PostFeedResponse(request.Chunk, request.Direction, request.Count);
 
-            // FILTERS
-            List<String> where = [];
-
-            if (request.PostTypeId != -1)
-                where.Add("Post.PostTypeId = @PostTypeId");
-
-            if (request.AppUserId != -1)
-                where.Add("Post.AppUserId = @AppUserId");
-
-            if (request.CountryId != -1)
-                where.Add("Post.CountryId = @CountryId");
-
-            if (request.StateId != -1)
-                where.Add("Post.StateId = @StateId");
-
-            if (request.Status != -1)
-                where.Add("Post.Status = @Status");
-
-            // EXPIRATION
-            if (taleExpirationTime > 0)
-                where.Add($"(Post.PostTypeId != {(long)PostType.Tale} OR Post.PublicationDateTime >= DATEADD(DAY, -{taleExpirationTime}, GETDATE()))");
-
-            if (recipeExpirationTime > 0)
-                where.Add($"(Post.PostTypeId != {(long)PostType.Recipe} OR Post.PublicationDateTime >= DATEADD(DAY, -{recipeExpirationTime}, GETDATE()))");
-
-            if (treatmentExpirationTime > 0)
-                where.Add($"(Post.PostTypeId != {(long)PostType.Treatment} OR Post.PublicationDateTime >= DATEADD(DAY, -{treatmentExpirationTime}, GETDATE()))");
-
-            if (radioExpirationTime > 0)
-                where.Add($"(Post.PostTypeId != {(long)PostType.Radio} OR Post.PublicationDateTime >= DATEADD(DAY, -{radioExpirationTime}, GETDATE()))");
-
-            if (productExpirationTime > 0)
-                where.Add($"(Post.PostTypeId != {(long)PostType.Product} OR Post.PublicationDateTime >= DATEADD(DAY, -{productExpirationTime}, GETDATE()))");
-
-            if (happeningExpirationTime > 0)
-                where.Add($"(Post.PostTypeId != {(long)PostType.Happening} OR Post.PublicationDateTime >= DATEADD(DAY, -{happeningExpirationTime}, GETDATE()))");
-
-            if (newsExpirationTime > 0)
-                where.Add($"(Post.PostTypeId != {(long)PostType.News} OR Post.PublicationDateTime >= DATEADD(DAY, -{newsExpirationTime}, GETDATE()))");
-
-            if (memoryExpirationTime > 0)
-                where.Add($"(Post.PostTypeId != {(long)PostType.Memory} OR Post.PublicationDateTime >= DATEADD(DAY, -{memoryExpirationTime}, GETDATE()))");
-
-            String whereCount = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
-
-            // DATE
-            if (request.Direction == 2)
-                where.Add("Post.PublicationDateTime < @StartDate");
-            else
-                where.Add("Post.PublicationDateTime > @StartDate");
-
-            String whereFeed = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
+            (String whereFeed, String whereCount) = PostDB.GetFeedWheres(request.PostTypeId, request.Direction, request.AppUserId, request.Status, request.CountryId, request.StateId);
 
             // QUERY FEED
-            String strCmd;
+            String strCmd = PostDB.InitFeedCmd(request.Direction, "PublicationDateTime");
 
-            if (request.Direction == 1)
-                strCmd = "WITH Posts AS" +
-                         " (SELECT ROW_NUMBER() OVER (ORDER BY Temp.PublicationDateTime DESC) AS RowNumber, * FROM" +
-                         " (SELECT TOP(@Count2)";
-            else
-                strCmd = "SELECT TOP(@Count)";
-            strCmd +=   " Post.Id AS PostId," +
+            strCmd += " Post.Id AS PostId," +
                         " Post.AppUserId," +
                         " DAppUser.Alias AS AppUserAlias," +
                         " Post.PostTypeId," +
@@ -290,15 +226,9 @@ namespace HeroServer
                         " LEFT JOIN [J-Favorite] AS JFavorite ON JFavorite.PostId = Post.Id AND JFavorite.AppUserId = @LikeAppUserId" +
                         " LEFT JOIN [D-Like] AS DLike ON DLike.PostId = Post.Id AND DLike.AppUserId = @LikeAppUserId" +
                         " LEFT JOIN [D-Reaction] AS DReaction ON DReaction.PostId = Post.Id AND DReaction.AppUserId = @LikeAppUserId" +
-                        whereFeed +
-                        " ORDER BY Post.PublicationDateTime";
-            if (request.Direction == 1)
-                strCmd += ") AS Temp)," +
-                          " PostCount AS (SELECT COUNT(1) AS Total FROM Posts)" +
-                          " SELECT * FROM Posts, PostCount" +
-                          " WHERE RowNumber <= Total - @Count" +
-                          " ORDER BY PublicationDateTime";
-            strCmd += " DESC;";
+                        whereFeed;
+
+            strCmd += PostDB.OrderFeedCmd(request.Direction, "PublicationDateTime");
 
             // QUERY COUNT
             strCmd += "SELECT COUNT(1) AS Total FROM [D-Post] AS Post" + whereCount + ";";
@@ -336,7 +266,7 @@ namespace HeroServer
                     using (SqlDataReader reader = await command.ExecuteReaderAsync())
                     {
                         while (await reader.ReadAsync())
-                            response.PostFulls.Add(PostDB.GetPostFull(reader));
+                            response.PostFulls.Add(GetPostFull(reader));
 
                         await reader.NextResultAsync();
                         if (await reader.ReadAsync())
@@ -360,6 +290,61 @@ namespace HeroServer
             }
 
             return response;
+        }
+
+        public static (String, String) GetFeedWheres(long feedType, int direction, long appUserId, int status, long countryId = -1L, long stateId = -1L)
+        {
+            // FILTERS
+            List<String> where = ["Post.PostTypeId = @PostTypeId"];
+
+            if (appUserId != -1)
+                where.Add("Post.AppUserId = @AppUserId");
+
+            if (status != -1)
+                where.Add("Post.Status = @Status");
+
+            if (countryId != -1)
+                where.Add("Post.CountryId = @CountryId");
+
+            if (stateId != -1)
+                where.Add("Post.StateId = @StateId");
+
+            // EXPIRATION
+            if (expirationTimes[feedType] > 0)
+                where.Add($"Post.PublicationDateTime >= DATEADD(DAY, -{expirationTimes[feedType]}, GETDATE()))");
+
+            String whereCount = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
+
+            // DATE
+            if (direction == 2)
+                where.Add("Post.PublicationDateTime < @StartDate");
+            else
+                where.Add("Post.PublicationDateTime > @StartDate");
+
+            String whereFeed = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
+
+            return (whereFeed, whereCount);
+        }
+
+        public static String InitFeedCmd(int direction, String orderField)
+        {
+            if (direction == 1)
+                return  "WITH Posts AS" +
+                       $" (SELECT ROW_NUMBER() OVER (ORDER BY Temp.{orderField} DESC) AS RowNumber, * FROM" +
+                        " (SELECT TOP(@Count2)";
+
+            return "SELECT TOP(@Count)";
+        }
+
+        public static String OrderFeedCmd(int direction, String orderField)
+        {
+            if (direction == 1)
+                return $" ORDER BY Post.{orderField}) AS Temp)," +
+                        " PostCount AS (SELECT COUNT(1) AS Total FROM Posts)" +
+                        " SELECT * FROM Posts, PostCount" +
+                        " WHERE RowNumber <= Total - @Count" +
+                       $" ORDER BY {orderField}";
+            return $" ORDER BY Post.{orderField} DESC;";
         }
 
         public async Task<CommentFeedResponse> GetCommentFeed(CommentFeedRequest request)

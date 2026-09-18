@@ -115,13 +115,31 @@ namespace HeroServer
             return radioFulls;
         }
 
+        // FEED
+        public static async Task<RadioFeedResponse> GetFeed(RadioFeedRequest request)
+        {
+            RadioFeedResponse response = await new RadioDB().GetFeed(request);
+
+            // TitleImages
+            List<Task<String>> tasks = [];
+            for (int i = 0; i < response.RadioFeeds.Count; i++)
+                tasks.Add(PostFunctions.GetTitleImageByPostId(response.RadioFeeds[i].PostId));
+
+            String[] images = await Task.WhenAll(tasks);
+
+            for (int i = 0; i < response.RadioFeeds.Count; i++)
+                response.RadioFeeds[i].TitleImage = images[i];
+
+            return response;
+        }
+
         // REGISTER
         public static async Task<long> Register(RegisterRadioRequest registerRadioRequest)
         {
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                registerRadioRequest.Post.PostTypeId = (long)PostType.Radio;
+                registerRadioRequest.Post.PostTypeId = PostType.Radio;
                 registerRadioRequest.Post.Id = await PostFunctions.Register(registerRadioRequest);
 
                 if (registerRadioRequest.Radio == null)
@@ -220,7 +238,7 @@ namespace HeroServer
                     }
                 }
 
-                // Radio Languates
+                // Radio Languages
                 // Soft Delete
                 await new RadioLanguageDB().UpdateStatusByRadioId(radioId, 1, 0);
 

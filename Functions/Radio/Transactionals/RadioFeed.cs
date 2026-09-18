@@ -4,6 +4,8 @@ namespace HeroServer
 {
     public class RadioFeed
     {
+        public long Id { get; set; }
+        public long PostId { get; set; }
         public String TitleImage { get; set; }
         public String Title { get; set; }
         public String RadioType { get; set; }
@@ -16,8 +18,10 @@ namespace HeroServer
 
         }
 
-        public RadioFeed(String titleImage, String title, String radioType, String postCountry, String postState, String url)
+        public RadioFeed(long id, long postId, String titleImage, String title, String radioType, String postCountry, String postState, String url)
         {
+            Id = id;
+            PostId = postId;
             TitleImage = titleImage;
             Title = title;
             RadioType = radioType;

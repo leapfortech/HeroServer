@@ -121,7 +121,7 @@ namespace HeroServer
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                registerHappeningRequest.Post.PostTypeId = (long)PostType.Happening;
+                registerHappeningRequest.Post.PostTypeId = PostType.Happening;
                 registerHappeningRequest.Happening.PostId = await PostFunctions.Register(registerHappeningRequest);
 
                 registerHappeningRequest.Happening.Status = 1;

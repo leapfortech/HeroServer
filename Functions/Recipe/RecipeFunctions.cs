@@ -121,7 +121,7 @@ namespace HeroServer
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                registerRecipeRequest.Post.PostTypeId = (long)PostType.Recipe;
+                registerRecipeRequest.Post.PostTypeId = PostType.Recipe;
                 registerRecipeRequest.Recipe.PostId = await PostFunctions.Register(registerRecipeRequest);
 
                 registerRecipeRequest.Recipe.Status = 1;

@@ -4,6 +4,8 @@ namespace HeroServer
 {
     public class ProductFeed
     {
+        public long Id { get; set; }
+        public long PostId { get; set; }
         public String TitleImage { get; set; }
         public String Title { get; set; }
         public String ProductSubtype { get; set; }
@@ -19,8 +21,10 @@ namespace HeroServer
 
         }
 
-        public ProductFeed(String titleImage, String title, String productSubtype, String saleCountry, String saleState, String currency, double price, double discountPrice, String link)
+        public ProductFeed(long id, long postId, String titleImage, String title, String productSubtype, String saleCountry, String saleState, String currency, double price, double discountPrice, String link)
         {
+            Id = id;
+            PostId = postId;
             TitleImage = titleImage;
             Title = title;
             ProductSubtype = productSubtype;
