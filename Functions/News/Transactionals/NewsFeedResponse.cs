@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace HeroServer
 {
-    public class RadioFeedResponse(RadioFeedRequest request)
+    public class NewsFeedResponse(NewsFeedRequest request)
     {
         public int Chunk { get; set; } = request.Chunk;
         public int Direction { get; set; } = request.Direction;
 
-        public List<RadioFeed> RadioFeeds { get; set; } = new List<RadioFeed>(request.Count);
+        public List<NewsFeed> NewsFeeds { get; set; } = new List<NewsFeed>(request.Count);
 
         public int Total { get; set; } = 0;
     }

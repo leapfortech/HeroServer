@@ -18,7 +18,7 @@ namespace HeroServer
                             Convert.ToInt64(reader["NewsTypeId"]),
                             reader["Place"].ToString(),
                             reader["Source"].ToString(),
-                            reader["DateTime"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(reader["DateTime"]),
+                            reader["DateTime"] == DBNull.Value ? null : Convert.ToDateTime(reader["DateTime"]),
                             Convert.ToDateTime(reader["CreateDateTime"]),
                             Convert.ToDateTime(reader["UpdateDateTime"]),
                             Convert.ToInt32(reader["Status"]));
@@ -74,11 +74,26 @@ namespace HeroServer
                                 Convert.ToInt64(reader["NewsTypeId"]),
                                 reader["Place"].ToString(),
                                 reader["Source"].ToString(),
-                                reader["DateTime"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["DateTime"]),
+                                reader["DateTime"] == DBNull.Value ? null : Convert.ToDateTime(reader["DateTime"]),
                                 Convert.ToInt32(reader["Status"]),
                                 null);  //Images);
         }
 
+        public static NewsFeed GetNewsFeed(SqlDataReader reader)
+        {
+            return new NewsFeed(Convert.ToInt64(reader["NewsId"]),
+                                Convert.ToInt64(reader["PostId"]),
+                                null,   //TitleImage
+                                reader["Title"].ToString(),
+                                reader["Description"].ToString(),
+                                reader["DateTime"] == DBNull.Value ? null : Convert.ToDateTime(reader["DateTime"]),
+                                reader["Source"].ToString(),
+                                [Convert.ToInt32(reader["ReactionCount1"]), Convert.ToInt32(reader["ReactionCount2"]),
+                                 Convert.ToInt32(reader["ReactionCount3"]), Convert.ToInt32(reader["ReactionCount4"])],
+                                Convert.ToInt64(reader["ReactionPhraseId"]),
+                                Convert.ToInt32(reader["CommentCount"]),
+                                reader["Alias"].ToString());
+        }
 
         // GET
         public async Task<List<News>> GetAllByStatus(int status = -1)
@@ -129,6 +144,62 @@ namespace HeroServer
                 }
             }
             return news;
+        }
+
+        // GET FEED
+        public async Task<NewsFeedResponse> GetFeed(NewsFeedRequest request)
+        {
+            NewsFeedResponse response = new NewsFeedResponse(request);
+
+            (String whereFeed, String whereCount) = PostDB.GetFeedWheres(PostType.News, request);
+
+            // QUERY FEED
+            String strCmd = PostDB.InitFeedCmd(request.Direction, "PublicationDateTime");
+
+            strCmd += "SELECT Post.Id AS PostId," +
+                      " News.Id AS NewsId," +
+                      " Post.Title," +
+                      " Post.Description," +
+                      " News.DateTime," +
+                      " News.Source," +
+                      " ISNULL((SELECT COUNT(*) FROM[D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 1), 0) AS ReactionCount1," +
+                      " ISNULL((SELECT COUNT(*) FROM[D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 2), 0) AS ReactionCount2," +
+                      " ISNULL((SELECT COUNT(*) FROM[D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 3), 0) AS ReactionCount3," +
+                      " ISNULL((SELECT COUNT(*) FROM[D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 4), 0) AS ReactionCount4," +
+                      " ISNULL(Reaction.ReactionPhraseId, -1) AS ReactionPhraseId," +
+                      " ISNULL((SELECT COUNT(*) FROM[D-Comment] AS Comment WHERE Comment.PostId = Post.Id AND Comment.Status = 1), 0) AS CommentCount," +
+                      " AppUser.Alias" +
+                      " FROM[D-Post] AS Post" +
+                      " INNER JOIN[D-AppUser] AS AppUser ON Post.AppUserId = AppUser.Id" +
+                      " INNER JOIN[D-News] AS News ON News.PostId = Post.Id" +
+                      " LEFT JOIN[D-Reaction] AS Reaction ON Reaction.PostId = Post.Id AND Reaction.AppUserId = @ReactionAppUserId" +
+                        whereFeed;
+
+            strCmd += PostDB.OrderFeedCmd(request.Direction, "PublicationDateTime");
+
+            // POST COUNT
+            strCmd += "SELECT COUNT(*) AS Total FROM [D-Post] AS Post" + whereCount + ";";
+
+            using (SqlCommand command = new SqlCommand(strCmd, conn))
+            {
+                command.AddFeedParams(request);
+
+                using (conn)
+                {
+                    await conn.OpenAsync();
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                            response.NewsFeeds.Add(GetNewsFeed(reader));
+
+                        await reader.NextResultAsync();
+                        if (await reader.ReadAsync())
+                            response.Total = Convert.ToInt32(reader["Total"]);
+                    }
+                }
+            }
+
+            return response;
         }
 
         // GET FULL

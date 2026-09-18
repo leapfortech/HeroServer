@@ -115,6 +115,24 @@ namespace HeroServer
             return newsFulls;
         }
 
+        // FEED
+        public static async Task<NewsFeedResponse> GetFeed(NewsFeedRequest request)
+        {
+            NewsFeedResponse response = await new NewsDB().GetFeed(request);
+
+            // TitleImages
+            List<Task<String>> tasks = [];
+            for (int i = 0; i < response.NewsFeeds.Count; i++)
+                tasks.Add(PostFunctions.GetTitleImageByPostId(response.NewsFeeds[i].PostId));
+
+            String[] images = await Task.WhenAll(tasks);
+
+            for (int i = 0; i < response.NewsFeeds.Count; i++)
+                response.NewsFeeds[i].TitleImage = images[i];
+
+            return response;
+        }
+
         // REGISTER
         public static async Task<long> Register(RegisterNewsRequest registerNewsRequest)
         {

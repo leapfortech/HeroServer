@@ -12,6 +12,7 @@ namespace HeroServer
         readonly String table = "[D-Post]";
 
         static int[] expirationTimes;
+        static String[] feedTables = [ "Tale", "Recipe", "Treatment", "Radio", "Product", "Happening", "News", "Puzzle", "Memory" ];
 
         public static void InitParams(int taleExpTime, int recipeExpTime, int treatmentExpTime, int radioExpTime, int productExpTime, int happeningExpTime, int newsExpTime, int memoryExpTime)
         {
@@ -172,7 +173,7 @@ namespace HeroServer
         {
             PostFeedResponse response = new PostFeedResponse(request.Chunk, request.Direction, request.Count);
 
-            (String whereFeed, String whereCount) = PostDB.GetFeedWheres(request.PostTypeId, request.Direction, request.AppUserId, request.Status, request.CountryId, request.StateId);
+            (String whereFeed, String whereCount) = PostDB.GetFeedWheres(request.PostTypeId, request);
 
             // QUERY FEED
             String strCmd = PostDB.InitFeedCmd(request.Direction, "PublicationDateTime");
@@ -237,28 +238,7 @@ namespace HeroServer
 
             using (SqlCommand command = new SqlCommand(strCmd, conn))
             {
-                if (request.Direction == 1)
-                    command.AddParam("@Count2", SqlDbType.Int, request.Count * 2);
-                command.AddParam("@Count", SqlDbType.Int, request.Count);
-                command.AddParam("@LikeAppUserId", SqlDbType.BigInt, request.LikeAppUserId);
-
-                if (request.PostTypeId != -1)
-                    command.AddParam("@PostTypeId", SqlDbType.BigInt, request.PostTypeId);
-
-                if (request.AppUserId != -1)
-                    command.AddParam("@AppUserId", SqlDbType.BigInt, request.AppUserId);
-
-                if (request.CountryId != -1)
-                    command.AddParam("@CountryId", SqlDbType.BigInt, request.CountryId);
-
-                if (request.StateId != -1)
-                    command.AddParam("@StateId", SqlDbType.BigInt, request.StateId);
-
-                if (request.Status != -1)
-                    command.AddParam("@Status", SqlDbType.Int, request.Status);
-
-
-                command.AddParam("@StartDate", SqlDbType.DateTime2, request.StartDateTime);
+                command.AddFeedParams(request);
 
                 using (conn)
                 {
@@ -292,22 +272,27 @@ namespace HeroServer
             return response;
         }
 
-        public static (String, String) GetFeedWheres(long feedType, int direction, long appUserId, int status, long countryId = -1L, long stateId = -1L)
+        public static (String, String) GetFeedWheres(long feedType, PostFeedRequest request, String[] feedFields = null)
         {
             // FILTERS
             List<String> where = ["Post.PostTypeId = @PostTypeId"];
 
-            if (appUserId != -1)
+            if (request.AppUserId != -1L)
                 where.Add("Post.AppUserId = @AppUserId");
 
-            if (status != -1)
+            if (request.Status != -1)
                 where.Add("Post.Status = @Status");
 
-            if (countryId != -1)
+            if (request.CountryId != -1L)
                 where.Add("Post.CountryId = @CountryId");
 
-            if (stateId != -1)
+            if (request.StateId != -1L)
                 where.Add("Post.StateId = @StateId");
+
+            if (feedFields != null)
+                for (int i = 0; i < feedFields.Length; i++)
+                    if (feedFields[i] != null)
+                        where.Add($"{feedTables[feedType]}.{feedFields[i]} = @{feedFields[i]}");
 
             // EXPIRATION
             if (expirationTimes[feedType] > 0)
@@ -316,7 +301,7 @@ namespace HeroServer
             String whereCount = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
 
             // DATE
-            if (direction == 2)
+            if (request.Direction == 2)
                 where.Add("Post.PublicationDateTime < @StartDate");
             else
                 where.Add("Post.PublicationDateTime > @StartDate");

@@ -21,10 +21,11 @@ namespace HeroServer
 
         }
 
-        public NewsFeed(long id, long postId, String title, String description, DateTime? dateTime, String source, int[] reactionCounts, long reactionPhraseId, int commentCount, String alias)
+        public NewsFeed(long id, long postId, String titleImage, String title, String description, DateTime? dateTime, String source, int[] reactionCounts, long reactionPhraseId, int commentCount, String alias)
         {
             Id = id;
             PostId = postId;
+            TitleImage = titleImage;
             Title = title;
             Description = description;
             DateTime = dateTime;

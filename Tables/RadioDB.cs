@@ -161,11 +161,12 @@ namespace HeroServer
             return id;
         }
 
+        // GET FEED
         public async Task<RadioFeedResponse> GetFeed(RadioFeedRequest request)
         {
-            RadioFeedResponse response = new RadioFeedResponse(request.Chunk, request.Direction, request.Count);
+            RadioFeedResponse response = new RadioFeedResponse(request);
 
-            (String whereFeed, String whereCount) = PostDB.GetFeedWheres(PostType.Radio, request.Direction, request.AppUserId, request.Status);
+            (String whereFeed, String whereCount) = PostDB.GetFeedWheres(PostType.Radio, request);
 
             // QUERY FEED
             String strCmd = PostDB.InitFeedCmd(request.Direction, "PublicationDateTime");
@@ -189,7 +190,7 @@ namespace HeroServer
                       "   INNER JOIN[K-RadioType] AS KRadioType ON KRadioType.Id = RadioType.RadioTypeId" +
                       "   WHERE RadioType.RadioId = Radio.Id AND RadioType.Status = 1 AND KRadioType.Status = 1" +
                       "   ORDER BY RadioType.CreateDateTime ASC" +
-                      " ) AS RadioType " +
+                      " ) AS RadioType" +
                         whereFeed;
 
             strCmd += PostDB.OrderFeedCmd(request.Direction, "PublicationDateTime");
@@ -199,19 +200,7 @@ namespace HeroServer
 
             using (SqlCommand command = new SqlCommand(strCmd, conn))
             {
-                if (request.Direction == 1)
-                    command.AddParam("@Count2", SqlDbType.Int, request.Count * 2);
-                command.AddParam("@Count", SqlDbType.Int, request.Count);
-
-                command.AddParam("@PostTypeId", SqlDbType.BigInt, PostType.Radio);
-
-                if (request.AppUserId != -1)
-                    command.AddParam("@AppUserId", SqlDbType.BigInt, request.AppUserId);
-
-                if (request.Status != -1)
-                    command.AddParam("@Status", SqlDbType.Int, request.Status);
-
-                command.AddParam("@StartDate", SqlDbType.DateTime2, request.StartDateTime);
+                command.AddFeedParams(request);
 
                 using (conn)
                 {
