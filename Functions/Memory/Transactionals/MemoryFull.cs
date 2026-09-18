@@ -33,7 +33,7 @@ namespace HeroServer
                              List<String> images)
             : base(postId, appUserId, appUserAlias, postTypeId,
                    countryId, stateId, title, titleImage, summary, description,
-                   imageCount, reactionCounts, commentCount, favorite, like, likeCount, reactionPhraseId, publicationDateTime, postStatus,
+                   imageCount, reactionCounts, reactionPhraseId, commentCount, publicationDateTime, postStatus,
                    appUserInfo, contactFull, linkFulls, commentFulls)
         {
             Id = id;

@@ -166,10 +166,10 @@ namespace HeroServer
         {
             RadioFeedResponse response = new RadioFeedResponse(request);
 
-            (String whereFeed, String whereCount) = PostDB.GetFeedWheres(PostType.Radio, request);
+            (String whereFeed, String whereCount) = DBHelper.GetFeedWheres(request, false, request.FavoriteAppUserId != -1);
 
             // QUERY FEED
-            String strCmd = PostDB.InitFeedCmd(request.Direction, "PublicationDateTime");
+            String strCmd = DBHelper.InitFeedCmd(request.Direction, "PublicationDateTime");
 
             strCmd += "SELECT Post.Id AS PostId," +
                       " Radio.Id AS RadioId," +
@@ -193,14 +193,14 @@ namespace HeroServer
                       " ) AS RadioType" +
                         whereFeed;
 
-            strCmd += PostDB.OrderFeedCmd(request.Direction, "PublicationDateTime");
+            strCmd += DBHelper.OrderFeedCmd(request.Direction, "PublicationDateTime");
 
             // POST COUNT
             strCmd += "SELECT COUNT(*) AS Total FROM [D-Post] AS Post" + whereCount + ";";
 
             using (SqlCommand command = new SqlCommand(strCmd, conn))
             {
-                command.AddFeedParams(request);
+                command.AddFeedParams(request, -1, request.FavoriteAppUserId);
 
                 using (conn)
                 {

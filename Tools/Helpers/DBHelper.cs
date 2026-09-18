@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -6,6 +7,7 @@ namespace HeroServer
 {
     public static class DBHelper
     {
+        // GENERIC
         public static void AddParam(this SqlCommand command, String name, SqlDbType sqlDbType, object value)
         {
             SqlParameter param = new SqlParameter()
@@ -17,7 +19,81 @@ namespace HeroServer
             command.Parameters.Add(param);
         }
 
-        public static void AddFeedParams(this SqlCommand command, PostFeedRequest request, (long Id, String Field)[] feedFields = null)
+        // FEEDS
+        private static readonly String[] feedTables = ["None", "Tale", "Recipe", "Treatment", "Radio", "Product", "Happening", "News", "Puzzle", "Memory"];
+
+        private static int[] expirationTimes;
+
+        public static void InitParams(int taleExpTime, int recipeExpTime, int treatmentExpTime, int radioExpTime, int productExpTime, int happeningExpTime, int newsExpTime, int memoryExpTime)
+        {
+            expirationTimes = [0, taleExpTime, recipeExpTime, treatmentExpTime, radioExpTime, productExpTime, happeningExpTime, newsExpTime, 0, memoryExpTime];
+        }
+
+        public static (String, String) GetFeedWheres(PostFeedRequest request, bool filterTypeId = false, bool filterFavorite = false, bool filterSelected = false)
+        {
+            // FILTERS
+            List<String> where = ["Post.PostTypeId = @PostTypeId"];
+
+            if (request.AppUserId != -1L)
+                where.Add("Post.AppUserId = @AppUserId");
+
+            if (request.Status != -1)
+                where.Add("Post.Status = @Status");
+
+            if (request.CountryId != -1L)
+                where.Add("Post.CountryId = @CountryId");
+
+            if (request.StateId != -1L)
+                where.Add("Post.StateId = @StateId");
+
+            if (filterTypeId)
+                where.Add($"{feedTables[request.PostTypeId]}.{feedTables[request.PostTypeId]}TypeId = @{feedTables[request.PostTypeId]}TypeId");
+
+            if (filterFavorite)
+                where.Add($"EXISTS(SELECT 1 FROM [J-Favorite] AS Favorite WHERE Favorite.PostId = Post.Id AND Favorite.AppUserId = @AppUserIdFavorite)");
+
+            if (filterSelected)
+                where.Add($"EXISTS(SELECT 1 FROM [J-Selected] AS Selected WHERE Selected.PostId = Post.Id AND Selected.AppUserId = @SelectedAppUserId)");
+
+            // EXPIRATION
+            if (expirationTimes[request.PostTypeId] > 0)
+                where.Add($"Post.PublicationDateTime >= DATEADD(DAY, -{expirationTimes[request.PostTypeId]}, GETDATE()))");
+
+            String whereCount = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
+
+            // PUBLICATION
+            if (request.Direction == 2)
+                where.Add("Post.PublicationDateTime < @StartDate");
+            else
+                where.Add("Post.PublicationDateTime > @StartDate");
+
+            String whereFeed = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
+
+            return (whereFeed, whereCount);
+        }
+
+        public static String InitFeedCmd(int direction, String orderField)
+        {
+            if (direction == 1)
+                return "WITH Posts AS" +
+                       $" (SELECT ROW_NUMBER() OVER (ORDER BY Temp.{orderField} DESC) AS RowNumber, * FROM" +
+                        " (SELECT TOP(@Count2)";
+
+            return "SELECT TOP(@Count)";
+        }
+
+        public static String OrderFeedCmd(int direction, String orderField)
+        {
+            if (direction == 1)
+                return $" ORDER BY Post.{orderField}) AS Temp)," +
+                        " PostCount AS (SELECT COUNT(1) AS Total FROM Posts)" +
+                        " SELECT * FROM Posts, PostCount" +
+                        " WHERE RowNumber <= Total - @Count" +
+                       $" ORDER BY {orderField}";
+            return $" ORDER BY Post.{orderField} DESC;";
+        }
+
+        public static void AddFeedParams(this SqlCommand command, PostFeedRequest request, long typeId = -1, long favoriteAppUserId = -1, long selectedAppUserId = -1)
         {
             if (request.Direction == 1)
                 command.AddParam("@Count2", SqlDbType.Int, request.Count * 2);
@@ -25,7 +101,6 @@ namespace HeroServer
 
             command.AddParam("@PostTypeId", SqlDbType.BigInt, request.PostTypeId);
 
-            command.AddParam("@LikeAppUserId", SqlDbType.BigInt, request.LikeAppUserId);
             command.AddParam("@ReactionAppUserId", SqlDbType.BigInt, request.ReactionAppUserId);
 
             if (request.AppUserId != -1L)
@@ -42,10 +117,14 @@ namespace HeroServer
 
             command.AddParam("@StartDate", SqlDbType.DateTime2, request.StartDateTime);
 
-            if (feedFields != null)
-                for (int i = 0; i < feedFields.Length; i++)
-                    if (feedFields[i].Id > 1L)
-                        command.AddParam($"@{feedFields[i].Field}", SqlDbType.BigInt, feedFields[i].Id);
+            if (typeId != -1)
+                command.AddParam($"@{feedTables[request.PostTypeId]}TypeId", SqlDbType.BigInt, typeId);
+
+            if (favoriteAppUserId != -1)
+                command.AddParam("@FavoriteAppUserId", SqlDbType.BigInt, favoriteAppUserId);
+
+            if (selectedAppUserId != -1)
+                command.AddParam("@SelectedAppUserId", SqlDbType.BigInt, selectedAppUserId);
         }
     }
 }

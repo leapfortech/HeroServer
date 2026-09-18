@@ -11,8 +11,7 @@ namespace HeroServer
         public int Direction { get; set; } = -1;
         public int Count { get; set; } = 0;
 
-        // LIKE
-        public long LikeAppUserId { get; set; } = -1L;      // NOT in 1.5
+        // REACTION
         public long ReactionAppUserId { get; set; } = -1L;
 
         // FILTERS

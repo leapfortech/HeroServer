@@ -10,7 +10,7 @@ namespace HeroServer
 
         public List<PostFull> PostFulls { get; set; } = new List<PostFull>(count);
 
-        // Stats
+        // State
         public int Total { get; set; } = 0;
 
         public long FirstPostId { get; set; } = -1;

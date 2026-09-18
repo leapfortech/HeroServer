@@ -151,10 +151,10 @@ namespace HeroServer
         {
             NewsFeedResponse response = new NewsFeedResponse(request);
 
-            (String whereFeed, String whereCount) = PostDB.GetFeedWheres(PostType.News, request);
+            (String whereFeed, String whereCount) = DBHelper.GetFeedWheres(request, request.NewsTypeId != -1);
 
             // QUERY FEED
-            String strCmd = PostDB.InitFeedCmd(request.Direction, "PublicationDateTime");
+            String strCmd = DBHelper.InitFeedCmd(request.Direction, "PublicationDateTime");
 
             strCmd += "SELECT Post.Id AS PostId," +
                       " News.Id AS NewsId," +
@@ -162,27 +162,27 @@ namespace HeroServer
                       " Post.Description," +
                       " News.DateTime," +
                       " News.Source," +
-                      " ISNULL((SELECT COUNT(*) FROM[D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 1), 0) AS ReactionCount1," +
-                      " ISNULL((SELECT COUNT(*) FROM[D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 2), 0) AS ReactionCount2," +
-                      " ISNULL((SELECT COUNT(*) FROM[D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 3), 0) AS ReactionCount3," +
-                      " ISNULL((SELECT COUNT(*) FROM[D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 4), 0) AS ReactionCount4," +
+                      " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 1), 0) AS ReactionCount1," +
+                      " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 2), 0) AS ReactionCount2," +
+                      " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 3), 0) AS ReactionCount3," +
+                      " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 4), 0) AS ReactionCount4," +
                       " ISNULL(Reaction.ReactionPhraseId, -1) AS ReactionPhraseId," +
-                      " ISNULL((SELECT COUNT(*) FROM[D-Comment] AS Comment WHERE Comment.PostId = Post.Id AND Comment.Status = 1), 0) AS CommentCount," +
+                      " ISNULL((SELECT COUNT(*) FROM [D-Comment] AS Comment WHERE Comment.PostId = Post.Id AND Comment.Status = 1), 0) AS CommentCount," +
                       " AppUser.Alias" +
-                      " FROM[D-Post] AS Post" +
-                      " INNER JOIN[D-AppUser] AS AppUser ON Post.AppUserId = AppUser.Id" +
-                      " INNER JOIN[D-News] AS News ON News.PostId = Post.Id" +
-                      " LEFT JOIN[D-Reaction] AS Reaction ON Reaction.PostId = Post.Id AND Reaction.AppUserId = @ReactionAppUserId" +
+                      " FROM [D-Post] AS Post" +
+                      " INNER JOIN [D-AppUser] AS AppUser ON Post.AppUserId = AppUser.Id" +
+                      " INNER JOIN [D-News] AS News ON News.PostId = Post.Id" +
+                      " LEFT JOIN [D-Reaction] AS Reaction ON Reaction.PostId = Post.Id AND Reaction.AppUserId = @ReactionAppUserId" +
                         whereFeed;
 
-            strCmd += PostDB.OrderFeedCmd(request.Direction, "PublicationDateTime");
+            strCmd += DBHelper.OrderFeedCmd(request.Direction, "PublicationDateTime");
 
             // POST COUNT
             strCmd += "SELECT COUNT(*) AS Total FROM [D-Post] AS Post" + whereCount + ";";
 
             using (SqlCommand command = new SqlCommand(strCmd, conn))
             {
-                command.AddFeedParams(request);
+                command.AddFeedParams(request, request.NewsTypeId);
 
                 using (conn)
                 {

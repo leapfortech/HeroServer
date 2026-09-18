@@ -10,14 +10,14 @@ namespace HeroServer
     {
         public static async void Initialize()
         {
-            PostDB.InitParams(Convert.ToInt32(await new SystemParamDB().GetValue("TaleExpirationTime")),
-                              Convert.ToInt32(await new SystemParamDB().GetValue("RecipeExpirationTime")),
-                              Convert.ToInt32(await new SystemParamDB().GetValue("TreatmentExpirationTime")),
-                              Convert.ToInt32(await new SystemParamDB().GetValue("RadioExpirationTime")),
-                              Convert.ToInt32(await new SystemParamDB().GetValue("ProductExpirationTime")),
-                              Convert.ToInt32(await new SystemParamDB().GetValue("HappeningExpirationTime")),
-                              Convert.ToInt32(await new SystemParamDB().GetValue("NewsExpirationTime")),
-                              Convert.ToInt32(await new SystemParamDB().GetValue("MemoryExpirationTime")));
+            DBHelper.InitParams(Convert.ToInt32(await new SystemParamDB().GetValue("TaleExpirationTime")),
+                                Convert.ToInt32(await new SystemParamDB().GetValue("RecipeExpirationTime")),
+                                Convert.ToInt32(await new SystemParamDB().GetValue("TreatmentExpirationTime")),
+                                Convert.ToInt32(await new SystemParamDB().GetValue("RadioExpirationTime")),
+                                Convert.ToInt32(await new SystemParamDB().GetValue("ProductExpirationTime")),
+                                Convert.ToInt32(await new SystemParamDB().GetValue("HappeningExpirationTime")),
+                                Convert.ToInt32(await new SystemParamDB().GetValue("NewsExpirationTime")),
+                                Convert.ToInt32(await new SystemParamDB().GetValue("MemoryExpirationTime")));
         }
 
         // GET
