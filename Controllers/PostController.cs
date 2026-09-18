@@ -39,7 +39,7 @@ namespace HeroServer.Controllers
             }
         }
 
-        // POST services/post/Feed
+        // POST services/post/PostFeed
         [HttpPost("PostFeed")]
         public async Task<ActionResult<PostFeedResponse>> GetPostFeed([FromBody] PostFeedRequest request)
         {
@@ -53,7 +53,7 @@ namespace HeroServer.Controllers
             }
         }
 
-        // POST services/post/Comment
+        // POST services/post/CommentFeed
         [HttpPost("CommentFeed")]
         public async Task<ActionResult<CommentFeedResponse>> GetCommentFeed([FromBody] CommentFeedRequest request)
         {
@@ -67,7 +67,7 @@ namespace HeroServer.Controllers
             }
         }
 
-        // POST services/post/Feed
+        // POST services/post/FullsPagedByType
         [HttpPost("FullsPagedByType")]
         public async Task<ActionResult<PostFullsPagedResponse>> GetFullsPagedByType([FromBody] PostTypePagedRequest request)
         {

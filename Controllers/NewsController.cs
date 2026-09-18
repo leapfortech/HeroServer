@@ -52,6 +52,20 @@ namespace HeroServer.Controllers
             }
         }
 
+        // POST services/news/Feed
+        [HttpPost("Feed")]
+        public async Task<ActionResult<NewsFeedResponse>> GetFeed([FromBody]NewsFeedRequest request)
+        {
+            try
+            {
+                return Ok(await NewsFunctions.GetFeed(request));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // POST services/news/Register
         [HttpPost("Register")]
         public async Task<ActionResult<long>> Register([FromBody] RegisterNewsRequest registerNewsRequest)

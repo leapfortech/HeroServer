@@ -41,7 +41,7 @@ namespace HeroServer.Controllers
 
         // GET services/radio/FullsByStatus/?status=1
         [HttpGet("FullsByStatus")]
-        public async Task<ActionResult<List<RadioFull>>> GetFullsByStatus([FromQuery] String status)
+        public async Task<ActionResult<List<RadioFull>>> GetFullsByStatus([FromQuery]String status)
         {
             try
             {
@@ -53,9 +53,23 @@ namespace HeroServer.Controllers
             }
         }
 
+        // POST services/radio/Feed
+        [HttpPost("Feed")]
+        public async Task<ActionResult<RadioFeedResponse>> GetFeed([FromBody]RadioFeedRequest request)
+        {
+            try
+            {
+                return Ok(await RadioFunctions.GetFeed(request));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // POST services/radio/Register
         [HttpPost("Register")]
-        public async Task<ActionResult<long>> Register([FromBody] RegisterRadioRequest registerRadioRequest)
+        public async Task<ActionResult<long>> Register([FromBody]RegisterRadioRequest registerRadioRequest)
         {
             try
             {
