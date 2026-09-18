@@ -166,7 +166,7 @@ namespace HeroServer
         {
             RadioFeedResponse response = new RadioFeedResponse(request);
 
-            (String whereFeed, String whereCount) = DBHelper.GetFeedWheres(request, false, request.FavoriteAppUserId != -1);
+            (String whereFeed, String whereCount) = DBHelper.GetFeedWheres(request);
 
             // QUERY FEED
             String strCmd = DBHelper.InitFeedCmd(request.Direction, "PublicationDateTime");
@@ -200,7 +200,7 @@ namespace HeroServer
 
             using (SqlCommand command = new SqlCommand(strCmd, conn))
             {
-                command.AddFeedParams(request, -1, request.FavoriteAppUserId);
+                command.AddFeedParams(request);
 
                 using (conn)
                 {

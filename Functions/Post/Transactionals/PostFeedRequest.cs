@@ -20,5 +20,8 @@ namespace HeroServer
         public long CountryId { get; set; } = -1L;
         public long StateId { get; set; } = -1L;
         public int Status { get; set; } = -1;
+
+        public int FavoriteAppUserId { get; set; } = -1;
+        public int SelectedAppUserId { get; set; } = -1;
     }
 }
