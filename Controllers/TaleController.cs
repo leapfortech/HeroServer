@@ -52,6 +52,20 @@ namespace HeroServer.Controllers
             }
         }
 
+        // POST services/tale/Feed
+        [HttpPost("Feed")]
+        public async Task<ActionResult<TaleFeedResponse>> GetFeed([FromBody] TaleFeedRequest request)
+        {
+            try
+            {
+                return Ok(await TaleFunctions.GetFeed(request));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // POST services/tale/Register
         [HttpPost("Register")]
         public async Task<ActionResult<long>> Register([FromBody] RegisterTaleRequest registerTaleRequest)

@@ -52,6 +52,20 @@ namespace HeroServer.Controllers
             }
         }
 
+        // POST services/product/Feed
+        [HttpPost("Feed")]
+        public async Task<ActionResult<ProductFeedResponse>> GetFeed([FromBody] ProductFeedRequest request)
+        {
+            try
+            {
+                return Ok(await ProductFunctions.GetFeed(request));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // POST services/product/Register
         [HttpPost("Register")]
         public async Task<ActionResult<long>> Register([FromBody] RegisterProductRequest registerProductRequest)

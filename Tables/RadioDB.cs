@@ -36,10 +36,10 @@ namespace HeroServer
                                  reader["Description"].ToString(),
                                  Convert.ToInt32(reader["ImageCount"]),
 
-                                 [Convert.ToInt32(reader["ReactionCount1"]),
-                                  Convert.ToInt32(reader["ReactionCount2"]),
-                                  Convert.ToInt32(reader["ReactionCount3"]),
-                                  Convert.ToInt32(reader["ReactionCount4"])],
+                                 [Convert.ToInt32(reader["Reaction1Count"]),
+                                  Convert.ToInt32(reader["Reaction2Count"]),
+                                  Convert.ToInt32(reader["Reaction3Count"]),
+                                  Convert.ToInt32(reader["Reaction4Count"])],
                                   Convert.ToInt32(reader["CommentCount"]),
                                 
                                  Convert.ToInt32(reader["Favorite"]),
@@ -232,22 +232,22 @@ namespace HeroServer
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 1), 0) AS ReactionCount1," +
+                             "        AND Reaction.ReactionPhraseId = 1), 0) AS Reaction1Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 2), 0) AS ReactionCount2," +
+                             "        AND Reaction.ReactionPhraseId = 2), 0) AS Reaction2Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 3), 0) AS ReactionCount3," +
+                             "        AND Reaction.ReactionPhraseId = 3), 0) AS Reaction3Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 4), 0) AS ReactionCount4," +
+                             "        AND Reaction.ReactionPhraseId = 4), 0) AS Reaction4Count," +
 
                              // CommentCount
                              " ISNULL((SELECT COUNT(*)" +
@@ -383,22 +383,22 @@ namespace HeroServer
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 1), 0) AS ReactionCount1," +
+                             "        AND Reaction.ReactionPhraseId = 1), 0) AS Reaction1Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 2), 0) AS ReactionCount2," +
+                             "        AND Reaction.ReactionPhraseId = 2), 0) AS Reaction2Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 3), 0) AS ReactionCount3," +
+                             "        AND Reaction.ReactionPhraseId = 3), 0) AS Reaction3Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 4), 0) AS ReactionCount4," +
+                             "        AND Reaction.ReactionPhraseId = 4), 0) AS Reaction4Count," +
 
                              // CommentCount
                              " ISNULL((SELECT COUNT(*)" +
@@ -536,22 +536,22 @@ namespace HeroServer
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 1), 0) AS ReactionCount1," +
+                             "        AND Reaction.ReactionPhraseId = 1), 0) AS Reaction1Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 2), 0) AS ReactionCount2," +
+                             "        AND Reaction.ReactionPhraseId = 2), 0) AS Reaction2Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 3), 0) AS ReactionCount3," +
+                             "        AND Reaction.ReactionPhraseId = 3), 0) AS Reaction3Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 4), 0) AS ReactionCount4," +
+                             "        AND Reaction.ReactionPhraseId = 4), 0) AS Reaction4Count," +
 
                              // CommentCount
                              " ISNULL((SELECT COUNT(*)" +

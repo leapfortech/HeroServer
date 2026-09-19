@@ -52,6 +52,20 @@ namespace HeroServer.Controllers
             }
         }
 
+        // POST services/happening/Feed
+        [HttpPost("Feed")]
+        public async Task<ActionResult<HappeningFeedResponse>> GetFeed([FromBody] HappeningFeedRequest request)
+        {
+            try
+            {
+                return Ok(await HappeningFunctions.GetFeed(request));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // POST services/happening/Register
         [HttpPost("Register")]
         public async Task<ActionResult<long>> Register([FromBody] RegisterHappeningRequest registerHappeningRequest)

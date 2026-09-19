@@ -52,6 +52,20 @@ namespace HeroServer.Controllers
             }
         }
 
+        // POST services/memory/Feed
+        [HttpPost("Feed")]
+        public async Task<ActionResult<MemoryFeedResponse>> GetFeed([FromBody] MemoryFeedRequest request)
+        {
+            try
+            {
+                return Ok(await MemoryFunctions.GetFeed(request));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // POST services/memory/Register
         [HttpPost("Register")]
         public async Task<ActionResult<long>> Register([FromBody] RegisterMemoryRequest registerMemoryRequest)

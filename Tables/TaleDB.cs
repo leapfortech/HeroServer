@@ -36,10 +36,10 @@ namespace HeroServer
                                 reader["Description"].ToString(),
                                 Convert.ToInt32(reader["ImageCount"]),
 
-                                new int[]{Convert.ToInt32(reader["ReactionCount1"]),
-                                          Convert.ToInt32(reader["ReactionCount2"]),
-                                          Convert.ToInt32(reader["ReactionCount3"]),
-                                          Convert.ToInt32(reader["ReactionCount4"])},
+                                new int[]{Convert.ToInt32(reader["Reaction1Count"]),
+                                          Convert.ToInt32(reader["Reaction2Count"]),
+                                          Convert.ToInt32(reader["Reaction3Count"]),
+                                          Convert.ToInt32(reader["Reaction4Count"])},
                                 Convert.ToInt32(reader["CommentCount"]),
 
                                 Convert.ToInt32(reader["Favorite"]),
@@ -70,6 +70,24 @@ namespace HeroServer
                                 Convert.ToInt32(reader["Status"]),
 
                                 null);  //Images
+        }
+
+        public static TaleFeed GetTaleFeed(SqlDataReader reader)
+        {
+            return new TaleFeed(Convert.ToInt64(reader["TaleId"]),
+                                Convert.ToInt64(reader["PostId"]),
+                                null,   //TitleImage
+                                reader["Title"].ToString(),
+                                reader["Description"].ToString(),
+                                [Convert.ToInt32(reader["Reaction1Count"]),
+                                 Convert.ToInt32(reader["Reaction2Count"]),
+                                 Convert.ToInt32(reader["Reaction3Count"]),
+                                 Convert.ToInt32(reader["Reaction4Count"])],
+                                Convert.ToInt64(reader["ReactionPhraseId"]),
+                                Convert.ToInt32(reader["CommentCount"]),
+                                reader["Alias"].ToString(),
+                                reader["InterestLocality"].ToString(),
+                                reader["CurrentLocality"].ToString());
         }
 
         // GET
@@ -123,6 +141,80 @@ namespace HeroServer
             return tale;
         }
 
+        // GET FEED
+        public async Task<TaleFeedResponse> GetFeed(TaleFeedRequest request)
+        {
+            TaleFeedResponse response = new TaleFeedResponse(request);
+
+            (String whereFeed, String whereCount) = DBHelper.GetFeedWheres(request);
+
+            // QUERY FEED
+            String strCmd = DBHelper.InitFeedCmd(request.Direction, "PublicationDateTime");
+
+            strCmd += "SELECT Post.Id AS PostId," +
+                      " Tale.Id AS TaleId," +
+                      " Post.Title," +
+                      " Post.Description," +
+                      " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 1), 0) AS Reaction1Count," +
+                      " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 2), 0) AS Reaction2Count," +
+                      " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 3), 0) AS Reaction3Count," +
+                      " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 4), 0) AS Reaction4Count," +
+                      " ISNULL(Reaction.ReactionPhraseId, -1) AS ReactionPhraseId," +
+                      " ISNULL((SELECT COUNT(*) FROM [D-Comment] AS Comment WHERE Comment.PostId = Post.Id AND Comment.Status = 1), 0) AS CommentCount," +
+                      " AppUser.Alias," +
+                      " CASE" +
+                      " WHEN InterestLocality.CountryId <> -1 AND InterestLocality.StateId <> -1 AND InterestLocality.CityId <> -1 THEN InterestLocalityCountry.Name + ', ' + InterestLocalityState.Name + ', ' + InterestLocalityCity.Name" +
+                      " WHEN InterestLocality.CountryId <> -1 AND InterestLocality.StateId <> -1 THEN InterestLocalityCountry.Name + ', ' + InterestLocalityState.Name" +
+                      " WHEN InterestLocality.CountryId <> -1 THEN InterestLocalityCountry.Name" +
+                      " ELSE ''" +
+                      " END AS InterestLocality," +
+                      " CASE" +
+                      " WHEN CurrentLocality.CountryId <> -1 AND CurrentLocality.StateId <> -1 AND CurrentLocality.CityId <> -1 THEN CurrentLocalityCountry.Name + ', ' + CurrentLocalityState.Name + ', ' + CurrentLocalityCity.Name" +
+                      " WHEN CurrentLocality.CountryId <> -1 AND CurrentLocality.StateId <> -1 THEN CurrentLocalityCountry.Name + ', ' + CurrentLocalityState.Name" +
+                      " WHEN CurrentLocality.CountryId <> -1 THEN CurrentLocalityCountry.Name" +
+                      " ELSE ''" +
+                      " END AS CurrentLocality" +
+                      " FROM [D-Post] AS Post" +
+                      " INNER JOIN [D-AppUser] AS AppUser ON Post.AppUserId = AppUser.Id" +
+                      " INNER JOIN [D-Tale] AS Tale ON Tale.PostId = Post.Id" +
+                      " LEFT JOIN [D-Reaction] AS Reaction ON Reaction.PostId = Post.Id AND Reaction.AppUserId = @ReactionAppUserId" +
+                      " OUTER APPLY (SELECT TOP 1 LocalityType, CountryId, StateId, CityId FROM [D-Locality] WHERE AppUserId = Post.AppUserId AND LocalityType = 1 AND Status = 1) AS InterestLocality" +
+                      " OUTER APPLY (SELECT TOP 1 LocalityType, CountryId, StateId, CityId FROM [D-Locality] WHERE AppUserId = Post.AppUserId AND LocalityType = 2 AND Status = 1) AS CurrentLocality" +
+                      " LEFT JOIN [K-Country] AS InterestLocalityCountry ON InterestLocalityCountry.Id = InterestLocality.CountryId" +
+                      " LEFT JOIN [K-State] AS InterestLocalityState ON InterestLocalityState.Id = InterestLocality.StateId" +
+                      " LEFT JOIN [K-City] AS InterestLocalityCity ON InterestLocalityCity.Id = InterestLocality.CityId" +
+                      " LEFT JOIN [K-Country] AS CurrentLocalityCountry ON CurrentLocalityCountry.Id = CurrentLocality.CountryId" +
+                      " LEFT JOIN [K-State] AS CurrentLocalityState ON CurrentLocalityState.Id = CurrentLocality.StateId" +
+                      " LEFT JOIN [K-City] AS CurrentLocalityCity ON CurrentLocalityCity.Id = CurrentLocality.CityId" +
+                        whereFeed;
+
+            strCmd += DBHelper.OrderFeedCmd(request.Direction, "PublicationDateTime");
+
+            // POST COUNT
+            strCmd += "SELECT COUNT(*) AS Total FROM [D-Post] AS Post" + whereCount + ";";
+
+            using (SqlCommand command = new SqlCommand(strCmd, conn))
+            {
+                command.AddFeedParams(request);
+
+                using (conn)
+                {
+                    await conn.OpenAsync();
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                            response.TaleFeeds.Add(GetTaleFeed(reader));
+
+                        await reader.NextResultAsync();
+                        if (await reader.ReadAsync())
+                            response.Total = Convert.ToInt32(reader["Total"]);
+                    }
+                }
+            }
+
+            return response;
+        }
+
         // GET FULL
         public async Task<TaleFull> GetFullById(long id, long likeAppUserId)
         {
@@ -137,22 +229,22 @@ namespace HeroServer
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 1), 0) AS ReactionCount1," +
+                             "        AND Reaction.ReactionPhraseId = 1), 0) AS Reaction1Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 2), 0) AS ReactionCount2," +
+                             "        AND Reaction.ReactionPhraseId = 2), 0) AS Reaction2Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 3), 0) AS ReactionCount3," +
+                             "        AND Reaction.ReactionPhraseId = 3), 0) AS Reaction3Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 4), 0) AS ReactionCount4," +
+                             "        AND Reaction.ReactionPhraseId = 4), 0) AS Reaction4Count," +
 
                              // CommentCount
                              " ISNULL((SELECT COUNT(*)" +
@@ -269,22 +361,22 @@ namespace HeroServer
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 1), 0) AS ReactionCount1," +
+                             "        AND Reaction.ReactionPhraseId = 1), 0) AS Reaction1Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 2), 0) AS ReactionCount2," +
+                             "        AND Reaction.ReactionPhraseId = 2), 0) AS Reaction2Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 3), 0) AS ReactionCount3," +
+                             "        AND Reaction.ReactionPhraseId = 3), 0) AS Reaction3Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 4), 0) AS ReactionCount4," +
+                             "        AND Reaction.ReactionPhraseId = 4), 0) AS Reaction4Count," +
 
                              // CommentCount
                              " ISNULL((SELECT COUNT(*)" +
@@ -400,22 +492,22 @@ namespace HeroServer
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 1), 0) AS ReactionCount1," +
+                             "        AND Reaction.ReactionPhraseId = 1), 0) AS Reaction1Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 2), 0) AS ReactionCount2," +
+                             "        AND Reaction.ReactionPhraseId = 2), 0) AS Reaction2Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 3), 0) AS ReactionCount3," +
+                             "        AND Reaction.ReactionPhraseId = 3), 0) AS Reaction3Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 4), 0) AS ReactionCount4," +
+                             "        AND Reaction.ReactionPhraseId = 4), 0) AS Reaction4Count," +
 
                              // CommentCount
                              " ISNULL((SELECT COUNT(*)" +

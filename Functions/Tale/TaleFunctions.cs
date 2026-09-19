@@ -115,6 +115,24 @@ namespace HeroServer
             return taleFulls;
         }
 
+        // FEED
+        public static async Task<TaleFeedResponse> GetFeed(TaleFeedRequest request)
+        {
+            TaleFeedResponse response = await new TaleDB().GetFeed(request);
+
+            // TitleImages
+            List<Task<String>> tasks = [];
+            for (int i = 0; i < response.TaleFeeds.Count; i++)
+                tasks.Add(PostFunctions.GetTitleImageByPostId(response.TaleFeeds[i].PostId));
+
+            String[] images = await Task.WhenAll(tasks);
+
+            for (int i = 0; i < response.TaleFeeds.Count; i++)
+                response.TaleFeeds[i].TitleImage = images[i];
+
+            return response;
+        }
+
         // REGISTER
         public static async Task<long> Register(RegisterTaleRequest registerTaleRequest)
         {

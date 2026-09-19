@@ -48,10 +48,10 @@ namespace HeroServer
                                      reader["Description"].ToString(),
                                      Convert.ToInt32(reader["ImageCount"]),
 
-                                     new int[]{Convert.ToInt32(reader["ReactionCount1"]),
-                                               Convert.ToInt32(reader["ReactionCount2"]),
-                                               Convert.ToInt32(reader["ReactionCount3"]),
-                                               Convert.ToInt32(reader["ReactionCount4"])},
+                                     new int[]{Convert.ToInt32(reader["Reaction1Count"]),
+                                               Convert.ToInt32(reader["Reaction2Count"]),
+                                               Convert.ToInt32(reader["Reaction3Count"]),
+                                               Convert.ToInt32(reader["Reaction4Count"])},
                                      Convert.ToInt32(reader["CommentCount"]),
                                      
                                      Convert.ToInt32(reader["Favorite"]),
@@ -95,6 +95,21 @@ namespace HeroServer
                                      Convert.ToInt32(reader["Status"]),
 
                                      null);  //Images)
+        }
+
+        public static HappeningFeed GetHappeningFeed(SqlDataReader reader)
+        {
+            return new HappeningFeed(Convert.ToInt64(reader["HappeningId"]),
+                                     Convert.ToInt64(reader["PostId"]),
+                                     null,   //TitleImage
+                                     reader["Title"].ToString(),
+                                     reader["StartDateTime"] == DBNull.Value ? null : Convert.ToDateTime(reader["StartDateTime"]),
+                                     reader["EndDateTime"] == DBNull.Value ? null : Convert.ToDateTime(reader["EndDateTime"]),
+                                     reader["HappeningType"].ToString(),
+                                     reader["Country"].ToString(),
+                                     reader["State"].ToString(),
+                                     reader["Location"].ToString(),
+                                     Convert.ToInt32(reader["LikeCount"]));
         }
 
 
@@ -149,6 +164,60 @@ namespace HeroServer
             return happening;
         }
 
+        // GET FEED
+        public async Task<HappeningFeedResponse> GetFeed(HappeningFeedRequest request)
+        {
+            HappeningFeedResponse response = new HappeningFeedResponse(request);
+
+            (String whereFeed, String whereCount) = DBHelper.GetFeedWheres(request, request.HappeningTypeId != -1);
+
+            // QUERY FEED
+            String strCmd = DBHelper.InitFeedCmd(request.Direction, "PublicationDateTime");
+
+            strCmd += " SELECT Post.Id AS PostId," +
+                      " Happening.Id AS HappeningId," +
+                      " Post.Title," +
+                      " Happening.StartDateTime," +
+                      " Happening.EndDateTime," +
+                      " HappeningType.Name AS HappeningType," +
+                      " Country.Name AS Country," +
+                      " State.Name AS State," +
+                      " Happening.Location," +
+                      " Post.LikeCount" +
+                      " FROM [D-Post] AS Post" +
+                      " INNER JOIN [D-Happening] AS Happening ON Happening.PostId = Post.Id" +
+                      " INNER JOIN [K-Country] AS Country ON Country.Id = Post.CountryId" +
+                      " LEFT JOIN [K-State] AS State ON State.Id = Post.StateId AND Post.StateId <> -1" +
+                      " INNER JOIN [K-HappeningType] AS HappeningType ON HappeningType.Id = Happening.HappeningTypeId" +
+                        whereFeed;
+
+            strCmd += DBHelper.OrderFeedCmd(request.Direction, "PublicationDateTime");
+
+            // POST COUNT
+            strCmd += "SELECT COUNT(*) AS Total FROM [D-Post] AS Post" + whereCount + ";";
+
+            using (SqlCommand command = new SqlCommand(strCmd, conn))
+            {
+                command.AddFeedParams(request, request.HappeningTypeId);
+
+                using (conn)
+                {
+                    await conn.OpenAsync();
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                            response.HappeningFeeds.Add(GetHappeningFeed(reader));
+
+                        await reader.NextResultAsync();
+                        if (await reader.ReadAsync())
+                            response.Total = Convert.ToInt32(reader["Total"]);
+                    }
+                }
+            }
+
+            return response;
+        }
+
         // GET FULL
         public async Task<HappeningFull> GetFullById(long id, long likeAppUserId)
         {
@@ -161,22 +230,22 @@ namespace HeroServer
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 1), 0) AS ReactionCount1," +
+                             "        AND Reaction.ReactionPhraseId = 1), 0) AS Reaction1Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 2), 0) AS ReactionCount2," +
+                             "        AND Reaction.ReactionPhraseId = 2), 0) AS Reaction2Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 3), 0) AS ReactionCount3," +
+                             "        AND Reaction.ReactionPhraseId = 3), 0) AS Reaction3Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 4), 0) AS ReactionCount4," +
+                             "        AND Reaction.ReactionPhraseId = 4), 0) AS Reaction4Count," +
 
                              // CommentCount
                              " ISNULL((SELECT COUNT(*)" +
@@ -294,22 +363,22 @@ namespace HeroServer
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 1), 0) AS ReactionCount1," +
+                             "        AND Reaction.ReactionPhraseId = 1), 0) AS Reaction1Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 2), 0) AS ReactionCount2," +
+                             "        AND Reaction.ReactionPhraseId = 2), 0) AS Reaction2Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 3), 0) AS ReactionCount3," +
+                             "        AND Reaction.ReactionPhraseId = 3), 0) AS Reaction3Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 4), 0) AS ReactionCount4," +
+                             "        AND Reaction.ReactionPhraseId = 4), 0) AS Reaction4Count," +
 
                              // CommentCount
                              " ISNULL((SELECT COUNT(*)" +
@@ -427,22 +496,22 @@ namespace HeroServer
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 1), 0) AS ReactionCount1," +
+                             "        AND Reaction.ReactionPhraseId = 1), 0) AS Reaction1Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 2), 0) AS ReactionCount2," +
+                             "        AND Reaction.ReactionPhraseId = 2), 0) AS Reaction2Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 3), 0) AS ReactionCount3," +
+                             "        AND Reaction.ReactionPhraseId = 3), 0) AS Reaction3Count," +
 
                              " ISNULL((SELECT COUNT(*)" +
                              "        FROM [D-Reaction] AS Reaction" +
                              "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 4), 0) AS ReactionCount4," +
+                             "        AND Reaction.ReactionPhraseId = 4), 0) AS Reaction4Count," +
 
                              // CommentCount
                              " ISNULL((SELECT COUNT(*)" +

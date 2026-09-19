@@ -115,6 +115,24 @@ namespace HeroServer
             return memoryFulls;
         }
 
+        // FEED
+        public static async Task<MemoryFeedResponse> GetFeed(MemoryFeedRequest request)
+        {
+            MemoryFeedResponse response = await new MemoryDB().GetFeed(request);
+
+            // TitleImages
+            List<Task<String>> tasks = [];
+            for (int i = 0; i < response.MemoryFeeds.Count; i++)
+                tasks.Add(PostFunctions.GetTitleImageByPostId(response.MemoryFeeds[i].PostId));
+
+            String[] images = await Task.WhenAll(tasks);
+
+            for (int i = 0; i < response.MemoryFeeds.Count; i++)
+                response.MemoryFeeds[i].TitleImage = images[i];
+
+            return response;
+        }
+
         // REGISTER
         public static async Task<long> Register(RegisterMemoryRequest registerMemoryRequest)
         {

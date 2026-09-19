@@ -115,6 +115,24 @@ namespace HeroServer
             return happeningFulls;
         }
 
+        // FEED
+        public static async Task<HappeningFeedResponse> GetFeed(HappeningFeedRequest request)
+        {
+            HappeningFeedResponse response = await new HappeningDB().GetFeed(request);
+
+            // TitleImages
+            List<Task<String>> tasks = [];
+            for (int i = 0; i < response.HappeningFeeds.Count; i++)
+                tasks.Add(PostFunctions.GetTitleImageByPostId(response.HappeningFeeds[i].PostId));
+
+            String[] images = await Task.WhenAll(tasks);
+
+            for (int i = 0; i < response.HappeningFeeds.Count; i++)
+                response.HappeningFeeds[i].TitleImage = images[i];
+
+            return response;
+        }
+
         // REGISTER
         public static async Task<long> Register(RegisterHappeningRequest registerHappeningRequest)
         {

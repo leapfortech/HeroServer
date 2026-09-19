@@ -115,6 +115,24 @@ namespace HeroServer
             return productFulls;
         }
 
+        // FEED
+        public static async Task<ProductFeedResponse> GetFeed(ProductFeedRequest request)
+        {
+            ProductFeedResponse response = await new ProductDB().GetFeed(request);
+
+            // TitleImages
+            List<Task<String>> tasks = [];
+            for (int i = 0; i < response.ProductFeeds.Count; i++)
+                tasks.Add(PostFunctions.GetTitleImageByPostId(response.ProductFeeds[i].PostId));
+
+            String[] images = await Task.WhenAll(tasks);
+
+            for (int i = 0; i < response.ProductFeeds.Count; i++)
+                response.ProductFeeds[i].TitleImage = images[i];
+
+            return response;
+        }
+
         // REGISTER
         public static async Task<long> Register(RegisterProductRequest registerProductRequest)
         {
