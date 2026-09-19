@@ -83,7 +83,8 @@ namespace HeroServer
                                  reader["RadioType"].ToString(),
                                  reader["PostCountry"].ToString(),
                                  reader["PostState"].ToString(),
-                                 reader["Url"].ToString());
+                                 reader["Url"].ToString(),
+                                 Convert.ToDateTime(reader["PublicationDateTime"]));
         }
 
 
@@ -178,15 +179,16 @@ namespace HeroServer
                       " Country.Name AS PostCountry," +
                       " State.Name AS PostState," +
                       " Link.Url" +
+                      " Post.PublicationDateTime," +
                       " FROM [D-Post] AS Post" +
-                      " INNER JOIN[D-Radio] AS Radio ON Radio.PostId = Post.Id" +
-                      " INNER JOIN[K-Country] AS Country ON Country.Id = Post.CountryId" +
-                      " LEFT JOIN[K-State] AS State ON State.Id = Post.StateId AND Post.StateId <> -1" +
-                      " LEFT JOIN[D-Link] AS Link ON Link.PostId = Post.Id AND Link.Status = 1" +
+                      " INNER JOIN [D-Radio] AS Radio ON Radio.PostId = Post.Id" +
+                      " INNER JOIN [K-Country] AS Country ON Country.Id = Post.CountryId" +
+                      " LEFT JOIN [K-State] AS State ON State.Id = Post.StateId AND Post.StateId <> -1" +
+                      " LEFT JOIN [D-Link] AS Link ON Link.PostId = Post.Id AND Link.Status = 1" +
                       " OUTER APPLY" +
                       " (" +
                       "   SELECT TOP 1 KRadioType.Name" +
-                      "   FROM[J-RadioType] AS RadioType" +
+                      "   FROM [J-RadioType] AS RadioType" +
                       "   INNER JOIN[K-RadioType] AS KRadioType ON KRadioType.Id = RadioType.RadioTypeId" +
                       "   WHERE RadioType.RadioId = Radio.Id AND RadioType.Status = 1 AND KRadioType.Status = 1" +
                       "   ORDER BY RadioType.CreateDateTime ASC" +
