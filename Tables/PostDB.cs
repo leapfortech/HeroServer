@@ -24,8 +24,8 @@ namespace HeroServer
                             Convert.ToInt32(reader["ImageCount"]),
                             Convert.ToInt32(reader["LikeCount"]),
                             Convert.ToDateTime(reader["PublicationDateTime"]),
-                            reader["ApprovalDateTime"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(reader["ApprovalDateTime"]),
-                            reader["ExpirationDateTime"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(reader["ExpirationDateTime"]),
+                            reader["ApprovalDateTime"] == DBNull.Value ? null : Convert.ToDateTime(reader["ApprovalDateTime"]),
+                            reader["ExpirationDateTime"] == DBNull.Value ? null : Convert.ToDateTime(reader["ExpirationDateTime"]),
                             Convert.ToDateTime(reader["CreateDateTime"]),
                             Convert.ToDateTime(reader["UpdateDateTime"]),
                             Convert.ToInt32(reader["Status"]));
@@ -166,55 +166,55 @@ namespace HeroServer
             String strCmd = DBHelper.InitFeedCmd(request.Direction, "PublicationDateTime");
 
             strCmd += " Post.Id AS PostId," +
-                        " Post.AppUserId," +
-                        " DAppUser.Alias AS AppUserAlias," +
-                        " Post.PostTypeId," +
-                        " Post.CountryId AS PostCountryId," +
-                        " Post.StateId AS PostStateId," +
-                        " Post.Title," +
-                        " Post.Summary," +
-                        " Post.Description," +
-                        " Post.ImageCount," +
+                      " Post.AppUserId," +
+                      " DAppUser.Alias AS AppUserAlias," +
+                      " Post.PostTypeId," +
+                      " Post.CountryId AS PostCountryId," +
+                      " Post.StateId AS PostStateId," +
+                      " Post.Title," +
+                      " Post.Summary," +
+                      " Post.Description," +
+                      " Post.ImageCount," +
 
-                        // ReactionCounts
-                        " ISNULL((SELECT COUNT(*)" +
-                        "        FROM [D-Reaction] AS Reaction" +
-                        "        WHERE Reaction.PostId = Post.Id" +
-                        "        AND Reaction.ReactionPhraseId = 1), 0) AS ReactionCount1," +
+                      // ReactionCounts
+                      " ISNULL((SELECT COUNT(*)" +
+                      "        FROM [D-Reaction] AS Reaction" +
+                      "        WHERE Reaction.PostId = Post.Id" +
+                      "        AND Reaction.ReactionPhraseId = 1), 0) AS ReactionCount1," +
 
-                        " ISNULL((SELECT COUNT(*)" +
-                        "        FROM [D-Reaction] AS Reaction" +
-                        "        WHERE Reaction.PostId = Post.Id" +
-                        "        AND Reaction.ReactionPhraseId = 2), 0) AS ReactionCount2," +
+                      " ISNULL((SELECT COUNT(*)" +
+                      "        FROM [D-Reaction] AS Reaction" +
+                      "        WHERE Reaction.PostId = Post.Id" +
+                      "        AND Reaction.ReactionPhraseId = 2), 0) AS ReactionCount2," +
 
-                        " ISNULL((SELECT COUNT(*)" +
-                        "        FROM [D-Reaction] AS Reaction" +
-                        "        WHERE Reaction.PostId = Post.Id" +
-                        "        AND Reaction.ReactionPhraseId = 3), 0) AS ReactionCount3," +
+                      " ISNULL((SELECT COUNT(*)" +
+                      "        FROM [D-Reaction] AS Reaction" +
+                      "        WHERE Reaction.PostId = Post.Id" +
+                      "        AND Reaction.ReactionPhraseId = 3), 0) AS ReactionCount3," +
 
-                        " ISNULL((SELECT COUNT(*)" +
-                        "        FROM [D-Reaction] AS Reaction" +
-                        "        WHERE Reaction.PostId = Post.Id" +
-                        "        AND Reaction.ReactionPhraseId = 4), 0) AS ReactionCount4," +
+                      " ISNULL((SELECT COUNT(*)" +
+                      "        FROM [D-Reaction] AS Reaction" +
+                      "        WHERE Reaction.PostId = Post.Id" +
+                      "        AND Reaction.ReactionPhraseId = 4), 0) AS ReactionCount4," +
 
-                        // CommentCount
-                        " ISNULL((SELECT COUNT(*)" +
-                        "        FROM [D-Comment] AS Comment" +
-                        "        WHERE Comment.PostId = Post.Id" +
-                        "        AND Comment.Status = 1), 0) AS CommentCount," +
+                      // CommentCount
+                      " ISNULL((SELECT COUNT(*)" +
+                      "        FROM [D-Comment] AS Comment" +
+                      "        WHERE Comment.PostId = Post.Id" +
+                      "        AND Comment.Status = 1), 0) AS CommentCount," +
 
-                        " CASE WHEN JFavorite.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
-                        " ISNULL(DLike.[Rank], -1) AS [Like]," +
-                        " ISNULL(DReaction.[ReactionPhraseId], -1) AS [ReactionPhraseId]," +
-                        " Post.LikeCount," +
-                        " Post.PublicationDateTime," +
-                        " Post.Status AS PostStatus" +
-                        " FROM [D-Post] AS Post" +
-                        " INNER JOIN [D-AppUser] AS DAppUser ON Post.AppUserId = DAppUser.Id" +
-                        " LEFT JOIN [J-Favorite] AS JFavorite ON JFavorite.PostId = Post.Id AND JFavorite.AppUserId = @LikeAppUserId" +
-                        " LEFT JOIN [D-Like] AS DLike ON DLike.PostId = Post.Id AND DLike.AppUserId = @LikeAppUserId" +
-                        " LEFT JOIN [D-Reaction] AS DReaction ON DReaction.PostId = Post.Id AND DReaction.AppUserId = @LikeAppUserId" +
-                        whereFeed;
+                      " CASE WHEN JFavorite.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
+                      " ISNULL(DLike.[Rank], -1) AS [Like]," +
+                      " ISNULL(DReaction.[ReactionPhraseId], -1) AS [ReactionPhraseId]," +
+                      " Post.LikeCount," +
+                      " Post.PublicationDateTime," +
+                      " Post.Status AS PostStatus" +
+                      " FROM [D-Post] AS Post" +
+                      " INNER JOIN [D-AppUser] AS DAppUser ON Post.AppUserId = DAppUser.Id" +
+                      " LEFT JOIN [J-Favorite] AS JFavorite ON JFavorite.PostId = Post.Id AND JFavorite.AppUserId = @ReactionAppUserId" +
+                      " LEFT JOIN [D-Like] AS DLike ON DLike.PostId = Post.Id AND DLike.AppUserId = @ReactionAppUserId" +
+                      " LEFT JOIN [D-Reaction] AS DReaction ON DReaction.PostId = Post.Id AND DReaction.AppUserId = @ReactionAppUserId" +
+                      whereFeed;
 
             strCmd += DBHelper.OrderFeedCmd(request.Direction, "PublicationDateTime");
 

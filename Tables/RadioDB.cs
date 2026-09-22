@@ -84,6 +84,7 @@ namespace HeroServer
                                  reader["PostCountry"].ToString(),
                                  reader["PostState"].ToString(),
                                  reader["Url"].ToString(),
+                                 Convert.ToInt32(reader["Favorite"]),
                                  Convert.ToDateTime(reader["PublicationDateTime"]));
         }
 
@@ -172,19 +173,21 @@ namespace HeroServer
             // QUERY FEED
             String strCmd = DBHelper.InitFeedCmd(request.Direction, "PublicationDateTime");
 
-            strCmd += "SELECT Post.Id AS PostId," +
+            strCmd += " Post.Id AS PostId," +
                       " Radio.Id AS RadioId," +
                       " Post.Title," +
                       " RadioType.Name AS RadioType," +
                       " Country.Name AS PostCountry," +
                       " State.Name AS PostState," +
-                      " Link.Url" +
-                      " Post.PublicationDateTime," +
+                      " Link.Url," +
+                      " CASE WHEN JFavorite.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
+                      " Post.PublicationDateTime" +
                       " FROM [D-Post] AS Post" +
                       " INNER JOIN [D-Radio] AS Radio ON Radio.PostId = Post.Id" +
                       " INNER JOIN [K-Country] AS Country ON Country.Id = Post.CountryId" +
                       " LEFT JOIN [K-State] AS State ON State.Id = Post.StateId AND Post.StateId <> -1" +
                       " LEFT JOIN [D-Link] AS Link ON Link.PostId = Post.Id AND Link.Status = 1" +
+                      " LEFT JOIN [J-Favorite] AS JFavorite ON JFavorite.PostId = Post.Id AND JFavorite.AppUserId = @ReactionAppUserId" +
                       " OUTER APPLY" +
                       " (" +
                       "   SELECT TOP 1 KRadioType.Name" +
@@ -196,6 +199,8 @@ namespace HeroServer
                         whereFeed;
 
             strCmd += DBHelper.OrderFeedCmd(request.Direction, "PublicationDateTime");
+
+            //throw new Exception(strCmd);
 
             // POST COUNT
             strCmd += "SELECT COUNT(*) AS Total FROM [D-Post] AS Post" + whereCount + ";";

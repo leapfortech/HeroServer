@@ -46,7 +46,7 @@ namespace HeroServer
             if (request.StateId != -1L)
                 where.Add("Post.StateId = @StateId");
 
-            if (request.FavoriteAppUserId != 1L)
+            if (request.FavoriteAppUserId != -1L)
                 where.Add($"EXISTS(SELECT 1 FROM [J-Favorite] AS Favorite WHERE Favorite.PostId = Post.Id AND Favorite.AppUserId = @FavoriteAppUserId)");
 
             if (request.SelectedAppUserId != -1L)
