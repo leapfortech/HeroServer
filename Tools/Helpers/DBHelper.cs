@@ -57,7 +57,7 @@ namespace HeroServer
 
             // EXPIRATION
             if (expirationTimes[request.PostTypeId] > 0)
-                where.Add($"Post.PublicationDateTime >= DATEADD(DAY, -{expirationTimes[request.PostTypeId]}, GETDATE()))");
+                where.Add($"Post.PublicationDateTime >= DATEADD(DAY, -{expirationTimes[request.PostTypeId]}, GETDATE())");
 
             String whereCount = where.Count > 0 ? " WHERE " + String.Join(" AND ", where) : "";
 
