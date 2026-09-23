@@ -163,7 +163,7 @@ namespace HeroServer
                       " Post.Title," +
                       " Post.Description," +
                       " DNews.DateTime," +
-                      " KNewsType.Name AS NewsType" +
+                      " KNewsType.Name AS NewsType," +
                       " DNews.Source," +
                       " DAppUser.Alias," +
                       " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 1), 0) AS Reaction1Count," +
