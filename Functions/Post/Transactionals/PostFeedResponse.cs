@@ -12,10 +12,5 @@ namespace HeroServer
 
         // State
         public int Total { get; set; } = 0;
-
-        public long FirstPostId { get; set; } = -1;
-        public DateTime FirstDateTime { get; set; }
-        public long LastPostId { get; set; } = -1;
-        public DateTime LastDateTime { get; set; }
     }
 }

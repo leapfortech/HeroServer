@@ -14,14 +14,18 @@ namespace HeroServer
         public String Country { get; set; }
         public String State { get; set; }
         public String Location { get; set; }
-        public int LikeCount { get; set; }
+        public int Selected { get; set; }
+        public int Favorite { get; set; }
+        public int FavoriteCount { get; set; }
+        public DateTime PublicationDateTime { get; set; }
 
         public HappeningFeed()
         {
 
         }
 
-        public HappeningFeed(long id, long postId, String titleImage, String title, DateTime? startDateTime, DateTime? endDateTime, String happeningType, String country, String state, String location, int likeCount)
+        public HappeningFeed(long id, long postId, String titleImage, String title, DateTime? startDateTime, DateTime? endDateTime,
+                             String happeningType, String country, String state, String location, int selected, int favorite, int favoriteCount, DateTime publicationDateTime)
         {
             Id = id;
             PostId = postId;
@@ -33,7 +37,10 @@ namespace HeroServer
             Country = country;
             State = state;
             Location = location;
-            LikeCount = likeCount;
+            Selected = selected;
+            Favorite = favorite;
+            FavoriteCount = favoriteCount;
+            PublicationDateTime = publicationDateTime;
         }
     }
 }

@@ -125,13 +125,31 @@ namespace HeroServer
         // FAVORITE
         public static async Task<long> RegisterFavorite(Favorite favorite)
         {
+            long favoriteId = -1L;
             favorite.Status = 1;
-            return await new FavoriteDB().Add(favorite);
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                favoriteId = await new FavoriteDB().Add(favorite);
+                await new PostDB().IncrementFavoriteCount(favorite.PostId);
+                scope.Complete();
+            }
+
+            return favoriteId;
         }
 
         public static async Task<bool> DeleteFavorite(Favorite favorite)
         {
-            return await new FavoriteDB().Delete(favorite);
+            bool deleted = false;
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                deleted = await new FavoriteDB().Delete(favorite);
+                await new PostDB().DecrementFavoriteCount(favorite.PostId);
+                scope.Complete();
+            }
+
+            return deleted;
         }
 
         // SELECTED
@@ -154,8 +172,8 @@ namespace HeroServer
             {
                 like.Status = 1;
                 likeId = await new LikeDB().Add(like);
-                if (like.Rank == 5)
-                    await new PostDB().IncrementLikeCount(like.PostId);
+                //if (like.Rank == 5)
+                //    await new PostDB().IncrementLikeCount(like.PostId);
 
                 scope.Complete();
             }
@@ -174,20 +192,20 @@ namespace HeroServer
                 if (curLike == null)
                 {
                     likeId = await new LikeDB().Add(like);
-                    if (like.Rank == 5)
-                        await new PostDB().IncrementLikeCount(like.PostId);
+                    //if (like.Rank == 5)
+                    //    await new PostDB().IncrementLikeCount(like.PostId);
                 }
                 else if (like.Rank < curLike.Rank)
                 {
                     likeId = curLike.Id;
                     await new LikeDB().UpdateRank(like);
-                    await new PostDB().DecrementLikeCount(like.PostId);
+                    //await new PostDB().DecrementLikeCount(like.PostId);
                 }
                 else if (like.Rank > curLike.Rank)
                 {
                     likeId = curLike.Id;
                     await new LikeDB().UpdateRank(like);
-                    await new PostDB().IncrementLikeCount(like.PostId);
+                    //await new PostDB().IncrementLikeCount(like.PostId);
                 }
 
                 scope.Complete();
@@ -206,8 +224,8 @@ namespace HeroServer
                 {
                     likeId = curLike.Id;
                     await new LikeDB().Delete(like);
-                    if (like.Rank != -1)
-                        await new PostDB().DecrementLikeCount(like.PostId);
+                    //if (like.Rank != -1)
+                    //    await new PostDB().DecrementLikeCount(like.PostId);
                 }
 
                 scope.Complete();

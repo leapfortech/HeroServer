@@ -15,13 +15,14 @@ namespace HeroServer
         public long ReactionPhraseId { get; set; }
         public int CommentCount { get; set; }
         public String Alias { get; set; }
+        public DateTime PublicationDateTime { get; set; }
 
         public NewsFeed()
         {
 
         }
 
-        public NewsFeed(long id, long postId, String titleImage, String title, String description, DateTime? dateTime, String source, int[] reactionCounts, long reactionPhraseId, int commentCount, String alias)
+        public NewsFeed(long id, long postId, String titleImage, String title, String description, DateTime? dateTime, String source, int[] reactionCounts, long reactionPhraseId, int commentCount, String alias, DateTime publicationDateTime)
         {
             Id = id;
             PostId = postId;
@@ -34,6 +35,7 @@ namespace HeroServer
             ReactionPhraseId = reactionPhraseId;
             CommentCount = commentCount;
             Alias = alias;
+            PublicationDateTime = publicationDateTime;
         }
     }
 }

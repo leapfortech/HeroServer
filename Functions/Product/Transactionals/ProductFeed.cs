@@ -15,13 +15,16 @@ namespace HeroServer
         public double Price { get; set; }
         public double DiscountPrice { get; set; }
         public String Link { get; set; }
+        public int Favorite { get; set; }
+        public DateTime PublicationDateTime { get; set; }
 
         public ProductFeed()
         {
 
         }
 
-        public ProductFeed(long id, long postId, String titleImage, String title, String productSubtype, String saleCountry, String saleState, String currency, double price, double discountPrice, String link)
+        public ProductFeed(long id, long postId, String titleImage, String title, String productSubtype, String saleCountry, String saleState,
+                           String currency, double price, double discountPrice, String link, int favorite, DateTime publicationDateTime)
         {
             Id = id;
             PostId = postId;
@@ -34,6 +37,8 @@ namespace HeroServer
             Price = price;
             DiscountPrice = discountPrice;
             Link = link;
+            Favorite = favorite;
+            PublicationDateTime = publicationDateTime;
         }
     }
 }

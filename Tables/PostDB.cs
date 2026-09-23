@@ -22,7 +22,7 @@ namespace HeroServer
                             reader["Summary"].ToString(),
                             reader["Description"].ToString(),
                             Convert.ToInt32(reader["ImageCount"]),
-                            Convert.ToInt32(reader["LikeCount"]),
+                            Convert.ToInt32(reader["FavoriteCount"]),
                             Convert.ToDateTime(reader["PublicationDateTime"]),
                             reader["ApprovalDateTime"] == DBNull.Value ? null : Convert.ToDateTime(reader["ApprovalDateTime"]),
                             reader["ExpirationDateTime"] == DBNull.Value ? null : Convert.ToDateTime(reader["ExpirationDateTime"]),
@@ -45,8 +45,8 @@ namespace HeroServer
                                 reader["Description"].ToString(),
                                 Convert.ToInt32(reader["ImageCount"]),
 
-                                [Convert.ToInt32(reader["ReactionCount1"]), Convert.ToInt32(reader["ReactionCount2"]),
-                                 Convert.ToInt32(reader["ReactionCount3"]), Convert.ToInt32(reader["ReactionCount4"])],
+                                [Convert.ToInt32(reader["Reaction1Count"]), Convert.ToInt32(reader["Reaction2Count"]),
+                                 Convert.ToInt32(reader["Reaction3Count"]), Convert.ToInt32(reader["Reaction4Count"])],
                                 Convert.ToInt64(reader["ReactionPhraseId"]),
                                 Convert.ToInt32(reader["CommentCount"]),
 
@@ -177,36 +177,18 @@ namespace HeroServer
                       " Post.ImageCount," +
 
                       // ReactionCounts
-                      " ISNULL((SELECT COUNT(*)" +
-                      "        FROM [D-Reaction] AS Reaction" +
-                      "        WHERE Reaction.PostId = Post.Id" +
-                      "        AND Reaction.ReactionPhraseId = 1), 0) AS ReactionCount1," +
-
-                      " ISNULL((SELECT COUNT(*)" +
-                      "        FROM [D-Reaction] AS Reaction" +
-                      "        WHERE Reaction.PostId = Post.Id" +
-                      "        AND Reaction.ReactionPhraseId = 2), 0) AS ReactionCount2," +
-
-                      " ISNULL((SELECT COUNT(*)" +
-                      "        FROM [D-Reaction] AS Reaction" +
-                      "        WHERE Reaction.PostId = Post.Id" +
-                      "        AND Reaction.ReactionPhraseId = 3), 0) AS ReactionCount3," +
-
-                      " ISNULL((SELECT COUNT(*)" +
-                      "        FROM [D-Reaction] AS Reaction" +
-                      "        WHERE Reaction.PostId = Post.Id" +
-                      "        AND Reaction.ReactionPhraseId = 4), 0) AS ReactionCount4," +
+                      " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 1), 0) AS Reaction1Count," +
+                      " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 2), 0) AS Reaction2Count," +
+                      " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 3), 0) AS Reaction3Count," +
+                      " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 4), 0) AS Reaction4Count," +
 
                       // CommentCount
-                      " ISNULL((SELECT COUNT(*)" +
-                      "        FROM [D-Comment] AS Comment" +
-                      "        WHERE Comment.PostId = Post.Id" +
-                      "        AND Comment.Status = 1), 0) AS CommentCount," +
+                      " ISNULL((SELECT COUNT(*) FROM [D-Comment] AS Comment WHERE Comment.PostId = Post.Id AND Comment.Status = 1), 0) AS CommentCount," +
 
                       " CASE WHEN JFavorite.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
                       " ISNULL(DLike.[Rank], -1) AS [Like]," +
                       " ISNULL(DReaction.[ReactionPhraseId], -1) AS [ReactionPhraseId]," +
-                      " Post.LikeCount," +
+                      " Post.FavoriteCount," +
                       " Post.PublicationDateTime," +
                       " Post.Status AS PostStatus" +
                       " FROM [D-Post] AS Post" +
@@ -236,20 +218,6 @@ namespace HeroServer
                         await reader.NextResultAsync();
                         if (await reader.ReadAsync())
                             response.Total = Convert.ToInt32(reader["Total"]);
-
-                        await reader.NextResultAsync();
-                        if (await reader.ReadAsync())
-                        {
-                            response.FirstPostId = Convert.ToInt64(reader["FirstPostId"]);
-                            response.FirstDateTime = Convert.ToDateTime(reader["FirstDateTime"]);
-                        }
-
-                        await reader.NextResultAsync();
-                        if (await reader.ReadAsync())
-                        {
-                            response.LastPostId = Convert.ToInt64(reader["LastPostId"]);
-                            response.LastDateTime = Convert.ToDateTime(reader["LastDateTime"]);
-                        }
                     }
                 }
             }
@@ -400,7 +368,7 @@ namespace HeroServer
                                 0 AS Favorite,
                                 -1 AS [Like],
                                 -1 AS [ReactionPhraseId],
-                                Post.LikeCount,
+                                Post.FavoriteCount,
                                 Post.PublicationDateTime,
                                 Post.Status AS PostStatus
                                 FROM [D-Post] AS Post
@@ -448,9 +416,9 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(Post post)
         {
-            String strCmd = $"INSERT INTO {table}(Id, AppUserId, PostTypeId, CountryId, StateId, Title, Summary, Description, ImageCount, LikeCount, PublicationDateTime, ApprovalDateTime, ExpirationDateTime, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(Id, AppUserId, PostTypeId, CountryId, StateId, Title, Summary, Description, ImageCount, FavoriteCount, PublicationDateTime, ApprovalDateTime, ExpirationDateTime, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @AppUserId, @PostTypeId, @CountryId, @StateId, @Title, @Summary, @Description, @ImageCount, @LikeCount, @PublicationDateTime, @ApprovalDateTime, @ExpirationDateTime, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@Id, @AppUserId, @PostTypeId, @CountryId, @StateId, @Title, @Summary, @Description, @ImageCount, @FavoriteCount, @PublicationDateTime, @ApprovalDateTime, @ExpirationDateTime, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -463,7 +431,7 @@ namespace HeroServer
             command.AddParam("@Summary", SqlDbType.VarChar, post.Summary);
             command.AddParam("@Description", SqlDbType.NVarChar, post.Description);
             command.AddParam("@ImageCount", SqlDbType.Int, post.ImageCount);
-            command.AddParam("@LikeCount", SqlDbType.Int, post.LikeCount);
+            command.AddParam("@FavoriteCount", SqlDbType.Int, post.FavoriteCount);
             command.AddParam("@PublicationDateTime", SqlDbType.DateTime, post.PublicationDateTime);
             command.AddParam("@ApprovalDateTime", SqlDbType.DateTime, post.ApprovalDateTime);
             command.AddParam("@ExpirationDateTime", SqlDbType.DateTime, post.ExpirationDateTime);
@@ -481,7 +449,7 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(Post post)
         {
-            String strCmd = $"UPDATE {table} SET AppUserId = @AppUserId, PostTypeId = @PostTypeId, CountryId = @CountryId, StateId = @StateId, Title = @Title, Summary = @Summary, Description = @Description, ImageCount = @ImageCount, LikeCount = @LikeCount, PublicationDateTime = @PublicationDateTime, ApprovalDateTime = @ApprovalDateTime, ExpirationDateTime = @ExpirationDateTime, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET AppUserId = @AppUserId, PostTypeId = @PostTypeId, CountryId = @CountryId, StateId = @StateId, Title = @Title, Summary = @Summary, Description = @Description, ImageCount = @ImageCount, FavoriteCount = @FavoriteCount, PublicationDateTime = @PublicationDateTime, ApprovalDateTime = @ApprovalDateTime, ExpirationDateTime = @ExpirationDateTime, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -493,7 +461,7 @@ namespace HeroServer
             command.AddParam("@Summary", SqlDbType.VarChar, post.Summary);
             command.AddParam("@Description", SqlDbType.NVarChar, post.Description);
             command.AddParam("@ImageCount", SqlDbType.Int, post.ImageCount);
-            command.AddParam("@LikeCount", SqlDbType.Int, post.LikeCount);
+            command.AddParam("@FavoriteCount", SqlDbType.Int, post.FavoriteCount);
             command.AddParam("@PublicationDateTime", SqlDbType.DateTime, post.PublicationDateTime);
             command.AddParam("@ApprovalDateTime", SqlDbType.DateTime, post.ApprovalDateTime);
             command.AddParam("@ExpirationDateTime", SqlDbType.DateTime, post.ExpirationDateTime);
@@ -526,10 +494,10 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> IncrementLikeCount(long id)
+        public async Task<bool> IncrementFavoriteCount(long id)
         {
             String strCmd = $"UPDATE {table}" +
-                            " SET LikeCount = LikeCount + 1" +
+                            " SET FavoriteCount = FavoriteCount + 1" +
                             " WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
@@ -543,10 +511,10 @@ namespace HeroServer
             }
         }
 
-        public async Task<bool> DecrementLikeCount(long id)
+        public async Task<bool> DecrementFavoriteCount(long id)
         {
             String strCmd = $"UPDATE {table}" +
-                            " SET LikeCount = LikeCount - 1" +
+                            " SET FavoriteCount = FavoriteCount - 1" +
                             " WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);

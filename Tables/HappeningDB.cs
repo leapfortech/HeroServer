@@ -56,7 +56,7 @@ namespace HeroServer
                                      
                                      Convert.ToInt32(reader["Favorite"]),
                                      Convert.ToInt32(reader["Like"]),
-                                     Convert.ToInt32(reader["LikeCount"]),
+                                     Convert.ToInt32(reader["FavoriteCount"]),
                                      Convert.ToInt64(reader["ReactionPhraseId"]),
                                      Convert.ToDateTime(reader["PublicationDateTime"]),
                                      Convert.ToInt32(reader["PostStatus"]),
@@ -109,7 +109,10 @@ namespace HeroServer
                                      reader["Country"].ToString(),
                                      reader["State"].ToString(),
                                      reader["Location"].ToString(),
-                                     Convert.ToInt32(reader["LikeCount"]));
+                                     Convert.ToInt32(reader["Selected"]),
+                                     Convert.ToInt32(reader["Favorite"]),
+                                     Convert.ToInt32(reader["FavoriteCount"]),
+                                     Convert.ToDateTime(reader["PublicationDateTime"]));
         }
 
 
@@ -174,7 +177,7 @@ namespace HeroServer
             // QUERY FEED
             String strCmd = DBHelper.InitFeedCmd(request.Direction, "PublicationDateTime");
 
-            strCmd += " SELECT Post.Id AS PostId," +
+            strCmd += " Post.Id AS PostId," +
                       " Happening.Id AS HappeningId," +
                       " Post.Title," +
                       " Happening.StartDateTime," +
@@ -183,11 +186,16 @@ namespace HeroServer
                       " Country.Name AS Country," +
                       " State.Name AS State," +
                       " Happening.Location," +
-                      " Post.LikeCount" +
+                      " CASE WHEN JSelected.PostId IS NULL THEN 0 ELSE 1 END AS Selected," +
+                      " CASE WHEN JFavorite.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
+                      " Post.FavoriteCount," +
+                      " Post.PublicationDateTime" +
                       " FROM [D-Post] AS Post" +
                       " INNER JOIN [D-Happening] AS Happening ON Happening.PostId = Post.Id" +
                       " INNER JOIN [K-Country] AS Country ON Country.Id = Post.CountryId" +
                       " LEFT JOIN [K-State] AS State ON State.Id = Post.StateId AND Post.StateId <> -1" +
+                      " LEFT JOIN [J-Favorite] AS JFavorite ON JFavorite.PostId = Post.Id AND JFavorite.AppUserId = @ReactionAppUserId" +
+                      " LEFT JOIN [J-Selected] AS JSelected ON JSelected.PostId = Post.Id AND JSelected.AppUserId = @ReactionAppUserId" +
                       " INNER JOIN [K-HappeningType] AS HappeningType ON HappeningType.Id = Happening.HappeningTypeId" +
                         whereFeed;
 
@@ -256,7 +264,7 @@ namespace HeroServer
                              " CASE WHEN Fav.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
                              " ISNULL(DLike.[Rank], -1) AS [Like]," +
                              " ISNULL(DReaction.[ReactionPhraseId], -1) AS [ReactionPhraseId]," +
-                             " Post.LikeCount, Post.PublicationDateTime, Post.Status AS PostStatus," +
+                             " Post.FavoriteCount, Post.PublicationDateTime, Post.Status AS PostStatus," +
 
                              // Interest Locality
                              " ISNULL(InterestLocality.LocalityType, -1) AS InterestLocalityTypeId," +
@@ -389,7 +397,7 @@ namespace HeroServer
                              " CASE WHEN Fav.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
                              " ISNULL(DLike.[Rank], -1) AS [Like]," +
                              " ISNULL(DReaction.[ReactionPhraseId], -1) AS [ReactionPhraseId]," +
-                             " Post.LikeCount, Post.PublicationDateTime, Post.Status AS PostStatus," +
+                             " Post.FavoriteCount, Post.PublicationDateTime, Post.Status AS PostStatus," +
 
                              // Interest Locality
                              " ISNULL(InterestLocality.LocalityType, -1) AS InterestLocalityTypeId," +
@@ -519,7 +527,7 @@ namespace HeroServer
                              "        WHERE Comment.PostId = Post.Id" +
                              "        AND Comment.Status = 1), 0) AS CommentCount," +
 
-                             " 0 AS Favorite, -1 AS [Like], Post.LikeCount, Post.PublicationDateTime, Post.Status AS PostStatus," +
+                             " 0 AS Favorite, -1 AS [Like], Post.FavoriteCount, Post.PublicationDateTime, Post.Status AS PostStatus," +
 
                              // Interest Locality
                              " ISNULL(InterestLocality.LocalityType, -1) AS InterestLocalityTypeId," +
