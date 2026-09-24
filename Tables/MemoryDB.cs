@@ -96,7 +96,8 @@ namespace HeroServer
                                    Convert.ToInt32(reader["Reaction2Count"]),
                                    Convert.ToInt32(reader["Reaction3Count"]),
                                    Convert.ToInt32(reader["Reaction4Count"])],
-                                  Convert.ToInt64(reader["ReactionPhraseId"]));
+                                  Convert.ToInt64(reader["ReactionPhraseId"]),
+                                  Convert.ToDateTime(reader["PublicationDateTime"]));
         }
 
 
@@ -171,7 +172,8 @@ namespace HeroServer
                       " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 2), 0) AS Reaction2Count," +
                       " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 3), 0) AS Reaction3Count," +
                       " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 4), 0) AS Reaction4Count," +
-                      " ISNULL(Reaction.ReactionPhraseId, -1) AS ReactionPhraseId" +
+                      " ISNULL(Reaction.ReactionPhraseId, -1) AS ReactionPhraseId," +
+                      " Post.PublicationDateTime" +
                       " FROM [D-Post] AS Post" +
                       " INNER JOIN [D-Memory] AS Memory ON Memory.PostId = Post.Id" +
                       " INNER JOIN [K-Country] AS Country ON Country.Id = Post.CountryId" +

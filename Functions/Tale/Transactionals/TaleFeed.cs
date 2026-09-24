@@ -15,13 +15,14 @@ namespace HeroServer
         public String Alias { get; set; }
         public String InterestLocality { get; set; }
         public String CurrentLocality { get; set; }
+        public DateTime PublicationDateTime { get; set; }
 
         public TaleFeed()
         {
 
         }
 
-        public TaleFeed(long id, long postId, String titleImage, String title, String description, int[] reactionCounts, long reactionPhraseId, int commentCount, String alias, String interestLocality, String currentLocality)
+        public TaleFeed(long id, long postId, String titleImage, String title, String description, int[] reactionCounts, long reactionPhraseId, int commentCount, String alias, String interestLocality, String currentLocality, DateTime publicationDateTime)
         {
             Id = id;
             PostId = postId;
@@ -34,6 +35,7 @@ namespace HeroServer
             Alias = alias;
             InterestLocality = interestLocality;
             CurrentLocality = currentLocality;
+            PublicationDateTime = publicationDateTime;
         }
     }
 }

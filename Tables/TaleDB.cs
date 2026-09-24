@@ -87,7 +87,8 @@ namespace HeroServer
                                 Convert.ToInt32(reader["CommentCount"]),
                                 reader["Alias"].ToString(),
                                 reader["InterestLocality"].ToString(),
-                                reader["CurrentLocality"].ToString());
+                                reader["CurrentLocality"].ToString(),
+                                Convert.ToDateTime(reader["PublicationDateTime"]));
         }
 
         // GET
@@ -173,7 +174,8 @@ namespace HeroServer
                       " WHEN CurrentLocality.CountryId <> -1 AND CurrentLocality.StateId <> -1 THEN CurrentLocalityCountry.Name + ', ' + CurrentLocalityState.Name" +
                       " WHEN CurrentLocality.CountryId <> -1 THEN CurrentLocalityCountry.Name" +
                       " ELSE ''" +
-                      " END AS CurrentLocality" +
+                      " END AS CurrentLocality," +
+                      " Post.PublicationDateTime" +
                       " FROM [D-Post] AS Post" +
                       " INNER JOIN [D-AppUser] AS AppUser ON Post.AppUserId = AppUser.Id" +
                       " INNER JOIN [D-Tale] AS Tale ON Tale.PostId = Post.Id" +
