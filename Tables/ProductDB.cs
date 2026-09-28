@@ -102,7 +102,7 @@ namespace HeroServer
                                    Convert.ToDouble(reader["Price"]),
                                    Convert.ToDouble(reader["DiscountPrice"]),
                                    reader["Link"].ToString(),
-                                   Convert.ToInt32(reader["FavoriteCount"]),
+                                   Convert.ToInt32(reader["Favorite"]),
                                    Convert.ToDateTime(reader["PublicationDateTime"]));
         }
 
@@ -202,6 +202,7 @@ namespace HeroServer
                       " Product.DiscountPrice," +
                       " CONVERT(VARCHAR(20), Link.LinkTypeId) + '|' + Link.Url AS Link," +
                       " CASE WHEN JFavorite.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
+                      " (SELECT COUNT(*) FROM [J-Favorite] AS Favorite WHERE Favorite.PostId = Post.Id) AS FavoriteCount," +
                       " Post.PublicationDateTime" +
                       " FROM [D-Post] AS Post" +
                       " INNER JOIN [D-Product] AS Product ON Product.PostId = Post.Id" +
