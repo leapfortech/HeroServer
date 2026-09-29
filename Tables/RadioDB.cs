@@ -31,47 +31,38 @@ namespace HeroServer
                                  Convert.ToInt64(reader["PostCountryId"]),
                                  Convert.ToInt64(reader["PostStateId"]),
                                  reader["Title"].ToString(),
-                                 null,   //TitleImage
-                                 reader["Summary"].ToString(),
+                                 null,   // TitleImage
                                  reader["Description"].ToString(),
                                  Convert.ToInt32(reader["ImageCount"]),
 
-                                 [Convert.ToInt32(reader["Reaction1Count"]),
-                                  Convert.ToInt32(reader["Reaction2Count"]),
-                                  Convert.ToInt32(reader["Reaction3Count"]),
-                                  Convert.ToInt32(reader["Reaction4Count"])],
-                                  Convert.ToInt32(reader["CommentCount"]),
-                                
-                                 Convert.ToInt32(reader["Favorite"]),
-                                 Convert.ToInt32(reader["Like"]),
                                  Convert.ToInt32(reader["FavoriteCount"]),
+                                 [Convert.ToInt32(reader["Reaction1Count"]), Convert.ToInt32(reader["Reaction2Count"]),
+                                  Convert.ToInt32(reader["Reaction3Count"]), Convert.ToInt32(reader["Reaction4Count"])],
                                  Convert.ToInt64(reader["ReactionPhraseId"]),
+                                 Convert.ToInt32(reader["CommentCount"]),
                                  Convert.ToDateTime(reader["PublicationDateTime"]),
                                  Convert.ToInt32(reader["PostStatus"]),
 
                                  new AppUserInfo(Convert.ToInt64(reader["AppUserId"]),
                                                  reader["AppUserAlias"].ToString(),
                                                  null,
-
                                                  new LocalityFull(Convert.ToInt64(reader["InterestLocalityTypeId"]),
                                                                   Convert.ToInt64(reader["InterestLocalityCountryId"]),
                                                                   Convert.ToInt64(reader["InterestLocalityStateId"]),
                                                                   Convert.ToInt64(reader["InterestLocalityCityId"])),
-
                                                  new LocalityFull(Convert.ToInt64(reader["CurrentLocalityTypeId"]),
                                                                   Convert.ToInt64(reader["CurrentLocalityCountryId"]),
                                                                   Convert.ToInt64(reader["CurrentLocalityStateId"]),
                                                                   Convert.ToInt64(reader["CurrentLocalityCityId"]))),
 
-                                 null,   //ContactFull
-                                 null,   //LinkFulls
-                                 null,   //CommentFulls
+                                 null,   // ContactFull
+                                 null,   // LinkFulls
+                                 null,   // CommentFulls
+                                 null,   // Images
 
                                  Convert.ToInt32(reader["Status"]),
-                                 null,   //RadioTypeFulls 
-                                 null,   //RadioLanguageFulls
-
-                                 null);   //Images);
+                                 null,   // RadioTypeFulls 
+                                 null);  // RadioLanguageFulls
         }
 
         public static RadioFeed GetRadioFeed(SqlDataReader reader)
@@ -232,7 +223,7 @@ namespace HeroServer
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId," +
-                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Description," +
                              " Post.ImageCount," +
 
                              // ReactionCounts
@@ -383,7 +374,7 @@ namespace HeroServer
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId," +
-                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Description," +
                              " Post.ImageCount," +
 
                              // ReactionCounts
@@ -536,7 +527,7 @@ namespace HeroServer
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId," +
-                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Description," +
                              " Post.ImageCount," +
 
                              // ReactionCounts

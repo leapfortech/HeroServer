@@ -18,26 +18,20 @@ namespace HeroServer
 
         public List<PuzzleAnswerFull> PuzzleAnswerFulls { get; set; }
 
-        public List<String> Images { get; set; }
-
 
         public PuzzleFull(long id, long postId, long appUserId, String appUserAlias,
                           long postTypeId,
                           long postCountryId, long postStateId,
-                          String title, String titleImage, String summary, String description,
-                          int imageCount, int[] reactionCounts, int commentCount, int favorite, int like, int likeCount, long reactionPhraseId,
+                          String title, String titleImage, String description,
+                          int imageCount, int favoriteCount, int[] reactionCounts, long reactionPhraseId, int commentCount,
                           DateTime publicationDateTime, int postStatus,
-                          AppUserInfo appUserInfo, ContactFull contactFull, List<LinkFull> linkFulls, List<CommentFull> commentFulls,
-                          long puzzleGameId, long countryId,
-                          String question, String hint,
-                          int difficulty, int delay, int points, int playCount,
-                          int status,
-                          List<PuzzleAnswerFull> puzzleAnswerFulls,
-                          List<String> images)
-            : base(postId, appUserId, appUserAlias, postTypeId,
-                   postCountryId, postStateId, title, titleImage, summary, description,
-                   imageCount, reactionCounts, reactionPhraseId, commentCount, publicationDateTime, postStatus,
-                   appUserInfo, contactFull, linkFulls, commentFulls)
+                          AppUserInfo appUserInfo, ContactFull contactFull, List<LinkFull> linkFulls, List<CommentFull> commentFulls, List<String> images,
+                          long puzzleGameId, long countryId, String question, String hint,
+                          int difficulty, int delay, int points, int playCount, int status,
+                          List<PuzzleAnswerFull> puzzleAnswerFulls)
+            : base(postId, appUserId, appUserAlias, postTypeId, postCountryId, postStateId, title, titleImage, description,
+                   imageCount, favoriteCount, reactionCounts, reactionPhraseId, commentCount, publicationDateTime, postStatus,
+                   appUserInfo, contactFull, linkFulls, commentFulls, images)
         {
             Id = id;
             PuzzleGameId = puzzleGameId;
@@ -51,7 +45,6 @@ namespace HeroServer
             Status = status;
 
             PuzzleAnswerFulls = puzzleAnswerFulls ?? new List<PuzzleAnswerFull>();
-            Images = images;
         }
     }
 }

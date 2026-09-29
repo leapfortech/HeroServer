@@ -39,41 +39,34 @@ namespace HeroServer
                                   Convert.ToInt64(reader["PostCountryId"]),
                                   Convert.ToInt64(reader["PostStateId"]),
                                   reader["Title"].ToString(),
-                                  null,   //TitleImage
-                                  reader["Summary"].ToString(),
+                                  null,   // TitleImage
                                   reader["Description"].ToString(),
                                   Convert.ToInt32(reader["ImageCount"]),
 
-                                  new int[]{Convert.ToInt32(reader["ReactionCount1"]),
-                                            Convert.ToInt32(reader["ReactionCount2"]),
-                                            Convert.ToInt32(reader["ReactionCount3"]),
-                                            Convert.ToInt32(reader["ReactionCount4"])},
-                                  Convert.ToInt32(reader["CommentCount"]),
-                                  
-                                  Convert.ToInt32(reader["Favorite"]),
-                                  Convert.ToInt32(reader["Like"]),
                                   Convert.ToInt32(reader["FavoriteCount"]),
-                                  Convert.ToInt64(reader["ReactionPhraseId"]),
+                                  [Convert.ToInt32(reader["Reaction1Count"]), Convert.ToInt32(reader["Reaction2Count"]),
+                                   Convert.ToInt32(reader["Reaction3Count"]), Convert.ToInt32(reader["Reaction4Count"])],
+                                   Convert.ToInt64(reader["ReactionPhraseId"]),
+                                  Convert.ToInt32(reader["CommentCount"]),
                                   Convert.ToDateTime(reader["PublicationDateTime"]),
                                   Convert.ToInt32(reader["PostStatus"]),
 
                                   new AppUserInfo(Convert.ToInt64(reader["AppUserId"]),
                                                   reader["AppUserAlias"].ToString(),
                                                   null,
-
                                                   new LocalityFull(Convert.ToInt64(reader["InterestLocalityTypeId"]),
                                                                    Convert.ToInt64(reader["InterestLocalityCountryId"]),
                                                                    Convert.ToInt64(reader["InterestLocalityStateId"]),
                                                                    Convert.ToInt64(reader["InterestLocalityCityId"])),
-
                                                   new LocalityFull(Convert.ToInt64(reader["CurrentLocalityTypeId"]),
                                                                    Convert.ToInt64(reader["CurrentLocalityCountryId"]),
                                                                    Convert.ToInt64(reader["CurrentLocalityStateId"]),
                                                                    Convert.ToInt64(reader["CurrentLocalityCityId"]))),
 
-                                  null,   //ContactFull
-                                  null,   //LinkFulls
-                                  null,   //CommentFulls
+                                  null,   // ContactFull
+                                  null,   // LinkFulls
+                                  null,   // CommentFulls
+                                  null,   // Images
 
                                   Convert.ToInt64(reader["PuzzleGameId"]),
                                   Convert.ToInt64(reader["CountryId"]),
@@ -84,8 +77,7 @@ namespace HeroServer
                                   Convert.ToInt32(reader["Points"]),
                                   Convert.ToInt32(reader["PlayCount"]),
                                   Convert.ToInt32(reader["Status"]),
-                                  null,     //PuzzleAnswerFulls 
-                                  null);  //Images);
+                                  null);  // PuzzleAnswerFulls 
         }
 
 
@@ -95,65 +87,65 @@ namespace HeroServer
             int offset = (req.Page - 1) * req.PageSize;
 
             String strCmd = // Total count
-                            "SELECT COUNT(DISTINCT P.Id) AS TotalCount " +
-                            "FROM [D-Puzzle] AS P " +
-                            "WHERE (@Status = -1 OR P.Status = @Status) " +
-                            "AND (@PuzzleGameId = -1 OR P.PuzzleGameId = @PuzzleGameId) " +
-                            "AND (@Difficulty = -1 OR P.Difficulty = @Difficulty); " +
+                            "SELECT COUNT(DISTINCT P.Id) AS TotalCount" +
+                            " FROM [D-Puzzle] AS P" +
+                            " WHERE (@Status = -1 OR P.Status = @Status)" +
+                            " AND (@PuzzleGameId = -1 OR P.PuzzleGameId = @PuzzleGameId)" +
+                            " AND (@Difficulty = -1 OR P.Difficulty = @Difficulty);" +
 
                             // Data
-                            "SELECT " +
+                            " SELECT" +
 
                             // Post
-                            "PO.Id AS PostIdData, " +
-                            "PO.AppUserId, PO.PostTypeId, " +
-                            "PO.CountryId AS PostCountryId, " +
-                            "PO.StateId, PO.Title, PO.Summary, " +
-                            "PO.Description AS PostDescription, " +
-                            "PO.ImageCount, PO.FavoriteCount, " +
-                            "PO.PublicationDateTime, " +
-                            "PO.ApprovalDateTime, " +
-                            "PO.ExpirationDateTime, " +
-                            "PO.CreateDateTime AS PostCreateDateTime, " +
-                            "PO.UpdateDateTime AS PostUpdateDateTime, " +
-                            "PO.Status AS PostStatus, " +
+                            " PO.Id AS PostIdData," +
+                            " PO.AppUserId, PO.PostTypeId," +
+                            " PO.CountryId AS PostCountryId," +
+                            " PO.StateId, PO.Title," +
+                            " PO.Description AS PostDescription," +
+                            " PO.ImageCount, PO.FavoriteCount," +
+                            " PO.PublicationDateTime," +
+                            " PO.ApprovalDateTime," +
+                            " PO.ExpirationDateTime," +
+                            " PO.CreateDateTime AS PostCreateDateTime," +
+                            " PO.UpdateDateTime AS PostUpdateDateTime," +
+                            " PO.Status AS PostStatus," +
 
                             // Puzzle
-                            "P.Id, P.PostId, P.PuzzleGameId, P.CountryId, " +
-                            "P.Question, P.Hint, P.Difficulty, P.Delay, " +
-                            "P.Points, P.PlayCount, P.CreateDateTime, " +
-                            "P.UpdateDateTime, P.Status, " +
+                            " P.Id, P.PostId, P.PuzzleGameId, P.CountryId," +
+                            " P.Question, P.Hint, P.Difficulty, P.Delay," +
+                            " P.Points, P.PlayCount, P.CreateDateTime," +
+                            " P.UpdateDateTime, P.Status," +
 
                             // PuzzleAnswer
-                            "PA.Id AS PuzzleAnswerId, " +
-                            "PA.PuzzleId, " +
-                            "PA.Description, " +
-                            "PA.IsCorrect, " +
-                            "PA.CreateDateTime AS PuzzleAnswerCreateDateTime, " +
-                            "PA.UpdateDateTime AS PuzzleAnswerUpdateDateTime, " +
-                            "PA.Status AS PuzzleAnswerStatus " +
+                            " PA.Id AS PuzzleAnswerId," +
+                            " PA.PuzzleId," +
+                            " PA.Description," +
+                            " PA.IsCorrect," +
+                            " PA.CreateDateTime AS PuzzleAnswerCreateDateTime," +
+                            " PA.UpdateDateTime AS PuzzleAnswerUpdateDateTime," +
+                            " PA.Status AS PuzzleAnswerStatus" +
 
-                            "FROM " +
-                            "(" +
-                                "SELECT P.Id " +
-                                "FROM [D-Puzzle] AS P " +
-                                "WHERE (@Status = -1 OR P.Status = @Status) " +
-                                "AND (@PuzzleGameId = -1 OR P.PuzzleGameId = @PuzzleGameId) " +
-                                "AND (@Difficulty = -1 OR P.Difficulty = @Difficulty) " +
-                                "ORDER BY P.CreateDateTime DESC " +
-                                "OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY " +
-                            ") AS PG " +
+                            " FROM" +
+                            " (" +
+                                " SELECT P.Id" +
+                                " FROM [D-Puzzle] AS P" +
+                                " WHERE (@Status = -1 OR P.Status = @Status)" +
+                                " AND (@PuzzleGameId = -1 OR P.PuzzleGameId = @PuzzleGameId)" +
+                                " AND (@Difficulty = -1 OR P.Difficulty = @Difficulty)" +
+                                " ORDER BY P.CreateDateTime DESC" +
+                                " OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY" +
+                            " ) AS PG" +
 
-                            "INNER JOIN [D-Puzzle] AS P " +
-                            "ON P.Id = PG.Id " +
+                            " INNER JOIN [D-Puzzle] AS P" +
+                            " ON P.Id = PG.Id" +
 
-                            "LEFT JOIN [D-Post] AS PO " +
-                            "ON PO.Id = P.PostId " +
+                            " LEFT JOIN [D-Post] AS PO" +
+                            " ON PO.Id = P.PostId" +
 
-                            "LEFT JOIN [D-PuzzleAnswer] AS PA " +
-                            "ON PA.PuzzleId = P.Id " +
+                            " LEFT JOIN [D-PuzzleAnswer] AS PA" +
+                            " ON PA.PuzzleId = P.Id" +
 
-                            "ORDER BY P.CreateDateTime DESC, PA.IsCorrect DESC;";
+                            " ORDER BY P.CreateDateTime DESC, PA.IsCorrect DESC;";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -299,7 +291,7 @@ namespace HeroServer
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId," +
-                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Description," +
                              " Post.ImageCount," +
 
                              // ReactionCounts
@@ -445,7 +437,7 @@ namespace HeroServer
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId," +
-                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Description," +
                              " Post.ImageCount," +
 
                              // ReactionCounts
@@ -588,7 +580,7 @@ namespace HeroServer
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias, Post.PostTypeId," +
-                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Summary, Post.Description," +
+                             " Post.CountryId AS PostCountryId, Post.StateId AS PostStateId, Post.Title, Post.Description," +
                              " Post.ImageCount," +
 
                              // ReactionCounts

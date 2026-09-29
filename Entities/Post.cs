@@ -10,7 +10,6 @@ namespace HeroServer
         public long CountryId { get; set; }
         public long StateId { get; set; }
         public String Title { get; set; }
-        public String Summary { get; set; }
         public String Description { get; set; }
         public int ImageCount { get; set; }
         public int FavoriteCount { get; set; }
@@ -24,7 +23,7 @@ namespace HeroServer
         public Post() { }
 
         public Post(long id, long appUserId, long postTypeId, long countryId,
-                    long stateId, String title, String summary, String description, int imageCount,
+                    long stateId, String title, String description, int imageCount,
                     int favoriteCount, DateTime publicationDateTime, DateTime? approvalDateTime,
                     DateTime? expirationDateTime, DateTime createDateTime, DateTime updateDateTime, int status)
         {
@@ -34,7 +33,6 @@ namespace HeroServer
             CountryId = countryId;
             StateId = stateId;
             Title = title;
-            Summary = summary;
             Description = description;
             ImageCount = imageCount;
             FavoriteCount = favoriteCount;

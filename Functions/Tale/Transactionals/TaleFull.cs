@@ -8,30 +8,20 @@ namespace HeroServer
         public long Id { get; set; }
         public int Status { get; set; }
 
-        public List<String> Images { get; set; }
-
-        public TaleFull()
-        {
-        }
 
         public TaleFull(long id, long postId, long appUserId, String appUserAlias,
                         long postTypeId, long postCountryId, long postStateId,
-                        String title, String titleImage, String summary, String description,
-                        int imageCount, int[] reactionCounts, int commentCount, int favorite, int like, int likeCount, long reactionPhraseId,
+                        String title, String titleImage, String description,
+                        int imageCount, int favoriteCount, int[] reactionCounts, long reactionPhraseId, int commentCount,
                         DateTime publicationDateTime, int postStatus,
-                        AppUserInfo appUserInfo, ContactFull contactFull,
-                        List<LinkFull> linkFulls,
-                        List<CommentFull> commentFulls,
-                        int status,
-                        List<String> images)
-            : base(postId, appUserId, appUserAlias, postTypeId,
-                   postCountryId, postStateId, title, titleImage, summary, description,
-                   imageCount, reactionCounts, reactionPhraseId, commentCount, publicationDateTime, postStatus,
-                   appUserInfo,contactFull, linkFulls, commentFulls)
+                        AppUserInfo appUserInfo, ContactFull contactFull, List<LinkFull> linkFulls, List<CommentFull> commentFulls, List<String> images,
+                        int status)
+            : base(postId, appUserId, appUserAlias, postTypeId, postCountryId, postStateId, title, titleImage, description,
+                   imageCount, favoriteCount, reactionCounts, reactionPhraseId, commentCount, publicationDateTime, postStatus,
+                   appUserInfo,contactFull, linkFulls, commentFulls, images)
         {
             Id = id;
             Status = status;
-            Images = images;
         }
     }
 }

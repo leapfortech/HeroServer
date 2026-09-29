@@ -20,29 +20,18 @@ namespace HeroServer
         public double? Longitude { get; set; }
         public int Status { get; set; }
 
-        public List<String> Images { get; set; }
-
-        public HappeningFull()
-        {
-        }
 
         public HappeningFull(long id, long postId, long appUserId, String appUserAlias,
-                             long postTypeId,
-                             long postCountryId, long postStateId,
-                             String title, String titleImage, String summary, String description,
-                             int imageCount, int[] reactionCounts, int commentCount, int favorite, int like, int likeCount, long reactionPhraseId,
+                             long postTypeId, long postCountryId, long postStateId,
+                             String title, String titleImage, String description,
+                             int imageCount, int favoriteCount, int[] reactionCounts, long reactionPhraseId, int commentCount,
                              DateTime publicationDateTime, int postStatus,
-                             AppUserInfo appUserInfo, ContactFull contactFull, List<LinkFull> linkFulls, List<CommentFull> commentFulls,
-                             long happeningTypeId, long countryId, long stateId,
-                             int isPublic, int hasSignup, int hasPayment, String paymentDetails,
-                             DateTime? startDateTime, DateTime? endDateTime,
-                             String location, double? latitude, double? longitude,
-                             int status,
-                             List<String> images)
-            : base(postId, appUserId, appUserAlias, postTypeId,
-                   countryId, stateId, title, titleImage, summary, description,
-                   imageCount, reactionCounts, reactionPhraseId, commentCount, publicationDateTime, postStatus,
-                   appUserInfo, contactFull, linkFulls, commentFulls)
+                             AppUserInfo appUserInfo, ContactFull contactFull, List<LinkFull> linkFulls, List<CommentFull> commentFulls, List<String> images,
+                             long happeningTypeId, long countryId, long stateId, int isPublic, int hasSignup, int hasPayment, String paymentDetails,
+                             DateTime? startDateTime, DateTime? endDateTime, String location, double? latitude, double? longitude, int status)
+            : base(postId, appUserId, appUserAlias, postTypeId, countryId, stateId, title, titleImage, description,
+                   imageCount, favoriteCount, reactionCounts, reactionPhraseId, commentCount, publicationDateTime, postStatus,
+                   appUserInfo, contactFull, linkFulls, commentFulls, images)
         {
             Id = id;
             HappeningTypeId = happeningTypeId;
@@ -58,7 +47,6 @@ namespace HeroServer
             Latitude = latitude;
             Longitude = longitude;
             Status = status;
-            Images = images;
         }
     }
 }

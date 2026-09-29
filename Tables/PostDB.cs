@@ -19,7 +19,6 @@ namespace HeroServer
                             Convert.ToInt64(reader["CountryId"]),
                             Convert.ToInt64(reader["StateId"]),
                             reader["Title"].ToString(),
-                            reader["Summary"].ToString(),
                             reader["Description"].ToString(),
                             Convert.ToInt32(reader["ImageCount"]),
                             Convert.ToInt32(reader["FavoriteCount"]),
@@ -40,11 +39,11 @@ namespace HeroServer
                                 Convert.ToInt64(reader["PostCountryId"]),
                                 Convert.ToInt64(reader["PostStateId"]),
                                 reader["Title"].ToString(),
-                                null,   //TitleImage
-                                reader["Summary"].ToString(),
+                                null,    // TitleImage
                                 reader["Description"].ToString(),
                                 Convert.ToInt32(reader["ImageCount"]),
 
+                                Convert.ToInt32(reader["FavoriteCount"]),
                                 [Convert.ToInt32(reader["Reaction1Count"]), Convert.ToInt32(reader["Reaction2Count"]),
                                  Convert.ToInt32(reader["Reaction3Count"]), Convert.ToInt32(reader["Reaction4Count"])],
                                 Convert.ToInt64(reader["ReactionPhraseId"]),
@@ -52,10 +51,11 @@ namespace HeroServer
 
                                 Convert.ToDateTime(reader["PublicationDateTime"]),
                                 Convert.ToInt32(reader["PostStatus"]),
-                                null, // AppUserInfo
-                                null,   //ContactFull
-                                null,   //LinkFulls
-                                null);  //CommentFulls
+                                null,    // AppUserInfo
+                                null,    // ContactFull
+                                null,    // LinkFulls
+                                null,    // CommentFulls
+                                null);   // Images
         }
 
 
@@ -172,7 +172,6 @@ namespace HeroServer
                       " Post.CountryId AS PostCountryId," +
                       " Post.StateId AS PostStateId," +
                       " Post.Title," +
-                      " Post.Summary," +
                       " Post.Description," +
                       " Post.ImageCount," +
 
@@ -362,7 +361,6 @@ namespace HeroServer
                                 Post.CountryId AS PostCountryId,
                                 Post.StateId AS PostStateId,
                                 Post.Title,
-                                Post.Summary,
                                 Post.Description,
                                 Post.ImageCount,
                                 0 AS Favorite,
@@ -416,9 +414,9 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(Post post)
         {
-            String strCmd = $"INSERT INTO {table}(Id, AppUserId, PostTypeId, CountryId, StateId, Title, Summary, Description, ImageCount, FavoriteCount, PublicationDateTime, ApprovalDateTime, ExpirationDateTime, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(Id, AppUserId, PostTypeId, CountryId, StateId, Title, Description, ImageCount, FavoriteCount, PublicationDateTime, ApprovalDateTime, ExpirationDateTime, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @AppUserId, @PostTypeId, @CountryId, @StateId, @Title, @Summary, @Description, @ImageCount, @FavoriteCount, @PublicationDateTime, @ApprovalDateTime, @ExpirationDateTime, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@Id, @AppUserId, @PostTypeId, @CountryId, @StateId, @Title, @Description, @ImageCount, @FavoriteCount, @PublicationDateTime, @ApprovalDateTime, @ExpirationDateTime, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -428,7 +426,6 @@ namespace HeroServer
             command.AddParam("@CountryId", SqlDbType.BigInt, post.CountryId);
             command.AddParam("@StateId", SqlDbType.BigInt, post.StateId);
             command.AddParam("@Title", SqlDbType.VarChar, post.Title);
-            command.AddParam("@Summary", SqlDbType.VarChar, post.Summary);
             command.AddParam("@Description", SqlDbType.NVarChar, post.Description);
             command.AddParam("@ImageCount", SqlDbType.Int, post.ImageCount);
             command.AddParam("@FavoriteCount", SqlDbType.Int, post.FavoriteCount);
@@ -449,7 +446,7 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(Post post)
         {
-            String strCmd = $"UPDATE {table} SET AppUserId = @AppUserId, PostTypeId = @PostTypeId, CountryId = @CountryId, StateId = @StateId, Title = @Title, Summary = @Summary, Description = @Description, ImageCount = @ImageCount, FavoriteCount = @FavoriteCount, PublicationDateTime = @PublicationDateTime, ApprovalDateTime = @ApprovalDateTime, ExpirationDateTime = @ExpirationDateTime, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET AppUserId = @AppUserId, PostTypeId = @PostTypeId, CountryId = @CountryId, StateId = @StateId, Title = @Title, Description = @Description, ImageCount = @ImageCount, FavoriteCount = @FavoriteCount, PublicationDateTime = @PublicationDateTime, ApprovalDateTime = @ApprovalDateTime, ExpirationDateTime = @ExpirationDateTime, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
@@ -458,7 +455,6 @@ namespace HeroServer
             command.AddParam("@CountryId", SqlDbType.BigInt, post.CountryId);
             command.AddParam("@StateId", SqlDbType.BigInt, post.StateId);
             command.AddParam("@Title", SqlDbType.VarChar, post.Title);
-            command.AddParam("@Summary", SqlDbType.VarChar, post.Summary);
             command.AddParam("@Description", SqlDbType.NVarChar, post.Description);
             command.AddParam("@ImageCount", SqlDbType.Int, post.ImageCount);
             command.AddParam("@FavoriteCount", SqlDbType.Int, post.FavoriteCount);

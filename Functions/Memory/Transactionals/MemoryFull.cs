@@ -13,28 +13,18 @@ namespace HeroServer
         public String Location { get; set; }
         public int Status { get; set; }
 
-        public List<String> Images { get; set; }
-
-        public MemoryFull()
-        {
-        }
 
         public MemoryFull(long id, long postId, long appUserId, String appUserAlias,
-                             long postTypeId,
-                             long postCountryId, long postStateId,
-                             String title, String titleImage, String summary, String description,
-                             int imageCount, int[] reactionCounts, int commentCount, int favorite, int like, int likeCount, long reactionPhraseId,
+                             long postTypeId, long postCountryId, long postStateId,
+                             String title, String titleImage, String description,
+                             int imageCount, int favoriteCount, int[] reactionCounts, long reactionPhraseId, int commentCount,
                              DateTime publicationDateTime, int postStatus,
-                             AppUserInfo appUserInfo, ContactFull contactFull, List<LinkFull> linkFulls, List<CommentFull> commentFulls,
+                             AppUserInfo appUserInfo, ContactFull contactFull, List<LinkFull> linkFulls, List<CommentFull> commentFulls, List<String> images,
                              long memoryTypeId, long countryId, long stateId,
-                             DateTime? dateTime,
-                             String location,
-                             int status,
-                             List<String> images)
-            : base(postId, appUserId, appUserAlias, postTypeId,
-                   countryId, stateId, title, titleImage, summary, description,
-                   imageCount, reactionCounts, reactionPhraseId, commentCount, publicationDateTime, postStatus,
-                   appUserInfo, contactFull, linkFulls, commentFulls)
+                             DateTime? dateTime, String location, int status)
+            : base(postId, appUserId, appUserAlias, postTypeId, countryId, stateId, title, titleImage, description,
+                   imageCount, favoriteCount, reactionCounts, reactionPhraseId, commentCount, publicationDateTime, postStatus,
+                   appUserInfo, contactFull, linkFulls, commentFulls, images)
         {
             Id = id;
             MemoryTypeId = memoryTypeId;
@@ -43,7 +33,6 @@ namespace HeroServer
             DateTime = dateTime;
             Location = location;
             Status = status;
-            Images = images;
         }
     }
 }

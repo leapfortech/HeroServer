@@ -18,26 +18,19 @@ namespace HeroServer
 
         public List<ProductReviewFull> ProductReviewFulls { get; set; }
 
-        public List<String> Images { get; set; }
-
 
         public ProductFull(long id, long postId, long appUserId, String appUserAlias,
-                           long postTypeId,
-                           long postCountryId, long postStateId,
-                           String title, String titleImage, String summary, String description,
-                           int imageCount, int[] reactionCounts, int commentCount, int favorite, int like, int likeCount, long reactionPhraseId,
+                           long postTypeId, long postCountryId, long postStateId,
+                           String title, String titleImage, String description,
+                           int imageCount, int favoriteCount, int[] reactionCounts, long reactionPhraseId, int commentCount,
                            DateTime publicationDateTime, int postStatus,
-                           AppUserInfo appUserInfo, ContactFull contactFull, List<LinkFull> linkFulls, List<CommentFull> commentFulls,
-                           long productSubtypeId, long saleCountryId, long saleStateId,
-                           long currencyId, double price, double discountPrice,
-                           long deliveryTypeId, String annotation,
-                           int status,
-                           List<ProductReviewFull> productReviewFulls,
-                           List<String> images)
-            : base(postId, appUserId, appUserAlias, postTypeId,
-                   postCountryId, postStateId, title, titleImage, summary, description,
-                   imageCount, reactionCounts, reactionPhraseId, commentCount, publicationDateTime, postStatus,
-                   appUserInfo, contactFull, linkFulls, commentFulls)
+                           AppUserInfo appUserInfo, ContactFull contactFull, List<LinkFull> linkFulls, List<CommentFull> commentFulls, List<String> images,
+                           long productSubtypeId, long saleCountryId, long saleStateId, long currencyId, double price, double discountPrice,
+                           long deliveryTypeId, String annotation, int status,
+                           List<ProductReviewFull> productReviewFulls)
+            : base(postId, appUserId, appUserAlias, postTypeId, postCountryId, postStateId, title, titleImage, description,
+                   imageCount, favoriteCount, reactionCounts, reactionPhraseId, commentCount, publicationDateTime, postStatus,
+                   appUserInfo, contactFull, linkFulls, commentFulls, images)
         {
             Id = id;
             ProductSubtypeId = productSubtypeId;
@@ -51,8 +44,6 @@ namespace HeroServer
             Status = status;
 
             ProductReviewFulls = productReviewFulls ?? new List<ProductReviewFull>();
-
-            Images = images;
         }
     }
 }

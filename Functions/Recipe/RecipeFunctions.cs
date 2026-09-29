@@ -26,7 +26,6 @@ namespace HeroServer
                 return null;
 
             recipeFull.Images = await PostFunctions.GetImagesById(recipeFull.PostId, true);
-            recipeFull.Thumbnail = await AppUserFunctions.GetThumbnail(recipeFull.AppUserId);
 
             return recipeFull;
         }
@@ -39,7 +38,6 @@ namespace HeroServer
                 return null;
 
             recipeFull.Images = await PostFunctions.GetImagesById(recipeFull.PostId, true);
-            recipeFull.Thumbnail = await AppUserFunctions.GetThumbnail(recipeFull.AppUserId);
 
             return recipeFull;
         }
@@ -107,7 +105,6 @@ namespace HeroServer
 
                 // Images
                 recipeFull.Images = await PostFunctions.GetImagesById(recipeFull.PostId, true);
-                recipeFull.Thumbnail = await AppUserFunctions.GetThumbnail(recipeFull.AppUserId);
 
                 recipeFulls.Add(recipeFull);
             }

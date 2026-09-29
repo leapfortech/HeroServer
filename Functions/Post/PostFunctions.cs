@@ -47,14 +47,14 @@ namespace HeroServer
                 response.PostFulls[i].TitleImage = images[i];
 
             // Thumbnails
-            tasks = [];
-            for (int i = 0; i < response.PostFulls.Count; i++)
-                tasks.Add(AppUserFunctions.GetThumbnail(response.PostFulls[i].AppUserId));
+            //tasks = [];
+            //for (int i = 0; i < response.PostFulls.Count; i++)
+            //    tasks.Add(AppUserFunctions.GetThumbnail(response.PostFulls[i].AppUserId));
 
-            images = await Task.WhenAll(tasks);
+            //images = await Task.WhenAll(tasks);
 
-            for (int i = 0; i < response.PostFulls.Count; i++)
-                response.PostFulls[i].Thumbnail = images[i];
+            //for (int i = 0; i < response.PostFulls.Count; i++)
+            //    response.PostFulls[i].Thumbnail = images[i];
 
             return response;
         }

@@ -26,7 +26,6 @@ namespace HeroServer
                 return null;
 
             radioFull.Images = await PostFunctions.GetImagesById(radioFull.PostId, true);
-            radioFull.Thumbnail = await AppUserFunctions.GetThumbnail(radioFull.AppUserId);
 
             return radioFull;
         }
@@ -39,7 +38,6 @@ namespace HeroServer
                 return null;
 
             radioFull.Images = await PostFunctions.GetImagesById(radioFull.PostId, true);
-            radioFull.Thumbnail = await AppUserFunctions.GetThumbnail(radioFull.AppUserId);
 
             return radioFull;
         }
@@ -107,7 +105,6 @@ namespace HeroServer
 
                 // Images
                 radioFull.Images = await PostFunctions.GetImagesById(radioFull.PostId, true);
-                radioFull.Thumbnail = await AppUserFunctions.GetThumbnail(radioFull.AppUserId);
 
                 radioFulls.Add(radioFull);
             }
