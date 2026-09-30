@@ -26,5 +26,16 @@ namespace HeroServer
             UpdateDateTime = updateDateTime;
             Status = status;
         }
+
+        public Link(LinkFull linkFull)
+        {
+            Id = linkFull.Id;
+            LinkTypeId = linkFull.LinkTypeId;
+            PostId = linkFull.PostId;
+            Url = linkFull.Url;
+            CreateDateTime = DateTime.Now;
+            UpdateDateTime = DateTime.Now;
+            Status = linkFull.Status;
+        }
     }
 }

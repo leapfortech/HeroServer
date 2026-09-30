@@ -24,5 +24,15 @@ namespace HeroServer
             UpdateDateTime = updateDateTime;
             Status = status;
         }
+
+        public Disease(DiseaseFull diseaseFull)
+        {
+            Id = diseaseFull.Id;
+            TreatmentId = diseaseFull.TreatmentId;
+            DiseaseTypeId = diseaseFull.DiseaseTypeId;
+            CreateDateTime = DateTime.Now;
+            UpdateDateTime = DateTime.Now;
+            Status = diseaseFull.Status;
+        }
     }
 }

@@ -38,5 +38,22 @@ namespace HeroServer
             UpdateDateTime = updateDateTime;
             Status = status;
         }
+
+        public Product(ProductFull productFull)
+        {
+            Id = productFull.Id;
+            PostId = productFull.PostId;
+            ProductSubtypeId = productFull.ProductSubtypeId;
+            SaleCountryId = productFull.SaleCountryId;
+            SaleStateId = productFull.SaleStateId;
+            CurrencyId = productFull.CurrencyId;
+            Price = productFull.Price;
+            DiscountPrice = productFull.DiscountPrice;
+            DeliveryTypeId = productFull.DeliveryTypeId;
+            Annotation = productFull.Annotation;
+            CreateDateTime = DateTime.Now;
+            UpdateDateTime = DateTime.Now;
+            Status = productFull.Status;
+        }
     }
 }

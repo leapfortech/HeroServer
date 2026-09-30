@@ -43,5 +43,24 @@ namespace HeroServer
             UpdateDateTime = updateDateTime;
             Status = status;
         }
+
+        public Post(PostFull postFull)
+        {
+            Id = postFull.PostId;
+            AppUserId = postFull.AppUserId;
+            PostTypeId = postFull.PostTypeId;
+            CountryId = postFull.PostCountryId;
+            StateId = postFull.PostStateId;
+            Title = postFull.Title;
+            Description = postFull.Description;
+            ImageCount = postFull.ImageCount;
+            FavoriteCount = postFull.FavoriteCount;
+            PublicationDateTime = postFull.PublicationDateTime;
+            ApprovalDateTime = null;
+            ExpirationDateTime = null;
+            CreateDateTime = DateTime.Now;
+            UpdateDateTime = DateTime.Now;
+            Status = postFull.PostStatus;
+        }
     }
 }

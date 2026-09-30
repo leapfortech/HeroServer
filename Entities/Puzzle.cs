@@ -37,5 +37,22 @@ namespace HeroServer
             UpdateDateTime = updateDateTime;
             Status = status;
         }
+
+        public Puzzle(PuzzleFull puzzleFull)
+        {
+            Id = puzzleFull.Id;
+            PostId = puzzleFull.PostId;
+            PuzzleGameId = puzzleFull.PuzzleGameId;
+            CountryId = puzzleFull.CountryId;
+            Question = puzzleFull.Question;
+            Hint = puzzleFull.Hint;
+            Difficulty = puzzleFull.Difficulty;
+            Delay = puzzleFull.Delay;
+            Points = puzzleFull.Points;
+            PlayCount = puzzleFull.PlayCount;
+            CreateDateTime = DateTime.Now;
+            UpdateDateTime = DateTime.Now;
+            Status = puzzleFull.Status;
+        }
     }
 }

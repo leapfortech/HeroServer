@@ -29,5 +29,18 @@ namespace HeroServer
             UpdateDateTime = updateDateTime;
             Status = status;
         }
+
+        public News(NewsFull newFull)
+        {
+            Id = newFull.Id;
+            PostId = newFull.PostId;
+            NewsTypeId = newFull.NewsTypeId;
+            Place = newFull.Place;
+            Source = newFull.Source;
+            DateTime = newFull.DateTime;
+            CreateDateTime = System.DateTime.Now;
+            UpdateDateTime = System.DateTime.Now;
+            Status = newFull.Status;
+        }
     }
 }

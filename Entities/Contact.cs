@@ -22,5 +22,15 @@ namespace HeroServer
             UpdateDateTime = updateDateTime;
             Status = status;
         }
+
+        public Contact(ContactFull contactFull)
+        {
+            Id = contactFull.Id;
+            PostId = contactFull.PostId;
+            Name = contactFull.Name;
+            CreateDateTime = DateTime.Now;
+            UpdateDateTime = DateTime.Now;
+            Status = contactFull.Status;
+        }
     }
 }

@@ -18,9 +18,9 @@ namespace HeroServer
             return await new RadioDB().GetById(id);
         }
 
-        public static async Task<RadioFull> GetFullById(long id, long likeAppUserId)
+        public static async Task<RadioFull> GetFullById(long id, long reactionAppUserId)
         {
-            RadioFull radioFull = await new RadioDB().GetFullById(id, likeAppUserId);
+            RadioFull radioFull = await new RadioDB().GetFullById(id, reactionAppUserId);
 
             if (radioFull == null)
                 return null;
@@ -30,9 +30,9 @@ namespace HeroServer
             return radioFull;
         }
 
-        public static async Task<RadioFull> GetFullByPostId(long postId, long likeAppUserId)
+        public static async Task<RadioFull> GetFullByPostId(long postId, long reactionAppUserId)
         {
-            RadioFull radioFull = await new RadioDB().GetFullByPostId(postId, likeAppUserId);
+            RadioFull radioFull = await new RadioDB().GetFullByPostId(postId, reactionAppUserId);
 
             if (radioFull == null)
                 return null;
@@ -131,40 +131,41 @@ namespace HeroServer
         }
 
         // REGISTER
-        public static async Task<long> Register(RegisterRadioRequest registerRadioRequest)
+        public static async Task<long> Register(RadioFull radioFull)
         {
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                registerRadioRequest.Post.PostTypeId = PostType.Radio;
-                registerRadioRequest.Post.Id = await PostFunctions.Register(registerRadioRequest);
+                radioFull.PostTypeId = PostType.Radio;
+                radioFull.PostId = await PostFunctions.Register(radioFull);
+                radioFull.Status = 1;
 
-                if (registerRadioRequest.Radio == null)
+                //if (registerRadioRequest.Radio == null)
+                //{
+                //    registerRadioRequest.Radio = new Radio(-1, registerRadioRequest.Post.Id, DateTime.Now, DateTime.Now, 0);
+                //}
+                //else
+                //{
+                //    registerRadioRequest.Radio.PostId = registerRadioRequest.Post.Id;
+                //    registerRadioRequest.Radio.Status = 0;
+                //}
+
+                id = await Add(new Radio(radioFull));
+
+                for (int i = 0; i < radioFull.RadioTypeFulls.Count; i++)
                 {
-                    registerRadioRequest.Radio = new Radio(-1, registerRadioRequest.Post.Id, DateTime.Now, DateTime.Now, 0);
+                    radioFull.RadioTypeFulls[i].Id = id;
+                    radioFull.RadioTypeFulls[i].Status = 1;
+
+                    await new RadioTypeDB().Add(new RadioType(radioFull.RadioTypeFulls[i]));
                 }
-                else
+
+                for (int i = 0; i < radioFull.RadioLanguageFulls.Count; i++)
                 {
-                    registerRadioRequest.Radio.PostId = registerRadioRequest.Post.Id;
-                    registerRadioRequest.Radio.Status = 0;
-                }
+                    radioFull.RadioLanguageFulls[i].Id = id;
+                    radioFull.RadioLanguageFulls[i].Status = 1;
 
-                id = await Add(registerRadioRequest.Radio);
-
-                for (int i = 0; i < registerRadioRequest.RadioTypes.Count; i++)
-                {
-                    registerRadioRequest.RadioTypes[i].RadioId = id;
-                    registerRadioRequest.RadioTypes[i].Status = 1;
-
-                    await new RadioTypeDB().Add(registerRadioRequest.RadioTypes[i]);
-                }
-
-                for (int i = 0; i < registerRadioRequest.RadioLanguages.Count; i++)
-                {
-                    registerRadioRequest.RadioLanguages[i].RadioId = id;
-                    registerRadioRequest.RadioLanguages[i].Status = 1;
-
-                    await new RadioLanguageDB().Add(registerRadioRequest.RadioLanguages[i]);
+                    await new RadioLanguageDB().Add(new RadioLanguage(radioFull.RadioLanguageFulls[i]));
                 }
 
                 scope.Complete();
@@ -185,41 +186,40 @@ namespace HeroServer
         }
 
         // UPDATE
-        public static async Task<bool> Update(RegisterRadioRequest registerRadioRequest)
+        public static async Task<bool> Update(RadioFull radioFull)
         {
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 // Update Post
-                await PostFunctions.UpdatePost(registerRadioRequest);
+                await PostFunctions.Update(radioFull);
 
                 // Update Radio
                 // Soft Delete
-                await new RadioDB().UpdateStatusByPostId(registerRadioRequest.Post.Id, 1, 0);
-
-                registerRadioRequest.Radio.PostId = registerRadioRequest.Post.Id;
-                registerRadioRequest.Radio.Status = 1;
+                await new RadioDB().UpdateStatusByPostId(radioFull.PostId, 1, 0);
 
                 long radioId = -1;
-                if (registerRadioRequest.Radio.Id == -1 || registerRadioRequest.Radio.Id == 0)
+
+                Radio radio = new Radio(radioFull);
+                if (radio.Id == -1 || radio.Id == 0)
                 {
-                    radioId = await Add(registerRadioRequest.Radio);
+                    radioId = await Add(radio);
                 }
                 else
                 {
-                    await Update(registerRadioRequest.Radio);
-                    await UpdateStatus(registerRadioRequest.Radio.Id, 1);
-                    radioId = registerRadioRequest.Radio.Id;
+                    await Update(radio);
+                    await UpdateStatus(radio.Id, 1);
+                    radioId = radio.Id;
                 }
 
                 // Radio Types
                 // Soft Delete
                 await new RadioTypeDB().UpdateStatusByRadioId(radioId, 1, 0);
 
-                if (registerRadioRequest.RadioTypes != null && registerRadioRequest.RadioTypes.Count > 0)
+                if (radioFull.RadioTypeFulls != null && radioFull.RadioTypeFulls.Count > 0)
                 {
-                    for (int i = 0; i < registerRadioRequest.RadioTypes.Count; i++)
+                    for (int i = 0; i < radioFull.RadioTypeFulls.Count; i++)
                     {
-                        RadioType radioType = registerRadioRequest.RadioTypes[i];
+                        RadioType radioType = new RadioType(radioFull.RadioTypeFulls[i]);
                         radioType.RadioId = radioId;
 
                         if (radioType.Id == -1 || radioType.Id == 0)
@@ -239,11 +239,11 @@ namespace HeroServer
                 // Soft Delete
                 await new RadioLanguageDB().UpdateStatusByRadioId(radioId, 1, 0);
 
-                if (registerRadioRequest.RadioLanguages != null && registerRadioRequest.RadioLanguages.Count > 0)
+                if (radioFull.RadioLanguageFulls != null && radioFull.RadioLanguageFulls.Count > 0)
                 {
-                    for (int i = 0; i < registerRadioRequest.RadioLanguages.Count; i++)
+                    for (int i = 0; i < radioFull.RadioLanguageFulls.Count; i++)
                     {
-                        RadioLanguage radioLanguage = registerRadioRequest.RadioLanguages[i];
+                        RadioLanguage radioLanguage = new RadioLanguage(radioFull.RadioLanguageFulls[i]);
                         radioLanguage.RadioId = radioId;
 
                         if (radioLanguage.Id == -1 || radioLanguage.Id == 0)

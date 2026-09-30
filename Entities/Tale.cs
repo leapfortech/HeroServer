@@ -20,5 +20,14 @@ namespace HeroServer
             UpdateDateTime = updateDateTime;
             Status = status;
         }
+
+        public Tale(TaleFull taleFull)
+        {
+            Id = taleFull.Id;
+            PostId = taleFull.PostId;
+            CreateDateTime = DateTime.Now;
+            UpdateDateTime = DateTime.Now;
+            Status = taleFull.Status;
+        }
     }
 }

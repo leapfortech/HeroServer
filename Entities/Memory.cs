@@ -31,5 +31,19 @@ namespace HeroServer
             UpdateDateTime = updateDateTime;
             Status = status;
         }
+
+        public Memory(MemoryFull memoryFull)
+        {
+            Id = memoryFull.Id;
+            PostId = memoryFull.PostId;
+            MemoryTypeId = memoryFull.MemoryTypeId;
+            CountryId = memoryFull.CountryId;
+            StateId = memoryFull.StateId;
+            DateTime = memoryFull.DateTime;
+            Location = memoryFull.Location;
+            CreateDateTime = System.DateTime.Now;
+            UpdateDateTime = System.DateTime.Now;
+            Status = memoryFull.Status;
+        }
     }
 }

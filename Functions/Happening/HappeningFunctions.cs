@@ -18,9 +18,9 @@ namespace HeroServer
             return await new HappeningDB().GetById(id);
         }
 
-        public static async Task<HappeningFull> GetFullById(long id, long likeAppUserId)
+        public static async Task<HappeningFull> GetFullById(long id, long reactionAppUserId)
         {
-            HappeningFull happeningFull = await new HappeningDB().GetFullById(id, likeAppUserId);
+            HappeningFull happeningFull = await new HappeningDB().GetFullById(id, reactionAppUserId);
 
             if (happeningFull == null)
                 return null;
@@ -30,9 +30,9 @@ namespace HeroServer
             return happeningFull;
         }
 
-        public static async Task<HappeningFull> GetFullByPostId(long postId, long likeAppUserId)
+        public static async Task<HappeningFull> GetFullByPostId(long postId, long reactionAppUserId)
         {
-            HappeningFull happeningFull = await new HappeningDB().GetFullByPostId(postId, likeAppUserId);
+            HappeningFull happeningFull = await new HappeningDB().GetFullByPostId(postId, reactionAppUserId);
 
             if (happeningFull == null)
                 return null;
@@ -131,16 +131,16 @@ namespace HeroServer
         }
 
         // REGISTER
-        public static async Task<long> Register(RegisterHappeningRequest registerHappeningRequest)
+        public static async Task<long> Register(HappeningFull happeningFull)
         {
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                registerHappeningRequest.Post.PostTypeId = PostType.Happening;
-                registerHappeningRequest.Happening.PostId = await PostFunctions.Register(registerHappeningRequest);
+                happeningFull.PostTypeId = PostType.Happening;
+                happeningFull.PostId = await PostFunctions.Register(happeningFull);
+                happeningFull.Status = 1;
 
-                registerHappeningRequest.Happening.Status = 1;
-                id = await Add(registerHappeningRequest.Happening);
+                id = await Add(new Happening(happeningFull));
 
                 scope.Complete();
             }
@@ -155,28 +155,28 @@ namespace HeroServer
         }
 
         // UPDATE
-        public static async Task<bool> Update(RegisterHappeningRequest registerHappeningRequest)
+        public static async Task<bool> Update(HappeningFull happeningFull)
         {
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 // Update Post
-                await PostFunctions.UpdatePost(registerHappeningRequest);
+                await PostFunctions.Update(happeningFull);
 
                 // Update Happening
                 // Soft Delete
-                await new HappeningDB().UpdateStatusByPostId(registerHappeningRequest.Post.Id, 1, 0);
+                await new HappeningDB().UpdateStatusByPostId(happeningFull.PostId, 1, 0);
 
-                registerHappeningRequest.Happening.PostId = registerHappeningRequest.Post.Id;
-                registerHappeningRequest.Happening.Status = 1;
+                happeningFull.Status = 1;
 
-                if (registerHappeningRequest.Happening.Id == -1 || registerHappeningRequest.Happening.Id == 0)
+                Happening happening = new Happening(happeningFull);
+                if (happening.Id == -1 || happening.Id == 0)
                 {
-                    await Add(registerHappeningRequest.Happening);
+                    await Add(happening);
                 }
                 else
                 {
-                    await Update(registerHappeningRequest.Happening);
-                    await UpdateStatus(registerHappeningRequest.Happening.Id, 1);
+                    await Update(happening);
+                    await UpdateStatus(happening.Id, 1);
                 }
 
                 scope.Complete();

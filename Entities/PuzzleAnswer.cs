@@ -25,5 +25,16 @@ namespace HeroServer
             UpdateDateTime = updateDateTime;
             Status = status;
         }
+
+        public PuzzleAnswer(PuzzleAnswerFull puzzleAnswerFull)
+        {
+            Id = puzzleAnswerFull.Id;
+            PuzzleId = puzzleAnswerFull.PuzzleId;
+            Description = puzzleAnswerFull.Description;
+            IsCorrect = puzzleAnswerFull.IsCorrect;
+            CreateDateTime = DateTime.Now;
+            UpdateDateTime = DateTime.Now;
+            Status = puzzleAnswerFull.Status;
+        }
     }
 }

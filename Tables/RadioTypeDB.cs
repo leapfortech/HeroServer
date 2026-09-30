@@ -24,6 +24,7 @@ namespace HeroServer
         public static RadioTypeFull GetRadioTypeFull(SqlDataReader reader)
         {
             return new RadioTypeFull(Convert.ToInt64(reader["Id"]),
+                                     Convert.ToInt64(reader["RadioId"]),
                                      Convert.ToInt64(reader["RadioTypeId"]),
                                      Convert.ToInt32(reader["Status"]));
         }

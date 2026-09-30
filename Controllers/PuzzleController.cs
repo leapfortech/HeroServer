@@ -13,11 +13,11 @@ namespace HeroServer.Controllers
     {
         // GET services/puzzle?id=1
         [HttpGet]
-        public async Task<ActionResult<PuzzleFull>> GetFullById([FromQuery] String id, [FromQuery] String likeAppUserId)
+        public async Task<ActionResult<PuzzleFull>> GetFullById([FromQuery] String id, [FromQuery] String reactionAppUserId)
         {
             try
             {
-                return Ok(await PuzzleFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(likeAppUserId), 1, 1));
+                return Ok(await PuzzleFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(reactionAppUserId), 1, 1));
             }
             catch (Exception ex)
             {
@@ -25,13 +25,13 @@ namespace HeroServer.Controllers
             }
         }
 
-        // GET services/puzzle/FullByPostId?postId=1, likeAppUserId=1
+        // GET services/puzzle/FullByPostId?postId=1, reactionAppUserId=1
         [HttpGet("FullByPostId")]
-        public async Task<ActionResult<PuzzleFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] String likeAppUserId)
+        public async Task<ActionResult<PuzzleFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] String reactionAppUserId)
         {
             try
             {
-                return Ok(await PuzzleFunctions.GetFullByPostId(Convert.ToInt64(postId), Convert.ToInt64(likeAppUserId)));
+                return Ok(await PuzzleFunctions.GetFullByPostId(Convert.ToInt64(postId), Convert.ToInt64(reactionAppUserId)));
             }
             catch (Exception ex)
             {
@@ -83,11 +83,11 @@ namespace HeroServer.Controllers
 
         // POST services/puzzle/Register
         [HttpPost("Register")]
-        public async Task<ActionResult<long>> Register([FromBody] RegisterPuzzleRequest registerPuzzleRequest)
+        public async Task<ActionResult<long>> Register([FromBody] PuzzleFull puzzleFull)
         {
             try
             {
-                return Ok(await PuzzleFunctions.Register(registerPuzzleRequest));
+                return Ok(await PuzzleFunctions.Register(puzzleFull));
             }
             catch (Exception ex)
             {
@@ -97,11 +97,11 @@ namespace HeroServer.Controllers
 
         // PUT services/puzzle
         [HttpPut]
-        public async Task<ActionResult<bool>> Update([FromBody] RegisterPuzzleRequest registerPuzzleRequest)
+        public async Task<ActionResult<bool>> Update([FromBody] PuzzleFull puzzleFull)
         {
             try
             {
-                return Ok(await PuzzleFunctions.Update(registerPuzzleRequest));
+                return Ok(await PuzzleFunctions.Update(puzzleFull));
             }
             catch (Exception ex)
             {

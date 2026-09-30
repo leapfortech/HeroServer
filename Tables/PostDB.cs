@@ -185,7 +185,6 @@ namespace HeroServer
                       " ISNULL((SELECT COUNT(*) FROM [D-Comment] AS Comment WHERE Comment.PostId = Post.Id AND Comment.Status = 1), 0) AS CommentCount," +
 
                       " CASE WHEN JFavorite.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
-                      " ISNULL(DLike.[Rank], -1) AS [Like]," +
                       " ISNULL(DReaction.[ReactionPhraseId], -1) AS [ReactionPhraseId]," +
                       " Post.FavoriteCount," +
                       " Post.PublicationDateTime," +
@@ -193,7 +192,6 @@ namespace HeroServer
                       " FROM [D-Post] AS Post" +
                       " INNER JOIN [D-AppUser] AS DAppUser ON Post.AppUserId = DAppUser.Id" +
                       " LEFT JOIN [J-Favorite] AS JFavorite ON JFavorite.PostId = Post.Id AND JFavorite.AppUserId = @ReactionAppUserId" +
-                      " LEFT JOIN [D-Like] AS DLike ON DLike.PostId = Post.Id AND DLike.AppUserId = @ReactionAppUserId" +
                       " LEFT JOIN [D-Reaction] AS DReaction ON DReaction.PostId = Post.Id AND DReaction.AppUserId = @ReactionAppUserId" +
                       whereFeed;
 
@@ -364,7 +362,6 @@ namespace HeroServer
                                 Post.Description,
                                 Post.ImageCount,
                                 0 AS Favorite,
-                                -1 AS [Like],
                                 -1 AS [ReactionPhraseId],
                                 Post.FavoriteCount,
                                 Post.PublicationDateTime,

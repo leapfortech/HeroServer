@@ -18,9 +18,9 @@ namespace HeroServer
             return await new NewsDB().GetById(id);
         }
 
-        public static async Task<NewsFull> GetFullById(long id, long likeAppUserId)
+        public static async Task<NewsFull> GetFullById(long id, long reactionAppUserId)
         {
-            NewsFull newsFull = await new NewsDB().GetFullById(id, likeAppUserId);
+            NewsFull newsFull = await new NewsDB().GetFullById(id, reactionAppUserId);
 
             if (newsFull == null)
                 return null;
@@ -30,9 +30,9 @@ namespace HeroServer
             return newsFull;
         }
 
-        public static async Task<NewsFull> GetFullByPostId(long postId, long likeAppUserId)
+        public static async Task<NewsFull> GetFullByPostId(long postId, long reactionAppUserId)
         {
-            NewsFull newsFull = await new NewsDB().GetFullByPostId(postId, likeAppUserId);
+            NewsFull newsFull = await new NewsDB().GetFullByPostId(postId, reactionAppUserId);
 
             if (newsFull == null)
                 return null;
@@ -131,16 +131,16 @@ namespace HeroServer
         }
 
         // REGISTER
-        public static async Task<long> Register(RegisterNewsRequest registerNewsRequest)
+        public static async Task<long> Register(NewsFull newsFull)
         {
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                registerNewsRequest.Post.PostTypeId = PostType.News;
-                registerNewsRequest.News.PostId = await PostFunctions.Register(registerNewsRequest);
+                newsFull.PostTypeId = PostType.News;
+                newsFull.PostId = await PostFunctions.Register(newsFull);
+                newsFull.Status = 1;
 
-                registerNewsRequest.News.Status = 1;
-                id = await Add(registerNewsRequest.News);
+                id = await Add(new News(newsFull));
 
                 scope.Complete();
             }
@@ -155,28 +155,28 @@ namespace HeroServer
         }
 
         // UPDATE
-        public static async Task<bool> Update(RegisterNewsRequest registerNewsRequest)
+        public static async Task<bool> Update(NewsFull newsFull)
         {
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 // Update Post
-                await PostFunctions.UpdatePost(registerNewsRequest);
+                await PostFunctions.Update(newsFull);
 
                 // Update News
                 // Soft Delete
-                await new NewsDB().UpdateStatusByPostId(registerNewsRequest.Post.Id, 1, 0);
+                await new NewsDB().UpdateStatusByPostId(newsFull.PostId, 1, 0);
 
-                registerNewsRequest.News.PostId = registerNewsRequest.Post.Id;
-                registerNewsRequest.News.Status = 1;
+                newsFull.Status = 1;
 
-                if (registerNewsRequest.News.Id == -1 || registerNewsRequest.News.Id == 0)
+                News news = new News(newsFull);
+				if (newsFull.Id == -1 || newsFull.Id == 0)
                 {
-                    await Add(registerNewsRequest.News);
+                    await Add(news);
                 }
                 else
                 {
-                    await Update(registerNewsRequest.News);
-                    await UpdateStatus(registerNewsRequest.News.Id, 1);
+                    await Update(news);
+                    await UpdateStatus(news.Id, 1);
                 }
 
                 scope.Complete();

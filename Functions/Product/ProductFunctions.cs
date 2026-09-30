@@ -18,9 +18,9 @@ namespace HeroServer
             return await new ProductDB().GetById(id);
         }
 
-        public static async Task<ProductFull> GetFullById(long id, long likeAppUserId)
+        public static async Task<ProductFull> GetFullById(long id, long reactionAppUserId)
         {
-            ProductFull productFull = await new ProductDB().GetFullById(id, likeAppUserId);
+            ProductFull productFull = await new ProductDB().GetFullById(id, reactionAppUserId);
 
             if (productFull == null)
                 return null;
@@ -30,9 +30,9 @@ namespace HeroServer
             return productFull;
         }
 
-        public static async Task<ProductFull> GetFullByPostId(long postId, long likeAppUserId)
+        public static async Task<ProductFull> GetFullByPostId(long postId, long reactionAppUserId)
         {
-            ProductFull productFull = await new ProductDB().GetFullByPostId(postId, likeAppUserId);
+            ProductFull productFull = await new ProductDB().GetFullByPostId(postId, reactionAppUserId);
 
             if (productFull == null)
                 return null;
@@ -131,16 +131,16 @@ namespace HeroServer
         }
 
         // REGISTER
-        public static async Task<long> Register(RegisterProductRequest registerProductRequest)
+        public static async Task<long> Register(ProductFull productFull)
         {
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                registerProductRequest.Post.PostTypeId = PostType.Product;
-                registerProductRequest.Product.PostId = await PostFunctions.Register(registerProductRequest);
+                productFull.PostTypeId = PostType.Product;
+                productFull.PostId = await PostFunctions.Register(productFull);
+                productFull.Status = 1;
 
-                registerProductRequest.Product.Status = 1;
-                id = await Add(registerProductRequest.Product);
+                id = await Add(new Product(productFull));
 
                 scope.Complete();
             }
@@ -161,28 +161,28 @@ namespace HeroServer
         }
 
         // UPDATE
-        public static async Task<bool> Update(RegisterProductRequest registerProductRequest)
+        public static async Task<bool> Update(ProductFull productFull)
         {
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 // Update Post
-                await PostFunctions.UpdatePost(registerProductRequest);
+                await PostFunctions.Update(productFull);
 
                 // Update Product
                 // Soft Delete
-                await new ProductDB().UpdateStatusByPostId(registerProductRequest.Post.Id, 1, 0);
+                await new ProductDB().UpdateStatusByPostId(productFull.PostId, 1, 0);
 
-                registerProductRequest.Product.PostId = registerProductRequest.Post.Id;
-                registerProductRequest.Product.Status = 1;
+                productFull.Status = 1;
 
-                if (registerProductRequest.Product.Id == -1 || registerProductRequest.Product.Id == 0)
+                Product product = new Product(productFull);
+                if (product.Id == -1 || product.Id == 0)
                 {
-                    await Add(registerProductRequest.Product);
+                    await Add(product);
                 }
                 else
                 {
-                    await Update(registerProductRequest.Product);
-                    await UpdateStatus(registerProductRequest.Product.Id, 1);
+                    await Update(product);
+                    await UpdateStatus(product.Id, 1);
                 }
 
                 scope.Complete();

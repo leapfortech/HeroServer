@@ -25,6 +25,7 @@ namespace HeroServer
         public static PuzzleAnswerFull GetPuzzleAnswerFull(SqlDataReader reader)
         {
             return new PuzzleAnswerFull(Convert.ToInt64(reader["Id"]),
+                                        Convert.ToInt64(reader["PuzzleId"]),
                                         reader["Description"].ToString(),
                                         Convert.ToInt32(reader["IsCorrect"]),
                                         Convert.ToInt32(reader["Status"]));

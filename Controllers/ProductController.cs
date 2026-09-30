@@ -13,11 +13,11 @@ namespace HeroServer.Controllers
     {
         // GET services/product?id=1
         [HttpGet]
-        public async Task<ActionResult<ProductFull>> GetFullById([FromQuery] String id, [FromQuery] String likeAppUserId)
+        public async Task<ActionResult<ProductFull>> GetFullById([FromQuery] String id, [FromQuery] String reactionAppUserId)
         {
             try
             {
-                return Ok(await ProductFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(likeAppUserId)));
+                return Ok(await ProductFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(reactionAppUserId)));
             }
             catch (Exception ex)
             {
@@ -26,11 +26,11 @@ namespace HeroServer.Controllers
         }
 
         [HttpGet("FullByPostId")]
-        public async Task<ActionResult<ProductFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] String likeAppUserId)
+        public async Task<ActionResult<ProductFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] String reactionAppUserId)
         {
             try
             {
-                return Ok(await ProductFunctions.GetFullByPostId(Convert.ToInt64(postId), Convert.ToInt64(likeAppUserId)));
+                return Ok(await ProductFunctions.GetFullByPostId(Convert.ToInt64(postId), Convert.ToInt64(reactionAppUserId)));
             }
             catch (Exception ex)
             {
@@ -68,11 +68,11 @@ namespace HeroServer.Controllers
 
         // POST services/product/Register
         [HttpPost("Register")]
-        public async Task<ActionResult<long>> Register([FromBody] RegisterProductRequest registerProductRequest)
+        public async Task<ActionResult<long>> Register([FromBody] ProductFull productFull)
         {
             try
             {
-                return Ok(await ProductFunctions.Register(registerProductRequest));
+                return Ok(await ProductFunctions.Register(productFull));
             }
             catch (Exception ex)
             {
@@ -96,11 +96,11 @@ namespace HeroServer.Controllers
 
         // PUT services/product
         [HttpPut]
-        public async Task<ActionResult<bool>> Update([FromBody] RegisterProductRequest registerProductRequest)
+        public async Task<ActionResult<bool>> Update([FromBody] ProductFull productFull)
         {
             try
             {
-                return Ok(await ProductFunctions.Update(registerProductRequest));
+                return Ok(await ProductFunctions.Update(productFull));
             }
             catch (Exception ex)
             {

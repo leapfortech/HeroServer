@@ -76,39 +76,37 @@ namespace HeroServer
         }
 
         // REGISTER
-        public static async Task<long> Register(RegisterPostRequest registerPostRequest)
+        public static async Task<long> Register(PostFull postFull)
         {
             long postId = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 // Register Post
-                registerPostRequest.Post.PublicationDateTime = DateTime.Now;
-                registerPostRequest.Post.ApprovalDateTime = null;
-                registerPostRequest.Post.ExpirationDateTime = null;
+                postFull.PublicationDateTime = DateTime.Now;
 
-                if (registerPostRequest.Post.PostTypeId == PostType.Radio)
-                    registerPostRequest.Post.Status = 0;
+                if (postFull.PostTypeId == PostType.Radio)
+                    postFull.PostStatus = 0;
                 else
-                    registerPostRequest.Post.Status = 1;
+                    postFull.PostStatus = 1;
 
-                postId = await new PostDB().Add(registerPostRequest.Post);
+                postId = await new PostDB().Add(new Post(postFull));
 
                 // Register Contact
-                if (registerPostRequest.Contact != null)
+                if (postFull.ContactFull != null)
                 {
-                    registerPostRequest.Contact.PostId = postId;
-                    registerPostRequest.Contact.Status = 1;
-                    await new ContactDB().Add(registerPostRequest.Contact);
+                    postFull.ContactFull.PostId = postId;
+                    postFull.ContactFull.Status = 1;
+                    await new ContactDB().Add(new Contact(postFull.ContactFull));
                 }
 
                 // Register Links
-                if (registerPostRequest.Links != null && registerPostRequest.Links.Count > 0)
+                if (postFull.LinkFulls != null && postFull.LinkFulls.Count > 0)
                 {
-                    for (int i = 0; i < registerPostRequest.Links.Count; i++)
+                    for (int i = 0; i < postFull.LinkFulls.Count; i++)
                     {
-                        registerPostRequest.Links[i].PostId = postId;
-                        registerPostRequest.Links[i].Status = 1;
-                        await new LinkDB().Add(registerPostRequest.Links[i]);
+                        postFull.LinkFulls[i].PostId = postId;
+                        postFull.LinkFulls[i].Status = 1;
+                        await new LinkDB().Add(new Link(postFull.LinkFulls[i]));
                     }
                 }
 
@@ -116,8 +114,8 @@ namespace HeroServer
             }
 
             // Register Images
-            if (registerPostRequest.Images != null && registerPostRequest.Images.Count != 0)
-                await RegisterImages(postId, registerPostRequest.Images);
+            if (postFull.Images != null && postFull.Images.Count != 0)
+                await RegisterImages(postId, postFull.Images);
 
             return postId;
         }
@@ -164,76 +162,7 @@ namespace HeroServer
             return await new SelectedDB().Delete(selected);
         }
 
-        // LIKE
-        public static async Task<long> RegisterLike(Like like)
-        {
-            long likeId = -1;
-            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {
-                like.Status = 1;
-                likeId = await new LikeDB().Add(like);
-                //if (like.Rank == 5)
-                //    await new PostDB().IncrementLikeCount(like.PostId);
-
-                scope.Complete();
-            }
-
-            return likeId;
-        }
-
-        public static async Task<long> UpdateLike(Like like)
-        {
-            long likeId = -1L;
-            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {
-                like.Status = 1;
-                
-                Like curLike = await new LikeDB().Get(like.PostId, like.AppUserId);
-                if (curLike == null)
-                {
-                    likeId = await new LikeDB().Add(like);
-                    //if (like.Rank == 5)
-                    //    await new PostDB().IncrementLikeCount(like.PostId);
-                }
-                else if (like.Rank < curLike.Rank)
-                {
-                    likeId = curLike.Id;
-                    await new LikeDB().UpdateRank(like);
-                    //await new PostDB().DecrementLikeCount(like.PostId);
-                }
-                else if (like.Rank > curLike.Rank)
-                {
-                    likeId = curLike.Id;
-                    await new LikeDB().UpdateRank(like);
-                    //await new PostDB().IncrementLikeCount(like.PostId);
-                }
-
-                scope.Complete();
-            }
-
-            return likeId;
-        }
-
-        public static async Task<long> DeleteLike(Like like)
-        {
-            long likeId = -1L;
-            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {
-                Like curLike = await new LikeDB().Get(like.PostId, like.AppUserId);
-                if (curLike != null)
-                {
-                    likeId = curLike.Id;
-                    await new LikeDB().Delete(like);
-                    //if (like.Rank != -1)
-                    //    await new PostDB().DecrementLikeCount(like.PostId);
-                }
-
-                scope.Complete();
-            }
-
-            return likeId;
-        }
-
+        // REACTION
         public static async Task<long> RegisterReaction(Reaction reaction)
         {
             reaction.Status = 1;
@@ -330,37 +259,33 @@ namespace HeroServer
         }
 
         // UPDATE
-        public static async Task<bool> UpdatePost(RegisterPostRequest registerPostRequest)
+        public static async Task<bool> Update(PostFull postFull)
         {
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 // Update Post
-                //registerPostRequest.Post.PublicationDateTime = DateTime.Now;
-                registerPostRequest.Post.ApprovalDateTime = null;
-                registerPostRequest.Post.ExpirationDateTime = null;
-                await new PostDB().Update(registerPostRequest.Post);
+                await new PostDB().Update(new Post(postFull));
                 
                 // Update Contact
                 // Soft Delete
-                if (registerPostRequest.Contact != null)
+                if (postFull.ContactFull != null)
                 {
-                    await new ContactDB().UpdateStatusByPostId(registerPostRequest.Post.Id, 1, 0);
+                    await new ContactDB().UpdateStatusByPostId(postFull.PostId, 1, 0);
 
-                    registerPostRequest.Contact.PostId = registerPostRequest.Post.Id;
-                    registerPostRequest.Contact.Status = 1;
-                    await new ContactDB().Add(registerPostRequest.Contact);
+                    postFull.ContactFull.PostId = postFull.PostId;
+                    postFull.ContactFull.Status = 1;
+                    await new ContactDB().Add(new Contact(postFull.ContactFull));
                 }
 
                 // Update Links
                 // Soft Delete
-                await new LinkDB().UpdateStatusByPostId(registerPostRequest.Post.Id, 1, 0);
+                await new LinkDB().UpdateStatusByPostId(postFull.PostId, 1, 0);
 
-                if (registerPostRequest.Links != null && registerPostRequest.Links.Count > 0)
+                if (postFull.LinkFulls != null && postFull.LinkFulls.Count > 0)
                 {
-                    for (int i = 0; i < registerPostRequest.Links.Count; i++)
+                    for (int i = 0; i < postFull.LinkFulls.Count; i++)
                     {
-                        Link link = registerPostRequest.Links[i];
-                        link.PostId = registerPostRequest.Post.Id;
+                        Link link = new Link(postFull.LinkFulls[i]);
 
                         if (link.Id == -1 || link.Id == 0)
                         {
@@ -378,7 +303,7 @@ namespace HeroServer
                 scope.Complete();
             }
 
-            await UpdateImages(registerPostRequest.Post.Id, registerPostRequest.Images);
+            await UpdateImages(postFull.PostId, postFull.Images);
 
             return true;
         }
@@ -407,7 +332,6 @@ namespace HeroServer
                 await DeleteLinkByPostId(id);
                 await DeletePostReadByPostId(id);
                 await DeleteReactionByPostId(id);
-                await DeleteLikeByPostId(id);
 
                 long postTypeId = await new PostDB().GetPostTypeId(id);
 
@@ -476,11 +400,6 @@ namespace HeroServer
         public static async Task DeletePostReadByPostId(long postId)
         {
             await new PostReadDB().DeleteByPostId(postId);
-        }
-
-        public static async Task DeleteLikeByPostId(long postId)
-        {
-            await new LikeDB().DeleteByPostId(postId);
         }
 
         public static async Task<bool> DeleteReactionByPostId(long postId)

@@ -13,11 +13,11 @@ namespace HeroServer.Controllers
     {
         // GET services/news?id=1
         [HttpGet]
-        public async Task<ActionResult<NewsFull>> GetFullById([FromQuery] String id, [FromQuery] String likeAppUserId)
+        public async Task<ActionResult<NewsFull>> GetFullById([FromQuery] String id, [FromQuery] String reactionAppUserId)
         {
             try
             {
-                return Ok(await NewsFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(likeAppUserId)));
+                return Ok(await NewsFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(reactionAppUserId)));
             }
             catch (Exception ex)
             {
@@ -26,11 +26,11 @@ namespace HeroServer.Controllers
         }
 
         [HttpGet("FullByPostId")]
-        public async Task<ActionResult<NewsFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] String likeAppUserId)
+        public async Task<ActionResult<NewsFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] String reactionAppUserId)
         {
             try
             {
-                return Ok(await NewsFunctions.GetFullByPostId(Convert.ToInt64(postId), Convert.ToInt64(likeAppUserId)));
+                return Ok(await NewsFunctions.GetFullByPostId(Convert.ToInt64(postId), Convert.ToInt64(reactionAppUserId)));
             }
             catch (Exception ex)
             {
@@ -68,11 +68,11 @@ namespace HeroServer.Controllers
 
         // POST services/news/Register
         [HttpPost("Register")]
-        public async Task<ActionResult<long>> Register([FromBody] RegisterNewsRequest registerNewsRequest)
+        public async Task<ActionResult<long>> Register([FromBody] NewsFull newsFull)
         {
             try
             {
-                return Ok(await NewsFunctions.Register(registerNewsRequest));
+                return Ok(await NewsFunctions.Register(newsFull));
             }
             catch (Exception ex)
             {
@@ -82,11 +82,11 @@ namespace HeroServer.Controllers
 
         // PUT services/news
         [HttpPut]
-        public async Task<ActionResult<bool>> Update([FromBody] RegisterNewsRequest registerNewsRequest)
+        public async Task<ActionResult<bool>> Update([FromBody] NewsFull newsFull)
         {
             try
             {
-                return Ok(await NewsFunctions.Update(registerNewsRequest));
+                return Ok(await NewsFunctions.Update(newsFull));
             }
             catch (Exception ex)
             {

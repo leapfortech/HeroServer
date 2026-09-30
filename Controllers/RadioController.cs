@@ -14,11 +14,11 @@ namespace HeroServer.Controllers
     {
         // GET services/radio?id=1
         [HttpGet]
-        public async Task<ActionResult<RadioFull>> GetFullById([FromQuery] String id, [FromQuery] String likeAppUserId)
+        public async Task<ActionResult<RadioFull>> GetFullById([FromQuery] String id, [FromQuery] String reactionAppUserId)
         {
             try
             {
-                return Ok(await RadioFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(likeAppUserId)));
+                return Ok(await RadioFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(reactionAppUserId)));
             }
             catch (Exception ex)
             {
@@ -27,11 +27,11 @@ namespace HeroServer.Controllers
         }
 
         [HttpGet("FullByPostId")]
-        public async Task<ActionResult<RadioFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] String likeAppUserId)
+        public async Task<ActionResult<RadioFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] String reactionAppUserId)
         {
             try
             {
-                return Ok(await RadioFunctions.GetFullByPostId(Convert.ToInt64(postId), Convert.ToInt64(likeAppUserId)));
+                return Ok(await RadioFunctions.GetFullByPostId(Convert.ToInt64(postId), Convert.ToInt64(reactionAppUserId)));
             }
             catch (Exception ex)
             {
@@ -69,11 +69,11 @@ namespace HeroServer.Controllers
 
         // POST services/radio/Register
         [HttpPost("Register")]
-        public async Task<ActionResult<long>> Register([FromBody]RegisterRadioRequest registerRadioRequest)
+        public async Task<ActionResult<long>> Register([FromBody]RadioFull radioFull)
         {
             try
             {
-                return Ok(await RadioFunctions.Register(registerRadioRequest));
+                return Ok(await RadioFunctions.Register(radioFull));
             }
             catch (Exception ex)
             {
@@ -97,11 +97,11 @@ namespace HeroServer.Controllers
 
         // PUT services/radio
         [HttpPut]
-        public async Task<ActionResult<bool>> Update([FromBody] RegisterRadioRequest registerRadioRequest)
+        public async Task<ActionResult<bool>> Update([FromBody] RadioFull radioFull)
         {
             try
             {
-                return Ok(await RadioFunctions.Update(registerRadioRequest));
+                return Ok(await RadioFunctions.Update(radioFull));
             }
             catch (Exception ex)
             {

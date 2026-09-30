@@ -18,9 +18,9 @@ namespace HeroServer
             return await new MemoryDB().GetById(id);
         }
 
-        public static async Task<MemoryFull> GetFullById(long id, long likeAppUserId)
+        public static async Task<MemoryFull> GetFullById(long id, long reactionAppUserId)
         {
-            MemoryFull memoryFull = await new MemoryDB().GetFullById(id, likeAppUserId);
+            MemoryFull memoryFull = await new MemoryDB().GetFullById(id, reactionAppUserId);
 
             if (memoryFull == null)
                 return null;
@@ -30,9 +30,9 @@ namespace HeroServer
             return memoryFull;
         }
 
-        public static async Task<MemoryFull> GetFullByPostId(long postId, long likeAppUserId)
+        public static async Task<MemoryFull> GetFullByPostId(long postId, long reactionAppUserId)
         {
-            MemoryFull memoryFull = await new MemoryDB().GetFullByPostId(postId, likeAppUserId);
+            MemoryFull memoryFull = await new MemoryDB().GetFullByPostId(postId, reactionAppUserId);
 
             if (memoryFull == null)
                 return null;
@@ -131,16 +131,16 @@ namespace HeroServer
         }
 
         // REGISTER
-        public static async Task<long> Register(RegisterMemoryRequest registerMemoryRequest)
+        public static async Task<long> Register(MemoryFull memoryFull)
         {
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                registerMemoryRequest.Post.PostTypeId = PostType.Memory;
-                registerMemoryRequest.Memory.PostId = await PostFunctions.Register(registerMemoryRequest);
+                memoryFull.PostTypeId = PostType.Memory;
+                memoryFull.PostId = await PostFunctions.Register(memoryFull);
+                memoryFull.Status = 1;
 
-                registerMemoryRequest.Memory.Status = 1;
-                id = await Add(registerMemoryRequest.Memory);
+                id = await Add(new Memory(memoryFull));
 
                 scope.Complete();
             }
@@ -155,28 +155,29 @@ namespace HeroServer
         }
 
         // UPDATE
-        public static async Task<bool> Update(RegisterMemoryRequest registerMemoryRequest)
+        public static async Task<bool> Update(MemoryFull memoryFull)
         {
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 // Update Post
-                await PostFunctions.UpdatePost(registerMemoryRequest);
+                await PostFunctions.Update(memoryFull);
 
                 // Update Memory
                 // Soft Delete
-                await new MemoryDB().UpdateStatusByPostId(registerMemoryRequest.Post.Id, 1, 0);
+                await new MemoryDB().UpdateStatusByPostId(memoryFull.PostId, 1, 0);
 
-                registerMemoryRequest.Memory.PostId = registerMemoryRequest.Post.Id;
-                registerMemoryRequest.Memory.Status = 1;
+                memoryFull.PostId = memoryFull.PostId;
+                memoryFull.Status = 1;
 
-                if (registerMemoryRequest.Memory.Id == -1 || registerMemoryRequest.Memory.Id == 0)
+                Memory memory = new Memory(memoryFull);
+                if (memory.Id == -1 || memory.Id == 0)
                 {
-                    await Add(registerMemoryRequest.Memory);
+                    await Add(memory);
                 }
                 else
                 {
-                    await Update(registerMemoryRequest.Memory);
-                    await UpdateStatus(registerMemoryRequest.Memory.Id, 1);
+                    await Update(memory);
+                    await UpdateStatus(memory.Id, 1);
                 }
 
                 scope.Complete();

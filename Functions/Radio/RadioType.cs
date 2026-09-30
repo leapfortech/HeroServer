@@ -24,5 +24,15 @@ namespace HeroServer
             UpdateDateTime = updateDateTime;
             Status = status;
         }
+
+        public RadioType(RadioTypeFull radioTypeFull)
+        {
+            Id = -1;
+            RadioId = radioTypeFull.Id;
+            RadioTypeId = radioTypeFull.RadioTypeId;
+            CreateDateTime = DateTime.Now;
+            UpdateDateTime = DateTime.Now;
+            Status = radioTypeFull.Status;
+        }
     }
 }

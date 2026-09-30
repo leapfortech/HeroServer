@@ -13,11 +13,11 @@ namespace HeroServer.Controllers
     {
         // GET services/happening?id=1
         [HttpGet]
-        public async Task<ActionResult<HappeningFull>> GetFullById([FromQuery] String id, [FromQuery] String likeAppUserId)
+        public async Task<ActionResult<HappeningFull>> GetFullById([FromQuery] String id, [FromQuery] String reactionAppUserId)
         {
             try
             {
-                return Ok(await HappeningFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(likeAppUserId)));
+                return Ok(await HappeningFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(reactionAppUserId)));
             }
             catch (Exception ex)
             {
@@ -26,11 +26,11 @@ namespace HeroServer.Controllers
         }
 
         [HttpGet("FullByPostId")]
-        public async Task<ActionResult<HappeningFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] String likeAppUserId)
+        public async Task<ActionResult<HappeningFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] String reactionAppUserId)
         {
             try
             {
-                return Ok(await HappeningFunctions.GetFullByPostId(Convert.ToInt64(postId), Convert.ToInt64(likeAppUserId)));
+                return Ok(await HappeningFunctions.GetFullByPostId(Convert.ToInt64(postId), Convert.ToInt64(reactionAppUserId)));
             }
             catch (Exception ex)
             {
@@ -68,11 +68,11 @@ namespace HeroServer.Controllers
 
         // POST services/happening/Register
         [HttpPost("Register")]
-        public async Task<ActionResult<long>> Register([FromBody] RegisterHappeningRequest registerHappeningRequest)
+        public async Task<ActionResult<long>> Register([FromBody] HappeningFull happeningFull)
         {
             try
             {
-                return Ok(await HappeningFunctions.Register(registerHappeningRequest));
+                return Ok(await HappeningFunctions.Register(happeningFull));
             }
             catch (Exception ex)
             {
@@ -82,11 +82,11 @@ namespace HeroServer.Controllers
 
         // PUT services/happening
         [HttpPut]
-        public async Task<ActionResult<bool>> Update([FromBody] RegisterHappeningRequest registerHappeningRequest)
+        public async Task<ActionResult<bool>> Update([FromBody] HappeningFull happeningFull)
         {
             try
             {
-                return Ok(await HappeningFunctions.Update(registerHappeningRequest));
+                return Ok(await HappeningFunctions.Update(happeningFull));
             }
             catch (Exception ex)
             {

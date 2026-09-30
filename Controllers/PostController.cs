@@ -151,48 +151,6 @@ namespace HeroServer.Controllers
             }
         }
 
-        // POST services/post/RegisterLike
-        [HttpPost("RegisterLike")]
-        public async Task<ActionResult<long>> RegisterLike([FromBody] Like like)
-        {
-            try
-            {
-                return Ok(await PostFunctions.RegisterLike(like));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        // POST services/post/UpdateLike
-        [HttpPost("UpdateLike")]
-        public async Task<ActionResult<long>> UpdateLike([FromBody] Like like)
-        {
-            try
-            {
-                return Ok(await PostFunctions.UpdateLike(like));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        // DELETE services/post/DeleteLike
-        [HttpDelete("DeleteLike")]
-        public async Task<ActionResult<long>> DeleteLike([FromBody] Like like)
-        {
-            try
-            {
-                return Ok(await PostFunctions.DeleteLike(like));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         // POST services/post/RegisterReaction
         [HttpPost("RegisterReaction")]
         public async Task<ActionResult<long>> RegisterReaction([FromBody] Reaction reaction)

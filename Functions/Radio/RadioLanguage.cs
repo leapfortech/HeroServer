@@ -24,5 +24,15 @@ namespace HeroServer
             UpdateDateTime = updateDateTime;
             Status = status;
         }
+
+        public RadioLanguage(RadioLanguageFull radioLanguageFull)
+        {
+            Id = -1;
+            RadioId = radioLanguageFull.Id;
+            LanguageId = radioLanguageFull.LanguageId;
+            CreateDateTime = DateTime.Now;
+            UpdateDateTime = DateTime.Now;
+            Status = radioLanguageFull.Status;
+        }
     }
 }

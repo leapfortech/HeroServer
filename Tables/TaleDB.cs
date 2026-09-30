@@ -209,7 +209,7 @@ namespace HeroServer
         }
 
         // GET FULL
-        public async Task<TaleFull> GetFullById(long id, long likeAppUserId)
+        public async Task<TaleFull> GetFullById(long id, long reactionAppUserId)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                              " Post.AppUserId, AppUser.Alias AS AppUserAlias," +
@@ -246,7 +246,6 @@ namespace HeroServer
                              "        AND Comment.Status = 1), 0) AS CommentCount," +
 
                              " CASE WHEN Fav.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
-                             " ISNULL(DLike.[Rank], -1) AS [Like]," +
                              " ISNULL(DReaction.[ReactionPhraseId], -1) AS [ReactionPhraseId]," +
                              " Post.FavoriteCount, Post.PublicationDateTime, Post.Status AS PostStatus," +
 
@@ -266,9 +265,8 @@ namespace HeroServer
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
                              " INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
-                             " LEFT JOIN [J-Favorite] AS Fav ON Fav.PostId = Post.Id AND Fav.AppUserId = @LikeAppUserId" +
-                             " LEFT JOIN [D-Like] AS DLike ON DLike.PostId = Post.Id AND DLike.AppUserId = @LikeAppUserId" +
-                             " LEFT JOIN [D-Reaction] AS DReaction ON DReaction.PostId = Post.Id AND DReaction.AppUserId = @LikeAppUserId" +
+                             " LEFT JOIN [J-Favorite] AS Fav ON Fav.PostId = Post.Id AND Fav.AppUserId = @ReactionAppUserId" +
+                             " LEFT JOIN [D-Reaction] AS DReaction ON DReaction.PostId = Post.Id AND DReaction.AppUserId = @ReactionAppUserId" +
 
                              // Interest locality
                              " OUTER APPLY (" +
@@ -307,7 +305,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
             command.AddParam("@Id", SqlDbType.BigInt, id);
-            command.AddParam("@LikeAppUserId", SqlDbType.BigInt, likeAppUserId);
+            command.AddParam("@ReactionAppUserId", SqlDbType.BigInt, reactionAppUserId);
 
             TaleFull taleFull = null;
             using (conn)
@@ -342,7 +340,7 @@ namespace HeroServer
             return taleFull;
         }
 
-        public async Task<TaleFull> GetFullByPostId(long postId, long likeAppUserId)
+        public async Task<TaleFull> GetFullByPostId(long postId, long reactionAppUserId)
         {
             String strCmd = $"SELECT {table}.Id, {table}.PostId," +
                             " Post.AppUserId, AppUser.Alias AS AppUserAlias," +
@@ -378,7 +376,6 @@ namespace HeroServer
                              "        AND Comment.Status = 1), 0) AS CommentCount," +
 
                             " CASE WHEN Fav.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
-                            " ISNULL(DLike.[Rank], -1) AS [Like]," +
                             " ISNULL(DReaction.[ReactionPhraseId], -1) AS [ReactionPhraseId]," +
                             " Post.FavoriteCount, Post.PublicationDateTime, Post.Status AS PostStatus," +
 
@@ -398,9 +395,8 @@ namespace HeroServer
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
                              " INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
-                             " LEFT JOIN [J-Favorite] AS Fav ON Fav.PostId = Post.Id AND Fav.AppUserId = @LikeAppUserId" +
-                             " LEFT JOIN [D-Like] AS DLike ON DLike.PostId = Post.Id AND DLike.AppUserId = @LikeAppUserId" +
-                             " LEFT JOIN [D-Reaction] AS DReaction ON DReaction.PostId = Post.Id AND DReaction.AppUserId = @LikeAppUserId" +
+                             " LEFT JOIN [J-Favorite] AS Fav ON Fav.PostId = Post.Id AND Fav.AppUserId = @ReactionAppUserId" +
+                             " LEFT JOIN [D-Reaction] AS DReaction ON DReaction.PostId = Post.Id AND DReaction.AppUserId = @ReactionAppUserId" +
 
                              // Interest locality
                              " OUTER APPLY (" +
@@ -439,7 +435,7 @@ namespace HeroServer
 
             SqlCommand command = new SqlCommand(strCmd, conn);
             command.AddParam("@PostId", SqlDbType.BigInt, postId);
-            command.AddParam("@LikeAppUserId", SqlDbType.BigInt, likeAppUserId);
+            command.AddParam("@ReactionAppUserId", SqlDbType.BigInt, reactionAppUserId);
 
             TaleFull taleFull = null;
             using (conn)
@@ -508,7 +504,7 @@ namespace HeroServer
                              "        WHERE Comment.PostId = Post.Id" +
                              "        AND Comment.Status = 1), 0) AS CommentCount," +
 
-                             " 0 AS Favorite, -1 AS [Like], Post.FavoriteCount, Post.PublicationDateTime, Post.Status AS PostStatus," +
+                             " 0 AS Favorite, Post.FavoriteCount, Post.PublicationDateTime, Post.Status AS PostStatus," +
 
                              // Interest Locality
                              " ISNULL(InterestLocality.LocalityType, -1) AS InterestLocalityTypeId," +

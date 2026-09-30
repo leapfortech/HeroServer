@@ -23,9 +23,9 @@ namespace HeroServer
             return await new PuzzleDB().GetById(id);
         }
 
-        public static async Task<PuzzleFull> GetFullById(long id, long likeAppUserId, int includeImages, int includeCorrect)
+        public static async Task<PuzzleFull> GetFullById(long id, long reactionAppUserId, int includeImages, int includeCorrect)
         {
-            PuzzleFull puzzleFull = await new PuzzleDB().GetFullById(id, likeAppUserId, includeCorrect);
+            PuzzleFull puzzleFull = await new PuzzleDB().GetFullById(id, reactionAppUserId, includeCorrect);
 
             if (puzzleFull == null)
                 return null;
@@ -36,9 +36,9 @@ namespace HeroServer
             return puzzleFull;
         }
 
-        public static async Task<PuzzleFull> GetFullByPostId(long postId, long likeAppUserId)
+        public static async Task<PuzzleFull> GetFullByPostId(long postId, long reactionAppUserId)
         {
-            PuzzleFull puzzleFull = await new PuzzleDB().GetFullByPostId(postId, likeAppUserId);
+            PuzzleFull puzzleFull = await new PuzzleDB().GetFullByPostId(postId, reactionAppUserId);
 
             if (puzzleFull == null)
                 return null;
@@ -131,26 +131,26 @@ namespace HeroServer
         }
 
         // REGISTER
-        public static async Task<long> Register(RegisterPuzzleRequest registerPuzzleRequest)
+        public static async Task<long> Register(PuzzleFull puzzleFull)
         {
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                registerPuzzleRequest.Post.PostTypeId = PostType.Puzzle;
-                registerPuzzleRequest.Post.PublicationDateTime = DateTime.Now;
+                puzzleFull.PostTypeId = PostType.Puzzle;
+                puzzleFull.PublicationDateTime = DateTime.Now;
 
-                registerPuzzleRequest.Puzzle.PostId = await PostFunctions.Register(registerPuzzleRequest);
+                puzzleFull.PostId = await PostFunctions.Register(puzzleFull);
 
-                registerPuzzleRequest.Puzzle.PlayCount = 0;
-                registerPuzzleRequest.Puzzle.Status = 1;
+                puzzleFull.PlayCount = 0;
+                puzzleFull.Status = 1;
                 
-                id = await Add(registerPuzzleRequest.Puzzle);
+                id = await Add(new Puzzle(puzzleFull));
 
-                for (int i = 0; i < registerPuzzleRequest.PuzzleAnswers.Count; i++)
+                for (int i = 0; i < puzzleFull.PuzzleAnswerFulls.Count; i++)
                 {
-                    registerPuzzleRequest.PuzzleAnswers[i].PuzzleId = id;
-                    registerPuzzleRequest.PuzzleAnswers[i].Status = 1;
-                    await new PuzzleAnswerDB().Add(registerPuzzleRequest.PuzzleAnswers[i]);
+                    puzzleFull.PuzzleAnswerFulls[i].PuzzleId = id;
+                    puzzleFull.PuzzleAnswerFulls[i].Status = 1;
+                    await new PuzzleAnswerDB().Add(new PuzzleAnswer(puzzleFull.PuzzleAnswerFulls[i]));
                     await Task.Delay(2);
                 }
 
@@ -172,40 +172,39 @@ namespace HeroServer
         }
 
         // UPDATE
-        public static async Task<bool> Update(RegisterPuzzleRequest registerPuzzleRequest)
+        public static async Task<bool> Update(PuzzleFull puzzleFull)
         {
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 // Update Post
-                await PostFunctions.UpdatePost(registerPuzzleRequest);
+                await PostFunctions.Update(puzzleFull);
 
                 // Update Puzzle
-                await new PuzzleDB().UpdateStatusByPostId(registerPuzzleRequest.Post.Id, 1, 0);
+                await new PuzzleDB().UpdateStatusByPostId(puzzleFull.PostId, 1, 0);
 
-                registerPuzzleRequest.Puzzle.PostId = registerPuzzleRequest.Post.Id;
-                registerPuzzleRequest.Puzzle.Status = 1;
+                puzzleFull.Status = 1;
 
                 long puzzleId = -1;
 
-                if (registerPuzzleRequest.Puzzle.Id == -1 || registerPuzzleRequest.Puzzle.Id == 0)
+                Puzzle puzzle = new Puzzle(puzzleFull);
+                if (puzzle.Id == -1 || puzzle.Id == 0)
                 {
-                    puzzleId = await Add(registerPuzzleRequest.Puzzle);
+                    puzzleId = await Add(puzzle);
                 }
                 else
                 {
-                    await Update(registerPuzzleRequest.Puzzle);
-                    await UpdateStatus(registerPuzzleRequest.Puzzle.Id, 1);
+                    await Update(puzzle);
+                    await UpdateStatus(puzzle.Id, 1);
 
-                    puzzleId = registerPuzzleRequest.Puzzle.Id;
+                    puzzleId = puzzle.Id;
                 }
 
                 // Update PuzzleAnswers
-                if (registerPuzzleRequest.PuzzleAnswers != null &&
-                    registerPuzzleRequest.PuzzleAnswers.Count > 0)
+                if (puzzleFull.PuzzleAnswerFulls != null && puzzleFull.PuzzleAnswerFulls.Count > 0)
                 {
-                    for (int i = 0; i < registerPuzzleRequest.PuzzleAnswers.Count; i++)
+                    for (int i = 0; i < puzzleFull.PuzzleAnswerFulls.Count; i++)
                     {
-                        PuzzleAnswer puzzleAnswer = registerPuzzleRequest.PuzzleAnswers[i];
+                        PuzzleAnswer puzzleAnswer = new PuzzleAnswer(puzzleFull.PuzzleAnswerFulls[i]);
 
                         puzzleAnswer.PuzzleId = puzzleId;
                         puzzleAnswer.Status = 1;

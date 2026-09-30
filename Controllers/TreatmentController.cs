@@ -13,11 +13,11 @@ namespace HeroServer.Controllers
     {
         // GET services/treatment?id=1
         [HttpGet]
-        public async Task<ActionResult<TreatmentFull>> GetFullById([FromQuery] String id, [FromQuery] String likeAppUserId)
+        public async Task<ActionResult<TreatmentFull>> GetFullById([FromQuery] String id, [FromQuery] String reactionAppUserId)
         {
             try
             {
-                return Ok(await TreatmentFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(likeAppUserId)));
+                return Ok(await TreatmentFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(reactionAppUserId)));
             }
             catch (Exception ex)
             {
@@ -26,11 +26,11 @@ namespace HeroServer.Controllers
         }
 
         [HttpGet("FullByPostId")]
-        public async Task<ActionResult<TreatmentFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] String likeAppUserId)
+        public async Task<ActionResult<TreatmentFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] String reactionAppUserId)
         {
             try
             {
-                return Ok(await TreatmentFunctions.GetFullByPostId(Convert.ToInt64(postId), Convert.ToInt64(likeAppUserId)));
+                return Ok(await TreatmentFunctions.GetFullByPostId(Convert.ToInt64(postId), Convert.ToInt64(reactionAppUserId)));
             }
             catch (Exception ex)
             {
@@ -54,11 +54,11 @@ namespace HeroServer.Controllers
 
         // POST services/treatment/Register
         [HttpPost("Register")]
-        public async Task<ActionResult<long>> Register([FromBody] RegisterTreatmentRequest registerTreatmentRequest)
+        public async Task<ActionResult<long>> Register([FromBody] TreatmentFull treatmentFull)
         {
             try
             {
-                return Ok(await TreatmentFunctions.Register(registerTreatmentRequest));
+                return Ok(await TreatmentFunctions.Register(treatmentFull));
             }
             catch (Exception ex)
             {
@@ -68,11 +68,11 @@ namespace HeroServer.Controllers
 
         // PUT services/treatment
         [HttpPut]
-        public async Task<ActionResult<bool>> Update([FromBody] RegisterTreatmentRequest registerTreatmentRequest)
+        public async Task<ActionResult<bool>> Update([FromBody] TreatmentFull treatmentFull)
         {
             try
             {
-                return Ok(await TreatmentFunctions.Update(registerTreatmentRequest));
+                return Ok(await TreatmentFunctions.Update(treatmentFull));
             }
             catch (Exception ex)
             {

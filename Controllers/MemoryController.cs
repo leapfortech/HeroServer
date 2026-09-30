@@ -13,11 +13,11 @@ namespace HeroServer.Controllers
     {
         // GET services/memory?id=1
         [HttpGet]
-        public async Task<ActionResult<MemoryFull>> GetFullById([FromQuery] String id, [FromQuery] String likeAppUserId)
+        public async Task<ActionResult<MemoryFull>> GetFullById([FromQuery] String id, [FromQuery] String reactionAppUserId)
         {
             try
             {
-                return Ok(await MemoryFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(likeAppUserId)));
+                return Ok(await MemoryFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(reactionAppUserId)));
             }
             catch (Exception ex)
             {
@@ -26,11 +26,11 @@ namespace HeroServer.Controllers
         }
 
         [HttpGet("FullByPostId")]
-        public async Task<ActionResult<MemoryFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] String likeAppUserId)
+        public async Task<ActionResult<MemoryFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] String reactionAppUserId)
         {
             try
             {
-                return Ok(await MemoryFunctions.GetFullByPostId(Convert.ToInt64(postId), Convert.ToInt64(likeAppUserId)));
+                return Ok(await MemoryFunctions.GetFullByPostId(Convert.ToInt64(postId), Convert.ToInt64(reactionAppUserId)));
             }
             catch (Exception ex)
             {
@@ -68,11 +68,11 @@ namespace HeroServer.Controllers
 
         // POST services/memory/Register
         [HttpPost("Register")]
-        public async Task<ActionResult<long>> Register([FromBody] RegisterMemoryRequest registerMemoryRequest)
+        public async Task<ActionResult<long>> Register([FromBody] MemoryFull memoryFull)
         {
             try
             {
-                return Ok(await MemoryFunctions.Register(registerMemoryRequest));
+                return Ok(await MemoryFunctions.Register(memoryFull));
             }
             catch (Exception ex)
             {
@@ -82,11 +82,11 @@ namespace HeroServer.Controllers
 
         // PUT services/memory
         [HttpPut]
-        public async Task<ActionResult<bool>> Update([FromBody] RegisterMemoryRequest registerMemoryRequest)
+        public async Task<ActionResult<bool>> Update([FromBody] MemoryFull memoryFull)
         {
             try
             {
-                return Ok(await MemoryFunctions.Update(registerMemoryRequest));
+                return Ok(await MemoryFunctions.Update(memoryFull));
             }
             catch (Exception ex)
             {

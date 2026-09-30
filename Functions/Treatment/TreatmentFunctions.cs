@@ -18,9 +18,9 @@ namespace HeroServer
             return await new TreatmentDB().GetById(id);
         }
 
-        public static async Task<TreatmentFull> GetFullById(long id, long likeAppUserId)
+        public static async Task<TreatmentFull> GetFullById(long id, long reactionAppUserId)
         {
-            TreatmentFull treatmentFull = await new TreatmentDB().GetFullById(id, likeAppUserId);
+            TreatmentFull treatmentFull = await new TreatmentDB().GetFullById(id, reactionAppUserId);
 
             if (treatmentFull == null)
                 return null;
@@ -30,9 +30,9 @@ namespace HeroServer
             return treatmentFull;
         }
 
-        public static async Task<TreatmentFull> GetFullByPostId(long postId, long likeAppUserId)
+        public static async Task<TreatmentFull> GetFullByPostId(long postId, long reactionAppUserId)
         {
-            TreatmentFull treatmentFull = await new TreatmentDB().GetFullByPostId(postId, likeAppUserId);
+            TreatmentFull treatmentFull = await new TreatmentDB().GetFullByPostId(postId, reactionAppUserId);
 
             if (treatmentFull == null)
                 return null;
@@ -113,23 +113,23 @@ namespace HeroServer
         }
 
         // REGISTER
-        public static async Task<long> Register(RegisterTreatmentRequest registerTreatmentRequest)
+        public static async Task<long> Register(TreatmentFull treatmentFull)
         {
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                registerTreatmentRequest.Post.PostTypeId = PostType.Treatment;
-                registerTreatmentRequest.Treatment.PostId = await PostFunctions.Register(registerTreatmentRequest);
+                treatmentFull.PostTypeId = PostType.Treatment;
+                treatmentFull.PostId = await PostFunctions.Register(treatmentFull);
+                treatmentFull.Status = 1;
 
-                registerTreatmentRequest.Treatment.Status = 1;
-                id = await Add(registerTreatmentRequest.Treatment);
+                id = await Add(new Treatment(treatmentFull));
 
-                for (int i = 0; i < registerTreatmentRequest.Diseases.Count; i++)
+                for (int i = 0; i < treatmentFull.DiseaseFulls.Count; i++)
                 {
-                    registerTreatmentRequest.Diseases[i].TreatmentId = id;
-                    registerTreatmentRequest.Diseases[i].Status = 1;
+                    treatmentFull.DiseaseFulls[i].TreatmentId = id;
+                    treatmentFull.DiseaseFulls[i].Status = 1;
 
-                    await new DiseaseDB().Add(registerTreatmentRequest.Diseases[i]);
+                    await new DiseaseDB().Add(new Disease(treatmentFull.DiseaseFulls[i]));
                 }
 
                 scope.Complete();
@@ -145,42 +145,42 @@ namespace HeroServer
         }
 
         // UPDATE
-        public static async Task<bool> Update(RegisterTreatmentRequest registerTreatmentRequest)
+        public static async Task<bool> Update(TreatmentFull treatmentFull)
         {
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 // Update Post
-                await PostFunctions.UpdatePost(registerTreatmentRequest);
+                await PostFunctions.Update(treatmentFull);
 
                 // Update Treatment
                 // Soft Delete
-                await new TreatmentDB().UpdateStatusByPostId(registerTreatmentRequest.Post.Id, 1, 0);
+                await new TreatmentDB().UpdateStatusByPostId(treatmentFull.PostId, 1, 0);
 
-                registerTreatmentRequest.Treatment.PostId = registerTreatmentRequest.Post.Id;
-                registerTreatmentRequest.Treatment.Status = 1;
+                treatmentFull.Status = 1;
 
                 long treatmentId = -1;
 
-                if (registerTreatmentRequest.Treatment.Id == -1 || registerTreatmentRequest.Treatment.Id == 0)
+                Treatment treatment = new Treatment(treatmentFull);
+                if (treatment.Id == -1 || treatment.Id == 0)
                 {
-                    treatmentId = await Add(registerTreatmentRequest.Treatment);
+                    treatmentId = await Add(treatment);
                 }
                 else
                 {
-                    await Update(registerTreatmentRequest.Treatment);
-                    await UpdateStatus(registerTreatmentRequest.Treatment.Id, 1);
-                    treatmentId = registerTreatmentRequest.Treatment.Id;
+                    await Update(treatment);
+                    await UpdateStatus(treatment.Id, 1);
+                    treatmentId = treatment.Id;
                 }
 
                 // Diseases
                 // Soft Delete
                 await new DiseaseDB().UpdateStatusByTreatmentId(treatmentId, 1, 0);
 
-                if (registerTreatmentRequest.Diseases != null && registerTreatmentRequest.Diseases.Count > 0)
+                if (treatmentFull.DiseaseFulls != null && treatmentFull.DiseaseFulls.Count > 0)
                 {
-                    for (int i = 0; i < registerTreatmentRequest.Diseases.Count; i++)
+                    for (int i = 0; i < treatmentFull.DiseaseFulls.Count; i++)
                     {
-                        Disease disease = registerTreatmentRequest.Diseases[i];
+                        Disease disease = new Disease(treatmentFull.DiseaseFulls[i]);
                         disease.TreatmentId = treatmentId;
 
                         if (disease.Id == -1 || disease.Id == 0)

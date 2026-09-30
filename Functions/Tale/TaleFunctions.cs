@@ -18,9 +18,9 @@ namespace HeroServer
             return await new TaleDB().GetById(id);
         }
 
-        public static async Task<TaleFull> GetFullById(long id, long likeAppUserId)
+        public static async Task<TaleFull> GetFullById(long id, long reactionAppUserId)
         {
-            TaleFull taleFull = await new TaleDB().GetFullById(id, likeAppUserId);
+            TaleFull taleFull = await new TaleDB().GetFullById(id, reactionAppUserId);
 
             if (taleFull == null)
                 return null;
@@ -30,9 +30,9 @@ namespace HeroServer
             return taleFull;
         }
 
-        public static async Task<TaleFull> GetFullByPostId(long postId, long likeAppUserId)
+        public static async Task<TaleFull> GetFullByPostId(long postId, long reactionAppUserId)
         {
-            TaleFull taleFull = await new TaleDB().GetFullByPostId(postId, likeAppUserId);
+            TaleFull taleFull = await new TaleDB().GetFullByPostId(postId, reactionAppUserId);
 
             if (taleFull == null)
                 return null;
@@ -131,25 +131,26 @@ namespace HeroServer
         }
 
         // REGISTER
-        public static async Task<long> Register(RegisterTaleRequest registerTaleRequest)
+        public static async Task<long> Register(TaleFull taleFull)
         {
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                registerTaleRequest.Post.PostTypeId = PostType.Tale;
-                registerTaleRequest.Post.Id = await PostFunctions.Register(registerTaleRequest);
+                taleFull.PostTypeId = PostType.Tale;
+                taleFull.PostId = await PostFunctions.Register(taleFull);
+                taleFull.Status = 1;
 
-                if (registerTaleRequest.Tale == null)
-                {
-                    registerTaleRequest.Tale = new Tale(-1, registerTaleRequest.Post.Id, DateTime.Now, DateTime.Now, 1);
-                }
-                else
-                {
-                    registerTaleRequest.Tale.PostId = registerTaleRequest.Post.Id;
-                    registerTaleRequest.Tale.Status = 1;
-                }
+                //if (taleFull.Tale == null)
+                //{
+                //    taleFull.Tale = new Tale(-1, taleFull.Post.Id, DateTime.Now, DateTime.Now, 1);
+                //}
+                //else
+                //{
+                //    taleFull.Tale.PostId = taleFull.Post.Id;
+                //    taleFull.Tale.Status = 1;
+                //}
 
-                id = await Add(registerTaleRequest.Tale);
+                id = await Add(new Tale(taleFull));
 
                 scope.Complete();
             }
@@ -164,36 +165,34 @@ namespace HeroServer
         }
 
         // UPDATE
-        public static async Task<bool> Update(RegisterTaleRequest registerTaleRequest)
+        public static async Task<bool> Update(TaleFull taleFull)
         {
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 // Update Post
-                await PostFunctions.UpdatePost(registerTaleRequest);
+                await PostFunctions.Update(taleFull);
 
                 // Update Tale
                 // Soft Delete
-                await new TaleDB().UpdateStatusByPostId(registerTaleRequest.Post.Id, 1, 0);
+                await new TaleDB().UpdateStatusByPostId(taleFull.PostId, 1, 0);
 
-                if (registerTaleRequest.Tale == null)
+                taleFull.Status = 1;
+
+                Tale tale = new Tale(taleFull);
+                if (taleFull.Id == -1 || taleFull.Id == 0)
                 {
-                    registerTaleRequest.Tale = new Tale(-1, registerTaleRequest.Post.Id, DateTime.Now, DateTime.Now, 1);
-
-                    await Add(registerTaleRequest.Tale);
+                    await Add(tale);
                 }
                 else
                 {
-                    registerTaleRequest.Tale.PostId = registerTaleRequest.Post.Id;
-                    registerTaleRequest.Tale.Status = 1;
-
-                    if (registerTaleRequest.Tale.Id == -1 || registerTaleRequest.Tale.Id == 0)
+                    if (tale.Id == -1 || tale.Id == 0)
                     {
-                        await Add(registerTaleRequest.Tale);
+                        await Add(tale);
                     }
                     else
                     {
-                        await Update(registerTaleRequest.Tale);
-                        await UpdateStatus(registerTaleRequest.Tale.Id, 1);
+                        await Update(tale);
+                        await UpdateStatus(tale.Id, 1);
                     }
                 }
 

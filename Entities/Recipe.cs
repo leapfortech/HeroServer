@@ -31,5 +31,19 @@ namespace HeroServer
             UpdateDateTime = updateDateTime;
             Status = status;
         }
+
+        public Recipe(RecipeFull recipeFull)
+        {
+            Id = recipeFull.Id;
+            PostId = recipeFull.PostId;
+            RecipeTypeId = recipeFull.RecipeTypeId;
+            Ingredients = recipeFull.Ingredients;
+            Preparation = recipeFull.Preparation;
+            Portions = recipeFull.Portions;
+            CookingTime = recipeFull.CookingTime;
+            CreateDateTime = DateTime.Now;
+            UpdateDateTime = DateTime.Now;
+            Status = recipeFull.Status;
+        }
     }
 }

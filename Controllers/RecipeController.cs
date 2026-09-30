@@ -13,11 +13,11 @@ namespace HeroServer.Controllers
     {
         // GET services/recipe?id=1
         [HttpGet]
-        public async Task<ActionResult<RecipeFull>> GetFullById([FromQuery] String id, [FromQuery] long likeAppUserId)
+        public async Task<ActionResult<RecipeFull>> GetFullById([FromQuery] String id, [FromQuery] long reactionAppUserId)
         {
             try
             {
-                return Ok(await RecipeFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(likeAppUserId)));
+                return Ok(await RecipeFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(reactionAppUserId)));
             }
             catch (Exception ex)
             {
@@ -26,11 +26,11 @@ namespace HeroServer.Controllers
         }
 
         [HttpGet("FullByPostId")]
-        public async Task<ActionResult<RecipeFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] long likeAppUserId)
+        public async Task<ActionResult<RecipeFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] long reactionAppUserId)
         {
             try
             {
-                return Ok(await RecipeFunctions.GetFullByPostId(Convert.ToInt64(postId), Convert.ToInt64(likeAppUserId)));
+                return Ok(await RecipeFunctions.GetFullByPostId(Convert.ToInt64(postId), Convert.ToInt64(reactionAppUserId)));
             }
             catch (Exception ex)
             {
@@ -54,11 +54,11 @@ namespace HeroServer.Controllers
 
         // POST services/recipe/Register
         [HttpPost("Register")]
-        public async Task<ActionResult<long>> Register([FromBody] RegisterRecipeRequest registerRecipeRequest)
+        public async Task<ActionResult<long>> Register([FromBody] RecipeFull recipeFull)
         {
             try
             {
-                return Ok(await RecipeFunctions.Register(registerRecipeRequest));
+                return Ok(await RecipeFunctions.Register(recipeFull));
             }
             catch (Exception ex)
             {
@@ -68,11 +68,11 @@ namespace HeroServer.Controllers
 
         // PUT services/recipe
         [HttpPut]
-        public async Task<ActionResult<bool>> Update([FromBody] RegisterRecipeRequest registerRecipeRequest)
+        public async Task<ActionResult<bool>> Update([FromBody] RecipeFull recipeFull)
         {
             try
             {
-                return Ok(await RecipeFunctions.Update(registerRecipeRequest));
+                return Ok(await RecipeFunctions.Update(recipeFull));
             }
             catch (Exception ex)
             {

@@ -47,5 +47,26 @@ namespace HeroServer
             UpdateDateTime = updateDateTime;
             Status = status;
         }
+
+        public Happening(HappeningFull happeningFull)
+        {
+            Id = happeningFull.Id;
+            PostId = happeningFull.PostId;
+            HappeningTypeId = happeningFull.HappeningTypeId;
+            CountryId = happeningFull.CountryId;
+            StateId = happeningFull.StateId;
+            IsPublic = happeningFull.IsPublic;
+            HasSignup = happeningFull.HasSignup;
+            HasPayment = happeningFull.HasPayment;
+            PaymentDetails = happeningFull.PaymentDetails;
+            StartDateTime = happeningFull.StartDateTime;
+            EndDateTime = happeningFull.EndDateTime;
+            Location = happeningFull.Location;
+            Latitude = happeningFull.Latitude;
+            Longitude = happeningFull.Longitude;
+            CreateDateTime = DateTime.Now;
+            UpdateDateTime = DateTime.Now;
+            Status = happeningFull.Status;
+        }
     }
 }

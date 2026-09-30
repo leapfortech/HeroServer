@@ -18,9 +18,9 @@ namespace HeroServer
             return await new RecipeDB().GetById(id);
         }
 
-        public static async Task<RecipeFull> GetFullById(long id, long likeAppUserId)
+        public static async Task<RecipeFull> GetFullById(long id, long reactionAppUserId)
         {
-            RecipeFull recipeFull = await new RecipeDB().GetFullById(id, likeAppUserId);
+            RecipeFull recipeFull = await new RecipeDB().GetFullById(id, reactionAppUserId);
 
             if (recipeFull == null)
                 return null;
@@ -30,9 +30,9 @@ namespace HeroServer
             return recipeFull;
         }
 
-        public static async Task<RecipeFull> GetFullByPostId(long postId, long likeAppUserId)
+        public static async Task<RecipeFull> GetFullByPostId(long postId, long reactionAppUserId)
         {
-            RecipeFull recipeFull = await new RecipeDB().GetFullByPostId(postId, likeAppUserId);
+            RecipeFull recipeFull = await new RecipeDB().GetFullByPostId(postId, reactionAppUserId);
 
             if (recipeFull == null)
                 return null;
@@ -113,16 +113,16 @@ namespace HeroServer
         }
 
         // REGISTER
-        public static async Task<long> Register(RegisterRecipeRequest registerRecipeRequest)
+        public static async Task<long> Register(RecipeFull recipeFull)
         {
             long id = -1;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                registerRecipeRequest.Post.PostTypeId = PostType.Recipe;
-                registerRecipeRequest.Recipe.PostId = await PostFunctions.Register(registerRecipeRequest);
+                recipeFull.PostTypeId = PostType.Recipe;
+                recipeFull.PostId = await PostFunctions.Register(recipeFull);
 
-                registerRecipeRequest.Recipe.Status = 1;
-                id = await Add(registerRecipeRequest.Recipe);
+                recipeFull.Status = 1;
+                id = await Add(new Recipe(recipeFull));
 
                 scope.Complete();
             }
@@ -137,28 +137,28 @@ namespace HeroServer
         }
 
         // UPDATE
-        public static async Task<bool> Update(RegisterRecipeRequest registerRecipeRequest)
+        public static async Task<bool> Update(RecipeFull recipeFull)
         {
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 // Update Post
-                await PostFunctions.UpdatePost(registerRecipeRequest);
+                await PostFunctions.Update(recipeFull);
 
                 // Update Recipe
                 // Soft Delete
-                await new RecipeDB().UpdateStatusByPostId(registerRecipeRequest.Post.Id, 1, 0);
+                await new RecipeDB().UpdateStatusByPostId(recipeFull.PostId, 1, 0);
 
-                registerRecipeRequest.Recipe.PostId = registerRecipeRequest.Post.Id;
-                registerRecipeRequest.Recipe.Status = 1;
+                recipeFull.Status = 1;
 
-                if (registerRecipeRequest.Recipe.Id == -1 || registerRecipeRequest.Recipe.Id == 0)
+                Recipe recipe = new Recipe(recipeFull);
+                if (recipe.Id == -1 || recipe.Id == 0)
                 {
-                    await Add(registerRecipeRequest.Recipe);
+                    await Add(recipe);
                 }
                 else
                 {
-                    await Update(registerRecipeRequest.Recipe);
-                    await UpdateStatus(registerRecipeRequest.Recipe.Id, 1);
+                    await Update(recipe);
+                    await UpdateStatus(recipe.Id, 1);
                 }
 
                 scope.Complete();

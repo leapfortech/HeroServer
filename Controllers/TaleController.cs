@@ -13,11 +13,11 @@ namespace HeroServer.Controllers
     {
         // GET services/tale?id=1
         [HttpGet]
-        public async Task<ActionResult<TaleFull>> GetFullById([FromQuery] String id, [FromQuery] String likeAppUserId)
+        public async Task<ActionResult<TaleFull>> GetFullById([FromQuery] String id, [FromQuery] String reactionAppUserId)
         {
             try
             {
-                return Ok(await TaleFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(likeAppUserId)));
+                return Ok(await TaleFunctions.GetFullById(Convert.ToInt64(id), Convert.ToInt64(reactionAppUserId)));
             }
             catch (Exception ex)
             {
@@ -26,11 +26,11 @@ namespace HeroServer.Controllers
         }
 
         [HttpGet("FullByPostId")]
-        public async Task<ActionResult<TaleFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] String likeAppUserId)
+        public async Task<ActionResult<TaleFull>> GetFullByPostId([FromQuery] String postId, [FromQuery] String reactionAppUserId)
         {
             try
             {
-                return Ok(await TaleFunctions.GetFullByPostId(Convert.ToInt64(postId), Convert.ToInt64(likeAppUserId)));
+                return Ok(await TaleFunctions.GetFullByPostId(Convert.ToInt64(postId), Convert.ToInt64(reactionAppUserId)));
             }
             catch (Exception ex)
             {
@@ -68,11 +68,11 @@ namespace HeroServer.Controllers
 
         // POST services/tale/Register
         [HttpPost("Register")]
-        public async Task<ActionResult<long>> Register([FromBody] RegisterTaleRequest registerTaleRequest)
+        public async Task<ActionResult<long>> Register([FromBody] TaleFull taleFull)
         {
             try
             {
-                return Ok(await TaleFunctions.Register(registerTaleRequest));
+                return Ok(await TaleFunctions.Register(taleFull));
             }
             catch (Exception ex)
             {
@@ -82,11 +82,11 @@ namespace HeroServer.Controllers
 
         // PUT services/tale
         [HttpPut]
-        public async Task<ActionResult<bool>> Update([FromBody] RegisterTaleRequest registerTaleRequest)
+        public async Task<ActionResult<bool>> Update([FromBody] TaleFull taleFull)
         {
             try
             {
-                return Ok(await TaleFunctions.Update(registerTaleRequest));
+                return Ok(await TaleFunctions.Update(taleFull));
             }
             catch (Exception ex)
             {
