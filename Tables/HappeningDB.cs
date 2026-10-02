@@ -84,7 +84,9 @@ namespace HeroServer
                                      reader["Location"].ToString(),
                                      reader["Latitude"] == DBNull.Value ? (double?)null : Convert.ToDouble(reader["Latitude"]),
                                      reader["Longitude"] == DBNull.Value ? (double?)null : Convert.ToDouble(reader["Longitude"]),
-                                      
+
+                                     Convert.ToInt32(reader["Favorite"]),
+                                     Convert.ToInt32(reader["Selected"]),
                                      Convert.ToInt32(reader["Status"]));
         }
 
@@ -100,8 +102,8 @@ namespace HeroServer
                                      reader["Country"].ToString(),
                                      reader["State"].ToString(),
                                      reader["Location"].ToString(),
-                                     Convert.ToInt32(reader["Selected"]),
                                      Convert.ToInt32(reader["Favorite"]),
+                                     Convert.ToInt32(reader["Selected"]),
                                      Convert.ToInt32(reader["FavoriteCount"]),
                                      Convert.ToDateTime(reader["PublicationDateTime"]));
         }
@@ -177,8 +179,8 @@ namespace HeroServer
                       " Country.Name AS Country," +
                       " State.Name AS State," +
                       " Happening.Location," +
-                      " CASE WHEN JSelected.PostId IS NULL THEN 0 ELSE 1 END AS Selected," +
                       " CASE WHEN JFavorite.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
+                      " CASE WHEN JSelected.PostId IS NULL THEN 0 ELSE 1 END AS Selected," +
                       " Post.FavoriteCount," +
                       " Post.PublicationDateTime" +
                       " FROM [D-Post] AS Post" +
@@ -253,6 +255,7 @@ namespace HeroServer
                              "        AND Comment.Status = 1), 0) AS CommentCount," +
 
                              " CASE WHEN Fav.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
+                             " CASE WHEN Sel.PostId IS NULL THEN 0 ELSE 1 END AS Selected," +
                              " ISNULL(DReaction.[ReactionPhraseId], -1) AS [ReactionPhraseId]," +
                              " Post.FavoriteCount, Post.PublicationDateTime, Post.Status AS PostStatus," +
 
@@ -275,6 +278,7 @@ namespace HeroServer
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
                              " INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
                              " LEFT JOIN [J-Favorite] AS Fav ON Fav.PostId = Post.Id AND Fav.AppUserId = @ReactionAppUserId" +
+                             " LEFT JOIN [J-Selected] AS Sel ON Sel.PostId = Post.Id AND Sel.AppUserId = @ReactionAppUserId" +
                              " LEFT JOIN [D-Reaction] AS DReaction ON DReaction.PostId = Post.Id AND DReaction.AppUserId = @ReactionAppUserId" +
 
                              // Interest locality
@@ -384,6 +388,7 @@ namespace HeroServer
                              "        AND Comment.Status = 1), 0) AS CommentCount," +
 
                              " CASE WHEN Fav.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
+                             " CASE WHEN Sel.PostId IS NULL THEN 0 ELSE 1 END AS Selected," +
                              " ISNULL(DReaction.[ReactionPhraseId], -1) AS [ReactionPhraseId]," +
                              " Post.FavoriteCount, Post.PublicationDateTime, Post.Status AS PostStatus," +
 
@@ -406,6 +411,7 @@ namespace HeroServer
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
                              " INNER JOIN [D-AppUser] AS AppUser ON (Post.AppUserId = AppUser.Id)" +
                              " LEFT JOIN [J-Favorite] AS Fav ON Fav.PostId = Post.Id AND Fav.AppUserId = @ReactionAppUserId " +
+                             " LEFT JOIN [J-Selected] AS Sel ON Sel.PostId = Post.Id AND Sel.AppUserId = @ReactionAppUserId" +
                              " LEFT JOIN [D-Reaction] AS DReaction ON DReaction.PostId = Post.Id AND DReaction.AppUserId = @ReactionAppUserId" +
 
                              // Interest locality

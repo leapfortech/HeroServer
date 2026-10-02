@@ -76,6 +76,7 @@ namespace HeroServer
                                    Convert.ToDouble(reader["DiscountPrice"]),
                                    Convert.ToInt64(reader["DeliveryTypeId"]),
                                    reader["Annotation"].ToString(),
+                                   Convert.ToInt32(reader["Favorite"]),
                                    Convert.ToInt32(reader["Status"]),
 
                                    null);  // ProductReviewFull

@@ -60,6 +60,7 @@ namespace HeroServer
                                  null,   // CommentFulls
                                  null,   // Images
 
+                                 Convert.ToInt32(reader["Favorite"]),
                                  Convert.ToInt32(reader["Status"]),
                                  null,   // RadioTypeFulls 
                                  null);  // RadioLanguageFulls
@@ -227,31 +228,13 @@ namespace HeroServer
                              " Post.ImageCount," +
 
                              // ReactionCounts
-                             " ISNULL((SELECT COUNT(*)" +
-                             "        FROM [D-Reaction] AS Reaction" +
-                             "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 1), 0) AS Reaction1Count," +
-
-                             " ISNULL((SELECT COUNT(*)" +
-                             "        FROM [D-Reaction] AS Reaction" +
-                             "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 2), 0) AS Reaction2Count," +
-
-                             " ISNULL((SELECT COUNT(*)" +
-                             "        FROM [D-Reaction] AS Reaction" +
-                             "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 3), 0) AS Reaction3Count," +
-
-                             " ISNULL((SELECT COUNT(*)" +
-                             "        FROM [D-Reaction] AS Reaction" +
-                             "        WHERE Reaction.PostId = Post.Id" +
-                             "        AND Reaction.ReactionPhraseId = 4), 0) AS Reaction4Count," +
+                             " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 1), 0) AS Reaction1Count," +
+                             " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 2), 0) AS Reaction2Count," +
+                             " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 3), 0) AS Reaction3Count," +
+                             " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 4), 0) AS Reaction4Count," +
 
                              // CommentCount
-                             " ISNULL((SELECT COUNT(*)" +
-                             "        FROM [D-Comment] AS Comment" +
-                             "        WHERE Comment.PostId = Post.Id" +
-                             "        AND Comment.Status = 1), 0) AS CommentCount," +
+                             " ISNULL((SELECT COUNT(*) FROM [D-Comment] AS Comment WHERE Comment.PostId = Post.Id AND Comment.Status = 1), 0) AS CommentCount," +
 
                              " CASE WHEN Fav.PostId IS NULL THEN 0 ELSE 1 END AS Favorite," +
                              " ISNULL(DReaction.[ReactionPhraseId], -1) AS [ReactionPhraseId]," +
@@ -298,21 +281,21 @@ namespace HeroServer
 
             strCmd += "SELECT Id, RadioTypeId, Status" +
                       " FROM [J-RadioType]" +
-                      " WHERE Status = 1" +
-                      " AND RadioId = @Id;";
+                      " WHERE RadioId = @Id" +
+                      " AND Status = 1;";
 
             strCmd += "SELECT Id, LanguageId, Status" +
                       " FROM [J-RadioLanguage]" +
-                      " WHERE Status = 1" +
-                      " AND RadioId = @Id;";
+                      " WHERE RadioId = @Id" +
+                      " AND Status = 1;";
 
             strCmd += "SELECT Id, PostId, Name, Status" +
                        " FROM [D-Contact]" +
-                      $" WHERE Status = 1 AND PostId = (SELECT PostId FROM {table} WHERE Id = @Id);";
+                      $" WHERE PostId = (SELECT PostId FROM {table} WHERE Id = @Id) AND Status = 1;";
 
             strCmd += "SELECT Link.Id, Link.LinkTypeId, Link.PostId, Link.Url, Link.Status" +
                        " FROM [D-Link] AS Link" +
-                      $" WHERE Link.Status = 1 AND Link.PostId = (SELECT PostId FROM {table} WHERE Id = @Id);";
+                      $" WHERE Link.PostId = (SELECT PostId FROM {table} WHERE Id = @Id) AND Link.Status = 1;";
 
             strCmd += "SELECT TOP 3 Comment.Id, Comment.PostId, Comment.AppUserId, AppUser.Alias AS AppUserAlias," +
                       " Comment.Message, Comment.PublicationDateTime, Comment.CreateDateTime, Comment.UpdateDateTime, Comment.Status" +

@@ -18,6 +18,8 @@ namespace HeroServer
         public String Location { get; set; }
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
+        public int Favorite { get; set; } = 0;
+        public int Selected { get; set; } = 0;
         public int Status { get; set; }
 
 
@@ -28,7 +30,8 @@ namespace HeroServer
                              DateTime publicationDateTime, int postStatus,
                              AppUserInfo appUserInfo, ContactFull contactFull, List<LinkFull> linkFulls, List<CommentFull> commentFulls, List<String> images,
                              long happeningTypeId, long countryId, long stateId, int isPublic, int hasSignup, int hasPayment, String paymentDetails,
-                             DateTime? startDateTime, DateTime? endDateTime, String location, double? latitude, double? longitude, int status)
+                             DateTime? startDateTime, DateTime? endDateTime, String location, double? latitude, double? longitude,
+                             int favorite, int selected, int status)
             : base(postId, appUserId, appUserAlias, postTypeId, countryId, stateId, title, titleImage, description,
                    imageCount, favoriteCount, reactionCounts, reactionPhraseId, commentCount, publicationDateTime, postStatus,
                    appUserInfo, contactFull, linkFulls, commentFulls, images)
@@ -46,6 +49,8 @@ namespace HeroServer
             Location = location;
             Latitude = latitude;
             Longitude = longitude;
+            Favorite = favorite;
+            Selected = selected;
             Status = status;
         }
     }
