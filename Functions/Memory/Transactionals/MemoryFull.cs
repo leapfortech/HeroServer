@@ -22,7 +22,7 @@ namespace HeroServer
                              AppUserInfo appUserInfo, ContactFull contactFull, List<LinkFull> linkFulls, List<CommentFull> commentFulls, List<String> images,
                              long memoryTypeId, long countryId, long stateId,
                              DateTime? dateTime, String location, int status)
-            : base(postId, appUserId, appUserAlias, postTypeId, countryId, stateId, title, titleImage, description,
+            : base(postId, appUserId, appUserAlias, postTypeId, postCountryId, postStateId, title, titleImage, description,
                    imageCount, favoriteCount, reactionCounts, reactionPhraseId, commentCount, publicationDateTime, postStatus,
                    appUserInfo, contactFull, linkFulls, commentFulls, images)
         {

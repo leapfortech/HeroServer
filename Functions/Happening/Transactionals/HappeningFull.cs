@@ -32,7 +32,7 @@ namespace HeroServer
                              long happeningTypeId, long countryId, long stateId, int isPublic, int hasSignup, int hasPayment, String paymentDetails,
                              DateTime? startDateTime, DateTime? endDateTime, String location, double? latitude, double? longitude,
                              int favorite, int selected, int status)
-            : base(postId, appUserId, appUserAlias, postTypeId, countryId, stateId, title, titleImage, description,
+            : base(postId, appUserId, appUserAlias, postTypeId, postCountryId, postStateId, title, titleImage, description,
                    imageCount, favoriteCount, reactionCounts, reactionPhraseId, commentCount, publicationDateTime, postStatus,
                    appUserInfo, contactFull, linkFulls, commentFulls, images)
         {
