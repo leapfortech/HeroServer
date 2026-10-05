@@ -53,7 +53,13 @@ namespace HeroServer
                 where.Add($"EXISTS(SELECT 1 FROM [J-Selected] AS Selected WHERE Selected.PostId = Post.Id AND Selected.AppUserId = @SelectedAppUserId)");
 
             if (filterTypeId)
-                where.Add($"{feedTables[request.PostTypeId]}.{feedTables[request.PostTypeId]}TypeId = @{feedTables[request.PostTypeId]}TypeId");
+            {
+                if (request.PostTypeId == (long)PostType.Product)
+                    where.Add("Product.ProductSubtypeId = @ProductTypeId");
+                else
+                    where.Add($"{feedTables[request.PostTypeId]}.{feedTables[request.PostTypeId]}TypeId = @{feedTables[request.PostTypeId]}TypeId");
+            }
+            //where.Add($"{feedTables[request.PostTypeId]}.{feedTables[request.PostTypeId]}TypeId = @{feedTables[request.PostTypeId]}TypeId");
 
             // EXPIRATION
             if (expirationTimes[request.PostTypeId] > 0)

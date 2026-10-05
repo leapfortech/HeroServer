@@ -174,8 +174,10 @@ namespace HeroServer
 
             strCmd += DBHelper.OrderFeedCmd(request.Direction, "PublicationDateTime");
 
-            // POST COUNT
-            strCmd += "SELECT COUNT(*) AS Total FROM [D-Post] AS Post" + whereCount + ";";
+            strCmd += "SELECT COUNT(*) AS Total " +
+                      "FROM [D-Post] AS Post" +
+                      " INNER JOIN [D-Memory] AS Memory ON Memory.PostId = Post.Id" +
+                      whereCount + ";";
 
             using (SqlCommand command = new SqlCommand(strCmd, conn))
             {

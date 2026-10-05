@@ -151,12 +151,12 @@ namespace HeroServer
             String strCmd = DBHelper.InitFeedCmd(request.Direction, "PublicationDateTime");
 
             strCmd += " Post.Id AS PostId," +
-                      " DNews.Id AS NewsId," +
+                      " News.Id AS NewsId," +
                       " Post.Title," +
                       " Post.Description," +
-                      " DNews.DateTime," +
+                      " News.DateTime," +
                       " KNewsType.Name AS NewsType," +
-                      " DNews.Source," +
+                      " News.Source," +
                       " DAppUser.Alias," +
                       " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 1), 0) AS Reaction1Count," +
                       " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 2), 0) AS Reaction2Count," +
@@ -167,15 +167,18 @@ namespace HeroServer
                       " Post.PublicationDateTime" +
                       " FROM [D-Post] AS Post" +
                       " INNER JOIN [D-AppUser] AS DAppUser ON Post.AppUserId = DAppUser.Id" +
-                      " INNER JOIN [D-News] AS DNews ON DNews.PostId = Post.Id" +
-                      " INNER JOIN [K-NewsType] AS KNewsType ON DNews.NewsTypeId = KNewsType.Id" +
+                      " INNER JOIN [D-News] AS News ON News.PostId = Post.Id" +
+                      " INNER JOIN [K-NewsType] AS KNewsType ON News.NewsTypeId = KNewsType.Id" +
                       " LEFT JOIN [D-Reaction] AS Reaction ON Reaction.PostId = Post.Id AND Reaction.AppUserId = @ReactionAppUserId" +
                         whereFeed;
 
             strCmd += DBHelper.OrderFeedCmd(request.Direction, "PublicationDateTime");
 
             // POST COUNT
-            strCmd += "SELECT COUNT(*) AS Total FROM [D-Post] AS Post" + whereCount + ";";
+            strCmd += "SELECT COUNT(*) AS Total" +
+                      " FROM [D-Post] AS Post" +
+                      " INNER JOIN [D-News] AS News ON News.PostId = Post.Id" +
+                      whereCount + ";";
 
             using (SqlCommand command = new SqlCommand(strCmd, conn))
             {
