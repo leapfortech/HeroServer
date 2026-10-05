@@ -95,7 +95,7 @@ namespace HeroServer
                         " PostCount AS (SELECT COUNT(1) AS Total FROM Posts)" +
                         " SELECT * FROM Posts, PostCount" +
                         " WHERE RowNumber <= Total - @Count" +
-                       $" ORDER BY {orderField}";
+                       $" ORDER BY {orderField};";
             return $" ORDER BY Post.{orderField} DESC;";
         }
 
