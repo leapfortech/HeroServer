@@ -185,8 +185,8 @@ namespace HeroServer
                       " Post.PublicationDateTime" +
                       " FROM [D-Post] AS Post" +
                       " INNER JOIN [D-Happening] AS Happening ON Happening.PostId = Post.Id" +
-                      " INNER JOIN [K-Country] AS Country ON Country.Id = Post.CountryId" +
-                      " LEFT JOIN [K-State] AS State ON State.Id = Post.StateId AND Post.StateId <> -1" +
+                      " INNER JOIN [K-Country] AS Country ON Country.Id = Happening.CountryId" +
+                      " LEFT JOIN [K-State] AS State ON State.Id = Happening.StateId AND Happening.StateId <> -1" +
                       " LEFT JOIN [J-Favorite] AS JFavorite ON JFavorite.PostId = Post.Id AND JFavorite.AppUserId = @ReactionAppUserId" +
                       " LEFT JOIN [J-Selected] AS JSelected ON JSelected.PostId = Post.Id AND JSelected.AppUserId = @ReactionAppUserId" +
                       " INNER JOIN [K-HappeningType] AS HappeningType ON HappeningType.Id = Happening.HappeningTypeId" +

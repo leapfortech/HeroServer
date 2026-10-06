@@ -167,8 +167,8 @@ namespace HeroServer
                       " Post.PublicationDateTime" +
                       " FROM [D-Post] AS Post" +
                       " INNER JOIN [D-Memory] AS Memory ON Memory.PostId = Post.Id" +
-                      " INNER JOIN [K-Country] AS Country ON Country.Id = Post.CountryId" +
-                      " LEFT JOIN [K-State] AS State ON State.Id = Post.StateId AND Post.StateId <> -1" +
+                      " INNER JOIN [K-Country] AS Country ON Country.Id = Memory.CountryId" +
+                      " LEFT JOIN [K-State] AS State ON State.Id = Memory.StateId AND Memory.StateId <> -1" +
                       " LEFT JOIN [D-Reaction] AS Reaction ON Reaction.PostId = Post.Id AND Reaction.AppUserId = @ReactionAppUserId" +
                         whereFeed;
 

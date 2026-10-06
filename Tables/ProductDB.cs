@@ -199,8 +199,8 @@ namespace HeroServer
                       " Post.PublicationDateTime" +
                       " FROM [D-Post] AS Post" +
                       " INNER JOIN [D-Product] AS Product ON Product.PostId = Post.Id" +
-                      " INNER JOIN [K-Country] AS Country ON Country.Id = Post.CountryId" +
-                      " LEFT JOIN [K-State] AS State ON State.Id = Post.StateId AND Post.StateId <> -1" +
+                      " INNER JOIN [K-Country] AS Country ON Country.Id = Product.SaleCountryId" +
+                      " LEFT JOIN [K-State] AS State ON State.Id = Product.SaleStateId AND Product.SaleStateId <> -1" +
                       " INNER JOIN [K-Currency] AS Currency ON Currency.Id = Product.CurrencyId" +
                       " LEFT JOIN [K-ProductSubtype] AS ProductSubtype ON ProductSubtype.Id = Product.ProductSubtypeId" +
                       " LEFT JOIN [J-Favorite] AS JFavorite ON JFavorite.PostId = Post.Id AND JFavorite.AppUserId = @ReactionAppUserId" +
