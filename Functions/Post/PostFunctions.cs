@@ -265,13 +265,12 @@ namespace HeroServer
             {
                 // Update Post
                 await new PostDB().Update(new Post(postFull));
-                
+
                 // Update Contact
                 // Soft Delete
+                await new ContactDB().UpdateStatusByPostId(postFull.PostId, 1, 0);
                 if (postFull.ContactFull != null)
                 {
-                    await new ContactDB().UpdateStatusByPostId(postFull.PostId, 1, 0);
-
                     postFull.ContactFull.PostId = postFull.PostId;
                     postFull.ContactFull.Status = 1;
                     await new ContactDB().Add(new Contact(postFull.ContactFull));
