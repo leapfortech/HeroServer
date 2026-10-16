@@ -216,6 +216,22 @@ namespace HeroServer
             return true;
         }
 
+        public static async Task<bool> Delete(long postId, long newsId)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                bool postOk = await PostFunctions.UpdateStatus(postId, 2);
+                bool newsOk = await UpdateStatus(newsId, 2);
+
+                if (!postOk || !newsOk)
+                    return false;
+
+                scope.Complete();
+            }
+
+            return true;
+        }
+
         public static async Task<bool> Update(News news)
         {
             return await new NewsDB().Update(news);

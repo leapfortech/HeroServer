@@ -199,6 +199,22 @@ namespace HeroServer
             return true;
         }
 
+        public static async Task<bool> Delete(long postId, long recipeId)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                bool postOk = await PostFunctions.UpdateStatus(postId, 2);
+                bool recipeOk = await UpdateStatus(recipeId, 2);
+
+                if (!postOk || !recipeOk)
+                    return false;
+
+                scope.Complete();
+            }
+
+            return true;
+        }
+
         public static async Task<bool> Update(Recipe recipe)
         {
             return await new RecipeDB().Update(recipe);

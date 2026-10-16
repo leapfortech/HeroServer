@@ -121,5 +121,19 @@ namespace HeroServer.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        // PUT services/news/Delete
+        [HttpPut("Delete")]
+        public async Task<ActionResult<bool>> Delete([FromBody] PostModerationRequest postModerationRequest)
+        {
+            try
+            {
+                return Ok(await NewsFunctions.Delete(postModerationRequest.PostId, postModerationRequest.Id));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

@@ -297,6 +297,22 @@ namespace HeroServer
             return true;
         }
 
+        public static async Task<bool> Delete(long postId, long radioId)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                bool postOk = await PostFunctions.UpdateStatus(postId, 2);
+                bool radioOk = await UpdateStatus(radioId, 2);
+
+                if (!postOk || !radioOk)
+                    return false;
+
+                scope.Complete();
+            }
+
+            return true;
+        }
+
         public static async Task<bool> Update(Radio radio)
         {
             return await new RadioDB().Update(radio);

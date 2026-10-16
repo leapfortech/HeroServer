@@ -136,5 +136,19 @@ namespace HeroServer.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        // PUT services/radio/Delete
+        [HttpPut("Delete")]
+        public async Task<ActionResult<bool>> Delete([FromBody] PostModerationRequest postModerationRequest)
+        {
+            try
+            {
+                return Ok(await RadioFunctions.Delete(postModerationRequest.PostId, postModerationRequest.Id));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

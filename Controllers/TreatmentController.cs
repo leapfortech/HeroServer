@@ -107,5 +107,19 @@ namespace HeroServer.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        // PUT services/treatment/Delete
+        [HttpPut("Delete")]
+        public async Task<ActionResult<bool>> Delete([FromBody] PostModerationRequest postModerationRequest)
+        {
+            try
+            {
+                return Ok(await TreatmentFunctions.Delete(postModerationRequest.PostId, postModerationRequest.Id));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
