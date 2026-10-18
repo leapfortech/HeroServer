@@ -73,6 +73,7 @@ namespace HeroServer
                                  null,   //TitleImage
                                  reader["Title"].ToString(),
                                  reader["RadioType"].ToString(),
+                                 reader["RadioLanguage"].ToString(),
                                  reader["PostCountry"].ToString(),
                                  reader["PostState"].ToString(),
                                  reader["Url"].ToString(),
@@ -169,6 +170,7 @@ namespace HeroServer
                       " Radio.Id AS RadioId," +
                       " Post.Title," +
                       " RadioType.Name AS RadioType," +
+                      " RadioLanguage.Name AS RadioLanguage," +
                       " Country.Name AS PostCountry," +
                       " State.Name AS PostState," +
                       " Link.Url," +
@@ -184,11 +186,19 @@ namespace HeroServer
                       " (" +
                       "   SELECT TOP 1 KRadioType.Name" +
                       "   FROM [J-RadioType] AS RadioType" +
-                      "   INNER JOIN[K-RadioType] AS KRadioType ON KRadioType.Id = RadioType.RadioTypeId" +
+                      "   INNER JOIN [K-RadioType] AS KRadioType ON KRadioType.Id = RadioType.RadioTypeId" +
                       "   WHERE RadioType.RadioId = Radio.Id AND RadioType.Status = 1 AND KRadioType.Status = 1" +
                       "   ORDER BY RadioType.CreateDateTime ASC" +
                       " ) AS RadioType" +
-                        whereFeed;
+                      " OUTER APPLY" +
+                      " (" +
+                      "   SELECT TOP 1 KRadioLanguage.Name" +
+                      "   FROM [J-RadioLanguage] AS RadioLanguage" +
+                      "   INNER JOIN [K-Language] AS KRadioLanguage ON KRadioLanguage.Id = RadioLanguage.LanguageId" +
+                      "   WHERE RadioLanguage.RadioId = Radio.Id AND RadioLanguage.Status = 1 AND KRadioLanguage.Status = 1" +
+                      "   ORDER BY RadioLanguage.CreateDateTime ASC" +
+                      " ) AS RadioLanguage" +
+                      whereFeed;
 
             strCmd += DBHelper.OrderFeedCmd(request.Direction, "PublicationDateTime");
 

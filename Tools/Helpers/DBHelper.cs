@@ -52,14 +52,28 @@ namespace HeroServer
             if (request.SelectedAppUserId != -1L)
                 where.Add($"EXISTS(SELECT 1 FROM [J-Selected] AS Selected WHERE Selected.PostId = Post.Id AND Selected.AppUserId = @SelectedAppUserId)");
 
+            // NEW MULTI
             if (filterTypeId)
             {
                 if (request.PostTypeId == (long)PostType.Product)
                     where.Add("Product.ProductSubtypeId = @ProductTypeId");
+
+                else if (request.PostTypeId == (long)PostType.Memory && request is MemoryFeedRequest memoryRequest)
+                {
+                    if (memoryRequest.MemoryTypeIds != null && memoryRequest.MemoryTypeIds.Length > 0 && memoryRequest.MemoryTypeIds[0] != -1L)
+                        where.Add("Memory.MemoryTypeId IN " + "(SELECT TRY_CAST(value AS BIGINT) " + "FROM STRING_SPLIT(@MemoryTypeIds, ','))");
+                }
                 else
                     where.Add($"{feedTables[request.PostTypeId]}.{feedTables[request.PostTypeId]}TypeId = @{feedTables[request.PostTypeId]}TypeId");
             }
-            //where.Add($"{feedTables[request.PostTypeId]}.{feedTables[request.PostTypeId]}TypeId = @{feedTables[request.PostTypeId]}TypeId");
+
+            //if (filterTypeId)
+            //{
+            //    if (request.PostTypeId == (long)PostType.Product)
+            //        where.Add("Product.ProductSubtypeId = @ProductTypeId");
+            //    else
+            //        where.Add($"{feedTables[request.PostTypeId]}.{feedTables[request.PostTypeId]}TypeId = @{feedTables[request.PostTypeId]}TypeId");
+            //}
 
             // EXPIRATION
             if (expirationTimes[request.PostTypeId] > 0)

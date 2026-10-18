@@ -9,6 +9,7 @@ namespace HeroServer
         public String TitleImage { get; set; }
         public String Title { get; set; }
         public String RadioType { get; set; }
+        public String RadioLanguage { get; set; }
         public String PostCountry { get; set; }
         public String PostState { get; set; }
         public String Url { get; set; }
@@ -20,13 +21,16 @@ namespace HeroServer
 
         }
 
-        public RadioFeed(long id, long postId, String titleImage, String title, String radioType, String postCountry, String postState, String url, int favorite, DateTime publicationDateTime)
+        public RadioFeed(long id, long postId, String titleImage, String title,
+                         String radioType, String radioLanguage, String postCountry, String postState,
+                         String url, int favorite, DateTime publicationDateTime)
         {
             Id = id;
             PostId = postId;
             TitleImage = titleImage;
             Title = title;
             RadioType = radioType;
+            RadioLanguage = radioLanguage;
             PostCountry = postCountry;
             PostState = postState;
             Url = url;
