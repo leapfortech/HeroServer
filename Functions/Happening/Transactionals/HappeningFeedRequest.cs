@@ -4,7 +4,7 @@ namespace HeroServer
 {
     public class HappeningFeedRequest : PostFeedRequest
     {
-        public long HappeningTypeId { get; set; } = -1L;
+        public long[] HappeningTypeIds { get; set; } = new long[] { -1L };
 
         public HappeningFeedRequest()
         {

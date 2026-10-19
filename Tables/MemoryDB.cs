@@ -148,11 +148,8 @@ namespace HeroServer
         {
             MemoryFeedResponse response = new MemoryFeedResponse(request);
 
-            // NEW MULTI
             Boolean filterMemoryType = request.MemoryTypeIds != null && request.MemoryTypeIds.Length > 0 && request.MemoryTypeIds[0] != -1L;
             (String whereFeed, String whereCount) = DBHelper.GetFeedWheres(request, filterMemoryType);
-
-            //(String whereFeed, String whereCount) = DBHelper.GetFeedWheres(request, request.MemoryTypeId != -1);
 
             // QUERY FEED
             String strCmd = DBHelper.InitFeedCmd(request.Direction, "PublicationDateTime");
@@ -185,7 +182,6 @@ namespace HeroServer
 
             using (SqlCommand command = new SqlCommand(strCmd, conn))
             {
-                // NEW MULTI
                 command.AddFeedParams(request);
 
                 if (filterMemoryType)
@@ -194,8 +190,6 @@ namespace HeroServer
 
                     command.AddParam("@MemoryTypeIds", SqlDbType.VarChar, memoryTypeIds);
                 }
-
-                //command.AddFeedParams(request, request.MemoryTypeId);
 
                 using (conn)
                 {

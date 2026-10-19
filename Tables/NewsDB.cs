@@ -145,7 +145,8 @@ namespace HeroServer
         {
             NewsFeedResponse response = new NewsFeedResponse(request);
 
-            (String whereFeed, String whereCount) = DBHelper.GetFeedWheres(request, request.NewsTypeId != -1);
+            Boolean filterNewsType = request.NewsTypeIds != null && request.NewsTypeIds.Length > 0 && request.NewsTypeIds[0] != -1L;
+            (String whereFeed, String whereCount) = DBHelper.GetFeedWheres(request, filterNewsType);
 
             // QUERY FEED
             String strCmd = DBHelper.InitFeedCmd(request.Direction, "PublicationDateTime");
@@ -182,7 +183,14 @@ namespace HeroServer
 
             using (SqlCommand command = new SqlCommand(strCmd, conn))
             {
-                command.AddFeedParams(request, request.NewsTypeId);
+                command.AddFeedParams(request);
+
+                if (filterNewsType)
+                {
+                    String newsTypeIds = String.Join(",", request.NewsTypeIds);
+
+                    command.AddParam("@NewsTypeIds", SqlDbType.VarChar, newsTypeIds);
+                }
 
                 using (conn)
                 {

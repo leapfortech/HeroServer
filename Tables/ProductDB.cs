@@ -179,7 +179,8 @@ namespace HeroServer
         {
             ProductFeedResponse response = new ProductFeedResponse(request);
 
-            (String whereFeed, String whereCount) = DBHelper.GetFeedWheres(request, request.ProductTypeId != -1);
+            Boolean filterProductType = request.ProductTypeIds != null && request.ProductTypeIds.Length > 0 && request.ProductTypeIds[0] != -1L;
+            (String whereFeed, String whereCount) = DBHelper.GetFeedWheres(request, filterProductType);
 
             // QUERY FEED
             String strCmd = DBHelper.InitFeedCmd(request.Direction, "PublicationDateTime");
@@ -217,7 +218,14 @@ namespace HeroServer
 
             using (SqlCommand command = new SqlCommand(strCmd, conn))
             {
-                command.AddFeedParams(request, request.ProductTypeId);
+                command.AddFeedParams(request);
+
+                if (filterProductType)
+                {
+                    String productTypeIds = String.Join(",", request.ProductTypeIds);
+
+                    command.AddParam("@ProductTypeIds", SqlDbType.VarChar, productTypeIds);
+                }
 
                 using (conn)
                 {

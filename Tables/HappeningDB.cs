@@ -165,7 +165,8 @@ namespace HeroServer
         {
             HappeningFeedResponse response = new HappeningFeedResponse(request);
 
-            (String whereFeed, String whereCount) = DBHelper.GetFeedWheres(request, request.HappeningTypeId != -1);
+            Boolean filterHappeningType = request.HappeningTypeIds != null && request.HappeningTypeIds.Length > 0 && request.HappeningTypeIds[0] != -1L;
+            (String whereFeed, String whereCount) = DBHelper.GetFeedWheres(request, filterHappeningType);
 
             // QUERY FEED
             String strCmd = DBHelper.InitFeedCmd(request.Direction, "PublicationDateTime");
@@ -202,7 +203,14 @@ namespace HeroServer
 
             using (SqlCommand command = new SqlCommand(strCmd, conn))
             {
-                command.AddFeedParams(request, request.HappeningTypeId);
+                command.AddFeedParams(request);
+
+                if (filterHappeningType)
+                {
+                    String happeningTypeIds = String.Join(",", request.HappeningTypeIds);
+
+                    command.AddParam("@HappeningTypeIds", SqlDbType.VarChar, happeningTypeIds);
+                }
 
                 using (conn)
                 {
