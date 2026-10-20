@@ -13,6 +13,7 @@ namespace HeroServer
         public DateTime? DateTime { get; set; }
         public int[] ReactionCounts { get; set; }
         public long ReactionPhraseId { get; set; }
+        public int CommentCount { get; set; }
         public DateTime PublicationDateTime { get; set; }
 
         public MemoryFeed()
@@ -20,7 +21,7 @@ namespace HeroServer
 
         }
 
-        public MemoryFeed(long id, long postId, String titleImage, String title, String country, String state, DateTime? dateTime, int[] reactionCounts, long reactionPhraseId, DateTime publicationDateTime)
+        public MemoryFeed(long id, long postId, String titleImage, String title, String country, String state, DateTime? dateTime, int[] reactionCounts, long reactionPhraseId, int commentCount, DateTime publicationDateTime)
         {
             Id = id;
             PostId = postId;
@@ -31,6 +32,7 @@ namespace HeroServer
             DateTime = dateTime;
             ReactionCounts = reactionCounts;
             ReactionPhraseId = reactionPhraseId;
+            CommentCount = commentCount;
             PublicationDateTime = publicationDateTime;
         }
     }
