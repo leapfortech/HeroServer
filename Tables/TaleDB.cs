@@ -76,6 +76,7 @@ namespace HeroServer
                                  Convert.ToInt32(reader["Reaction4Count"])],
                                 Convert.ToInt64(reader["ReactionPhraseId"]),
                                 Convert.ToInt32(reader["CommentCount"]),
+                                Convert.ToInt64(reader["AppUserId"]),
                                 reader["Alias"].ToString(),
                                 reader["InterestLocality"].ToString(),
                                 reader["CurrentLocality"].ToString(),
@@ -153,6 +154,7 @@ namespace HeroServer
                       " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 4), 0) AS Reaction4Count," +
                       " ISNULL(Reaction.ReactionPhraseId, -1) AS ReactionPhraseId," +
                       " ISNULL((SELECT COUNT(*) FROM [D-Comment] AS Comment WHERE Comment.PostId = Post.Id AND Comment.Status = 1), 0) AS CommentCount," +
+                      " Post.AppUserId," +
                       " AppUser.Alias," +
                       " CASE" +
                       " WHEN InterestLocality.CountryId <> -1 AND InterestLocality.StateId <> -1 AND InterestLocality.CityId <> -1 THEN InterestLocalityCountry.Name + ', ' + InterestLocalityState.Name + ', ' + InterestLocalityCity.Name" +

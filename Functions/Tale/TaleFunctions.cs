@@ -38,6 +38,7 @@ namespace HeroServer
                 return null;
 
             taleFull.Images = await PostFunctions.GetImagesById(postId, true);
+            taleFull.AppUserInfo.Thumbnail = await AppUserFunctions.GetThumbnail(taleFull.AppUserId);
 
             return taleFull;
         }
@@ -126,6 +127,16 @@ namespace HeroServer
 
             for (int i = 0; i < response.TaleFeeds.Count; i++)
                 response.TaleFeeds[i].TitleImage = images[i];
+
+            // Thumbnails
+            tasks = [];
+            for (int i = 0; i < response.TaleFeeds.Count; i++)
+                tasks.Add(AppUserFunctions.GetThumbnail(response.TaleFeeds[i].AppUserId));
+
+            images = await Task.WhenAll(tasks);
+
+            for (int i = 0; i < response.TaleFeeds.Count; i++)
+                response.TaleFeeds[i].Thumbnail = images[i];
 
             return response;
         }
