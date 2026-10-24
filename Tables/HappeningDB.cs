@@ -96,6 +96,7 @@ namespace HeroServer
                                      Convert.ToInt64(reader["PostId"]),
                                      null,   //TitleImage
                                      reader["Title"].ToString(),
+                                     reader["Description"].ToString(),
                                      reader["StartDateTime"] == DBNull.Value ? null : Convert.ToDateTime(reader["StartDateTime"]),
                                      reader["EndDateTime"] == DBNull.Value ? null : Convert.ToDateTime(reader["EndDateTime"]),
                                      reader["HappeningType"].ToString(),
@@ -174,6 +175,7 @@ namespace HeroServer
             strCmd += " Post.Id AS PostId," +
                       " Happening.Id AS HappeningId," +
                       " Post.Title," +
+                      " Post.Description," +
                       " Happening.StartDateTime," +
                       " Happening.EndDateTime," +
                       " HappeningType.Name AS HappeningType," +

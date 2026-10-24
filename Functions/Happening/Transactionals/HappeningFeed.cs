@@ -8,6 +8,7 @@ namespace HeroServer
         public long PostId { get; set; }
         public String TitleImage { get; set; }
         public String Title { get; set; }
+        public String Description { get; set; }
         public DateTime? StartDateTime { get; set; }
         public DateTime? EndDateTime { get; set; }
         public String HappeningType { get; set; }
@@ -24,13 +25,14 @@ namespace HeroServer
 
         }
 
-        public HappeningFeed(long id, long postId, String titleImage, String title, DateTime? startDateTime, DateTime? endDateTime,
+        public HappeningFeed(long id, long postId, String titleImage, String title, String description, DateTime? startDateTime, DateTime? endDateTime,
                              String happeningType, String country, String state, String location, int favorite, int selected, int favoriteCount, DateTime publicationDateTime)
         {
             Id = id;
             PostId = postId;
             TitleImage = titleImage;
             Title = title;
+            Description = description;
             StartDateTime = startDateTime;
             EndDateTime = endDateTime;
             HappeningType = happeningType;
