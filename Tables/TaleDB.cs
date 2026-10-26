@@ -157,14 +157,14 @@ namespace HeroServer
                       " Post.AppUserId," +
                       " AppUser.Alias," +
                       " CASE" +
-                      " WHEN InterestLocality.CountryId <> -1 AND InterestLocality.StateId <> -1 AND InterestLocality.CityId <> -1 THEN InterestLocalityCountry.Name + ', ' + InterestLocalityState.Name + ', ' + InterestLocalityCity.Name" +
-                      " WHEN InterestLocality.CountryId <> -1 AND InterestLocality.StateId <> -1 THEN InterestLocalityCountry.Name + ', ' + InterestLocalityState.Name" +
+                      " WHEN InterestLocality.CityId <> -1 THEN InterestLocalityCity.Name" +
+                      " WHEN InterestLocality.StateId <> -1 THEN InterestLocalityState.Name" +
                       " WHEN InterestLocality.CountryId <> -1 THEN InterestLocalityCountry.Name" +
                       " ELSE ''" +
                       " END AS InterestLocality," +
                       " CASE" +
-                      " WHEN CurrentLocality.CountryId <> -1 AND CurrentLocality.StateId <> -1 AND CurrentLocality.CityId <> -1 THEN CurrentLocalityCountry.Name + ', ' + CurrentLocalityState.Name + ', ' + CurrentLocalityCity.Name" +
-                      " WHEN CurrentLocality.CountryId <> -1 AND CurrentLocality.StateId <> -1 THEN CurrentLocalityCountry.Name + ', ' + CurrentLocalityState.Name" +
+                      " WHEN CurrentLocality.CityId <> -1 THEN CurrentLocalityCity.Name" +
+                      " WHEN CurrentLocality.StateId <> -1 THEN CurrentLocalityState.Name" +
                       " WHEN CurrentLocality.CountryId <> -1 THEN CurrentLocalityCountry.Name" +
                       " ELSE ''" +
                       " END AS CurrentLocality," +

@@ -83,6 +83,7 @@ namespace HeroServer
                                   reader["Country"].ToString(),
                                   reader["State"].ToString(),
                                   reader["DateTime"] == DBNull.Value ? null : Convert.ToDateTime(reader["DateTime"]),
+                                  reader["MemoryType"].ToString(),
                                   [Convert.ToInt32(reader["Reaction1Count"]),
                                    Convert.ToInt32(reader["Reaction2Count"]),
                                    Convert.ToInt32(reader["Reaction3Count"]),
@@ -161,6 +162,7 @@ namespace HeroServer
                       " Country.Name AS Country," +
                       " State.Name AS State," +
                       " Memory.DateTime," +
+                      " MemoryType.Name AS MemoryType," +
                       " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 1), 0) AS Reaction1Count," +
                       " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 2), 0) AS Reaction2Count," +
                       " ISNULL((SELECT COUNT(*) FROM [D-Reaction] AS Reaction WHERE Reaction.PostId = Post.Id AND Reaction.ReactionPhraseId = 3), 0) AS Reaction3Count," +
@@ -173,6 +175,7 @@ namespace HeroServer
                       " INNER JOIN [K-Country] AS Country ON Country.Id = Memory.CountryId" +
                       " LEFT JOIN [K-State] AS State ON State.Id = Memory.StateId AND Memory.StateId <> -1" +
                       " LEFT JOIN [D-Reaction] AS Reaction ON Reaction.PostId = Post.Id AND Reaction.AppUserId = @ReactionAppUserId" +
+                      " INNER JOIN [K-MemoryType] AS MemoryType ON MemoryType.Id = Memory.MemoryTypeId" +
                         whereFeed;
 
             strCmd += DBHelper.OrderFeedCmd(request.Direction, "PublicationDateTime");
