@@ -177,14 +177,9 @@ namespace HeroServer
 
                 Product product = new Product(productFull);
                 if (product.Id == -1 || product.Id == 0)
-                {
                     await Add(product);
-                }
                 else
-                {
                     await Update(product);
-                    await UpdateStatus(product.Id, 1);
-                }
 
                 scope.Complete();
                 return true;

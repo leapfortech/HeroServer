@@ -197,30 +197,24 @@ namespace HeroServer
                 // Soft Delete
                 await new RadioDB().UpdateStatusByPostId(radioFull.PostId, 1, 0);
 
-                long radioId = -1;
+                radioFull.Status = 1;
 
                 Radio radio = new Radio(radioFull);
                 if (radio.Id == -1 || radio.Id == 0)
-                {
-                    radioId = await Add(radio);
-                }
+                    radio.Id = await Add(radio);
                 else
-                {
                     await Update(radio);
-                    await UpdateStatus(radio.Id, 1);
-                    radioId = radio.Id;
-                }
 
                 // Radio Types
                 // Soft Delete
-                await new RadioTypeDB().UpdateStatusByRadioId(radioId, 1, 0);
+                await new RadioTypeDB().UpdateStatusByRadioId(radio.Id, 1, 0);
 
                 if (radioFull.RadioTypeFulls != null && radioFull.RadioTypeFulls.Count > 0)
                 {
                     for (int i = 0; i < radioFull.RadioTypeFulls.Count; i++)
                     {
                         RadioType radioType = new RadioType(radioFull.RadioTypeFulls[i]);
-                        radioType.RadioId = radioId;
+                        radioType.RadioId = radio.Id;
 
                         if (radioType.Id == -1 || radioType.Id == 0)
                         {
@@ -237,14 +231,14 @@ namespace HeroServer
 
                 // Radio Languages
                 // Soft Delete
-                await new RadioLanguageDB().UpdateStatusByRadioId(radioId, 1, 0);
+                await new RadioLanguageDB().UpdateStatusByRadioId(radio.Id, 1, 0);
 
                 if (radioFull.RadioLanguageFulls != null && radioFull.RadioLanguageFulls.Count > 0)
                 {
                     for (int i = 0; i < radioFull.RadioLanguageFulls.Count; i++)
                     {
                         RadioLanguage radioLanguage = new RadioLanguage(radioFull.RadioLanguageFulls[i]);
-                        radioLanguage.RadioId = radioId;
+                        radioLanguage.RadioId = radio.Id;
 
                         if (radioLanguage.Id == -1 || radioLanguage.Id == 0)
                         {
@@ -254,8 +248,7 @@ namespace HeroServer
                         else
                         {
                             await new RadioLanguageDB().Update(radioLanguage);
-                            await new RadioLanguageDB().UpdateStatus(
-                                radioLanguage.Id, 1);
+                            await new RadioLanguageDB().UpdateStatus(radioLanguage.Id, 1);
                         }
                     }
                 }

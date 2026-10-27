@@ -166,19 +166,13 @@ namespace HeroServer
                 // Soft Delete
                 await new MemoryDB().UpdateStatusByPostId(memoryFull.PostId, 1, 0);
 
-                memoryFull.PostId = memoryFull.PostId;
                 memoryFull.Status = 1;
 
                 Memory memory = new Memory(memoryFull);
                 if (memory.Id == -1 || memory.Id == 0)
-                {
                     await Add(memory);
-                }
                 else
-                {
                     await Update(memory);
-                    await UpdateStatus(memory.Id, 1);
-                }
 
                 scope.Complete();
                 return true;

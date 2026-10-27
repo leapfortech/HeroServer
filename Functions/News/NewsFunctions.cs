@@ -169,15 +169,10 @@ namespace HeroServer
                 newsFull.Status = 1;
 
                 News news = new News(newsFull);
-				if (newsFull.Id == -1 || newsFull.Id == 0)
-                {
+				if (news.Id == -1 || news.Id == 0)
                     await Add(news);
-                }
                 else
-                {
                     await Update(news);
-                    await UpdateStatus(news.Id, 1);
-                }
 
                 scope.Complete();
                 return true;
