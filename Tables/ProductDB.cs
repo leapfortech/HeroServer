@@ -191,7 +191,7 @@ namespace HeroServer
                       " ProductSubtype.Name AS ProductSubtype," +
                       " Country.Name AS SaleCountry," +
                       " State.Name AS SaleState," +
-                      " Currency.Name AS Currency," +
+                      " Currency.Symbol AS Currency," +
                       " Product.Price," +
                       " Product.DiscountPrice," +
                       " CONVERT(VARCHAR(20), Link.LinkTypeId) + '|' + Link.Url AS Link," +

@@ -38,6 +38,7 @@ namespace HeroServer
                 return null;
 
             productFull.Images = await PostFunctions.GetImagesById(productFull.PostId, true);
+            productFull.AppUserInfo.Thumbnail = await AppUserFunctions.GetThumbnail(productFull.AppUserId);
 
             return productFull;
         }
