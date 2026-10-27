@@ -20,6 +20,10 @@ namespace HeroServer
         public List<ProductReviewFull> ProductReviewFulls { get; set; }
 
 
+        public ProductFull()
+        {
+        }
+
         public ProductFull(long id, long postId, long appUserId, String appUserAlias,
                            long postTypeId, long postCountryId, long postStateId,
                            String title, String titleImage, String description,

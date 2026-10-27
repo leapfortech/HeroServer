@@ -22,6 +22,9 @@ namespace HeroServer
         public int Selected { get; set; } = 0;
         public int Status { get; set; }
 
+        public HappeningFull()
+        {
+        }
 
         public HappeningFull(long id, long postId, long appUserId, String appUserAlias,
                              long postTypeId, long postCountryId, long postStateId,

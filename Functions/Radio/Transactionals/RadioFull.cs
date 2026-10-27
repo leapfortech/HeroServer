@@ -12,6 +12,9 @@ namespace HeroServer
         public List<RadioTypeFull> RadioTypeFulls { get; set; }
         public List<RadioLanguageFull> RadioLanguageFulls { get; set; }
 
+        public RadioFull()
+        {
+        }
 
         public RadioFull(long id, long postId, long appUserId, String appUserAlias,
                          long postTypeId, long postCountryId, long postStateId,

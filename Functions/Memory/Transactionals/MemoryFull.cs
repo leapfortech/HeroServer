@@ -13,6 +13,9 @@ namespace HeroServer
         public String Location { get; set; }
         public int Status { get; set; }
 
+        public MemoryFull()
+        {
+        }
 
         public MemoryFull(long id, long postId, long appUserId, String appUserAlias,
                              long postTypeId, long postCountryId, long postStateId,

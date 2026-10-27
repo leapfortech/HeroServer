@@ -8,6 +8,9 @@ namespace HeroServer
         public long Id { get; set; }
         public int Status { get; set; }
 
+        public TaleFull()
+        {
+        }
 
         public TaleFull(long id, long postId, long appUserId, String appUserAlias,
                         long postTypeId, long postCountryId, long postStateId,
