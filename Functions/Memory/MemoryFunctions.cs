@@ -37,7 +37,21 @@ namespace HeroServer
             if (memoryFull == null)
                 return null;
 
-            memoryFull.Images = await PostFunctions.GetImagesById(memoryFull.PostId, true);
+            // Images
+            Task<List<String>> imagesTask = PostFunctions.GetImagesById(memoryFull.PostId, true);
+
+            // Comment thumbnails
+            List<Task<String>> commentTasks = [];
+
+            for (int i = 0; i < memoryFull.CommentFulls.Count; i++)
+                commentTasks.Add(AppUserFunctions.GetThumbnail(memoryFull.CommentFulls[i].AppUserId));
+
+            await Task.WhenAll(commentTasks);
+
+            memoryFull.Images = await imagesTask;
+
+            for (int i = 0; i < memoryFull.CommentFulls.Count; i++)
+                memoryFull.CommentFulls[i].Thumbnail = await commentTasks[i];
 
             return memoryFull;
         }

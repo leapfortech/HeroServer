@@ -61,7 +61,20 @@ namespace HeroServer
 
         public static async Task<CommentFeedResponse> GetCommentFeed(CommentFeedRequest request)
         {
-            return await new PostDB().GetCommentFeed(request);
+            CommentFeedResponse response = await new PostDB().GetCommentFeed(request);
+
+            // Thumbnails
+            List<Task<String>> tasks = [];
+
+            for (int i = 0; i < response.CommentFulls.Count; i++)
+                tasks.Add(AppUserFunctions.GetThumbnail(response.CommentFulls[i].AppUserId));
+
+            String[] images = await Task.WhenAll(tasks);
+
+            for (int i = 0; i < response.CommentFulls.Count; i++)
+                response.CommentFulls[i].Thumbnail = images[i];
+
+            return response;
         }
 
         // PAGED

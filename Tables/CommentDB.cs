@@ -28,6 +28,7 @@ namespace HeroServer
             return new CommentFull(Convert.ToInt64(reader["Id"]),
                                    Convert.ToInt64(reader["PostId"]),
                                    Convert.ToInt64(reader["AppUserId"]),
+                                   null, //Thumbnail
                                    reader["AppUserAlias"].ToString(),
                                    reader["Message"].ToString(),
                                    Convert.ToDateTime(reader["PublicationDateTime"]),

@@ -286,6 +286,9 @@ namespace HeroServer
             strCmd += "SELECT TOP(1) Comment.Id AS FirstCommentId, Comment.PublicationDateTime AS FirstDateTime FROM [D-Comment] AS Comment" + whereCount + " ORDER BY Comment.PublicationDateTime;";
             strCmd += "SELECT TOP(1) Comment.Id AS LastCommentId, Comment.PublicationDateTime AS LastDateTime FROM [D-Comment] AS Comment" + whereCount + " ORDER BY Comment.PublicationDateTime DESC;";
 
+            // QUERY COMMENT COUNT
+            strCmd += "SELECT COUNT(1) AS CommentCount FROM [D-Comment] AS Comment WHERE Comment.PostId = @PostId;";
+
             using (SqlCommand command = new SqlCommand(strCmd, conn))
             {
                 if (request.Direction == 1)
@@ -328,6 +331,10 @@ namespace HeroServer
                             response.LastCommentId = Convert.ToInt64(reader["LastCommentId"]);
                             response.LastDateTime = Convert.ToDateTime(reader["LastDateTime"]);
                         }
+
+                        await reader.NextResultAsync();
+                        if (await reader.ReadAsync())
+                            response.CommentCount = Convert.ToInt32(reader["CommentCount"]);
                     }
                 }
             }
