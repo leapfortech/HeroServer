@@ -207,22 +207,10 @@ namespace HeroServer
                 taleFull.Status = 1;
 
                 Tale tale = new Tale(taleFull);
-                if (taleFull.Id == -1 || taleFull.Id == 0)
-                {
+                if (tale.Id == -1 || tale.Id == 0)
                     await Add(tale);
-                }
                 else
-                {
-                    if (tale.Id == -1 || tale.Id == 0)
-                    {
-                        await Add(tale);
-                    }
-                    else
-                    {
-                        await Update(tale);
-                        await UpdateStatus(tale.Id, 1);
-                    }
-                }
+                    await Update(tale);
 
                 scope.Complete();
             }

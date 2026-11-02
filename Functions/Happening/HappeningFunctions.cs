@@ -170,14 +170,9 @@ namespace HeroServer
 
                 Happening happening = new Happening(happeningFull);
                 if (happening.Id == -1 || happening.Id == 0)
-                {
                     await Add(happening);
-                }
                 else
-                {
                     await Update(happening);
-                    await UpdateStatus(happening.Id, 1);
-                }
 
                 scope.Complete();
                 return true;
