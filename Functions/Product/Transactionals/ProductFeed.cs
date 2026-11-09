@@ -9,8 +9,8 @@ namespace HeroServer
         public String TitleImage { get; set; }
         public String Title { get; set; }
         public String ProductSubtype { get; set; }
-        public String SaleCountry { get; set; }
-        public String SaleState { get; set; }
+        public String Country { get; set; }
+        public String State { get; set; }
         public String Currency { get; set; }
         public double Price { get; set; }
         public double DiscountPrice { get; set; }
@@ -23,7 +23,7 @@ namespace HeroServer
 
         }
 
-        public ProductFeed(long id, long postId, String titleImage, String title, String productSubtype, String saleCountry, String saleState,
+        public ProductFeed(long id, long postId, String titleImage, String title, String productSubtype, String country, String state,
                            String currency, double price, double discountPrice, String link, int favorite, DateTime publicationDateTime)
         {
             Id = id;
@@ -31,8 +31,8 @@ namespace HeroServer
             TitleImage = titleImage;
             Title = title;
             ProductSubtype = productSubtype;
-            SaleCountry = saleCountry;
-            SaleState = saleState;
+            Country = country;
+            State = state;
             Currency = currency;
             Price = price;
             DiscountPrice = discountPrice;

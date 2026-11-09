@@ -7,8 +7,6 @@ namespace HeroServer
         public long Id { get; set; }
         public long PostId { get; set; }
         public long ProductSubtypeId { get; set; }
-        public long SaleCountryId { get; set; }
-        public long SaleStateId { get; set; }
         public long CurrencyId { get; set; }
         public double Price { get; set; }
         public double DiscountPrice { get; set; }
@@ -20,15 +18,12 @@ namespace HeroServer
 
         public Product() { }
 
-        public Product(long id, long postId, long productSubtypeId, long saleCountryId, long saleStateId, long currencyId,
-                       double price, double discountPrice, long deliveryTypeId, String annotation, DateTime createDateTime,
-                       DateTime updateDateTime, int status)
+        public Product(long id, long postId, long productSubtypeId, long currencyId, double price, double discountPrice,
+                       long deliveryTypeId, String annotation, DateTime createDateTime, DateTime updateDateTime, int status)
         {
             Id = id;
             PostId = postId;
             ProductSubtypeId = productSubtypeId;
-            SaleCountryId = saleCountryId;
-            SaleStateId = saleStateId;
             CurrencyId = currencyId;
             Price = price;
             DiscountPrice = discountPrice;
@@ -44,8 +39,6 @@ namespace HeroServer
             Id = productFull.Id;
             PostId = productFull.PostId;
             ProductSubtypeId = productFull.ProductSubtypeId;
-            SaleCountryId = productFull.SaleCountryId;
-            SaleStateId = productFull.SaleStateId;
             CurrencyId = productFull.CurrencyId;
             Price = productFull.Price;
             DiscountPrice = productFull.DiscountPrice;

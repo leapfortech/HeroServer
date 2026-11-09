@@ -16,8 +16,6 @@ namespace HeroServer
             return new Product(Convert.ToInt64(reader["Id"]),
                                Convert.ToInt64(reader["PostId"]),
                                Convert.ToInt64(reader["ProductSubtypeId"]),
-                               Convert.ToInt64(reader["SaleCountryId"]),
-                               Convert.ToInt64(reader["SaleStateId"]),
                                Convert.ToInt64(reader["CurrencyId"]),
                                Convert.ToDouble(reader["Price"]),
                                Convert.ToDouble(reader["DiscountPrice"]),
@@ -69,8 +67,6 @@ namespace HeroServer
                                    null,   // Images
 
                                    Convert.ToInt64(reader["ProductSubtypeId"]),
-                                   Convert.ToInt64(reader["SaleCountryId"]),
-                                   Convert.ToInt64(reader["SaleStateId"]),
                                    Convert.ToInt64(reader["CurrencyId"]),
                                    Convert.ToDouble(reader["Price"]),
                                    Convert.ToDouble(reader["DiscountPrice"]),
@@ -89,8 +85,8 @@ namespace HeroServer
                                    null,   //TitleImage
                                    reader["Title"].ToString(),
                                    reader["ProductSubtype"].ToString(),
-                                   reader["SaleCountry"].ToString(),
-                                   reader["SaleState"].ToString(),
+                                   reader["Country"].ToString(),
+                                   reader["State"].ToString(),
                                    reader["Currency"].ToString(),
                                    Convert.ToDouble(reader["Price"]),
                                    Convert.ToDouble(reader["DiscountPrice"]),
@@ -179,7 +175,7 @@ namespace HeroServer
         {
             ProductFeedResponse response = new ProductFeedResponse(request);
 
-            Boolean filterProductType = request.ProductTypeIds != null && request.ProductTypeIds.Length > 0 && request.ProductTypeIds[0] != -1L;
+            bool filterProductType = request.ProductTypeIds != null && request.ProductTypeIds.Length > 0 && request.ProductTypeIds[0] != -1L;
             (String whereFeed, String whereCount) = DBHelper.GetFeedWheres(request, filterProductType);
 
             // QUERY FEED
@@ -188,10 +184,10 @@ namespace HeroServer
             strCmd += " Post.Id AS PostId," +
                       " Product.Id AS ProductId," +
                       " Post.Title," +
-                      " ProductSubtype.Name AS ProductSubtype," +
-                      " Country.Name AS SaleCountry," +
-                      " State.Name AS SaleState," +
-                      " Currency.Symbol AS Currency," +
+                      " KProductSubtype.Name AS ProductSubtype," +
+                      " KCountry.Name AS Country," +
+                      " KState.Name AS State," +
+                      " KCurrency.Symbol AS Currency," +
                       " Product.Price," +
                       " Product.DiscountPrice," +
                       " CONVERT(VARCHAR(20), Link.LinkTypeId) + '|' + Link.Url AS Link," +
@@ -200,10 +196,10 @@ namespace HeroServer
                       " Post.PublicationDateTime" +
                       " FROM [D-Post] AS Post" +
                       " INNER JOIN [D-Product] AS Product ON Product.PostId = Post.Id" +
-                      " INNER JOIN [K-Country] AS Country ON Country.Id = Product.SaleCountryId" +
-                      " LEFT JOIN [K-State] AS State ON State.Id = Product.SaleStateId AND Product.SaleStateId <> -1" +
-                      " INNER JOIN [K-Currency] AS Currency ON Currency.Id = Product.CurrencyId" +
-                      " LEFT JOIN [K-ProductSubtype] AS ProductSubtype ON ProductSubtype.Id = Product.ProductSubtypeId" +
+                      " INNER JOIN [K-Country] AS KCountry ON KCountry.Id = Post.CountryId" +
+                      " LEFT JOIN [K-State] AS KState ON KState.Id = Post.StateId AND Post.StateId <> -1" +
+                      " INNER JOIN [K-Currency] AS KCurrency ON KCurrency.Id = Product.CurrencyId" +
+                      " LEFT JOIN [K-ProductSubtype] AS KProductSubtype ON KProductSubtype.Id = Product.ProductSubtypeId" +
                       " LEFT JOIN [J-Favorite] AS JFavorite ON JFavorite.PostId = Post.Id AND JFavorite.AppUserId = @ReactionAppUserId" +
                       " OUTER APPLY (SELECT TOP 1 LinkTypeId, Url FROM [D-Link] WHERE PostId = Post.Id AND Status = 1 ORDER BY CreateDateTime ASC) AS Link" +
                         whereFeed;
@@ -296,7 +292,7 @@ namespace HeroServer
                              " ISNULL(CurrentLocality.StateId, -1) AS CurrentLocalityStateId," +
                              " ISNULL(CurrentLocality.CityId, -1) AS CurrentLocalityCityId," +
 
-                            $" {table}.ProductSubtypeId, {table}.SaleCountryId, {table}.SaleStateId," +
+                            $" {table}.ProductSubtypeId," +
                             $" {table}.CurrencyId, {table}.Price, {table}.DiscountPrice, {table}.DeliveryTypeId, {table}.Annotation," + 
                             $" {table}.Status" +
                             $" FROM {table}" +
@@ -441,7 +437,7 @@ namespace HeroServer
                              " ISNULL(CurrentLocality.StateId, -1) AS CurrentLocalityStateId," +
                              " ISNULL(CurrentLocality.CityId, -1) AS CurrentLocalityCityId," +
 
-                            $" {table}.ProductSubtypeId, {table}.SaleCountryId, {table}.SaleStateId," +
+                            $" {table}.ProductSubtypeId," +
                             $" {table}.CurrencyId, {table}.Price, {table}.DiscountPrice, {table}.DeliveryTypeId, {table}.Annotation," +
                             $" {table}.Status" +
                             $" FROM {table}" +
@@ -585,8 +581,8 @@ namespace HeroServer
                              " ISNULL(CurrentLocality.StateId, -1) AS CurrentLocalityStateId," +
                              " ISNULL(CurrentLocality.CityId, -1) AS CurrentLocalityCityId," +
 
-                            $" {table}.ProductSubtypeId, {table}.SaleCountryId, {table}.SaleStateId, {table}.CurrencyId," +
-                            $" {table}.Price, {table}.DiscountPrice, {table}.DeliveryTypeId, {table}.Annotation," +
+                            $" {table}.ProductSubtypeId," +
+                            $" {table}.CurrencyId, {table}.Price, {table}.DiscountPrice, {table}.DeliveryTypeId, {table}.Annotation," +
                             $" {table}.Status" +
                             $" FROM {table}" +
                             $" INNER JOIN [D-Post] AS Post ON ({table}.PostId = Post.Id)" +
@@ -720,17 +716,15 @@ namespace HeroServer
         // INSERT
         public async Task<long> Add(Product product)
         {
-            String strCmd = $"INSERT INTO {table}(Id, PostId, ProductSubtypeId, SaleCountryId, SaleStateId, CurrencyId, Price, DiscountPrice, DeliveryTypeId, Annotation, CreateDateTime, UpdateDateTime, Status)" + 
+            String strCmd = $"INSERT INTO {table}(Id, PostId, ProductSubtypeId, CurrencyId, Price, DiscountPrice, DeliveryTypeId, Annotation, CreateDateTime, UpdateDateTime, Status)" + 
                             " OUTPUT INSERTED.Id" +
-                            " VALUES (@Id, @PostId, @ProductSubtypeId, @SaleCountryId, @SaleStateId, @CurrencyId, @Price, @DiscountPrice, @DeliveryTypeId, @Annotation, @CreateDateTime, @UpdateDateTime, @Status)";
+                            " VALUES (@Id, @PostId, @ProductSubtypeId, @CurrencyId, @Price, @DiscountPrice, @DeliveryTypeId, @Annotation, @CreateDateTime, @UpdateDateTime, @Status)";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             command.AddParam("@Id", SqlDbType.BigInt, SecurityFunctions.GetUid('U'));
             command.AddParam("@PostId", SqlDbType.BigInt, product.PostId);
             command.AddParam("@ProductSubtypeId", SqlDbType.BigInt, product.ProductSubtypeId);
-            command.AddParam("@SaleCountryId", SqlDbType.BigInt, product.SaleCountryId);
-            command.AddParam("@SaleStateId", SqlDbType.BigInt, product.SaleStateId);
             command.AddParam("@CurrencyId", SqlDbType.BigInt, product.CurrencyId);
             command.AddParam("@Price", SqlDbType.Decimal, product.Price);
             command.AddParam("@DiscountPrice", SqlDbType.Decimal, product.DiscountPrice);
@@ -750,14 +744,12 @@ namespace HeroServer
         // UPDATE
         public async Task<bool> Update(Product product)
         {
-            String strCmd = $"UPDATE {table} SET PostId = @PostId, ProductSubtypeId = @ProductSubtypeId, SaleCountryId = @SaleCountryId, SaleStateId = @SaleStateId, CurrencyId = @CurrencyId, Price = @Price, DiscountPrice = @DiscountPrice, DeliveryTypeId = @DeliveryTypeId, Annotation = @Annotation, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
+            String strCmd = $"UPDATE {table} SET PostId = @PostId, ProductSubtypeId = @ProductSubtypeId, CurrencyId = @CurrencyId, Price = @Price, DiscountPrice = @DiscountPrice, DeliveryTypeId = @DeliveryTypeId, Annotation = @Annotation, UpdateDateTime = @UpdateDateTime, Status = @Status WHERE Id = @Id";
 
             SqlCommand command = new SqlCommand(strCmd, conn);
 
             command.AddParam("@PostId", SqlDbType.BigInt, product.PostId);
             command.AddParam("@ProductSubtypeId", SqlDbType.BigInt, product.ProductSubtypeId);
-            command.AddParam("@SaleCountryId", SqlDbType.BigInt, product.SaleCountryId);
-            command.AddParam("@SaleStateId", SqlDbType.BigInt, product.SaleStateId);
             command.AddParam("@CurrencyId", SqlDbType.BigInt, product.CurrencyId);
             command.AddParam("@Price", SqlDbType.Decimal, product.Price);
             command.AddParam("@DiscountPrice", SqlDbType.Decimal, product.DiscountPrice);
