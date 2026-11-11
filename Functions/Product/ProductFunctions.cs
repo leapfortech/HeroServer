@@ -117,6 +117,8 @@ namespace HeroServer
         public static async Task<ProductFeedResponse> GetFeed(ProductFeedRequest request)
         {
             ProductFeedResponse response = await new ProductDB().GetFeed(request);
+            if (request.Direction == 3)
+                return response;
 
             // TitleImages
             List<Task<String>> tasks = [];
