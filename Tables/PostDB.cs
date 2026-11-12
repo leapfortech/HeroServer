@@ -368,9 +368,13 @@ namespace HeroServer
                                 Post.Title,
                                 Post.Description,
                                 Post.ImageCount,
-                                0 AS Favorite,
-                                -1 AS [ReactionPhraseId],
                                 Post.FavoriteCount,
+                                0 AS Reaction1Count,
+                                0 AS Reaction2Count,
+                                0 AS Reaction3Count,
+                                0 AS Reaction4Count,
+                                -1 AS ReactionPhraseId,
+                                0 AS CommentCount,
                                 Post.PublicationDateTime,
                                 Post.Status AS PostStatus
                                 FROM [D-Post] AS Post
