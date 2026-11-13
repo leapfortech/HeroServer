@@ -28,7 +28,7 @@ namespace HeroServer
                               Convert.ToInt32(reader["Status"]));
         }
 
-        public static PuzzleFull GetPuzzleFull(SqlDataReader reader)
+        public static PuzzleFull GetPuzzleFull(SqlDataReader reader, bool loadAppUserInfo = true)
         {
             return new PuzzleFull(Convert.ToInt64(reader["Id"]),
 
@@ -40,7 +40,7 @@ namespace HeroServer
                                   Convert.ToInt64(reader["PostStateId"]),
                                   reader["Title"].ToString(),
                                   null,   // TitleImage
-                                  reader["Description"].ToString(),
+                                  reader["PostDescription"].ToString(),
                                   Convert.ToInt32(reader["ImageCount"]),
 
                                   Convert.ToInt32(reader["FavoriteCount"]),
@@ -51,17 +51,18 @@ namespace HeroServer
                                   Convert.ToDateTime(reader["PublicationDateTime"]),
                                   Convert.ToInt32(reader["PostStatus"]),
 
-                                  new AppUserInfo(Convert.ToInt64(reader["AppUserId"]),
-                                                  reader["AppUserAlias"].ToString(),
-                                                  null,
-                                                  new LocalityFull(Convert.ToInt64(reader["InterestLocalityTypeId"]),
+                                  loadAppUserInfo ? new AppUserInfo(Convert.ToInt64(reader["AppUserId"]),
+                                                    reader["AppUserAlias"].ToString(),
+                                                    null,
+                                                    new LocalityFull(Convert.ToInt64(reader["InterestLocalityTypeId"]),
                                                                    Convert.ToInt64(reader["InterestLocalityCountryId"]),
                                                                    Convert.ToInt64(reader["InterestLocalityStateId"]),
                                                                    Convert.ToInt64(reader["InterestLocalityCityId"])),
-                                                  new LocalityFull(Convert.ToInt64(reader["CurrentLocalityTypeId"]),
+                                                    new LocalityFull(Convert.ToInt64(reader["CurrentLocalityTypeId"]),
                                                                    Convert.ToInt64(reader["CurrentLocalityCountryId"]),
                                                                    Convert.ToInt64(reader["CurrentLocalityStateId"]),
-                                                                   Convert.ToInt64(reader["CurrentLocalityCityId"]))),
+                                                                   Convert.ToInt64(reader["CurrentLocalityCityId"])))
+                                                    : null,
 
                                   null,   // ContactFull
                                   null,   // LinkFulls
@@ -97,10 +98,11 @@ namespace HeroServer
                             " SELECT" +
 
                             // Post
-                            " PO.Id AS PostIdData," +
+                            " PO.Id AS PostId," +
                             " PO.AppUserId, PO.PostTypeId," +
                             " PO.CountryId AS PostCountryId," +
-                            " PO.StateId, PO.Title," +
+                            " PO.StateId AS PostStateId," +
+                            " PO.Title," +
                             " PO.Description AS PostDescription," +
                             " PO.ImageCount, PO.FavoriteCount," +
                             " PO.PublicationDateTime," +
@@ -123,7 +125,15 @@ namespace HeroServer
                             " PA.IsCorrect," +
                             " PA.CreateDateTime AS PuzzleAnswerCreateDateTime," +
                             " PA.UpdateDateTime AS PuzzleAnswerUpdateDateTime," +
-                            " PA.Status AS PuzzleAnswerStatus" +
+                            " PA.Status AS PuzzleAnswerStatus," +
+
+                            " AppUser.Alias AS AppUserAlias," +
+                            " 0 AS Reaction1Count," +
+                            " 0 AS Reaction2Count," +
+                            " 0 AS Reaction3Count," +
+                            " 0 AS Reaction4Count," +
+                            " -1 AS ReactionPhraseId," +
+                            " 0 AS CommentCount" +
 
                             " FROM" +
                             " (" +
@@ -144,6 +154,9 @@ namespace HeroServer
 
                             " LEFT JOIN [D-PuzzleAnswer] AS PA" +
                             " ON PA.PuzzleId = P.Id" +
+
+                            " LEFT JOIN [D-AppUser] AS AppUser" +
+                            " ON PO.AppUserId = AppUser.Id" +
 
                             " ORDER BY P.CreateDateTime DESC, PA.IsCorrect DESC;";
 
@@ -174,39 +187,37 @@ namespace HeroServer
                     // Data
                     await reader.NextResultAsync();
 
-                    List<PuzzleInfo> puzzleInfos = new List<PuzzleInfo>();
+                    List<PuzzleFull> puzzleFulls = new List<PuzzleFull>();
 
-                    Dictionary<long, PuzzleInfo> dicPuzzle = new Dictionary<long, PuzzleInfo>();
+                    Dictionary<long, PuzzleFull> dicPuzzleFull = new Dictionary<long, PuzzleFull>();
 
                     while (await reader.ReadAsync())
                     {
                         long puzzleId = Convert.ToInt64(reader["Id"]);
 
-                        if (!dicPuzzle.ContainsKey(puzzleId))
+                        if (!dicPuzzleFull.ContainsKey(puzzleId))
                         {
-                            Post post = PostDB.GetPost(reader);
-                            post.Id = Convert.ToInt64(reader["PostIdData"]);
+                            PuzzleFull puzzleFull = PuzzleDB.GetPuzzleFull(reader, false);
 
-
-                            Puzzle puzzle = PuzzleDB.GetPuzzle(reader);
-
-                            PuzzleInfo puzzleInfo = new PuzzleInfo(post, puzzle, new List<PuzzleAnswer>());
-
-                            dicPuzzle.Add(puzzleId, puzzleInfo);
-
-                            puzzleInfos.Add(puzzleInfo);
+                            dicPuzzleFull.Add(puzzleId, puzzleFull);
+                            puzzleFulls.Add(puzzleFull);
                         }
 
                         if (reader["PuzzleAnswerId"] != DBNull.Value)
                         {
-                            PuzzleAnswer puzzleAnswer = PuzzleAnswerDB.GetPuzzleAnswer(reader);
-                            puzzleAnswer.Id = Convert.ToInt64(reader["PuzzleAnswerId"]);
+                            PuzzleAnswerFull puzzleAnswerFull = new PuzzleAnswerFull(
+                                Convert.ToInt64(reader["PuzzleAnswerId"]),
+                                Convert.ToInt64(reader["PuzzleId"]),
+                                reader["Description"].ToString(),
+                                Convert.ToInt32(reader["IsCorrect"]),
+                                Convert.ToInt32(reader["PuzzleAnswerStatus"])
+                            );
 
-                            dicPuzzle[puzzleId].PuzzleAnswers.Add(puzzleAnswer);
+                            dicPuzzleFull[puzzleId].PuzzleAnswerFulls.Add(puzzleAnswerFull);
                         }
                     }
 
-                    response = new PuzzleAllRsp(req.Page, totalPages, puzzleInfos);
+                    response = new PuzzleAllRsp(req.Page, totalPages, puzzleFulls);
                 }
             }
 
