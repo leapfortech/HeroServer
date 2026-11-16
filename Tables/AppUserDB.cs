@@ -584,6 +584,57 @@ namespace HeroServer
             return id;
         }
 
+        public async Task<int> GetReferralCount(String referringCode)
+        {
+            String strCmd = $"SELECT COUNT(*) AS ReferralCount FROM {table}" +
+                            $" WHERE ReferrerAppUserId = (SELECT Id FROM {table}" +
+                            $" WHERE ReferringCode = @ReferringCode)";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            command.AddParam("@ReferringCode", SqlDbType.VarChar, referringCode);
+
+            int referralCount = 0;
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        referralCount = Convert.ToInt32(reader["ReferralCount"]);
+                    }
+                }
+            }
+
+            return referralCount;
+        }
+
+        public async Task<long> GetIdByReferringCode(String referringCode)
+        {
+            String strCmd = $"SELECT {table}.Id FROM {table}" +
+                            $" WHERE {table}.ReferringCode = @ReferringCode";
+
+            SqlCommand command = new SqlCommand(strCmd, conn);
+
+            command.AddParam("@ReferringCode", SqlDbType.VarChar, referringCode);
+
+            long id = -1;
+            using (conn)
+            {
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        id = Convert.ToInt64(reader["Id"]);
+                    }
+                }
+            }
+
+            return id;
+        }
+
         public async Task<AppUser> GetByCSToken(String csToken)
         {
             String strCmd = $"SELECT * FROM {table} WHERE CSToken = @CSToken";

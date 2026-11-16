@@ -94,6 +94,11 @@ namespace HeroServer
             return await new AppUserDB().GetCountByStatus(status);
         }
 
+        public static async Task<int> GetReferralCount(String referringCode)
+        {
+            return await new AppUserDB().GetReferralCount(referringCode);
+        }
+
         public static async Task<AliasResponse> ValidateAlias(AliasRequest aliasRequest)
         {
             return new AliasResponse(await new AppUserDB().GetMailByAlias(aliasRequest.Alias, 1));
@@ -215,19 +220,18 @@ namespace HeroServer
 
         public static async Task<long> UpdateReferred(long id, String referredCode)
         {
-            Referred referred = null;
-
+            long referrerAppUserId = -1L;
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 if (referredCode != null && referredCode.Length > 0)
-                    referred = await ReferredFunctions.GetByCode(referredCode);
+                    referrerAppUserId = await new AppUserDB().GetIdByReferringCode(referredCode);
 
-                await new AppUserDB().UpdateReferredAppUserId(id, referred != null ? referred.AppUserId : -1);
+                await new AppUserDB().UpdateReferredAppUserId(id, referrerAppUserId != -1L ? referrerAppUserId : -1L);
 
                 scope.Complete();
             }
 
-            return referred != null ? referred.AppUserId : -1;
+            return referrerAppUserId != -1L ? referrerAppUserId : -1L;
         }
 
         public static async Task<long> UpdateLocality(Locality locality)

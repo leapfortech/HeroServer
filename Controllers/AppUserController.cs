@@ -81,6 +81,20 @@ namespace HeroServer.Controllers
             }
         }
 
+        // GET services/appUser/GetReferralCount?referringCode='WEG4DGMS'
+        [HttpGet("GetReferralCount")]
+        public async Task<ActionResult<int>> GetReferralCount([FromQuery] String referringCode)
+        {
+            try
+            {
+                return Ok(await AppUserFunctions.GetReferralCount(referringCode));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // GET services/appUser/CountByStatus?status=0
         [HttpGet("CountByStatus")]
         public async Task<ActionResult<int>> GetCountByStatus([FromQuery]String status)
